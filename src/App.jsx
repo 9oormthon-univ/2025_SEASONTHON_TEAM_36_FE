@@ -1,14 +1,17 @@
 import { Route, Routes } from 'react-router-dom';
 import Login from './pages/login';
-import SignUpDone from './pages/signup';
 import Home from './pages/home';
+import ProtectedRoute from './layout/ProtectedRoute';
+import SignUpDone from './pages/signup';
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/signup/done" element={<SignUpDone />} />
-      <Route path="/home" element={<Home />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<Login />} />
+        <Route path="/signup/done" element={<SignUpDone />} />
+        <Route path="/home" element={<Home />} />
+      </Route>
     </Routes>
   );
 }

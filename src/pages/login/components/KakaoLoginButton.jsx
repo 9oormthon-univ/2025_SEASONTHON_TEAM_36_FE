@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { setCookie } from '../../../common/utils/cookie';
 
 const KakaoLoginButtonStyle = styled.button`
   background-color: #fffb00;
@@ -10,13 +11,15 @@ const KakaoLoginButtonStyle = styled.button`
 `;
 
 const KakaoLoginButton = () => {
+  const navigate = useNavigate();
   return (
     <KakaoLoginButtonStyle
       onClick={() => {
-        
+        setCookie('access-token', 'accesstoken', 3600);
+        navigate('/signup/done');
       }}
     >
-      <Link to="/signup/done">카카오로 시작하기</Link>
+      카카오로 시작하기
     </KakaoLoginButtonStyle>
   );
 };
