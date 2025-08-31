@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
 import { useEffect } from "react";
@@ -14,7 +15,6 @@ const Splash = () => <div>스플래시…</div>;
 const Login = () => <div>로그인 폼 자리</div>;
 
 export default function App() {
-
   // 앱 시작 시 기본 테마 지정 (라이트/다크)
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", "light");
