@@ -70,9 +70,9 @@ export const GlobalStyle = createGlobalStyle`
     --icon-4: #F1F4F8;
 
     /* Background */
-    --bg-1:       #FFFFFF;
-    --bg-1-soft:  #FFFFFF;
-    --bg-2:       linear-gradient(0deg, #FFFFFF 0%, #ECFFE2 100%);
+    --bg-1:       #0E1116;
+    --bg-1-soft:  #131821;
+    --bg-2:       linear-gradient(0deg, #0E1116 0%, #10151C 100%);
   }
 
   /* 수정 가능성 있음 */
