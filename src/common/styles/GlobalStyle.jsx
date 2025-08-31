@@ -43,12 +43,10 @@ export const GlobalStyle = createGlobalStyle`
     --icon-3: #FFFFFF;
     --icon-4: #6F737B;
 
-    /* Background / Surface */
+    /* Background */
     --bg-1:       #FFFFFF;
     --bg-1-soft:  #F8FBFF;
     --bg-2:       linear-gradient(0deg, #FFFFFF 0%, #ECFFE2 100%);
-    --surface-1:  var(--bg-1);
-    --surface-2:  var(--bg-1-soft);
   }
 
   /* ===== 3) Semantic tokens: Dark ===== */
@@ -71,12 +69,10 @@ export const GlobalStyle = createGlobalStyle`
     --icon-3: #FFFFFF;
     --icon-4: #F1F4F8;
 
-    /* Background / Surface */
+    /* Background */
     --bg-1:       #FFFFFF;
     --bg-1-soft:  #FFFFFF;
     --bg-2:       linear-gradient(0deg, #FFFFFF 0%, #ECFFE2 100%);
-    --surface-1:  var(--bg-1);
-    --surface-2:  var(--bg-1-soft);
   }
 
   /* 수정 가능성 있음 */
