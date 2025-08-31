@@ -28,10 +28,7 @@ const Login = () => {
   return (
     <LoginStyle>
       <SplashScreen show={showSplash}>스플래시 화면</SplashScreen>
-      <LoginScreenStyle>
-        <AppLogos />
-        <KakaoLoginButton />
-      </LoginScreenStyle>
+      <LoginScreen />
     </LoginStyle>
   );
 };
