@@ -1,6 +1,4 @@
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { setCookie } from '../../../common/utils/cookie';
 
 const KakaoLoginButtonStyle = styled.button`
   background-color: #fffb00;
@@ -11,12 +9,12 @@ const KakaoLoginButtonStyle = styled.button`
 `;
 
 const KakaoLoginButton = () => {
-  const navigate = useNavigate();
   return (
     <KakaoLoginButtonStyle
       onClick={() => {
-        setCookie('access-token', 'accesstoken', 3600);
-        navigate('/signup/done');
+        window.location.href = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${
+          import.meta.env.VITE_KAKAO_REST_API_KEY
+        }&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}`;
       }}
     >
       카카오로 시작하기

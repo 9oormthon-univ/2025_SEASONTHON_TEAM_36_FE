@@ -1,5 +1,5 @@
 import { getCookie } from './cookie';
 
 export const getAccessToken = () => {
-  return getCookie('access-token');
+  return getCookie('access_token');
 };
