@@ -4,7 +4,7 @@ import frogIndicator from "@/assets/images/frog-indicator.svg";
 
 /** 진행 막대 + 마커 + 물결오버레이 */
 export default function FrogBar({ progress = 0, className, style }) {
-  const p = Math.max(0, Math.min(100, Number(progress) || 9));
+  const p = Math.max(0, Math.min(100, Number(progress) || 0));
 
   return (
     <Bar
@@ -23,7 +23,8 @@ export default function FrogBar({ progress = 0, className, style }) {
       </div>
 
       {/* 물결 오버레이: 개구리 위로 덮이도록 marker 다음에 둬서 z-index 우위 */}
-      <div className="wave" aria-hidden="true" />
+      {/* 받아온 progress가 0이면 wave 자체를 렌더링하지 않음 */}
+      {progress > 0 && <div className="wave" aria-hidden="true" />}
     </Bar>
   );
 }
@@ -42,7 +43,7 @@ const Bar = styled.div`
 --marker-half: calc(var(--marker-size) / 2);
 
   /* 조정용 변수 */
-  --p-clamped: clamp(0, var(--p, 0), 100);
+  --p-clamped: clamp(9, var(--p, 0), 100);
   --wave-h: 18px;        /* 파도 높이 */
   --wave-size-x: 160px;  /* 파도 한 주기 가로 길이 */
   --wave-offset: 16px;   /* 물결이 물 위로 얼마나 올라오게 할지(덮임 깊이) */
