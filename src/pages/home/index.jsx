@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import EmptyState from "./components/EmptyState";
 import TaskCard from "./components/TaskCard";
+import DotIndicator from "./components/DotIndicator";
 
 // progress 퍼센트는 여기서 넘겨줌 
 
@@ -18,7 +19,8 @@ export default function HomePage() {
         <DateLine className="typo-h1">{dateStr}</DateLine>
       </DateBox>
       {/* <EmptyState /> */}
-        <TaskCard progress={12} />
+      <TaskCard progress={85} />
+      <DotIndicator index={0}/>
     </Page>
   );
 }
