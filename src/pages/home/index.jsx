@@ -1,8 +1,8 @@
-// src/pages/HomePage.js
-
 import styled from "styled-components";
 import EmptyState from "./components/EmptyState";
 import TaskCard from "./components/TaskCard";
+
+// progress 퍼센트는 여기서 넘겨줌 
 
 export default function HomePage() {
   const now = new Date();
@@ -18,7 +18,7 @@ export default function HomePage() {
         <DateLine className="typo-h1">{dateStr}</DateLine>
       </DateBox>
       {/* <EmptyState /> */}
-        <TaskCard progress={70} />
+        <TaskCard progress={12} />
     </Page>
   );
 }

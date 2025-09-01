@@ -5,10 +5,11 @@ import frogGlasses from "@/assets/images/frog-glasses.svg";
 import FrogBar from "./FrogBar";
 
 export default function TaskCard({
+  // 더미 텍스트, 추후 Task 관련 데이터 넘겨줘야 함 ('인디케이터 바'와 연동 필요)
   dday = "D - 5",
   title = "LG 전자제품 IMC 기획서 작성",
   cheer = "느려도 괜찮아, 계속 가면 결국 도착해.",
-  progress = 80, // 0~100
+  progress, // 0~100
   className,
 }) {
   const frogSrc = progress >= 85 ? frogGlasses : frogDefault;
@@ -23,9 +24,8 @@ export default function TaskCard({
       <CheerMsg>{cheer}</CheerMsg>
 
       {/* 진행률을 CSS 변수 --p 로 전달 (점선/화살표와 동기화) */}
-      <ImgContainer style={{ "--p": progress }}>
+      <ImgContainer>
         <FrogBar progress={progress} />
-
         <Illust aria-hidden="true">
           <img src={frogSrc} alt="" />
         </Illust>
