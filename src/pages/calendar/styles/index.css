@@ -53,9 +53,17 @@
 
 .react-calendar__navigation__prev-button,
 .react-calendar__navigation__next-button {
-  margin-bottom: 5px;
   font-size: 24px;
 }
+
+.react-calendar__navigation__prev-button {
+  margin-right: 10px !important;
+}
+
+/*
+.react-calendar__navigation__next-button {
+  margin-right: 16px !important;
+} */
 
 /* */
 .react-calendar__viewContainer {
@@ -78,11 +86,6 @@
   flex-direction: column-reverse;
   justify-content: center;
   align-items: center;
-  /* padding: 0; */
-}
-
-.react-calendar__month-view__days__day--neighboringMonth {
-  opacity: 0 !important;
 }
 
 /* 요일 헤더 스타일 정렬 */
@@ -121,6 +124,11 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .react-calendar__navigation__prev2-button,

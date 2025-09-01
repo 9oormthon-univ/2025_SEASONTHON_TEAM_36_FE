@@ -1,4 +1,6 @@
 import Calendar from 'react-calendar';
+import LeftArrow from '../../../assets/images/left-arrow.png';
+import RightArrow from '../../../assets/images/right-arrow.png';
 
 const CustomCalendar = () => {
   // 현재 주의 시작일과 끝일 계산 (월요일 시작, 일요일 끝)
@@ -58,6 +60,8 @@ const CustomCalendar = () => {
     <Calendar
       formatDay={formatDay}
       tileContent={getTileContent}
+      prevLabel={<img src={LeftArrow} alt="left-arrow" width="24" />}
+      nextLabel={<img src={RightArrow} alt="right-arrow" width="24" />}
       // tileDisabled={tileDisabled}
     />
   );
