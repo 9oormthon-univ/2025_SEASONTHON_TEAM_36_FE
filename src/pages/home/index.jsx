@@ -1,26 +1,26 @@
 import styled from "styled-components";
+import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TaskCard from "./components/TaskCard";
 import DotIndicator from "./components/DotIndicator";
+// import TaskModal from "./components/TaskModal";
 
-// progress 퍼센트는 여기서 넘겨줌 
-
+// progress 퍼센트는 여기서 넘겨줌!!
+/**
+ * 홈/페이지: 카드 스와이프 + 인디케이터 연동
+ * - 좌우 스와이프로 index 변경 → DotIndicator에 반영
+ * - DotIndicator는 고정값(5칸)
+ */
 export default function HomePage() {
-  const now = new Date();
-  const year = `${now.getFullYear()}년`;
-  const days = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
-  const dateStr = `${now.getMonth() + 1}월 ${now.getDate()}일 ${days[now.getDay()]}`;
-
+  
   return (
     <Page>
       <TopSpacing />
-      <DateBox>
-        <Year className="typo-h2">{year}</Year>
-        <DateLine className="typo-h1">{dateStr}</DateLine>
-      </DateBox>
+      <DateView />
       {/* <EmptyState /> */}
       <TaskCard progress={85} />
       <DotIndicator index={0}/>
+      {/* <TaskModal/> */}
     </Page>
   );
 }
@@ -41,22 +41,4 @@ const TopSpacing = styled.div`
   @media (min-height: 700px) {
     height: calc(75px + env(safe-area-inset-top, 0px));
   }
-`;
-
-const DateBox = styled.header`
-  display: grid;
-  gap: 8px;
-  margin: 18px 0 8px;
-  text-align: center;
-  @media (min-width: 375px) {
-    gap: 12px;
-  }
-`;
-
-const Year = styled.h2`
-  color: var(--text-1);
-`;
-
-const DateLine = styled.h1`
-  color: var(--text-1);
 `;
