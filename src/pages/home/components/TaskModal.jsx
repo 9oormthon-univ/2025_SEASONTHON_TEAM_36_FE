@@ -8,13 +8,6 @@ export default function TaskModal() {
   const closeSheet = () => setOpen(false);
 
   return (
-    <Wrapper>
-      <ButtonGroup>
-        <Btn aria-pressed={open} data-active={open ? "true" : "false"} onClick={openSheet}>
-          bottom
-        </Btn>
-      </ButtonGroup>
-
       <BottomSheet
         open={open}
         onOpen={openSheet}          // 드래그 업/탭으로 열기
@@ -58,48 +51,10 @@ export default function TaskModal() {
           </Footer>
         </SheetBody>
       </BottomSheet>
-    </Wrapper>
   );
 }
 
 /* ───────────── styled-components ───────────── */
-const Wrapper = styled.div`
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background: var(--bg-1);
-  min-height: 60vh;
-`;
-
-const ButtonGroup = styled.div`
-  display: inline-flex;
-  gap: 8px;
-  background: var(--surface-2, #f6f7fa);
-  padding: 6px;
-  border-radius: 999px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 14px rgba(0,0,0,0.06);
-`;
-
-const Btn = styled.button`
-  appearance: none;
-  border: 0;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: var(--surface-1, #fff);
-  color: var(--text-2, #6f737b);
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.12s ease, background 0.12s ease, color 0.12s ease;
-  &[data-active="true"] {
-    background: var(--brand-1, #0e7400);
-    color: var(--natural-0, #fff);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-  }
-  &:hover { transform: translateY(-1px); }
-  &:active { transform: translateY(0); }
-`;
-
 const SheetBody = styled.div`
   display: flex;
   flex-direction: column;
