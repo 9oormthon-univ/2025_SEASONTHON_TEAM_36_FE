@@ -79,6 +79,17 @@ const Bar = styled.div`
 
   /* ===== 물결 오버레이 ===== */
   .wave {
+  /* intensity: 진행률 0~1 스케일 */
+    --int: clamp(0, calc((var(--p-clamped) - 8) / 92), 1);
+   /* 진행률↑ → 파도 높이(진폭)↑ */
+   --wave-h: calc(10px + 10px * var(--int));
+   /* 진행률↑ → 수평 이동 속도↑ */
+   --spd: calc(4s - 2.5s * var(--int));
+   /* 진행률↑ → 상하 흔들림 빠르게 */
+   --bob-time: calc(4s - 1.2s * var(--int));
+   /* 진행률↑ → 상하 흔들림 폭↑ */
+   --bob-amp: calc(1px + 6px * var(--int));
+
     position: absolute;
     left: 0px; right: 0px;
     height: var(--wave-h);
