@@ -1,7 +1,8 @@
 // src/pages/HomePage.js
 
 import styled from "styled-components";
-import EmptyState from "./components/EmptyState"; 
+import EmptyState from "./components/EmptyState";
+import TaskCard from "./components/TaskCard";
 
 export default function HomePage() {
   const now = new Date();
@@ -16,7 +17,8 @@ export default function HomePage() {
         <Year className="typo-h2">{year}</Year>
         <DateLine className="typo-h1">{dateStr}</DateLine>
       </DateBox>
-      <EmptyState />
+      {/* <EmptyState /> */}
+        <TaskCard progress={70} />
     </Page>
   );
 }
