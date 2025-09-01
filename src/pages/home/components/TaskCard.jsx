@@ -12,7 +12,6 @@ export default function TaskCard({
   progress, // 0~100
   className,
 }) {
-  const frogSrc = progress >= 85 ? frogGlasses : frogDefault;
 
   return (
     <Container role="article" aria-label="Task card" className={className}>
@@ -27,7 +26,7 @@ export default function TaskCard({
       <ImgContainer>
         <FrogBar progress={progress} />
         <Illust aria-hidden="true">
-          <img src={frogSrc} alt="" />
+          <img src={frogDefault} alt="" />
         </Illust>
       </ImgContainer>
     </Container>
