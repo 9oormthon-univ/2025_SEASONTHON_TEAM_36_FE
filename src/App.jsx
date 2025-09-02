@@ -1,8 +1,11 @@
-
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import AppLayout from "./layout/AppLayout";
-import { useEffect } from "react";
-
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/login';
+import OAuthCallback from './pages/oauth';
+import SignUpDone from './pages/signup';
+import AppLayout from './layout/AppLayout';
+import ProtectedRoute from './layout/ProtectedRoute';
+import { useEffect } from 'react';
+import HomePage from './pages/home';
 
 // 테스트를 위한 임시 페이지 콘텐츠, 추후 삭제 예정 
 const Screen = ({ title }) => (
@@ -22,19 +25,20 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 스플래시/로그인 페이지 */}
-        <Route path="/splash" element={<Splash />} />
-        <Route path="/login" element={<Login />} />
-
-        {/* 메인 앱 페이지 (NavBar 포함) */}
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<Screen title="홈" />} />
-          <Route path="/calendar" element={<Screen title="캘린더" />} />
-          <Route path="/diary" element={<Screen title="다이어리" />} />
-          <Route path="/profile" element={<Screen title="프로필" />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Login />} />
+          <Route path="/oauth/callback/kakao" element={<OAuthCallback />} />
+          <Route path="/signup/done" element={<SignUpDone />} />
+          <Route element={<AppLayout />}>
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/calendar" element={<Screen title="캘린더" />} />
+            <Route path="/diary" element={<Screen title="다이어리" />} />
+            <Route path="/profile" element={<Screen title="프로필" />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        
       </Routes>
     </BrowserRouter>
   );
