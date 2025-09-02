@@ -16,67 +16,102 @@ export default function TaskModal({ todoId }) {
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
 
-  // ✅ 부모에서 내려준 id 사용(+ 폴백)
+  // 부모에서 내려준 id 사용(+ 폴백)
   const targetId = React.useMemo(
     () => (todoId ?? homeGoals?.contents?.[0]?.id ?? null),
     [todoId]
   );
 
-  // ✅ steps.mocks.json 기반 데이터 선택
+  // mocks 기반 데이터 선택
   const data = React.useMemo(
     () => (targetId != null ? selectStepsByGoalId(homeGoals, targetId) : null),
     [targetId]
   );
 
-  // ✅ stepDate 기준 섹션 구성:
-  // - 오늘/미래 => "우물 밖으로 나갈 준비"
-  // - 과거      => "이월된 일"
-  const { headerTitle, groups } = React.useMemo(() => {
+  // ===== 1) 섹션 분류(오늘/미래=prep, 과거=carried) + 모든 아이템 기본 pause =====
+  const baseGroups = React.useMemo(() => {
     if (!data) {
-      return {
-        headerTitle: "할 일 목록",
-        groups: [
-          { id: "prep", title: "우물 밖으로 나갈 준비", defaultOpen: true, items: [] },
-          { id: "carried", title: "이월된 일", defaultOpen: true, items: [] },
-        ],
-      };
+      return [
+        { id: "prep", title: "우물 밖으로 나갈 준비", defaultOpen: true, items: [] },
+        { id: "carried", title: "이월된 일", defaultOpen: true, items: [] },
+      ];
     }
 
     const parseISODateLocal = (iso) => {
       if (!iso || typeof iso !== "string") return null;
       const [y, m, d] = iso.split("-").map(Number);
       if (!y || !m || !d) return null;
-      return new Date(y, m - 1, d); // local midnight
+      return new Date(y, m - 1, d);
     };
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const isSameOrFuture = (iso) => {
+    const isToday = (iso) => {
       const dt = parseISODateLocal(iso);
-      if (!dt) return false; // 유효하지 않으면 과거 취급
+      if (!dt) return false;
       dt.setHours(0, 0, 0, 0);
-      return dt.getTime() >= today.getTime();
+      return dt.getTime() === today.getTime();
+    };
+    const isFuture = (iso) => {
+      const dt = parseISODateLocal(iso);
+      if (!dt) return false;
+      dt.setHours(0, 0, 0, 0);
+      return dt.getTime() > today.getTime();
     };
 
-    const toItem = (prefix) => (s) => ({
-      id: `${prefix}-${s.stepOrder ?? 0}`,
+    // 미완료 스텝만 사용
+    const allSteps = Array.isArray(data.steps) ? data.steps : [];
+    const steps = allSteps.filter((s) => s && s.isCompleted === false);
+
+    const toPausedItem = (prefix) => (s, i) => ({
+      id: `${prefix}-${s.stepOrder ?? i ?? 0}`,
       title: s.description ?? "",
-      state: s.isCompleted ? "idle" : "play",
+      state: "pause", // 기본 상태는 전부 pause
     });
 
-    const steps = Array.isArray(data.steps) ? data.steps : [];
-    const prep = steps.filter((s) => isSameOrFuture(s.stepDate)).map(toItem("prep"));
-    const carried = steps.filter((s) => !isSameOrFuture(s.stepDate)).map(toItem("carried"));
+    //steps 중 미래가 수행 예정 날짜인 경우를 제외 
+    const nonFuture = steps.filter((s) => !isFuture(s.stepDate));
+    // 오늘과 정확히 일치 
+    const prepItems = nonFuture
+      .filter((s) => isToday(s.stepDate))
+      .map(toPausedItem("prep"));
+    // 과거) 오늘 할 일은 아니지만, 미뤄져서 오늘 해야 함
+    const carriedItems = nonFuture
+      .filter((s) => !isToday(s.stepDate))
+      .map(toPausedItem("carried"));
 
-    return {
-      headerTitle: data.title ?? "할 일 목록",
-      groups: [
-        { id: "prep", title: "우물 밖으로 나갈 준비", defaultOpen: true, items: prep },
-        { id: "carried", title: "이월된 일", defaultOpen: true, items: carried },
-      ],
-    };
+    return [
+      { id: "prep", title: "우물 밖으로 나갈 준비", defaultOpen: true, items: prepItems },
+      { id: "carried", title: "이월된 일", defaultOpen: true, items: carriedItems },
+    ];
   }, [data]);
+
+  // ===== 2) 토글/재생 정책 =====
+  // 전역 1개만 play 가능. 다시 누르면 pause로.
+  const [playingKey, setPlayingKey] = React.useState(null);
+
+  // todoId 바뀌면 모두 pause로 초기화
+  React.useEffect(() => {
+    setPlayingKey(null);
+  }, [targetId]);
+
+  // 렌더링 시, 현재 playingKey에 맞춰 상태 반영
+  const groups = React.useMemo(() => {
+    return baseGroups.map((g) => ({
+      ...g,
+      items: g.items.map((it) => ({
+        ...it,
+        state: it.id === playingKey ? "play" : "pause",
+      })),
+    }));
+  }, [baseGroups, playingKey]);
+
+  const headerTitle = data?.title ?? "할 일 목록";
+
+  const handleAction = (it) => {
+    setPlayingKey((prev) => (prev === it.id ? null : it.id));
+  };
 
   return (
     <>
@@ -100,7 +135,7 @@ export default function TaskModal({ todoId }) {
             <ScrollArea role="list">
               {groups.map((g) => (
                 <ListSection key={g.id} title={g.title} defaultOpen={g.defaultOpen}>
-                  <TaskList items={g.items} />
+                  <TaskList items={g.items} onAction={handleAction} />
                 </ListSection>
               ))}
             </ScrollArea>
@@ -122,7 +157,6 @@ export default function TaskModal({ todoId }) {
     </>
   );
 }
-
 
 /* ===================== styles ===================== */
 
@@ -167,7 +201,6 @@ const ScrollArea = styled.div`
   padding: 4px 8px 12px;
 `;
 
-/** 화면(뷰포트)에 고정된 화살표 — 시트의 peek 위로 살짝 띄움 */
 const FloatingArrow = styled.img`
   position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(env(safe-area-inset-bottom, 0px) + var(--peek, 58px) + var(--gap, 14px) + var(--navbar-height));
