@@ -32,7 +32,7 @@ function App() {
             <Route path="/diary" element={<Screen title="다이어리" />} />
             <Route path="/profile" element={<Screen title="프로필" />} />
           </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
         </Route>
 
         
