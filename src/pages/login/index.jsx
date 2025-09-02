@@ -7,6 +7,12 @@ const LoginStyle = styled.div`
   position: relative;
 `;
 
+const LoginScreenStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 const Login = () => {
   const [showSplash, setShowSplash] = useState(true);
 
@@ -22,7 +28,7 @@ const Login = () => {
   return (
     <LoginStyle>
       <SplashScreen show={showSplash}>스플래시 화면</SplashScreen>
-      <LoginScreen>로그인 화면</LoginScreen>
+      <LoginScreen />
     </LoginStyle>
   );
 };

@@ -7,20 +7,17 @@ import ProtectedRoute from './layout/ProtectedRoute';
 import { useEffect } from 'react';
 import HomePage from './pages/home';
 
-// 테스트를 위한 임시 페이지 콘텐츠, 추후 삭제 예정 
+// 테스트를 위한 임시 페이지 콘텐츠, 추후 삭제 예정
 const Screen = ({ title }) => (
-  <div style={{ padding: "24px 16px" }}>
+  <div style={{ padding: '24px 16px' }}>
     <h1>{title}</h1>
     <p>임시 화면</p>
   </div>
 );
-const Splash = () => <div>스플래시…</div>;
-const Login = () => <div>로그인 폼 자리</div>;
 
-export default function App() {
-  // 앱 시작 시 기본 테마 지정 (라이트/다크)
+function App() {
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", "light");
+    document.documentElement.setAttribute('data-theme', 'light');
   }, []);
   return (
     <BrowserRouter>
@@ -43,3 +40,5 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+export default App;
