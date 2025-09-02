@@ -3,10 +3,10 @@ import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TaskModal from "./components/TaskModal";
 
-// 더미데이터
-import tasksData from "./store/tasks.mock";
+// 새 JSON 데이터 사용 
+import homeGoals from "./store/todos.mock.json";
 import { useMemo } from "react";
-import TaskCardsCarousel from "./components/TrackCardsCarousel";
+import TaskCardsCarousel from "./components/TaskCardsCarousel";
 
 /**
  * 홈/페이지: 카드 스와이프 + 인디케이터 연동
@@ -14,17 +14,26 @@ import TaskCardsCarousel from "./components/TrackCardsCarousel";
  * - DotIndicator는 최대 5칸 '창'이 좌우로 슬라이드하며 현재 위치 표시
  */
 export default function HomePage() {
-  // 전체 tasks 사용 (더 이상 5장으로 자르지 않음)
-  const tasks = useMemo(() => tasksData ?? [], []);
+  // JSON -> 카드용 데이터로 매핑
+  const tasks = useMemo(() => {
+    const contents = homeGoals?.contents ?? [];
+    return contents.map((g) => ({
+      id: g.id,
+      dday: g.dDay,
+      title: g.title,
+      warmMessage: g.warmMessage,
+      progress: Number(g.progress ?? 0),
+      steps: g.stepResponses ?? [],
+      // 필요시 추가 필드: currentDate: g.currentDate, userId: g.userId
+    }));
+  }, []);
   const hasTasks = tasks.length > 0;
 
   return (
     <Page>
       <TopSpacing />
       <DateView />
-
       {hasTasks ? <TaskCardsCarousel tasks={tasks} /> : <EmptyState />}
-
       <TaskModal />
     </Page>
   );

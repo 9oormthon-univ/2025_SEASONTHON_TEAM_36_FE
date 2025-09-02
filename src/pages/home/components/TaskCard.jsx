@@ -1,36 +1,32 @@
 import React from "react";
 import styled from "styled-components";
 import FrogBar from "./FrogBar";
-import { pickRandomCheer } from "../store/cheers.mock";
 import { pickRandomFrog } from "../store/frogs";
 import sirenIcon from '@/assets/images/siren.svg';
 
 export default function TaskCard({
-  dday = "D - 0",
+  dday = "D-0",
   title = "오늘의 할 일",
-  progress, // 0~100
+  progress = 0, // 0~100
+  warmMessage,           
   className,
 }) {
-  // 인스턴스당 1회 랜덤(리렌더에도 유지)
-  // cheer
-  const cheerRef = React.useRef(null);
-  if (cheerRef.current == null) {
-    cheerRef.current = pickRandomCheer();
-  }
-  // frog
+  // frog: 인스턴스당 1회 랜덤(리렌더에도 유지)
   const frogRef = React.useRef(null);
   if (frogRef.current == null) {
     frogRef.current = pickRandomFrog();
   }
 
-  // dday 숫자 파싱 (예: "D - 1" -> 1)
-  const ddayNum = React.useMemo(() => {
-    const m = String(dday).match(/-?\d+/g);
-    if (!m || m.length === 0) return null;
-    const n = parseInt(m[m.length - 1], 10);
-    return Number.isNaN(n) ? null : Math.abs(n);
+  // D-Day 파서 (D-3 / D - 3 / D+1 / D0 모두 대응)
+  const { sign, num } = React.useMemo(() => {
+    const m = /D\s*([+-])?\s*(\d+)/i.exec(String(dday));
+    if (!m) return { sign: 0, num: null };
+    const s = m[1] === "+" ? 1 : m[1] === "-" ? -1 : 0;
+    const n = parseInt(m[2], 10);
+    return { sign: s, num: Number.isNaN(n) ? null : n };
   }, [dday]);
-  const isUrgent = ddayNum === 0 || ddayNum === 1;
+  // 마감 임박: D-1 또는 D-0만 긴급, D+1(지남)는 긴급 아이콘 X
+  const isUrgent = (sign <= 0) && (num === 0 || num === 1);
 
   return (
     <Container role="article" aria-label="Task card" className={className}>
@@ -49,9 +45,9 @@ export default function TaskCard({
         </TitleWrap>
       </HeaderRow>
 
-      <CheerMsg>{cheerRef.current}</CheerMsg>
+      <CheerMsg>{warmMessage || "파이팅! 오늘도 한 걸음."}</CheerMsg>
 
-      {/* 진행률을 CSS 변수 --p 로 전달 (점선/화살표와 동기화) */}
+      {/* 진행률을 CSS 변수 --p 로 전달*/}
       <ImgContainer>
         <FrogBar progress={progress} />
         <Illust aria-hidden="true">

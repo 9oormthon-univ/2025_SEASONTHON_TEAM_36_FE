@@ -5,7 +5,7 @@ import SwipeCarousel from "../../../layout/SwipeCarousel";
 import DotIndicator from "./DotIndicator";
 import TaskCard from "./TaskCard";
 
-/** tasks: [{ dday, title, progress }] */
+/** tasks: [{ id?, dday|dDay, title, progress, warmMessage }] */
 export default function TaskCardsCarousel({ tasks = [] }) {
   const [index, setIndex] = useState(0);
 
@@ -21,7 +21,13 @@ export default function TaskCardsCarousel({ tasks = [] }) {
       <CarouselWrap>
         <SwipeCarousel index={index} onIndexChange={setIndex}>
           {tasks.map((t, i) => (
-            <TaskCard key={i} dday={t.dday} title={t.title} progress={t.progress} />
+            <TaskCard
+              key={t.id ?? `${t.title ?? "task"}-${i}`}
+              dday={t.dday ?? "D-0"}
+              title={t.title ?? ""}
+              progress={Number.isFinite(+t.progress) ? +t.progress : 0}
+              warmMessage={t.warmMessage ?? ""}
+            />
           ))}
         </SwipeCarousel>
       </CarouselWrap>
