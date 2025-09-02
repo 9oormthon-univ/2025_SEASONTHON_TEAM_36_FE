@@ -38,7 +38,7 @@ const Bar = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: center;
-
+  margin-left: 2%;
   --marker-size: 26px;
 --marker-half: calc(var(--marker-size) / 2);
 

@@ -44,12 +44,12 @@ export default function TaskCard({
 }
 
 const Container = styled.div`
-  width: 75%;
+  width: 80%;
   aspect-ratio: 327 / 368;
   height: auto;
 
-  margin: clamp(8px, 6vh, 48px) auto 0;
-  padding: clamp(12px, 4.5vw, 40px);
+  margin: clamp(8px, 4vh, 48px) auto 0;
+  padding: clamp(12px, 4.3vw, 40px) clamp(12px, 3vw, 40px);
 
   flex-shrink: 0;
   border-radius: clamp(12px, 4vw, 16px);
@@ -92,21 +92,16 @@ const CheerMsg = styled.p`
 
 const ImgContainer = styled.div`
   position: relative;
-  flex: 1;
-  margin-top: 4px;
+  flex: 1 1 auto; display: flex; align-items: flex-end; justify-content: flex-end;
   border-radius: 12px;
   overflow: hidden;
 `;
 
 const Illust = styled.figure`
   position: absolute;
-  right: -1px;
-  bottom: 4px;
-  width: 65%;
+  bottom: 3%;
+  width: 80%;
   height: auto;
-  margin: 0 5% 5%;
   pointer-events: none;
-  opacity: 0.95;
-
   img { width: 100%; height: 100%; display: block; object-fit: contain; }
 `;

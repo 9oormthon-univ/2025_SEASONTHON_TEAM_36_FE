@@ -1,13 +1,13 @@
-import frogDefault from "@/assets/images/frog-default.svg";
-import frogGlasses from "@/assets/images/frog-glasses.svg";
+import frog1 from "@/assets/images/frog-1.svg";
+import frog2 from "@/assets/images/frog-2.svg";
 
 // 사용 가능한 개구리 이미지 목록
-const frogs = [frogDefault, frogGlasses];
+const frogs = [frog1, frog2];
 export default frogs; 
 
 
 // 폴백 이미지
-export const FALLBACK_FROG = frogDefault;
+export const FALLBACK_FROG = frog1;
 
 // 랜덤 선택 헬퍼
 export function pickRandomFrog() {
