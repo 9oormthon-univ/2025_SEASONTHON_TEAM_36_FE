@@ -1,9 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import frogDefault from "@/assets/images/frog-default.svg";
-import frogGlasses from "@/assets/images/frog-glasses.svg";
 import FrogBar from "./FrogBar";
-import cheers from "../store/cheers.mock";
+import { pickRandomCheer } from "../store/cheers.mock";
+import { pickRandomFrog } from "../store/frogs";
 
 export default function TaskCard({
   dday = "D - 0",
@@ -11,12 +10,17 @@ export default function TaskCard({
   progress, // 0~100
   className,
 }) {
-  // cheer 문구 랜덤 선택 -- 카드 인스턴스별로 한 번만 선택(리렌더에도 유지)
+  // 인스턴스당 1회 랜덤(리렌더에도 유지)
+  // cheer
   const cheerRef = React.useRef(null);
   if (cheerRef.current == null) {
-    const pool = Array.isArray(cheers) && cheers.length ? cheers : ["오늘도 파이팅!"];
-    const r = Math.floor(Math.random() * pool.length);
-    cheerRef.current = pool[r];
+    cheerRef.current = pickRandomCheer();
+  }
+
+  // frog
+  const frogRef = React.useRef(null);
+  if (frogRef.current == null) {
+    frogRef.current = pickRandomFrog();
   }
 
   return (
@@ -32,7 +36,7 @@ export default function TaskCard({
       <ImgContainer>
         <FrogBar progress={progress} />
         <Illust aria-hidden="true">
-          <img src={frogDefault} alt="" />
+          <img src={frogRef.current} alt="" />
         </Illust>
       </ImgContainer>
     </Container>
