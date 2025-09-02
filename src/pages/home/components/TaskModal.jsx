@@ -2,8 +2,11 @@ import React from "react";
 import styled from "styled-components";
 import BottomSheet from "../../../layout/BottomSheet";
 import arrowDown from "@/assets/images/arrow-down.svg";
+import dragUp from "@/assets/images/drag-up.svg";
 import ListSection from "./ListSection";
 import TaskList from "./TaskList";
+
+const PEEK_HEIGHT = 58; // 닫힘 상태에서 보일 높이 (BottomSheet의 peekHeight와 동일)
 
 export default function TaskModal() {
   const [open, setOpen] = React.useState(false);
@@ -40,10 +43,10 @@ export default function TaskModal() {
         onOpen={openSheet}
         onClose={closeSheet}
         ariaLabel="할 일 목록"
-        peekHeight={58}
-        size="60vh"
+        peekHeight={PEEK_HEIGHT}
+        size="56vh"
       >
-        {open && ( // ⬅닫힌 경우 SheetBody 렌더링 안 함
+        {open ? (
           <SheetBody>
             <TopBar>
               <CloseDownBtn onClick={closeSheet} aria-label="내려서 닫기">
@@ -59,34 +62,82 @@ export default function TaskModal() {
               ))}
             </ScrollArea>
           </SheetBody>
+        ) : (
+            <Title className="typo-h3">{groups[0]?.title ?? "할 일 목록"}</Title>
+
         )}
       </BottomSheet>
+
+      {/* 패널 밖(뷰포트)에 고정된 화살표: overflow 클리핑 영향 X */}
+      {!open && (
+        <FloatingArrow
+          src={dragUp}
+          alt=""
+          aria-hidden="true"
+          style={{ "--peek": `${PEEK_HEIGHT}px`, "--gap": "20px" }}
+        />
+      )}
     </>
   );
 }
 
+/* ===================== styles ===================== */
+
 const SheetBody = styled.div`
-  display: flex; flex-direction: column; height: 100%; max-height: 100%; overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
   margin: 0 2%;
 `;
 
 const TopBar = styled.div`
-  position: sticky; top: 0; z-index: 1;
-  display: flex; align-items: center; justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border-bottom: 1px solid var(--surface-2);
 `;
 
 const CloseDownBtn = styled.button`
-  position: absolute; right: 8px; top: 6px;
-  appearance: none; border: 0; background: transparent; cursor: pointer;
-  color: var(--text-2); font-size: 18px; line-height: 1;
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-2);
+  font-size: 18px;
+  line-height: 1;
   padding: 0 6px;
   margin: 0 1% 0 0;
   border-radius: 8px;
-  &:hover { background: var(--surface-2); }
+  &:hover {
+    background: var(--surface-2);
+  }
 `;
 
 const ScrollArea = styled.div`
-  overflow: auto; padding: 4px 8px 12px;
+  overflow: auto;
+  padding: 4px 8px 12px;
+`;
+
+/** 화면(뷰포트)에 고정된 화살표 — 시트의 peek 위로 살짝 띄움 */
+const FloatingArrow = styled.img`
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--peek, 58px) + var(--gap, 20px) + var(--navbar-height));
+  width: 14px;
+  height: auto;
+  pointer-events: none; /* 드래그 제스처 방해하지 않음 */
+  z-index: 9999;
+`;
+
+const Title = styled.h3`
+  margin: 8px 30px;
+  color: var(--text-1);
 `;

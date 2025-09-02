@@ -16,7 +16,6 @@ export default function ListSection({ title, defaultOpen = true, className, chil
   return (
     <SectionWrap className={className}>
       <SectionHeader
-        className="typo-h3"
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
@@ -24,7 +23,7 @@ export default function ListSection({ title, defaultOpen = true, className, chil
         id={labelId}
       >
         <Chevron $open={open} aria-hidden="true">▾</Chevron>
-        <SectionTitle>{title}</SectionTitle>
+        <SectionTitle className="typo-h3">{title}</SectionTitle>
       </SectionHeader>
 
       <SectionContent
@@ -56,20 +55,16 @@ const SectionHeader = styled.button`
   gap: 8px;
   background: transparent;
   color: var(--text-1);
-  padding: 10px 8px;
 `;
 
 const Chevron = styled.span`
   display: inline-block;
   transition: transform 180ms ease;
   transform: rotate(${(p) => (p.$open ? 0 : -90)}deg);
+  font-size: var(--fs-xl, 20px);
 `;
 
 const SectionTitle = styled.h3`
-  margin: 0;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: -0.2px;
   color: var(--text-1);
 `;
 
