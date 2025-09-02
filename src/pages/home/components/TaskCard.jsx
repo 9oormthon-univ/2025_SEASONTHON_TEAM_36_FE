@@ -3,6 +3,7 @@ import styled from "styled-components";
 import FrogBar from "./FrogBar";
 import { pickRandomCheer } from "../store/cheers.mock";
 import { pickRandomFrog } from "../store/frogs";
+import sirenIcon from '@/assets/images/siren.svg';
 
 export default function TaskCard({
   dday = "D - 0",
@@ -16,19 +17,37 @@ export default function TaskCard({
   if (cheerRef.current == null) {
     cheerRef.current = pickRandomCheer();
   }
-
   // frog
   const frogRef = React.useRef(null);
   if (frogRef.current == null) {
     frogRef.current = pickRandomFrog();
   }
 
+  // dday 숫자 파싱 (예: "D - 1" -> 1)
+  const ddayNum = React.useMemo(() => {
+    const m = String(dday).match(/-?\d+/g);
+    if (!m || m.length === 0) return null;
+    const n = parseInt(m[m.length - 1], 10);
+    return Number.isNaN(n) ? null : Math.abs(n);
+  }, [dday]);
+  const isUrgent = ddayNum === 0 || ddayNum === 1;
+
   return (
     <Container role="article" aria-label="Task card" className={className}>
-      <div>
+      <HeaderRow>
         <DDayIcon>{dday}</DDayIcon>
-        <TaskTitle>{title}</TaskTitle>
-      </div>
+        <TitleWrap>
+          <TaskTitle>{title}</TaskTitle>
+          {isUrgent && (
+            <SirenIcon
+              src={sirenIcon}
+              alt="긴급"
+              title="마감 임박"
+              aria-hidden={false}
+            />
+          )}
+        </TitleWrap>
+      </HeaderRow>
 
       <CheerMsg>{cheerRef.current}</CheerMsg>
 
@@ -64,6 +83,16 @@ const Container = styled.div`
   text-align: center;
 `;
 
+const HeaderRow = styled.div`
+  display: flex;
+  align-items: center;
+  /* DDayIcon이 margin-right: 8px을 갖고 있으니 gap은 0 */
+  gap: 0;
+  justify-content: center;   /* 중앙 정렬 */
+  width: 100%;
+  flex-wrap: wrap;
+`;
+
 const DDayIcon = styled.div`
   display: inline-flex;
   align-items: center;
@@ -77,11 +106,25 @@ const DDayIcon = styled.div`
   margin-right: 8px;
 `;
 
+const TitleWrap = styled.div`
+  display: inline-flex;
+  align-items: center;
+  min-width: 0; /* 긴 제목 줄바꿈 안전 */
+`;
+
 const TaskTitle = styled.h3`
   display: inline-block;
   font-size: clamp(12px, 2.9vw, 30px);
   font-weight: 700;
   color: var(--text-1);
+`;
+
+const SirenIcon = styled.img`
+  width: clamp(14px, 4vw, 20px);
+  height: auto;
+  margin-left: 6px;
+  vertical-align: middle;
+  display: inline-block;
 `;
 
 const CheerMsg = styled.p`
