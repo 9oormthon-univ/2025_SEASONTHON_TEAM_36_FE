@@ -1,44 +1,66 @@
 import Calendar from 'react-calendar';
 import LeftArrow from '../../../assets/images/left-arrow.png';
 import RightArrow from '../../../assets/images/right-arrow.png';
+import { useCallback, useEffect, useState } from 'react';
 
-const CustomCalendar = () => {
-  // 현재 주의 시작일과 끝일 계산 (월요일 시작, 일요일 끝)
-  const getCurrentWeekRange = () => {
-    const today = new Date();
-    const currentDay = today.getDay(); // 0 = 일요일, 1 = 월요일, ...
+const CustomCalendar = ({
+  curDate,
+  allToDo,
+  maxSteps,
+  handleToDo,
+  handleMovePrev,
+  handleMoveNext,
+}) => {
+  const [selectedDate, setSelectedDate] = useState(curDate);
 
-    // 월요일을 주의 시작으로 계산
-    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1; // 일요일이면 6, 나머지는 currentDay - 1
+  useEffect(() => {
+    setSelectedDate(curDate);
+  }, [curDate]);
 
-    // 이번 주 시작 (월요일)
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - daysFromMonday);
-    weekStart.setHours(0, 0, 0, 0);
-
-    // 이번 주 끝 (일요일)
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-    weekEnd.setHours(23, 59, 59, 999);
-
-    return { weekStart, weekEnd };
-  };
-
-  const { weekStart, weekEnd } = getCurrentWeekRange();
-
-  // 이번 주가 아닌 날짜들을 비활성화
-  const tileDisabled = ({ activeStartDate, date, view }) => {
-    if (view !== 'month') return false;
-
-    return date < weekStart || date > weekEnd;
-  };
-
-  // 날짜를 "1", "2", ... 형태로 포맷팅
   const formatDay = (locale, date) => {
-    return date.getDate().toString(); // "1일" → "1"
+    const isSameDate = date.toDateString() === selectedDate.toDateString();
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '20px',
+          height: '20px',
+          backgroundColor: isSameDate ? 'var(--natural-400)' : 'transparent',
+          borderRadius: '50%',
+          fontSize: 'var(--fs-xs)',
+        }}
+      >
+        {date.getDate().toString()}
+      </div>
+    );
   };
-  // 각 날짜 위에 div 요소 추가
+
+  const selectGreen = useCallback(count => {
+    const quotient = Math.floor(maxSteps / 5);
+    const remain = maxSteps % 5;
+    const twentyPercent = quotient;
+    const fortyPercent = quotient * 2 + (remain >= 4 ? remain - 3 : 0);
+    const sixtyPercent = quotient * 3 + (remain >= 3 ? remain - 2 : 0);
+    const eightyPercent = quotient * 4 + (remain >= 2 ? remain - 1 : 0);
+    if (count <= twentyPercent) return 'var(--green-100)';
+    if (count <= fortyPercent) return 'var(--green-200)';
+    if (count <= sixtyPercent) return 'var(--green-300)';
+    if (count <= eightyPercent) return 'var(--green-400)';
+    return 'var(--green-500)';
+  });
+
   const getTileContent = ({ activeStartDate, date, view }) => {
+    let count = 0;
+    const goals = allToDo[date.getDate()] ?? {};
+
+    Object.keys(goals).map(goal => {
+      const steps = goals[goal];
+      Object.keys(steps).map(step => {
+        if (steps[step].done) count++;
+      });
+    });
     // 월 보기일 때만 div 추가
     if (view === 'month') {
       return (
@@ -46,7 +68,8 @@ const CustomCalendar = () => {
           style={{
             width: '23px',
             height: '23px',
-            border: '1px solid var(--natural-400)',
+            border: count > 0 ? 'none' : '1px solid var(--natural-400)',
+            backgroundColor: count > 0 ? selectGreen(count) : '#ffffff',
             borderRadius: '4px',
             marginBottom: '2px',
           }}
@@ -58,11 +81,42 @@ const CustomCalendar = () => {
 
   return (
     <Calendar
+      onClickDay={(value, event) => {
+        handleToDo(value);
+        setSelectedDate(value);
+      }}
       formatDay={formatDay}
       tileContent={getTileContent}
-      prevLabel={<img src={LeftArrow} alt="left-arrow" width="24" />}
-      nextLabel={<img src={RightArrow} alt="right-arrow" width="24" />}
-      // tileDisabled={tileDisabled}
+      prevLabel={
+        <img
+          src={LeftArrow}
+          alt="left-arrow"
+          width="24"
+          onClick={e => {
+            handleMovePrev();
+          }}
+        />
+      }
+      nextLabel={
+        <img
+          src={RightArrow}
+          alt="right-arrow"
+          width="24"
+          onClick={() => {
+            handleMoveNext();
+          }}
+        />
+      }
+      next2Label={
+        <span
+          style={{ fontSize: 'var(--fs-xs)' }}
+          onClick={e => {
+            e.stopPropagation();
+          }}
+        >
+          월
+        </span>
+      }
     />
   );
 };

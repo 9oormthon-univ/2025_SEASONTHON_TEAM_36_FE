@@ -6,11 +6,16 @@ const GoalListStyle = styled.div`
   padding-bottom: 30px;
 `;
 
-const GoalList = () => {
+const GoalList = ({ toDo }) => {
   return (
     <GoalListStyle>
-      <Goal goal={'Goal 1'} steps={['step 1']} />
-      <Goal goal={'Goal 2'} steps={['step 2', 'step3']} />
+      {Object.keys(toDo).map((goal, index) => {
+        const oneGoal = toDo[goal];
+        const objToArray = Object.keys(oneGoal).map(step => {
+          return { name: step, id: oneGoal[step].id, done: oneGoal[step].done };
+        });
+        return <Goal key={index} goal={goal} steps={objToArray} />;
+      })}
     </GoalListStyle>
   );
 };
