@@ -10,14 +10,13 @@ import tasksData from "./store/tasks.mock";
 import { useMemo, useState } from "react";
 import SwipeCarousel from "./components/SwipeCarousel";
 
-// progress 퍼센트는 여기서 넘겨줌!!
 /**
  * 홈/페이지: 카드 스와이프 + 인디케이터 연동
  * - 좌우 스와이프로 index 변경 → DotIndicator에 반영
  * - DotIndicator는 고정값(5칸)
  */
 export default function HomePage() {
-  // DotIndicator가 5칸 고정이라 카드도 5장만 사용 (필요시 pad 로직 추가)
+  // DotIndicator가 5칸 고정이라 카드도 5장만 사용
   const tasks = useMemo(() => tasksData.slice(0, 5), []);
   const [index, setIndex] = useState(0);
 
@@ -27,10 +26,8 @@ export default function HomePage() {
     <Page>
       <TopSpacing />
       <DateView />
-      {/* <EmptyState /> */}
-      {/* <TaskCard progress={85} /> */}
-      {/* <DotIndicator index={0}/> */}
-       {hasTasks ? (
+
+      {hasTasks ? (
         <>
           <CarouselWrap>
             <SwipeCarousel index={index} onIndexChange={setIndex}>
@@ -39,8 +36,7 @@ export default function HomePage() {
                   key={i}
                   dday={t.dday}
                   title={t.title}
-                  cheer={t.cheer}
-                  progress={t.progress} // ✅ progress 퍼센트 여기서 넘김
+                  progress={t.progress} 
                 />
               ))}
             </SwipeCarousel>
@@ -54,7 +50,7 @@ export default function HomePage() {
         <EmptyState />
       )}
 
-      <TaskModal/>
+      <TaskModal />
     </Page>
   );
 }

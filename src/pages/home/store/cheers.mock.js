@@ -1,4 +1,4 @@
-export const cheers = [
+const cheers = [
   "첫 단추만 잘 끼우자.",              // 0  (예: D-15)
   "방향만 잃지 않으면 돼.",            // 1  (예: D-14)
   "사용자를 떠올리면 길이 보여.",       // 2
@@ -15,3 +15,5 @@ export const cheers = [
   "시작이 반!",                         // 13
   "좋아, 거의 다 왔어.",                // 14
 ];
+
+export default cheers; 

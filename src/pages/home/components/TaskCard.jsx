@@ -3,15 +3,21 @@ import styled from "styled-components";
 import frogDefault from "@/assets/images/frog-default.svg";
 import frogGlasses from "@/assets/images/frog-glasses.svg";
 import FrogBar from "./FrogBar";
+import cheers from "../store/cheers.mock";
 
 export default function TaskCard({
-  // 더미 텍스트, 추후 Task 관련 데이터 넘겨줘야 함 ('인디케이터 바'와 연동 필요)
-  dday = "D - 5",
-  title = "LG 전자제품 IMC 기획서 작성",
-  cheer = "느려도 괜찮아, 계속 가면 결국 도착해.",
+  dday = "D - 0",
+  title = "오늘의 할 일",
   progress, // 0~100
   className,
 }) {
+  // cheer 문구 랜덤 선택 -- 카드 인스턴스별로 한 번만 선택(리렌더에도 유지)
+  const cheerRef = React.useRef(null);
+  if (cheerRef.current == null) {
+    const pool = Array.isArray(cheers) && cheers.length ? cheers : ["오늘도 파이팅!"];
+    const r = Math.floor(Math.random() * pool.length);
+    cheerRef.current = pool[r];
+  }
 
   return (
     <Container role="article" aria-label="Task card" className={className}>
@@ -20,7 +26,7 @@ export default function TaskCard({
         <TaskTitle>{title}</TaskTitle>
       </div>
 
-      <CheerMsg>{cheer}</CheerMsg>
+      <CheerMsg>{cheerRef.current}</CheerMsg>
 
       {/* 진행률을 CSS 변수 --p 로 전달 (점선/화살표와 동기화) */}
       <ImgContainer>
