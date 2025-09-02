@@ -1,0 +1,224 @@
+[
+  {
+    "dDay": "D-10",
+    "title": "우물밖개구리 프로젝트",
+    "endDate": "2025-09-05",
+    "progressText": "개구리가 햇빛을 보기 시작했어요!",
+    "progress": 50,
+    "steps": [
+      {
+        "stepDate": "2025-09-02",
+        "stepOrder": 1,
+        "description": "ToDo ERD 설계",
+        "isCompleted": false
+      }
+    ]
+  },
+  {
+    "dDay": "D-1",
+    "title": "BottomSheet 드래그 업",
+    "endDate": "2025-09-04",
+    "progressText": "한 번만 더! 드래그 감이 좋아지고 있어요.",
+    "progress": 70,
+    "steps": [
+      {
+        "stepDate": "2025-09-01",
+        "stepOrder": 1,
+        "description": "스냅 포인트 정의",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-02",
+        "stepOrder": 2,
+        "description": "관성 스크롤 적용",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-03",
+        "stepOrder": 3,
+        "description": "iOS 스와이프 제스처 보정",
+        "isCompleted": false
+      }
+    ]
+  },
+  {
+    "dDay": "D-0",
+    "title": "DotIndicator 동적 스케일",
+    "endDate": "2025-09-03",
+    "progressText": "마지막 점만 찍으면 끝!",
+    "progress": 90,
+    "steps": [
+      {
+        "stepDate": "2025-09-02",
+        "stepOrder": 1,
+        "description": "창 슬라이딩 알고리즘",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-03",
+        "stepOrder": 2,
+        "description": "가장자리 점 축소 처리",
+        "isCompleted": false
+      }
+    ]
+  },
+  {
+    "dDay": "D+1",
+    "title": "TaskCard 헤더 정렬",
+    "endDate": "2025-09-02",
+    "progressText": "괜찮아, 하루 지났을 뿐! 지금 시작하면 충분해요.",
+    "progress": 95,
+    "steps": [
+      {
+        "stepDate": "2025-09-01",
+        "stepOrder": 1,
+        "description": "DDay 아이콘 정렬",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-02",
+        "stepOrder": 2,
+        "description": "사이렌 표시 조건 추가",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-03",
+        "stepOrder": 3,
+        "description": "접근성 라벨 점검",
+        "isCompleted": false
+      }
+    ]
+  },
+  {
+    "dDay": "D-5",
+    "title": "IMC 기획서 1차",
+    "endDate": "2025-09-08",
+    "progressText": "조각들이 맞춰지고 있어요. 꾸준함이 곧 완성!",
+    "progress": 45,
+    "steps": [
+      {
+        "stepDate": "2025-09-03",
+        "stepOrder": 1,
+        "description": "목차/요약 초안",
+        "isCompleted": false
+      },
+      {
+        "stepDate": "2025-09-04",
+        "stepOrder": 2,
+        "description": "메시지/채널 믹스",
+        "isCompleted": false
+      },
+      {
+        "stepDate": "2025-09-05",
+        "stepOrder": 3,
+        "description": "예산안 연결",
+        "isCompleted": false
+      }
+    ]
+  },
+  {
+    "dDay": "D-2",
+    "title": "FrogBar 0% 오프셋 보정",
+    "endDate": "2025-09-05",
+    "progressText": "개구리가 물 밖으로 튀어나가지 않게!",
+    "progress": 100,
+    "steps": [
+      {
+        "stepDate": "2025-09-01",
+        "stepOrder": 1,
+        "description": "최소 오프셋 계산",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-02",
+        "stepOrder": 2,
+        "description": "레이아웃 테스트",
+        "isCompleted": true
+      }
+    ]
+  },
+  {
+    "dDay": "D-4",
+    "title": "MUI 의존성 정리",
+    "endDate": "2025-09-07",
+    "progressText": "가볍고 탄탄한 의존성 트리 만들기!",
+    "progress": 35,
+    "steps": [
+      {
+        "stepDate": "2025-09-02",
+        "stepOrder": 1,
+        "description": "Emotion 제거 영향도 확인",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-03",
+        "stepOrder": 2,
+        "description": "대체 컴포넌트 검토",
+        "isCompleted": false
+      }
+    ]
+  },
+  {
+    "dDay": "D-7",
+    "title": "SwipeCarousel 경계 스냅",
+    "endDate": "2025-09-10",
+    "progressText": "끝까지 넘겨도 자연스럽게, 스냅!",
+    "progress": 15,
+    "steps": [
+      {
+        "stepDate": "2025-09-03",
+        "stepOrder": 1,
+        "description": "슬라이드 길이/인덱스 계산",
+        "isCompleted": false
+      },
+      {
+        "stepDate": "2025-09-04",
+        "stepOrder": 2,
+        "description": "관성 감쇠값 튜닝",
+        "isCompleted": false
+      }
+    ]
+  },
+  {
+    "dDay": "D-6",
+    "title": "SVAR IRF 그림 정리",
+    "endDate": "2025-09-09",
+    "progressText": "그림이 말을 하게 만들자!",
+    "progress": 55,
+    "steps": [
+      {
+        "stepDate": "2025-09-01",
+        "stepOrder": 1,
+        "description": "IRF 재계산/라벨링",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-04",
+        "stepOrder": 2,
+        "description": "캡션/도판 번호",
+        "isCompleted": false
+      }
+    ]
+  },
+  {
+    "dDay": "D-8",
+    "title": "참고문헌 포맷 정리",
+    "endDate": "2025-09-11",
+    "progressText": "깔끔한 참고문헌은 완성도의 마침표!",
+    "progress": 65,
+    "steps": [
+      {
+        "stepDate": "2025-09-02",
+        "stepOrder": 1,
+        "description": "APA 규칙 적용",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-05",
+        "stepOrder": 2,
+        "description": "중복/누락 점검",
+        "isCompleted": false
+      }
+    ]
+  }
+]
