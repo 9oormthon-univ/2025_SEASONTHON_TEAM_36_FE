@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import SwipeCarousel from "./SwipeCarousel";
+// import SwipeCarousel from "./SwipeCarousel";
 import DotIndicator from "./DotIndicator";
 import TaskCard from "./TaskCard";
+import SwipeCarousel from "../../../layout/SwipeCarousel";
 
 /** 
  * TaskCardsCarousel

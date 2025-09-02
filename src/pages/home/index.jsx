@@ -1,14 +1,11 @@
 import styled from "styled-components";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
-import TaskCard from "./components/TaskCard";
-import DotIndicator from "./components/DotIndicator";
 import TaskModal from "./components/TaskModal";
 
 // 더미데이터 
 import tasksData from "./store/tasks.mock";
 import { useMemo, useState } from "react";
-import SwipeCarousel from "./components/SwipeCarousel";
 import TaskCardsCarousel from "./components/TrackCardsCarousel";
 
 /**

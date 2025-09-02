@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import styled from "styled-components";
+import { Viewport, Track, Slide } from "./styles";
 
-// 포인터 드래그로 좌우 스와이프 구현
 /**
  * 스와이프 가능한 카드 캐러셀.
  *
@@ -15,7 +14,6 @@ import styled from "styled-components";
  * @param {string} [props["aria-label"]="카드 캐러셀"] - 접근성 라벨.
  * @returns {JSX.Element} 캐러셀 뷰포트 요소.
  */
-
 export default function SwipeCarousel({
   children,
   index,
@@ -36,7 +34,8 @@ export default function SwipeCarousel({
     if (index === undefined) setInnerIndex(next);
     onIndexChange?.(next);
   };
-  // 드래그 상태 
+
+  // 드래그 상태
   const viewportRef = useRef(null);
   const trackRef = useRef(null);
   const startX = useRef(0);
@@ -45,7 +44,9 @@ export default function SwipeCarousel({
   const widthRef = useRef(0);
 
   useEffect(() => snapToIndex(activeIndex, 0), [count]);
-  useEffect(() => { if (!dragging.current) snapToIndex(activeIndex, 300); }, [activeIndex]);
+  useEffect(() => {
+    if (!dragging.current) snapToIndex(activeIndex, 300);
+  }, [activeIndex]);
 
   function onPointerDown(e) {
     viewportRef.current?.setPointerCapture?.(e.pointerId);
@@ -58,8 +59,10 @@ export default function SwipeCarousel({
     if (!dragging.current) return;
     dragX.current = e.clientX - startX.current;
     const px = -activeIndex * widthRef.current + dragX.current;
-    trackRef.current.style.transition = "none";
-    trackRef.current.style.transform = `translate3d(${px}px,0,0)`;
+    if (trackRef.current) {
+      trackRef.current.style.transition = "none";
+      trackRef.current.style.transform = `translate3d(${px}px,0,0)`;
+    }
   }
   function onPointerUp() {
     if (!dragging.current) return;
@@ -84,10 +87,17 @@ export default function SwipeCarousel({
     trackRef.current.style.transition = ms ? `transform ${ms}ms ease` : "none";
     trackRef.current.style.transform = `translate3d(${-i * W}px,0,0)`;
   }
-  // 좌/우 화살표 키보드로 cards 넘기기 
+
+  // 좌/우 화살표 키보드로 cards 넘기기
   function onKeyDown(e) {
-    if (e.key === "ArrowLeft") { e.preventDefault(); setIndex(activeIndex - 1); }
-    if (e.key === "ArrowRight") { e.preventDefault(); setIndex(activeIndex + 1); }
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      setIndex(activeIndex - 1);
+    }
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      setIndex(activeIndex + 1);
+    }
   }
 
   return (
@@ -116,20 +126,6 @@ export default function SwipeCarousel({
   );
 }
 
-function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
-
-const Viewport = styled.div`
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  touch-action: pan-y;
-  user-select: none;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  outline: none;
-  &:focus { outline: none; }
-  &:focus-visible { outline: none; }
-`;
-const Track = styled.div` display: flex; will-change: transform; `;
-const Slide = styled.div` flex: 0 0 100%; min-width: 100%; padding: 8px; `;
+function clamp(n, min, max) {
+  return Math.min(max, Math.max(min, n));
+}
