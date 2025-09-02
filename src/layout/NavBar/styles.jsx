@@ -57,7 +57,7 @@ export const Bar = styled.nav`
   border-top: 1px solid var(--natural-400);
 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --navbar-height: calc(16px + 54px + 34px + var(--safe-bottom));
+  --navbar-height: calc(54px + 34px + var(--safe-bottom));
 `;
 
 /* 내부 컨테이너 */

@@ -8,9 +8,9 @@ const Shell = styled.div`
   background: var(--bg-1);
   color: var(--text-1);
 
-  /* iOS safe-area + NavBar 실제 높이(패딩+아이템영역+라벨영역) */
+  /* iOS safe-area + NavBar 실제 높이(아이템영역+라벨영역) */
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --navbar-height: calc(16px + 54px + 34px + var(--safe-bottom));
+  --navbar-height: calc(54px + 34px + var(--safe-bottom));
 
   min-height: 100dvh;
   display: flex;
