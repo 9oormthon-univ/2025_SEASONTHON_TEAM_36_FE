@@ -32,7 +32,7 @@ export const Panel = styled(motion.div)`
 export const GrabHandle = styled.div`
   display: grid; place-items: center; padding: 8px 0 0 0; cursor: grab;
   & > span {
-    display: block; width: 44px; height: 5px;
+    display: block; width: 34px; height: 3px;
     background: var(--surface-2, #f1f4f8); border-radius: 999px;
   }
 `;

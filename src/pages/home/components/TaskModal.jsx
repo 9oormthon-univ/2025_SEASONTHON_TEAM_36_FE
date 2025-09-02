@@ -74,7 +74,7 @@ export default function TaskModal() {
           src={dragUp}
           alt=""
           aria-hidden="true"
-          style={{ "--peek": `${PEEK_HEIGHT}px`, "--gap": "20px" }}
+          style={{ "--peek": `${PEEK_HEIGHT}px`, "--gap": "2%" }}
         />
       )}
     </>
@@ -130,7 +130,7 @@ const ScrollArea = styled.div`
 /** 화면(뷰포트)에 고정된 화살표 — 시트의 peek 위로 살짝 띄움 */
 const FloatingArrow = styled.img`
   position: fixed; left: 50%; transform: translateX(-50%);
-  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--peek, 58px) + var(--gap, 20px) + var(--navbar-height));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--peek, 58px) + var(--gap, 14px) + var(--navbar-height));
   width: 14px;
   height: auto;
   pointer-events: none; /* 드래그 제스처 방해하지 않음 */
