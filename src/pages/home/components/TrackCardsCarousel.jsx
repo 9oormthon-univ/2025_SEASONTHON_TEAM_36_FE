@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+// src/components/TrackCardsCarousel.jsx
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-// import SwipeCarousel from "./SwipeCarousel";
+import SwipeCarousel from "../../../layout/SwipeCarousel";
 import DotIndicator from "./DotIndicator";
 import TaskCard from "./TaskCard";
-import SwipeCarousel from "../../../layout/SwipeCarousel";
 
-/** 
- * TaskCardsCarousel
- * - tasks: [{ dday, title, progress }]
- * - 내부에서 index 상태를 관리하며 SwipeCarousel ↔ DotIndicator 연동
- */
+/** tasks: [{ dday, title, progress }] */
 export default function TaskCardsCarousel({ tasks = [] }) {
   const [index, setIndex] = useState(0);
+
+  // tasks 길이가 줄어들었을 때 index 안전 범위로 보정
+  useEffect(() => {
+    if (index > tasks.length - 1) {
+      setIndex(Math.max(0, tasks.length - 1));
+    }
+  }, [tasks.length, index]);
 
   return (
     <Wrap>
@@ -24,22 +27,19 @@ export default function TaskCardsCarousel({ tasks = [] }) {
       </CarouselWrap>
 
       <IndicatorRow>
-        <DotIndicator index={index} />
+        {/* 전체 개수에 맞춰 동적으로 5칸 창이 슬라이드 */}
+        <DotIndicator index={index} total={tasks.length} maxDots={5} />
       </IndicatorRow>
     </Wrap>
   );
 }
 
-const Wrap = styled.div`
-  width: 100%;
-`;
-
+const Wrap = styled.div` width: 100%; `;
 const CarouselWrap = styled.section`
   width: 100%;
   max-width: 560px;
   margin: 0 auto;
 `;
-
 const IndicatorRow = styled.div`
   margin-top: 8px;
   display: flex;

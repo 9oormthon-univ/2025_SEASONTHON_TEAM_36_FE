@@ -3,20 +3,19 @@ import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TaskModal from "./components/TaskModal";
 
-// 더미데이터 
+// 더미데이터
 import tasksData from "./store/tasks.mock";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import TaskCardsCarousel from "./components/TrackCardsCarousel";
 
 /**
  * 홈/페이지: 카드 스와이프 + 인디케이터 연동
- * - 좌우 스와이프로 index 변경 → DotIndicator에 반영
- * - DotIndicator는 고정값(5칸)
+ * - 카드 수(N)만큼 스와이프 가능
+ * - DotIndicator는 최대 5칸 '창'이 좌우로 슬라이드하며 현재 위치 표시
  */
 export default function HomePage() {
-  // DotIndicator가 5칸 고정이라 카드도 5장만 사용
-  const tasks = useMemo(() => tasksData.slice(0, 5), []);
-
+  // 전체 tasks 사용 (더 이상 5장으로 자르지 않음)
+  const tasks = useMemo(() => tasksData ?? [], []);
   const hasTasks = tasks.length > 0;
 
   return (
