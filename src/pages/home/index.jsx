@@ -9,6 +9,7 @@ import TaskModal from "./components/TaskModal";
 import tasksData from "./store/tasks.mock";
 import { useMemo, useState } from "react";
 import SwipeCarousel from "./components/SwipeCarousel";
+import TaskCardsCarousel from "./components/TrackCardsCarousel";
 
 /**
  * 홈/페이지: 카드 스와이프 + 인디케이터 연동
@@ -18,7 +19,6 @@ import SwipeCarousel from "./components/SwipeCarousel";
 export default function HomePage() {
   // DotIndicator가 5칸 고정이라 카드도 5장만 사용
   const tasks = useMemo(() => tasksData.slice(0, 5), []);
-  const [index, setIndex] = useState(0);
 
   const hasTasks = tasks.length > 0;
 
@@ -27,28 +27,7 @@ export default function HomePage() {
       <TopSpacing />
       <DateView />
 
-      {hasTasks ? (
-        <>
-          <CarouselWrap>
-            <SwipeCarousel index={index} onIndexChange={setIndex}>
-              {tasks.map((t, i) => (
-                <TaskCard
-                  key={i}
-                  dday={t.dday}
-                  title={t.title}
-                  progress={t.progress} 
-                />
-              ))}
-            </SwipeCarousel>
-          </CarouselWrap>
-
-          <IndicatorRow>
-            <DotIndicator index={index} />
-          </IndicatorRow>
-        </>
-      ) : (
-        <EmptyState />
-      )}
+      {hasTasks ? <TaskCardsCarousel tasks={tasks} /> : <EmptyState />}
 
       <TaskModal />
     </Page>
@@ -71,16 +50,4 @@ const TopSpacing = styled.div`
   @media (min-height: 700px) {
     height: calc(75px + env(safe-area-inset-top, 0px));
   }
-`;
-
-const CarouselWrap = styled.section`
-  width: 100%;
-  max-width: 560px;
-  margin: 0 auto;
-`;
-
-const IndicatorRow = styled.div`
-  margin-top: 8px;
-  display: flex;
-  justify-content: center;
 `;
