@@ -91,6 +91,7 @@ export default function TaskModal({ todoId }) {
         {open ? (
           <SheetBody>
             <TopBar>
+              <Title className="typo-h3">{headerTitle}</Title>
               <CloseDownBtn onClick={closeSheet} aria-label="내려서 닫기">
                 <img src={arrowDown} alt="arrow-down" width={14} style={{ height: "auto" }} />
               </CloseDownBtn>
@@ -138,9 +139,6 @@ const TopBar = styled.div`
   position: sticky;
   top: 0;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: transparent;
   border-bottom: 1px solid var(--surface-2);
 `;

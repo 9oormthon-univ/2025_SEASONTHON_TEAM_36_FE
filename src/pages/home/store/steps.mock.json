@@ -38,6 +38,24 @@
         "stepOrder": 3,
         "description": "iOS 스와이프 제스처 보정",
         "isCompleted": false
+      },
+      {
+        "stepDate": "2025-09-01",
+        "stepOrder": 4,
+        "description": "스냅 포인트 정의",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-02",
+        "stepOrder": 5,
+        "description": "관성 스크롤 적용",
+        "isCompleted": true
+      },
+      {
+        "stepDate": "2025-09-03",
+        "stepOrder": 6,
+        "description": "iOS 스와이프 제스처 보정",
+        "isCompleted": false
       }
     ]
   },
