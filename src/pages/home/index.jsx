@@ -2,39 +2,54 @@ import styled from "styled-components";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TaskModal from "./components/TaskModal";
-
-// 새 JSON 데이터 사용 
-import homeGoals from "./store/todos.mock.json";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import TaskCardsCarousel from "./components/TaskCardsCarousel";
 
-/**
- * 홈/페이지: 카드 스와이프 + 인디케이터 연동
- * - 카드 수(N)만큼 스와이프 가능
- * - DotIndicator는 최대 5칸 '창'이 좌우로 슬라이드하며 현재 위치 표시
- */
+import homeGoals from "./store/todos.mock.json";
+
 export default function HomePage() {
-  // JSON -> 카드용 데이터로 매핑
   const tasks = useMemo(() => {
     const contents = homeGoals?.contents ?? [];
     return contents.map((g) => ({
-      id: g.id,
+      id: g.id,                    // ✅ id 필수
       dday: g.dDay,
       title: g.title,
       warmMessage: g.warmMessage,
       progress: Number(g.progress ?? 0),
-      steps: g.stepResponses ?? [],
-      // 필요시 추가 필드: currentDate: g.currentDate, userId: g.userId
     }));
   }, []);
-  const hasTasks = tasks.length > 0;
+
+  // ✅ 현재 활성 카드의 id를 관리
+  const [activeId, setActiveId] = useState(null);
+  console.log(activeId);
+
+  // 초기/데이터 변경 시 기본 id 설정
+  useEffect(() => {
+    if (!tasks.length) return;
+    if (activeId == null || !tasks.some(t => t.id === activeId)) {
+      setActiveId(tasks[0].id);
+    }
+  }, [tasks, activeId]);
+
+  const current = tasks.find(t => t.id === activeId) ?? null;
 
   return (
     <Page>
       <TopSpacing />
       <DateView />
-      {hasTasks ? <TaskCardsCarousel tasks={tasks} /> : <EmptyState />}
-      <TaskModal />
+
+      {tasks.length ? (
+        <TaskCardsCarousel
+          tasks={tasks}
+          activeId={activeId}              // ✅ id로 제어
+          onActiveIdChange={setActiveId}   // ✅ 스와이프 시 id 받아옴
+        />
+      ) : (
+        <EmptyState />
+      )}
+
+      {/* ✅ 현재 선택된 카드 id로 API 호출 */}
+      <TaskModal todoId={activeId} />
     </Page>
   );
 }

@@ -6,35 +6,77 @@ import dragUp from "@/assets/images/drag-up.svg";
 import ListSection from "./ListSection";
 import TaskList from "./TaskList";
 
+import homeGoals from "../store/todos.mock.json";
+import { selectStepsByGoalId } from "../store/selectStepsByGoalId";
+
 const PEEK_HEIGHT = 58; // 닫힘 상태에서 보일 높이 (BottomSheet의 peekHeight와 동일)
 
-export default function TaskModal() {
+export default function TaskModal({ todoId }) {
   const [open, setOpen] = React.useState(false);
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
 
-  const groups = [
-    {
-      id: "today",
-      title: "우물 밖으로 나갈 준비",
-      defaultOpen: true,
-      items: [
-        { id: 1, title: "LG 전자 과거 마케팅사례 조사하기", state: "pause" },
-        { id: 2, title: "LG 전자제품 선정하기", state: "play" },
+  // ✅ 부모에서 내려준 id 사용(+ 폴백)
+  const targetId = React.useMemo(
+    () => (todoId ?? homeGoals?.contents?.[0]?.id ?? null),
+    [todoId]
+  );
+
+  // ✅ steps.mocks.json 기반 데이터 선택
+  const data = React.useMemo(
+    () => (targetId != null ? selectStepsByGoalId(homeGoals, targetId) : null),
+    [targetId]
+  );
+
+  // ✅ stepDate 기준 섹션 구성:
+  // - 오늘/미래 => "우물 밖으로 나갈 준비"
+  // - 과거      => "이월된 일"
+  const { headerTitle, groups } = React.useMemo(() => {
+    if (!data) {
+      return {
+        headerTitle: "할 일 목록",
+        groups: [
+          { id: "prep", title: "우물 밖으로 나갈 준비", defaultOpen: true, items: [] },
+          { id: "carried", title: "이월된 일", defaultOpen: true, items: [] },
+        ],
+      };
+    }
+
+    const parseISODateLocal = (iso) => {
+      if (!iso || typeof iso !== "string") return null;
+      const [y, m, d] = iso.split("-").map(Number);
+      if (!y || !m || !d) return null;
+      return new Date(y, m - 1, d); // local midnight
+    };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const isSameOrFuture = (iso) => {
+      const dt = parseISODateLocal(iso);
+      if (!dt) return false; // 유효하지 않으면 과거 취급
+      dt.setHours(0, 0, 0, 0);
+      return dt.getTime() >= today.getTime();
+    };
+
+    const toItem = (prefix) => (s) => ({
+      id: `${prefix}-${s.stepOrder ?? 0}`,
+      title: s.description ?? "",
+      state: s.isCompleted ? "idle" : "play",
+    });
+
+    const steps = Array.isArray(data.steps) ? data.steps : [];
+    const prep = steps.filter((s) => isSameOrFuture(s.stepDate)).map(toItem("prep"));
+    const carried = steps.filter((s) => !isSameOrFuture(s.stepDate)).map(toItem("carried"));
+
+    return {
+      headerTitle: data.title ?? "할 일 목록",
+      groups: [
+        { id: "prep", title: "우물 밖으로 나갈 준비", defaultOpen: true, items: prep },
+        { id: "carried", title: "이월된 일", defaultOpen: true, items: carried },
       ],
-    },
-    {
-      id: "carried",
-      title: "이월된 일",
-      defaultOpen: true,
-      items: [
-        { id: 3, title: "선정한 제품 자료조사하기", state: "play" },
-        { id: 4, title: "텍스트", state: "idle" },
-        { id: 5, title: "텍스트", state: "play" },
-        { id: 6, title: "텍스트", state: "idle" },
-      ],
-    },
-  ];
+    };
+  }, [data]);
 
   return (
     <>
@@ -63,8 +105,7 @@ export default function TaskModal() {
             </ScrollArea>
           </SheetBody>
         ) : (
-            <Title className="typo-h3">{groups[0]?.title ?? "할 일 목록"}</Title>
-
+          <Title className="typo-h3">{headerTitle}</Title>
         )}
       </BottomSheet>
 
@@ -80,6 +121,7 @@ export default function TaskModal() {
     </>
   );
 }
+
 
 /* ===================== styles ===================== */
 
@@ -133,7 +175,7 @@ const FloatingArrow = styled.img`
   bottom: calc(env(safe-area-inset-bottom, 0px) + var(--peek, 58px) + var(--gap, 14px) + var(--navbar-height));
   width: 14px;
   height: auto;
-  pointer-events: none; /* 드래그 제스처 방해하지 않음 */
+  pointer-events: none;
   z-index: 9999;
 `;
 
