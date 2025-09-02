@@ -40,27 +40,26 @@ export default function TaskModal() {
         onOpen={openSheet}
         onClose={closeSheet}
         ariaLabel="할 일 목록"
-        peekHeight={50}
-        size="56vh"
+        peekHeight={58}
+        size="60vh"
       >
-        <SheetBody>
-          <TopBar>
-            <CloseDownBtn onClick={closeSheet} aria-label="내려서 닫기">
-              <img src={arrowDown} alt="arrow-down" width={14} style={{ height: "auto" }} />
-            </CloseDownBtn>
-          </TopBar>
+        {open && ( // ⬅닫힌 경우 SheetBody 렌더링 안 함
+          <SheetBody>
+            <TopBar>
+              <CloseDownBtn onClick={closeSheet} aria-label="내려서 닫기">
+                <img src={arrowDown} alt="arrow-down" width={14} style={{ height: "auto" }} />
+              </CloseDownBtn>
+            </TopBar>
 
-          <ScrollArea role="list">
-            {groups.map((g) => (
-              <ListSection key={g.id} title={g.title} defaultOpen={g.defaultOpen}>
-                <TaskList
-                  items={g.items}
-                // onAction={(item) => console.log("clicked:", item)} // 필요 시 사용
-                />
-              </ListSection>
-            ))}
-          </ScrollArea>
-        </SheetBody>
+            <ScrollArea role="list">
+              {groups.map((g) => (
+                <ListSection key={g.id} title={g.title} defaultOpen={g.defaultOpen}>
+                  <TaskList items={g.items} />
+                </ListSection>
+              ))}
+            </ScrollArea>
+          </SheetBody>
+        )}
       </BottomSheet>
     </>
   );
