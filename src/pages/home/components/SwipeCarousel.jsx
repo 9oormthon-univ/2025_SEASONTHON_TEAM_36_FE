@@ -1,6 +1,21 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
+// 포인터 드래그로 좌우 스와이프 구현
+/**
+ * 스와이프 가능한 카드 캐러셀.
+ *
+ * @param {Object} props
+ * @param {React.ReactNode | React.ReactNode[]} props.children - 슬라이드로 표시할 콘텐츠.
+ * @param {number} [props.index] - 현재 인덱스(제어형). 미지정 시 내부 상태로 동작.
+ * @param {(next: number) => void} [props.onIndexChange] - 인덱스 변경 콜백.
+ * @param {boolean} [props.loop=false] - 끝↔처음 순환 여부.
+ * @param {string} [props.className] - 커스텀 클래스명.
+ * @param {React.CSSProperties} [props.style] - 인라인 스타일.
+ * @param {string} [props["aria-label"]="카드 캐러셀"] - 접근성 라벨.
+ * @returns {JSX.Element} 캐러셀 뷰포트 요소.
+ */
+
 export default function SwipeCarousel({
   children,
   index,
@@ -13,6 +28,7 @@ export default function SwipeCarousel({
   const slides = useMemo(() => React.Children.toArray(children), [children]);
   const count = slides.length;
 
+  // 인덱스 관리 (controlled/uncontrolled)
   const [innerIndex, setInnerIndex] = useState(0);
   const activeIndex = clamp(index ?? innerIndex, 0, count - 1);
   const setIndex = (n) => {
@@ -20,7 +36,7 @@ export default function SwipeCarousel({
     if (index === undefined) setInnerIndex(next);
     onIndexChange?.(next);
   };
-
+  // 드래그 상태 
   const viewportRef = useRef(null);
   const trackRef = useRef(null);
   const startX = useRef(0);
@@ -68,6 +84,7 @@ export default function SwipeCarousel({
     trackRef.current.style.transition = ms ? `transform ${ms}ms ease` : "none";
     trackRef.current.style.transform = `translate3d(${-i * W}px,0,0)`;
   }
+  // 좌/우 화살표 키보드로 cards 넘기기 
   function onKeyDown(e) {
     if (e.key === "ArrowLeft") { e.preventDefault(); setIndex(activeIndex - 1); }
     if (e.key === "ArrowRight") { e.preventDefault(); setIndex(activeIndex + 1); }
@@ -107,9 +124,12 @@ const Viewport = styled.div`
   width: 100%;
   touch-action: pan-y;
   user-select: none;
-  border-radius: 16px;
-  background: var(--bg-1, #fff);
-  border: 1px solid var(--surface-2, #f1f4f8);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  &:focus { outline: none; }
+  &:focus-visible { outline: none; }
 `;
 const Track = styled.div` display: flex; will-change: transform; `;
 const Slide = styled.div` flex: 0 0 100%; min-width: 100%; padding: 8px; `;
