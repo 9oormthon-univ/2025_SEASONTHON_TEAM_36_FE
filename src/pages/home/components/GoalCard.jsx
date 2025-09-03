@@ -3,8 +3,7 @@ import styled from "styled-components";
 import FrogBar from "./FrogBar";
 import { pickRandomFrog } from "../store/frogs";
 import sirenIcon from "@/assets/images/siren.svg";
-import AdjustGoalModal from "../modals/AdjustGoalModal";  // ✅ 사이렌용
-import PageModal from "../../../common/components/PageModal";
+import AdjustGoalModal from "../modals/AdjustGoalModal";  
 import GoalStepsModal from "../modals/GoalStepsModal";
 
 export default function GoalCard({
