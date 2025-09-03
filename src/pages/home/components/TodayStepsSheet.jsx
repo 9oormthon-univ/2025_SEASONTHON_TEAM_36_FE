@@ -17,8 +17,10 @@ export default function TodayStepsSheet({ todoId }) {
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
 
+  // DailyCheckInModal 관련
   const [modalOpen, setModalOpen] = React.useState(false);
   const [selectedStep, setSelectedStep] = React.useState(null);
+  const [playingKey, setPlayingKey] = React.useState(null);
 
   // 부모에서 내려준 id 사용(+ 폴백)
   const targetId = React.useMemo(
@@ -74,13 +76,13 @@ export default function TodayStepsSheet({ todoId }) {
       state: "pause", // 기본 상태는 전부 pause
     });
 
-    //steps 중 미래가 수행 예정 날짜인 경우를 제외 
+    // steps 중 미래는 제외
     const nonFuture = steps.filter((s) => !isFuture(s.stepDate));
-    // 오늘과 정확히 일치 
+    // 오늘
     const prepItems = nonFuture
       .filter((s) => isToday(s.stepDate))
       .map(toPausedItem("prep"));
-    // 과거) 오늘 할 일은 아니지만, 미뤄져서 오늘 해야 함
+    // 과거
     const carriedItems = nonFuture
       .filter((s) => !isToday(s.stepDate))
       .map(toPausedItem("carried"));
@@ -90,10 +92,6 @@ export default function TodayStepsSheet({ todoId }) {
       { id: "carried", title: "이월된 일", defaultOpen: true, items: carriedItems },
     ];
   }, [data]);
-
-  // ===== 2) 토글/재생 정책 =====
-  // 전역 1개만 play 가능. 다시 누르면 pause로.
-  const [playingKey, setPlayingKey] = React.useState(null);
 
   // todoId 바뀌면 모두 pause로 초기화
   React.useEffect(() => {
@@ -111,18 +109,14 @@ export default function TodayStepsSheet({ todoId }) {
     }));
   }, [baseGroups, playingKey]);
 
-  // const headerTitle = data?.title ?? "할 일 목록";
-
+  // 액션 (재생/정지)
   const handleAction = (it) => {
     setPlayingKey((prev) => {
       const next = prev === it.id ? null : it.id;
       if (next) {
-        // ▶️ play 전환 시: 모달 오픈 + 선택 스텝 저장 + (선택) 바텀시트 닫기
         setSelectedStep(it);
         setModalOpen(true);
-        // closeSheet();
       } else {
-        // ⏸ pause 전환 시: 모달 닫기
         setModalOpen(false);
       }
       return next;
@@ -156,12 +150,11 @@ export default function TodayStepsSheet({ todoId }) {
             </ScrollArea>
           </SheetBody>
         ) : (
-          // <Title className="typo-h3">{headerTitle}</Title>
           <Title className="typo-h3">우물 밖으로 나갈 준비</Title>
         )}
       </BottomSheet>
 
-      {/* 패널 밖(뷰포트)에 고정된 화살표: overflow 클리핑 영향 X */}
+      {/* 패널 밖(뷰포트)에 고정된 화살표 */}
       {!open && (
         <FloatingArrow
           src={dragUp}
@@ -174,20 +167,10 @@ export default function TodayStepsSheet({ todoId }) {
       <DailyCheckInModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-      // NavBar 보이게 하려면 주석 해제:
-      // navOffset="calc(54px + 34px + env(safe-area-inset-bottom, 0px))"
-      >
-          {/* <h3 className="typo-h3" style={{ margin: 0, color: "var(--text-1)" }}>
-            {data?.title ?? "목표"}
-          </h3>
-          <p style={{ margin: "6px 0 12px", color: "var(--text-2)" }}>
-            선택한 스텝: <strong style={{ color: "var(--text-1)" }}>{selectedStep?.title ?? "-"}</strong>
-          </p>
-          <p style={{ margin: 0, color: "var(--text-2)" }}>
-            진행 상태: <strong style={{ color: "var(--text-1)" }}>{playingKey ? "진행 중" : "일시정지"}</strong>
-          </p> */}
-
-      </DailyCheckInModal>
+        title={data?.title ?? "목표"}
+        step={selectedStep}
+        isPlaying={!!playingKey}
+      />
     </>
   );
 }
