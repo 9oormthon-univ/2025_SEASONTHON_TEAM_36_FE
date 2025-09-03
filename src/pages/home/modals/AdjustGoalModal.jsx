@@ -16,10 +16,13 @@ export default function AdjustGoalModal({ open, onClose, goal }) {
     <PageModal
       open={open}
       onClose={onClose}
-      title={`${goal.title} 조정`}
       headerVariant="close-right"
     >
       <Section>
+        <Row>
+          <Label>제목</Label>
+          <Value>{goal.title}</Value>
+        </Row>
         <Row>
           <Label>ID</Label>
           <Value>{goal.id}</Value>

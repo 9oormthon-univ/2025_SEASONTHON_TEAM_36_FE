@@ -15,7 +15,6 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
     <PageModal
       open={open}
       onClose={onClose}
-      title={title ?? "목표"}
     >
       <h3 className="typo-h3" style={{ margin: 0, color: "var(--text-1)" }}>
         {title ?? "목표"}

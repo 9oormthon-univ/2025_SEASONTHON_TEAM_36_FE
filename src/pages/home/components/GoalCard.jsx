@@ -107,11 +107,7 @@ export default function GoalCard({
       <GoalStepsModal
         open={openSteps}
         onClose={closeStepsModal}
-        goalId={goalId}
-        dday={dday}
-        title={title}
-        progress={progress}
-        warmMessage={warmMessage}
+        goal={{ id: goalId, dday, title, progress: +progress || 0, warmMessage }}
       />
 
       <AdjustGoalModal

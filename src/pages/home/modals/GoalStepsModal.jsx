@@ -2,38 +2,38 @@ import React from "react";
 import styled from "styled-components";
 import PageModal from "../../../common/components/PageModal";
 
-export default function GoalStepsModal({
-  open,
-  onClose,
-  goalId,
-  dday,
-  title,
-  progress,
-  warmMessage,
-}) {
+/**
+ * steps 표시 모달 
+ * props:
+ *  - open: boolean
+ *  - onClose: () => void
+ *  - goal: { id, dday, title, progress, warmMessage }
+ */
+export default function GoalStepsModal({ open, onClose, goal }) {
+  if (!goal) return null;
+
   return (
     <PageModal
       open={open}
       onClose={onClose}
-      title={title}
       headerVariant="back-left"
       viewNavBar
     >
       <Row>
         <Label>ID</Label>
-        <Value>{goalId}</Value>
+        <Value>{goal.id}</Value>
       </Row>
       <Row>
         <Label>디데이</Label>
-        <Value>{dday}</Value>
+        <Value>{goal.dday}</Value>
       </Row>
       <Row>
         <Label>진행률</Label>
         <Value>
-          {Number.isFinite(+progress) ? `${+progress}%` : "0%"}
+          {Number.isFinite(goal.progress) ? `${goal.progress}%` : "0%"}
         </Value>
       </Row>
-      {warmMessage ? <Warm>{warmMessage}</Warm> : null}
+      {goal.warmMessage ? <Warm>{goal.warmMessage}</Warm> : null}
     </PageModal>
   );
 }
