@@ -61,6 +61,7 @@ export default function CardsCarousel({
           {tasks.map((t, i) => (
             <GoalCard
               key={ids[i]}
+               id={ids[i]}  // GoalCard에서 모달 열 때 사용할 id 넘겨줌
               dday={t.dday ?? "D-0"}
               title={t.title ?? ""}
               progress={Number.isFinite(+t.progress) ? +t.progress : 0}
