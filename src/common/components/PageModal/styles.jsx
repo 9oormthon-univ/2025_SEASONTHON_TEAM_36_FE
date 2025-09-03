@@ -7,7 +7,7 @@ export const Screen = styled.div`
   right: 0;
   top: 0;
 
-  /* ✅ viewNavBar가 true면 NavBar 높이만큼 비워서 NavBar 클릭 가능 */
+  /* viewNavBar가 true면 NavBar 높이만큼 비워서 NavBar 클릭 가능 */
   bottom: ${({ $viewNavBar }) =>
     $viewNavBar
       ? "calc(var(--navbar-height, calc(54px + 34px + env(safe-area-inset-bottom, 0px))) + 1px)"
@@ -43,7 +43,7 @@ export const HeaderBar = styled.header`
   top: 0;
   z-index: 1;
   display: grid;
-  grid-template-columns: 40px 1fr 40px;
+  grid-template-columns: 24px 1fr 24px;
   align-items: center;
   gap: 8px;
 
@@ -70,35 +70,21 @@ export const Spacer = styled.div`
 `;
 
 export const IconBtn = styled.button`
-  width: 36px;
-  height: 36px;
+  padding: 4px 4px;
   border: 0;
   border-radius: 12px;
-  background: var(--surface-1, var(--bg-1));
-  color: var(--text-1);
-  box-shadow: 0 0 0 1px var(--natural-200) inset;
+  background: transparent;
   cursor: pointer;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
   line-height: 0;
-
-  &:focus-visible {
-    outline: 2px solid var(--brand-1, #18A904);
-    outline-offset: 2px;
-  }
 `;
 
 export const IconImg = styled.img`
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
   display: block;
-`;
-
-export const X = styled.span`
-  font-size: 22px;
-  line-height: 1;
 `;
 
 export const Body = styled.div`

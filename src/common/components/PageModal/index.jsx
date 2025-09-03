@@ -1,6 +1,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import backArrow from "@/assets/images/back-arrow.svg";
+import cancelIcon from "@/assets/images/cancel.svg";
 import {
   Screen,
   HeaderBar,
@@ -8,14 +9,13 @@ import {
   Spacer,
   IconBtn,
   IconImg,
-  X,
   Body,
 } from "./styles";
 
 /** ===================== 내부 헤더 컴포넌트 ===================== */
 function ModalHeader({
-  variant = "back-left",              // 'back-left' | 'close-right'
-  title = "상세",
+  variant = "close-right", // 'back-left'  | 'close-right'    <- | X  버튼 모양 선택
+  title = "",
   onBack,
   onClose,
   titleId = "page-modal-title",
@@ -47,7 +47,7 @@ function ModalHeader({
         onClick={onClose ?? onBack}
         data-variant="close"
       >
-        <X aria-hidden="true">×</X>
+        <IconImg src={cancelIcon} alt="" aria-hidden="true" />
       </IconBtn>
     </HeaderBar>
   );
@@ -61,7 +61,7 @@ export default function PageModal({
   title,
   children,
   headerVariant = "close-right",   // 기본은 오른쪽 X버튼
-  viewNavBar = false,              // ✅ 추가: true면 NavBar를 보이게 (아래 여백 확보)
+  viewNavBar = false,  // true면 NavBar를 보이게 (아래 여백 확보)
 }) {
   if (!open) return null;
 
@@ -94,11 +94,11 @@ export default function PageModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="page-modal-title"
-      $viewNavBar={viewNavBar}          
+      $viewNavBar={viewNavBar}
     >
       <ModalHeader
         variant={headerVariant}
-        title={title ?? "상세"}
+        title={title ?? ""} // title 없으면 표시 안 함 (우리 프로젝트에서는 다 없음)
         onBack={onClose}
         onClose={onClose}
         titleId="page-modal-title"
