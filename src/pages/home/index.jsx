@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
-import TodaySteps from "./components/TodaySteps";
+import TodayStepsSheet from "./components/TodayStepsSheet";
 import { useMemo, useState, useEffect } from "react";
 import CardsCarousel from "./components/CardsCarousel";
 
@@ -31,8 +31,6 @@ export default function HomePage() {
     }
   }, [tasks, activeId]);
 
-  const current = tasks.find(t => t.id === activeId) ?? null;
-
   return (
     <Page>
       <TopSpacing />
@@ -49,7 +47,7 @@ export default function HomePage() {
       )}
 
       {/* ✅ 현재 선택된 카드 id로 API 호출 */}
-      <TodaySteps todoId={activeId} />
+      <TodayStepsSheet todoId={activeId} />
     </Page>
   );
 }

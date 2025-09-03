@@ -3,15 +3,15 @@ import styled from "styled-components";
 import BottomSheet from "../../../layout/BottomSheet";
 import arrowDown from "@/assets/images/arrow-down.svg";
 import dragUp from "@/assets/images/drag-up.svg";
-import ListSection from "./ListSection";
-import StepsList from "./StepsList";
+import SheetListSection from "./SheetListSection";
+import TodayStepsList from "./TodayStepsList";
 
 import homeGoals from "../store/todos.mock.json";
 import { selectStepsByGoalId } from "../store/selectStepsByGoalId";
 
 const PEEK_HEIGHT = 58; // 닫힘 상태에서 보일 높이 (BottomSheet의 peekHeight와 동일)
 
-export default function TodaySteps({ todoId }) {
+export default function TodayStepsSheet({ todoId }) {
   const [open, setOpen] = React.useState(false);
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
@@ -133,9 +133,9 @@ export default function TodaySteps({ todoId }) {
 
             <ScrollArea role="list">
               {groups.map((g) => (
-                <ListSection key={g.id} title={g.title} defaultOpen={g.defaultOpen}>
-                  <StepsList items={g.items} onAction={handleAction} />
-                </ListSection>
+                <SheetListSection key={g.id} title={g.title} defaultOpen={g.defaultOpen}>
+                  <TodayStepsList items={g.items} onAction={handleAction} />
+                </SheetListSection>
               ))}
             </ScrollArea>
           </SheetBody>

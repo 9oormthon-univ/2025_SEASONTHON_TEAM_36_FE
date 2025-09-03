@@ -8,7 +8,7 @@ import styled from "styled-components";
  * - defaultOpen?: 초기 오픈 여부 (기본 true)
  * - className?: 외부 스타일 확장용
  */
-export default function ListSection({ title, defaultOpen = true, className, children }) {
+export default function SheetListSection({ title, defaultOpen = true, className, children }) {
   const [open, setOpen] = React.useState(defaultOpen);
   const labelId = React.useId();
   const contentId = React.useId();
