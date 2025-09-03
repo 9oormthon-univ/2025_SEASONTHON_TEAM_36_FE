@@ -5,6 +5,7 @@ import { pickRandomFrog } from "../store/frogs";
 import sirenIcon from "@/assets/images/siren.svg";
 import AdjustGoalModal from "../modals/AdjustGoalModal";  // ✅ 사이렌용
 import PageModal from "../../../common/components/PageModal";
+import GoalStepsModal from "../modals/GoalStepsModal";
 
 export default function GoalCard({
   id: goalId,
@@ -102,26 +103,17 @@ export default function GoalCard({
         </ImgContainer>
       </Container>
 
-      <PageModal
+
+      <GoalStepsModal
         open={openSteps}
         onClose={closeStepsModal}
+        goalId={goalId}
+        dday={dday}
         title={title}
-        headerVariant="back-left"
-        viewNavBar
-      >
-        <Row><Label>ID</Label><Value>{goalId}</Value></Row>
-        <Row>
-          <Label>디데이</Label>
-          <Value>{dday}</Value>
-        </Row>
-        <Row>
-          <Label>진행률</Label>
-          <Value>{Number.isFinite(+progress) ? `${+progress}%` : "0%"}</Value>
-        </Row>
-        {warmMessage ? <Warm>{warmMessage}</Warm> : null}
-      </PageModal>
+        progress={progress}
+        warmMessage={warmMessage}
+      />
 
-      {/* ✅ 사이렌 전용: AdjustGoalModal */}
       <AdjustGoalModal
         open={openAdjust}
         onClose={closeAdjustModal}
