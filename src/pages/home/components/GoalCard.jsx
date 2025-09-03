@@ -3,7 +3,7 @@ import styled from "styled-components";
 import FrogBar from "./FrogBar";
 import { pickRandomFrog } from "../store/frogs";
 import sirenIcon from "@/assets/images/siren.svg";
-import AdjustGoalModal from "../modals/AdjustGoalModal";  
+import AdjustGoalModal from "../modals/AdjustGoalModal";  // ✅ 사이렌용
 import PageModal from "../../../common/components/PageModal";
 
 export default function GoalCard({
@@ -31,19 +31,19 @@ export default function GoalCard({
   const isUrgent = sign <= 0 && (num === 0 || num === 1);
 
   // 모달 상태 분리
-  const [openSimple, setOpenSimple] = React.useState(false);   // 카드 → SimpleModal
-  const [openAdjust, setOpenAdjust] = React.useState(false);   // 사이렌 → AdjustGoalModal
-  const anyOpen = openSimple || openAdjust;
+  const [openSteps, setOpenSteps] = React.useState(false);     // ✅ 카드 → Steps(상세)
+  const [openAdjust, setOpenAdjust] = React.useState(false);   // ✅ 사이렌 → AdjustGoalModal
+  const anyOpen = openSteps || openAdjust;
 
-  const openSimpleModal = () => setOpenSimple(true);
-  const closeSimpleModal = () => setOpenSimple(false);
+  const openStepsModal = () => setOpenSteps(true);
+  const closeStepsModal = () => setOpenSteps(false);
   const openAdjustModal = () => setOpenAdjust(true);
   const closeAdjustModal = () => setOpenAdjust(false);
 
   // ESC + body 스크롤 잠금 (두 모달 중 하나라도 열리면)
   React.useEffect(() => {
     if (!anyOpen) return;
-    const onKey = (e) => e.key === "Escape" && (openAdjust ? closeAdjustModal() : closeSimpleModal());
+    const onKey = (e) => e.key === "Escape" && (openAdjust ? closeAdjustModal() : closeStepsModal());
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -53,11 +53,11 @@ export default function GoalCard({
     };
   }, [anyOpen, openAdjust]);
 
-  // 카드 키보드 접근성 (Enter / Space → SimpleModal)
+  // 카드 키보드 접근성 (Enter / Space → Steps)
   const onCardKeyDown = (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      openSimpleModal();
+      openStepsModal();
     }
   };
 
@@ -68,7 +68,7 @@ export default function GoalCard({
         tabIndex={0}
         className={className}
         aria-label="Task card"
-        onClick={openSimpleModal}     // ✅ 카드 클릭 → SimpleModal
+        onClick={openStepsModal}      // ✅ 카드 클릭 → Steps
         onKeyDown={onCardKeyDown}
         data-goal-id={goalId}
       >
@@ -102,7 +102,13 @@ export default function GoalCard({
         </ImgContainer>
       </Container>
 
-      <PageModal open={openSimple} onClose={closeSimpleModal} title={title} headerVariant = "back-left" viewNavBar>
+      <PageModal
+        open={openSteps}
+        onClose={closeStepsModal}
+        title={title}
+        headerVariant="back-left"
+        viewNavBar
+      >
         <Row><Label>ID</Label><Value>{goalId}</Value></Row>
         <Row>
           <Label>디데이</Label>
