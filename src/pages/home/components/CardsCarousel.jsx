@@ -3,10 +3,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import SwipeCarousel from "../../../layout/SwipeCarousel";
 import DotIndicator from "./DotIndicator";
-import TaskCard from "./TaskCard";
+import GoalCard from "./GoalCard";
 
-/** tasks: [{ id, dday|dDay, title, progress, warmMessage }] */
-export default function TaskCardsCarousel({
+/** tasks: [{ id, dday, title, progress, warmMessage }] */
+export default function CardsCarousel({
   tasks = [],
   activeId,                 // ✅ 현재 활성 카드 id (optional: controlled)
   onActiveIdChange,         // ✅ 활성 카드 id 변경 콜백
@@ -59,7 +59,7 @@ export default function TaskCardsCarousel({
       <CarouselWrap>
         <SwipeCarousel index={index} onIndexChange={setIndexBoth}>
           {tasks.map((t, i) => (
-            <TaskCard
+            <GoalCard
               key={ids[i]}
               dday={t.dday ?? "D-0"}
               title={t.title ?? ""}

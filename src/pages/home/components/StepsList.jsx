@@ -8,7 +8,7 @@ import pauseIcon from "@/assets/images/pause.svg";
  * - items: [{ id, title, state: "play" | "pause" | "idle" }]
  * - onAction?: (item) => void  // 버튼 클릭 시 콜백 (선택)
  */
-export default function TaskList({ items = [], onAction }) {
+export default function StepsList({ items = [], onAction }) {
   return (
     <List role="list">
       {items.map((it) => {

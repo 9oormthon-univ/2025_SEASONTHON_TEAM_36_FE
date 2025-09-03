@@ -4,7 +4,7 @@ import FrogBar from "./FrogBar";
 import { pickRandomFrog } from "../store/frogs";
 import sirenIcon from '@/assets/images/siren.svg';
 
-export default function TaskCard({
+export default function GoalCard({
   dday = "D-0",
   title = "오늘의 할 일",
   progress = 0, // 0~100

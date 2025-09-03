@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
-import TaskModal from "./components/TaskModal";
+import TodaySteps from "./components/TodaySteps";
 import { useMemo, useState, useEffect } from "react";
-import TaskCardsCarousel from "./components/TaskCardsCarousel";
+import CardsCarousel from "./components/CardsCarousel";
 
 import homeGoals from "./store/todos.mock.json";
 
@@ -39,7 +39,7 @@ export default function HomePage() {
       <DateView />
 
       {tasks.length ? (
-        <TaskCardsCarousel
+        <CardsCarousel
           tasks={tasks}
           activeId={activeId}              // ✅ id로 제어
           onActiveIdChange={setActiveId}   // ✅ 스와이프 시 id 받아옴
@@ -49,7 +49,7 @@ export default function HomePage() {
       )}
 
       {/* ✅ 현재 선택된 카드 id로 API 호출 */}
-      <TaskModal todoId={activeId} />
+      <TodaySteps todoId={activeId} />
     </Page>
   );
 }

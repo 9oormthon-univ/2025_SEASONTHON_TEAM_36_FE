@@ -4,14 +4,14 @@ import BottomSheet from "../../../layout/BottomSheet";
 import arrowDown from "@/assets/images/arrow-down.svg";
 import dragUp from "@/assets/images/drag-up.svg";
 import ListSection from "./ListSection";
-import TaskList from "./TaskList";
+import StepsList from "./StepsList";
 
 import homeGoals from "../store/todos.mock.json";
 import { selectStepsByGoalId } from "../store/selectStepsByGoalId";
 
 const PEEK_HEIGHT = 58; // 닫힘 상태에서 보일 높이 (BottomSheet의 peekHeight와 동일)
 
-export default function TaskModal({ todoId }) {
+export default function TodaySteps({ todoId }) {
   const [open, setOpen] = React.useState(false);
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
@@ -107,7 +107,7 @@ export default function TaskModal({ todoId }) {
     }));
   }, [baseGroups, playingKey]);
 
-  const headerTitle = data?.title ?? "할 일 목록";
+  // const headerTitle = data?.title ?? "할 일 목록";
 
   const handleAction = (it) => {
     setPlayingKey((prev) => (prev === it.id ? null : it.id));
@@ -126,7 +126,6 @@ export default function TaskModal({ todoId }) {
         {open ? (
           <SheetBody>
             <TopBar>
-              <Title className="typo-h3">{headerTitle}</Title>
               <CloseDownBtn onClick={closeSheet} aria-label="내려서 닫기">
                 <img src={arrowDown} alt="arrow-down" width={14} style={{ height: "auto" }} />
               </CloseDownBtn>
@@ -135,13 +134,14 @@ export default function TaskModal({ todoId }) {
             <ScrollArea role="list">
               {groups.map((g) => (
                 <ListSection key={g.id} title={g.title} defaultOpen={g.defaultOpen}>
-                  <TaskList items={g.items} onAction={handleAction} />
+                  <StepsList items={g.items} onAction={handleAction} />
                 </ListSection>
               ))}
             </ScrollArea>
           </SheetBody>
         ) : (
-          <Title className="typo-h3">{headerTitle}</Title>
+          // <Title className="typo-h3">{headerTitle}</Title>
+          <Title className="typo-h3">우물 밖으로 나갈 준비</Title>
         )}
       </BottomSheet>
 

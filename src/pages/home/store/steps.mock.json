@@ -25,13 +25,13 @@
         "stepDate": "2025-09-01",
         "stepOrder": 1,
         "description": "스냅 포인트 정의",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "stepDate": "2025-09-02",
         "stepOrder": 2,
         "description": "관성 스크롤 적용",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "stepDate": "2025-09-03",
@@ -43,13 +43,13 @@
         "stepDate": "2025-09-01",
         "stepOrder": 4,
         "description": "스냅 포인트 정의",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "stepDate": "2025-09-02",
         "stepOrder": 5,
         "description": "관성 스크롤 적용",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "stepDate": "2025-09-03",
@@ -70,7 +70,7 @@
         "stepDate": "2025-09-02",
         "stepOrder": 1,
         "description": "창 슬라이딩 알고리즘",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "stepDate": "2025-09-03",
@@ -91,13 +91,13 @@
         "stepDate": "2025-09-01",
         "stepOrder": 1,
         "description": "DDay 아이콘 정렬",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "stepDate": "2025-09-02",
         "stepOrder": 2,
         "description": "사이렌 표시 조건 추가",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "stepDate": "2025-09-03",
@@ -145,7 +145,7 @@
         "stepDate": "2025-09-01",
         "stepOrder": 1,
         "description": "최소 오프셋 계산",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "stepDate": "2025-09-02",
