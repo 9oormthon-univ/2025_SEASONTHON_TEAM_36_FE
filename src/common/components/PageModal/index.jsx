@@ -52,7 +52,7 @@ function ModalHeader({
     </HeaderBar>
   );
 }
-
+ 
 /** ===================== 메인 모달 컴포넌트 ===================== */
 /** NavBar 위까지 꽉 차는 페이지형 모달 (Portal) */
 export default function PageModal({

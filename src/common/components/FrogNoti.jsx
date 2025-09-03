@@ -1,7 +1,7 @@
 // FrogPage.jsx
 import React from "react";
 import styled from "styled-components";
-
+  
 export default function FrogNoti({
   topText = "", // 
   imageSrc, // 개구리 이미지를 받아옴 

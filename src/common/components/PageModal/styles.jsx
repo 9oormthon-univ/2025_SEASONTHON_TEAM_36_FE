@@ -80,7 +80,7 @@ export const IconBtn = styled.button`
   justify-content: center;
   line-height: 0;
 `;
-
+ 
 export const IconImg = styled.img`
   width: 14px;
   height: 14px;
