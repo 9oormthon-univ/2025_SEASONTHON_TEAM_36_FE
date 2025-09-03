@@ -8,6 +8,7 @@ import TodayStepsList from "./TodayStepsList";
 
 import homeGoals from "../store/todos.mock.json";
 import { selectStepsByGoalId } from "../store/selectStepsByGoalId";
+import DailyCheckInModal from "../modals/DailyCheckInModal";
 
 const PEEK_HEIGHT = 58; // 닫힘 상태에서 보일 높이 (BottomSheet의 peekHeight와 동일)
 
@@ -15,6 +16,9 @@ export default function TodayStepsSheet({ todoId }) {
   const [open, setOpen] = React.useState(false);
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
+
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [selectedStep, setSelectedStep] = React.useState(null);
 
   // 부모에서 내려준 id 사용(+ 폴백)
   const targetId = React.useMemo(
@@ -110,7 +114,19 @@ export default function TodayStepsSheet({ todoId }) {
   // const headerTitle = data?.title ?? "할 일 목록";
 
   const handleAction = (it) => {
-    setPlayingKey((prev) => (prev === it.id ? null : it.id));
+    setPlayingKey((prev) => {
+      const next = prev === it.id ? null : it.id;
+      if (next) {
+        // ▶️ play 전환 시: 모달 오픈 + 선택 스텝 저장 + (선택) 바텀시트 닫기
+        setSelectedStep(it);
+        setModalOpen(true);
+        // closeSheet();
+      } else {
+        // ⏸ pause 전환 시: 모달 닫기
+        setModalOpen(false);
+      }
+      return next;
+    });
   };
 
   return (
@@ -154,6 +170,26 @@ export default function TodayStepsSheet({ todoId }) {
           style={{ "--peek": `${PEEK_HEIGHT}px`, "--gap": "2%" }}
         />
       )}
+
+      {/* ▶️ GoalStepsModal: NavBar 위까지 채우고, 선택 스텝 표시 */}
+      <DailyCheckInModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={selectedStep?.title || data?.title || "현재 진행 중"}
+      // NavBar 보이게 하려면 주석 해제:
+      // navOffset="calc(54px + 34px + env(safe-area-inset-bottom, 0px))"
+      >
+          <h3 className="typo-h3" style={{ margin: 0, color: "var(--text-1)" }}>
+            {data?.title ?? "목표"}
+          </h3>
+          <p style={{ margin: "6px 0 12px", color: "var(--text-2)" }}>
+            선택한 스텝: <strong style={{ color: "var(--text-1)" }}>{selectedStep?.title ?? "-"}</strong>
+          </p>
+          <p style={{ margin: 0, color: "var(--text-2)" }}>
+            진행 상태: <strong style={{ color: "var(--text-1)" }}>{playingKey ? "진행 중" : "일시정지"}</strong>
+          </p>
+
+      </DailyCheckInModal>
     </>
   );
 }

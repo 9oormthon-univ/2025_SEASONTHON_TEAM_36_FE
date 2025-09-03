@@ -1,16 +1,15 @@
-// src/components/SimpleModal.jsx
 import React from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
 
-/** NavBar 위까지 꽉 차는 페이지형 모달 (Portal) */
-export default function SimpleModal({
+/** 페이지형 모달 (Portal). NavBar 제외/포함 모두 prop으로 제어 가능 */
+export default function DailyCheckInModal({
   open,
   onClose,
   title,
   children,
-  /** NavBar 높이(기본: 54px 아이콘영역 + 34px 라벨영역 + safe-bottom) */
-  navOffset = "calc(54px + 34px + env(safe-area-inset-bottom, 0px))",
+  /** 선택: NavBar 만큼 아래를 비우고 싶으면 전달. 예) "calc(54px + 34px + env(safe-area-inset-bottom, 0px))" */
+  navOffset = "0px",
 }) {
   if (!open) return null;
 
@@ -41,39 +40,37 @@ export default function SimpleModal({
     <Screen
       role="dialog"
       aria-modal="true"
-      aria-labelledby="page-modal-title"
+      aria-labelledby="goal-steps-modal-title"
       style={{ "--nav-offset": navOffset }}
+      onClick={onClose}            // 바깥 탭 닫기
     >
-      <HeaderBar>
-        <Spacer aria-hidden="true" />
-        <PageTitle id="page-modal-title">{title ?? "상세"}</PageTitle>
-        <CloseBtn type="button" aria-label="닫기" onClick={onClose}>×</CloseBtn>
-      </HeaderBar>
-
-      <Body>{children}</Body>
+      <Sheet onClick={(e) => e.stopPropagation()}>
+        <HeaderBar>
+          <Spacer aria-hidden="true" />
+          <PageTitle id="goal-steps-modal-title">{title ?? "상세"}</PageTitle>
+          <CloseBtn type="button" aria-label="닫기" onClick={onClose}>×</CloseBtn>
+        </HeaderBar>
+        <Body>{children}</Body>
+      </Sheet>
     </Screen>,
     getRoot()
   );
 }
 
-/* ===== styles: NavBar 제외 전체 덮기 ===== */
+/* ===== styles ===== */
 const Screen = styled.div`
   position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
+  left: 0; right: 0; top: 0;
+  /* 🔸 NavBar 제외 모드: 아래 여백을 변수로 남김. 기본 0 = 전체화면 */
+  bottom: var(--nav-offset);
 
-  /* ⭐️ NavBar 높이만큼 아래를 비워서 NavBar 클릭 가능 */
-  bottom: calc(var(--nav-offset) + 1px);
-
-  z-index: 2147483647; /* 앱 모든 요소 위 */
+  z-index: 2147483647;
   background: var(--bg-1);
   color: var(--text-1);
   display: flex;
   flex-direction: column;
   overscroll-behavior: contain;
 
-  /* 살짝 위에서 슬라이드-인 */
   transform: translateY(4%);
   opacity: 0.01;
   animation: pageEnter 220ms ease forwards;
@@ -84,24 +81,19 @@ const Screen = styled.div`
   }
 `;
 
+const Sheet = styled.div`
+  display: flex; flex-direction: column; flex: 1 1 auto;
+  min-height: 0; /* for child scroll */
+`;
+
 const HeaderBar = styled.header`
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: 40px 1fr 40px;
-  align-items: center;
-  gap: 8px;
-
+  position: sticky; top: 0; z-index: 1;
+  display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; gap: 8px;
   padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
-  padding-bottom: 8px;
-  padding-left: 12px;
-  padding-right: 12px;
-
+  padding: 8px 12px;
   background: var(--bg-1);
   border-bottom: 1px solid var(--natural-200);
 `;
-
 const Spacer = styled.div`width: 40px; height: 36px;`;
 const CloseBtn = styled.button`
   width: 36px; height: 36px; border: 0; border-radius: 12px;
