@@ -3,7 +3,8 @@ import styled from "styled-components";
 import FrogBar from "./FrogBar";
 import { pickRandomFrog } from "../store/frogs";
 import sirenIcon from "@/assets/images/siren.svg";
-import SimpleModal from "../modals/SimpleModal";
+import AdjustGoalModal from "../modals/AdjustGoalModal";  
+import PageModal from "../../../common/components/PageModal";
 
 export default function GoalCard({
   id: goalId,
@@ -29,15 +30,20 @@ export default function GoalCard({
   }, [dday]);
   const isUrgent = sign <= 0 && (num === 0 || num === 1);
 
-  // 모달 상태
-  const [open, setOpen] = React.useState(false);
-  const openModal = () => setOpen(true);
-  const closeModal = () => setOpen(false);
+  // 모달 상태 분리
+  const [openSimple, setOpenSimple] = React.useState(false);   // 카드 → SimpleModal
+  const [openAdjust, setOpenAdjust] = React.useState(false);   // 사이렌 → AdjustGoalModal
+  const anyOpen = openSimple || openAdjust;
 
-  // ESC + body 스크롤 잠금
+  const openSimpleModal = () => setOpenSimple(true);
+  const closeSimpleModal = () => setOpenSimple(false);
+  const openAdjustModal = () => setOpenAdjust(true);
+  const closeAdjustModal = () => setOpenAdjust(false);
+
+  // ESC + body 스크롤 잠금 (두 모달 중 하나라도 열리면)
   React.useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => e.key === "Escape" && closeModal();
+    if (!anyOpen) return;
+    const onKey = (e) => e.key === "Escape" && (openAdjust ? closeAdjustModal() : closeSimpleModal());
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -45,23 +51,43 @@ export default function GoalCard({
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
     };
-  }, [open]);
+  }, [anyOpen, openAdjust]);
+
+  // 카드 키보드 접근성 (Enter / Space → SimpleModal)
+  const onCardKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openSimpleModal();
+    }
+  };
 
   return (
     <>
       <Container
-        type="button"
+        role="button"
+        tabIndex={0}
         className={className}
         aria-label="Task card"
-        onClick={openModal}
-        data-goal-id={goalId}   // <- 추적/디버깅/테스트에 유용
+        onClick={openSimpleModal}     // ✅ 카드 클릭 → SimpleModal
+        onKeyDown={onCardKeyDown}
+        data-goal-id={goalId}
       >
         <HeaderRow>
           <DDayIcon>{dday}</DDayIcon>
           <TitleWrap>
             <TaskTitle>{title}</TaskTitle>
             {isUrgent && (
-              <SirenIcon src={sirenIcon} alt="긴급" title="마감 임박" />
+              <SirenButton
+                type="button"
+                title="마감 임박: 목표 조정"
+                aria-label="마감 임박: 목표 조정"
+                onClick={(e) => {
+                  e.stopPropagation(); // 카드 onClick 막기
+                  openAdjustModal();   // ✅ 사이렌 클릭 → AdjustGoalModal
+                }}
+              >
+                <SirenIcon src={sirenIcon} alt="" aria-hidden="true" />
+              </SirenButton>
             )}
           </TitleWrap>
         </HeaderRow>
@@ -76,7 +102,7 @@ export default function GoalCard({
         </ImgContainer>
       </Container>
 
-      <SimpleModal open={open} onClose={closeModal} title={title}>
+      <PageModal open={openSimple} onClose={closeSimpleModal} title={title} headerVariant = "back-left" viewNavBar>
         <Row><Label>ID</Label><Value>{goalId}</Value></Row>
         <Row>
           <Label>디데이</Label>
@@ -87,25 +113,22 @@ export default function GoalCard({
           <Value>{Number.isFinite(+progress) ? `${+progress}%` : "0%"}</Value>
         </Row>
         {warmMessage ? <Warm>{warmMessage}</Warm> : null}
-        <Actions>
-          <ModalBtn type="button" onClick={closeModal}>
-            닫기
-          </ModalBtn>
-        </Actions>
-      </SimpleModal>
+      </PageModal>
+
+      {/* ✅ 사이렌 전용: AdjustGoalModal */}
+      <AdjustGoalModal
+        open={openAdjust}
+        onClose={closeAdjustModal}
+        goal={{ id: goalId, dday, title, progress: +progress || 0, warmMessage }}
+      />
     </>
   );
 }
 
-/* ---------------- Styles ---------------- */
 
-const Container = styled.button`
-  /* 버튼 리셋 + 접근성 유지 */
-  appearance: none;
-  border: 0;
+const Container = styled.div`
   background: var(--bg-1);
   color: inherit;
-  text-align: left;
 
   width: 80%;
   aspect-ratio: 327 / 368;
@@ -161,18 +184,36 @@ const TitleWrap = styled.div`
   align-items: center;
   min-width: 0;
 `;
+
 const TaskTitle = styled.h3`
   display: inline-block;
   font-size: clamp(12px, 2.9vw, 30px);
   font-weight: 700;
   color: var(--text-1);
 `;
+
+/** 🚨 사이렌: 진짜 버튼 */
+const SirenButton = styled.button`
+  appearance: none;
+  border: 0;
+  background: transparent;
+  margin-left: 6px;
+  padding: 6px;            /* 터치 영역 확보 */
+  border-radius: 9999px;
+  line-height: 0;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-1, #18A904);
+    outline-offset: 2px;
+  }
+  &:active { transform: scale(0.96); }
+`;
+
 const SirenIcon = styled.img`
   width: clamp(14px, 4vw, 20px);
   height: auto;
-  margin-left: 6px;
-  vertical-align: middle;
-  display: inline-block;
+  display: block;
 `;
 
 const CheerMsg = styled.p`
@@ -190,6 +231,7 @@ const ImgContainer = styled.div`
   border-radius: 12px;
   overflow: hidden;
 `;
+
 const Illust = styled.figure`
   position: absolute;
   bottom: 3%;
@@ -199,7 +241,7 @@ const Illust = styled.figure`
   img { width: 100%; height: 100%; display: block; object-fit: contain; }
 `;
 
-// 모달용 추가 
+// 모달 내용
 const Row = styled.div`
   display: flex;
   align-items: center;
@@ -217,19 +259,4 @@ const Warm = styled.p`
   margin: 4px 0 0;
   font-size: 14px;
   color: var(--text-1, #111);
-`;
-const Actions = styled.div`
-  margin-top: 6px;
-  display: flex;
-  justify-content: flex-end;
-`;
-const ModalBtn = styled.button`
-  appearance: none;
-  border: 0;
-  border-radius: 10px;
-  padding: 10px 14px;
-  background: var(--brand-1, #18A904);
-  color: #fff;
-  font-weight: 700;
-  cursor: pointer;
 `;

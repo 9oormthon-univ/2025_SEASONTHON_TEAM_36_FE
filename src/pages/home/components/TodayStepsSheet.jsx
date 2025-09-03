@@ -171,15 +171,13 @@ export default function TodayStepsSheet({ todoId }) {
         />
       )}
 
-      {/* ▶️ GoalStepsModal: NavBar 위까지 채우고, 선택 스텝 표시 */}
       <DailyCheckInModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={selectedStep?.title || data?.title || "현재 진행 중"}
       // NavBar 보이게 하려면 주석 해제:
       // navOffset="calc(54px + 34px + env(safe-area-inset-bottom, 0px))"
       >
-          <h3 className="typo-h3" style={{ margin: 0, color: "var(--text-1)" }}>
+          {/* <h3 className="typo-h3" style={{ margin: 0, color: "var(--text-1)" }}>
             {data?.title ?? "목표"}
           </h3>
           <p style={{ margin: "6px 0 12px", color: "var(--text-2)" }}>
@@ -187,7 +185,7 @@ export default function TodayStepsSheet({ todoId }) {
           </p>
           <p style={{ margin: 0, color: "var(--text-2)" }}>
             진행 상태: <strong style={{ color: "var(--text-1)" }}>{playingKey ? "진행 중" : "일시정지"}</strong>
-          </p>
+          </p> */}
 
       </DailyCheckInModal>
     </>
