@@ -38,39 +38,96 @@ export default function SwipeCarousel({
   // 드래그 상태
   const viewportRef = useRef(null);
   const trackRef = useRef(null);
-  const startX = useRef(0);
-  const dragX = useRef(0);
+  // const startX = useRef(0);
+  // const dragX = useRef(0);
   const dragging = useRef(false);
-  const widthRef = useRef(0);
+  // const widthRef = useRef(0);
+  const state = useRef({
+    isDown: false,
+    dragging: false,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    width: 0,
+    pointerId: null,
+  });
 
   useEffect(() => snapToIndex(activeIndex, 0), [count]);
   useEffect(() => {
     if (!dragging.current) snapToIndex(activeIndex, 300);
   }, [activeIndex]);
 
+  const DRAG_ACTIVATE_PX = 8;          // 드래그 확정 임계값
+  const SWIPE_CHANGE_RATIO = 0.18;     // 페이지 전환 임계비율 (화면폭의 18%)
+
   function onPointerDown(e) {
-    viewportRef.current?.setPointerCapture?.(e.pointerId);
-    widthRef.current = viewportRef.current.clientWidth;
-    startX.current = e.clientX;
-    dragX.current = 0;
-    dragging.current = true;
+    if (e.button != null && e.button !== 0) return; // 좌클릭만
+    const vp = viewportRef.current;
+    state.current.isDown = true;
+    state.current.dragging = false;            // 아직 드래그 아님 (중요)
+    state.current.startX = e.clientX;
+    state.current.startY = e.clientY;
+    state.current.lastX = e.clientX;
+    state.current.width = vp?.clientWidth ?? 1;
+    state.current.pointerId = e.pointerId;
+    // ⚠️ 여기서는 capture / preventDefault 하지 않음 (클릭 합성 보존)
   }
   function onPointerMove(e) {
-    if (!dragging.current) return;
-    dragX.current = e.clientX - startX.current;
-    const px = -activeIndex * widthRef.current + dragX.current;
+    if (!state.current.isDown) return;
+
+    const dx = e.clientX - state.current.startX;
+    const dy = e.clientY - state.current.startY;
+
+    // 드래그 미확정 → 임계값 + 방향성 체크
+    if (!state.current.dragging) {
+      if (Math.abs(dx) > DRAG_ACTIVATE_PX && Math.abs(dx) > Math.abs(dy)) {
+        state.current.dragging = true;
+        // 드래그 확정 시점에만 캡처 & 기본동작 차단
+        viewportRef.current?.setPointerCapture?.(state.current.pointerId);
+        e.preventDefault();
+        // 애니메이션 끔
+        if (trackRef.current) {
+          trackRef.current.style.transition = "none";
+        }
+      } else {
+        return; // 아직 클릭 후보 상태 → 아무 것도 막지 않음
+      }
+    } else {
+      // 이미 드래그 중이면 계속 기본동작 차단
+      e.preventDefault();
+    }
+    // 드래그 처리
+    state.current.lastX = e.clientX;
+    const px = -activeIndex * state.current.width + dx;
     if (trackRef.current) {
-      trackRef.current.style.transition = "none";
       trackRef.current.style.transform = `translate3d(${px}px,0,0)`;
     }
   }
-  function onPointerUp() {
-    if (!dragging.current) return;
-    dragging.current = false;
-    const W = widthRef.current || 1;
-    const dx = dragX.current;
-    const threshold = Math.max(40, W * 0.18);
+  function onPointerUp(e) {
+    if (!state.current.isDown) return;
+
+    const wasDragging = state.current.dragging;
+    const W = state.current.width || 1;
+    const dx = state.current.lastX - state.current.startX;
+
+    // 상태 리셋
+    state.current.isDown = false;
+    state.current.dragging = false;
+    viewportRef.current?.releasePointerCapture?.(state.current.pointerId);
+
+    if (!wasDragging) {
+      // 드래그가 아니었으면 클릭 합성을 위해 아무 것도 막지 않음
+      // (모달 등 카드 onClick 정상 동작)
+      return;
+    }
+
+    // 드래그였으면 클릭 버블 방지 (의도치 않은 클릭 방지)
+    e.preventDefault();
+    e.stopPropagation();
+
+    const threshold = Math.max(40, W * SWIPE_CHANGE_RATIO);
     let next = activeIndex;
+
     if (Math.abs(dx) > threshold) {
       next = dx < 0 ? activeIndex + 1 : activeIndex - 1;
       if (loop) {
@@ -78,6 +135,7 @@ export default function SwipeCarousel({
         if (next > count - 1) next = 0;
       }
     }
+
     setIndex(next);
     snapToIndex(next, 260);
   }
