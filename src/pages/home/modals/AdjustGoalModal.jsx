@@ -128,7 +128,7 @@ const DeadlineInput = styled.div`
     text-align: center;
     font-size: 14px;
     color: var(--text-1);
-    background: var(--surface-1);
+    background: var(--bg-1);
   }
 
   span {

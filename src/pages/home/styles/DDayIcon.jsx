@@ -8,7 +8,7 @@ export const DDayIcon = styled.div`
   border-radius: 10px;
   background: var(--green-200, #86EC78);
   color: var(--text-1);
-  font-size: clamp(8px, 2.5vw, 15px);
+  font-size: clamp(8px, 2.8vw, 15px);
   font-weight: 400;
   margin-right: 8px;
 `;

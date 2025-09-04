@@ -41,7 +41,6 @@ export default function SheetListSection({ title, defaultOpen = true, className,
 const SectionWrap = styled.section`
   background: var(--bg-1);
   border-radius: 12px;
-  box-shadow: 0 0 0 1px var(--surface-2) inset;
   margin: 8px 0 12px;
 `;
 

@@ -126,7 +126,7 @@ const ChoiceButton = styled.button`
   flex: 1 0 calc(33% - 10px);
   padding: 5% 13px;
   border-radius: 20px;
-  border: 1px solid var(--surface-2);
+  border: 1px solid var(--bg-2);
   background: ${(p) => (p.$active ? "var(--primary-1)" : "var(--natural-200)")};
   color: ${(p) => (p.$active ? "var(--text-w1)" : "var(--text-1)")};
   cursor: pointer;

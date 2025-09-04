@@ -146,15 +146,18 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
         onClose={closeSheet}
         ariaLabel="할 일 목록"
         peekHeight={PEEK_HEIGHT}
-        size="30vh"
+        size="32vh"
         onHeightChange={onHeightChange}
       >
         {open ? (
           <SheetBody>
             <TopBar>
-              <CloseDownBtn onClick={closeSheet} aria-label="내려서 닫기">
-                <img src={arrowDown} alt="arrow-down" width={14} style={{ height: "auto" }} />
-              </CloseDownBtn>
+              <TopRow>
+                <CloseDownBtn onClick={closeSheet} aria-label="내려서 닫기">
+                  <img src={arrowDown} alt="arrow-down" width={14} style={{ height: "auto" }} />
+                </CloseDownBtn>
+              </TopRow>
+
             </TopBar>
 
             <ScrollArea role="list">
@@ -205,13 +208,17 @@ const TopBar = styled.div`
   top: 0;
   z-index: 1;
   background: transparent;
-  border-bottom: 1px solid var(--surface-2);
+  border-bottom: 1px solid var(--bg-2);
+`;
+
+const TopRow = styled.div`  
+  min-height: 20px;  
 `;
 
 const CloseDownBtn = styled.button`
   position: absolute;
   right: 8px;
-  top: 6px;
+  top: 0px;
   appearance: none;
   border: 0;
   background: transparent;
@@ -223,7 +230,7 @@ const CloseDownBtn = styled.button`
   margin: 0 1% 0 0;
   border-radius: 8px;
   &:hover {
-    background: var(--surface-2);
+    background: var(--text-w2);
   }
 `;
 

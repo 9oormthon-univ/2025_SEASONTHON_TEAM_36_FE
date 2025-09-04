@@ -33,13 +33,12 @@ export const GrabHandle = styled.div`
   display: grid; place-items: center; padding: 8px 0 0 0; cursor: grab;
   & > span {
     display: block; width: 34px; height: 3px;
-    background: var(--surface-2, #f1f4f8); border-radius: 999px;
+    background: var(--text-w2, #f1f4f8); border-radius: 999px;
   }
 `;
 
 export const SheetViewport = styled.div`
   display: flex; flex-direction: column;
-  height: calc(100% - var(--peek, 28px));
-  max-height: calc(100% - var(--peek, 28px));
+  height: 90%;
   overflow: hidden;
 `;

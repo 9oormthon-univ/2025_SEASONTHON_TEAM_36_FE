@@ -158,7 +158,7 @@ const TitleWrap = styled.div`
 
 const TaskTitle = styled.h3`
   display: inline-block;
-  font-size: clamp(12px, 3.5vw, 30px);
+  font-size: clamp(12px, 4vw, 30px);
   font-weight: 700;
   color: var(--text-1);
 `;
@@ -187,7 +187,7 @@ const SirenIcon = styled.img`
 `;
 
 const CheerMsg = styled.p`
-  font-size: clamp(10px, 3vw, 24px);
+  font-size: clamp(10px, 3.5vw, 24px);
   font-weight: 500;
   color: var(--text-2, #6F737B);
 `;
