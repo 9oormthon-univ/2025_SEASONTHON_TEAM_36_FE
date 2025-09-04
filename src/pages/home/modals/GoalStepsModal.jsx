@@ -37,6 +37,39 @@ export default function GoalStepsModal({ open, onClose, goalId }) {
     };
   }, [goalId]);
 
+  /** 스크롤 필요 여부를 감지해서 Steps 중앙 정렬 여부 결정 */
+  const stepsRef = React.useRef(null);
+  const [centerList, setCenterList] = React.useState(true); // 기본: 중앙 정렬
+
+  React.useEffect(() => {
+    const el = stepsRef.current;
+    if (!el) return;
+
+    const compute = () => {
+      // overflow 발생 여부 판단
+      const hasOverflow = el.scrollHeight > el.clientHeight + 1;
+      setCenterList(!hasOverflow);
+    };
+
+    // 최초 계산
+    compute();
+
+    // 요소 크기 변화 관찰 (내용/컨테이너 변화 모두 대응)
+    let ro = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(compute);
+      ro.observe(el);
+    }
+
+    // 윈도우 리사이즈도 대응
+    window.addEventListener("resize", compute);
+
+    return () => {
+      window.removeEventListener("resize", compute);
+      if (ro) ro.disconnect();
+    };
+  }, [view.steps.length]);
+
   return (
     <PageModal open={open} onClose={onClose} headerVariant="back-left" viewNavBar>
       {/* 모달 내부 레이아웃 루트 (헤더 위, 컨텐츠 아래) */}
@@ -62,27 +95,31 @@ export default function GoalStepsModal({ open, onClose, goalId }) {
             <FrogBar progress={view.progress} />
           </FrogWrap>
 
-         <Steps role="list" aria-label="진행 단계 목록">
-  {view.steps.map((s) => (
-    <StepItem key={s.stepOrder} role="listitem">
-      <StepDate className="typo-body-s">{s.stepDate}</StepDate>
+          <Steps
+            ref={stepsRef}
+            role="list"
+            aria-label="진행 단계 목록"
+            $center={centerList}   // ✅ 스크롤 없을 때만 중앙 정렬
+          >
+            {view.steps.map((s) => (
+              <StepItem key={s.stepOrder} role="listitem">
+                <StepDate className="typo-body-s">{s.stepDate}</StepDate>
 
-      {/* 타이틀 + 아이콘 한 줄 */}
-      <StepTitleRow>
-        <StepTitle>{s.description}</StepTitle>
-        <DetailsBtn type="button" aria-label="자세히 보기">
-          <img src={detailsTri} alt="" aria-hidden="true" />
-        </DetailsBtn>
-      </StepTitleRow>
-    </StepItem>
-  ))}
-</Steps>
+                {/* 타이틀 + 아이콘 한 줄 */}
+                <StepTitleRow>
+                  <StepTitle>{s.description}</StepTitle>
+                  <DetailsBtn type="button" aria-label="자세히 보기">
+                    <img src={detailsTri} alt="" aria-hidden="true" />
+                  </DetailsBtn>
+                </StepTitleRow>
+              </StepItem>
+            ))}
+          </Steps>
         </Content>
       </Body>
     </PageModal>
   );
 }
-
 
 const Body = styled.div`
   /* 모달 내부 전체를 수직 레이아웃으로 구성 */
@@ -171,7 +208,7 @@ const Content = styled.div`
   border-radius: 12px;
   overflow: hidden;
   min-height: 0;
-  gap: 12%
+  gap: 12%;
 `;
 
 const FrogWrap = styled.div`
@@ -187,9 +224,18 @@ const Steps = styled.ul`
   flex-direction: column;
   gap: 5%;
   min-width: 0;
+
+  /* 첫/마지막 아이템 그림자, 둥근 모서리 클리핑 방지 */
   padding: 1.5%;
+  padding-block: calc(1.5% + 12px);
+  scroll-padding-top: 12px;
+  scroll-padding-bottom: 12px;
+
   overflow-y: auto;
   overscroll-behavior: contain;
+
+  /* ✅ 스크롤 없을 때만 중앙 정렬 */
+  ${({ $center }) => ($center ? "justify-content: center;" : "justify-content: flex-start;")}
 `;
 
 /* Step 리스트 아이템 */
@@ -249,6 +295,6 @@ const DetailsBtn = styled.button`
     width: 16px;
     height: 16px;
     display: block;
-    filter: var(--icon, none); /* 토큰 쓰신다면 아이콘 톤 맞춰줘요 */
+    filter: var(--icon, none);
   }
 `;
