@@ -1,19 +1,10 @@
+import { useCallback, useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
+
 import LeftArrow from '../../../assets/images/left-arrow.png';
 import RightArrow from '../../../assets/images/right-arrow.png';
-import { useCallback, useEffect, useState } from 'react';
 
-const CustomCalendar = ({
-  curDate,
-  startOfWeek,
-  endOfWeek,
-  calView,
-  allToDo,
-  maxSteps,
-  handleToDo,
-  handleMoveMonth,
-  handleView,
-}) => {
+const CustomCalendar = ({ curDate, maxSteps, handleMoveMonth }) => {
   const [selectedDate, setSelectedDate] = useState(curDate);
 
   useEffect(() => {
@@ -56,14 +47,6 @@ const CustomCalendar = ({
 
   const getTileContent = ({ activeStartDate, date, view }) => {
     let count = 0;
-    const goals = allToDo[date.getDate()] ?? {};
-
-    Object.keys(goals).map(goal => {
-      const steps = goals[goal];
-      Object.keys(steps).map(step => {
-        if (steps[step].done) count++;
-      });
-    });
     // 월 보기일 때만 div 추가
     if (view === 'month') {
       return (
@@ -85,13 +68,7 @@ const CustomCalendar = ({
   return (
     <Calendar
       onClickDay={(value, event) => {
-        handleToDo(value);
         setSelectedDate(value);
-      }}
-      tileDisabled={({ date, view }) => {
-        if (view === 'month' && !calView) {
-          return date < startOfWeek || date > endOfWeek;
-        }
       }}
       formatDay={formatDay}
       tileContent={getTileContent}
@@ -100,7 +77,7 @@ const CustomCalendar = ({
           src={LeftArrow}
           alt="left-arrow"
           width="24"
-          onClick={e => {
+          onClick={() => {
             handleMoveMonth(-1);
             setSelectedDate(curDate);
           }}
@@ -111,7 +88,7 @@ const CustomCalendar = ({
           src={RightArrow}
           alt="right-arrow"
           width="24"
-          onClick={e => {
+          onClick={_ => {
             handleMoveMonth(1);
             setSelectedDate(curDate);
           }}
@@ -122,10 +99,9 @@ const CustomCalendar = ({
           style={{ fontSize: 'var(--fs-xs)' }}
           onClick={e => {
             e.stopPropagation();
-            handleView();
           }}
         >
-          {calView ? '월' : '주'}
+          {'월'}
         </span>
       }
     />

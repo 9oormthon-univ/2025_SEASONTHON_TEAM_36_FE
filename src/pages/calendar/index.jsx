@@ -1,10 +1,11 @@
 import './styles/index.css';
-import CustomCalendar from './components/CustomCalendar';
-import ToDoList from './components/ToDoList';
-import Modal from './components/Modal';
-import styled from 'styled-components';
+
 import { useCallback, useState } from 'react';
-import { dummy } from './utils/dummy';
+import styled from 'styled-components';
+
+import CustomCalendar from './components/CustomCalendar';
+import Modal from './components/Modal';
+import ToDoList from './components/ToDoList';
 
 const CalendarScreenStyle = styled.div`
   height: 100vh;
@@ -39,22 +40,17 @@ const CalendarScreen = () => {
   const [view, setView] = useState(true);
   const [date, setDate] = useState(new Date());
   const [day, setDay] = useState(new Date().getDate());
-  const [allToDoOfMonth, setAllToDoOfMonth] = useState(dummy);
-  const [toDo, setToDo] = useState(dummy[new Date().getDate()] ?? {});
+  const [toDo, setToDo] = useState({});
 
   const handleShowModal = useCallback(() => {
     setOpen(prev => !prev);
-  }, [open]);
+  }, []);
 
-  const handleToDo = useCallback(
-    selectedDate => {
-      const date = new Date(selectedDate);
-      const dayOfSelectedDate = date.getDate();
-      setDay(dayOfSelectedDate);
-      setToDo(allToDoOfMonth[dayOfSelectedDate] ?? {});
-    },
-    [setDay, setToDo],
-  );
+  const handleToDo = useCallback(selectedDate => {
+    const date = new Date(selectedDate);
+    const dayOfSelectedDate = date.getDate();
+    setDay(dayOfSelectedDate);
+  }, []);
 
   const handleMoveMonth = useCallback(
     move => {
@@ -64,18 +60,15 @@ const CalendarScreen = () => {
       const tmp = prevMonth + move;
       const nextYear = tmp <= 0 ? prevYear - 1 : tmp > 12 ? prevYear + 1 : prevYear;
       const nextMonth = tmp <= 0 ? 12 : tmp > 12 ? 1 : tmp;
-      console.log(nextYear, nextMonth);
-      setDate(`${nextYear}-${nextMonth}`);
+      setDate(new Date(nextYear, nextMonth));
       setDay(1);
-      setToDo(allToDoOfMonth[1] ?? {});
-      console.log(`${nextYear}-${nextMonth}`);
     },
-    [date, setDate, setDay],
+    [date],
   );
 
   const handleView = useCallback(() => {
     setView(prev => !prev);
-  }, [view]);
+  }, []);
 
   return (
     <CalendarScreenStyle>
@@ -83,7 +76,6 @@ const CalendarScreen = () => {
         <CustomCalendar
           curDate={new Date()}
           calView={view}
-          allToDo={allToDoOfMonth}
           maxSteps={6} // 하드코딩
           handleToDo={handleToDo}
           handleMoveMonth={handleMoveMonth}
