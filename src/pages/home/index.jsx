@@ -138,7 +138,7 @@ export default function HomePage() {
       </Body>
 
       {hasGoals ? (
-        <TodayStepsSheet todoId={activeId} onHeightChange={setSheetHeight} />
+        <TodayStepsSheet goalId={activeId} onHeightChange={setSheetHeight} />
       ) : null}
     </Page>
   );

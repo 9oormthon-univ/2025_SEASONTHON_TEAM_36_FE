@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import PageModal from "../../../common/components/PageModal";
 import GreenButton from "../../../common/components/GreenButton";
+import { ModalContainer } from "../styles/ModalContainer";
 
 /**
  * 목표 조정 모달
@@ -19,7 +20,7 @@ export default function AdjustGoalModal({ open, onClose, goalId }) {
       headerVariant="close-right"
       viewNavBar
     >
-      <Container>
+      <ModalContainer>
         <Section>
           <Heading className="typo-h2">재도약하기</Heading>
           <Desc>
@@ -53,26 +54,10 @@ export default function AdjustGoalModal({ open, onClose, goalId }) {
         <ButtonRow>
           <GreenButton>RESTART</GreenButton>
         </ButtonRow>
-      </Container>
+      </ModalContainer>
     </PageModal>
   );
 }
-
-const Container = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10%;
-  padding: 20px;
-  background: var(--bg-1);
-  color: var(--text-1);
-
-  /* h <= 700px: 여백 축소 */
-  @media (max-height: 700px) {
-    gap: 4%;
-    padding: 12px;
-  }
-`;
 
 const Section = styled.section`
   display: flex;

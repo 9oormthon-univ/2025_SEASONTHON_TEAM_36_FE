@@ -12,7 +12,24 @@ import DailyCheckInModal from "../modals/DailyCheckInModal";
 
 const PEEK_HEIGHT = 58; // 닫힘 상태에서 보일 높이 (BottomSheet의 peekHeight와 동일)
 
-export default function TodayStepsSheet({ todoId, onHeightChange }) {
+/** !!! API !!! 하드코딩된 steps 포함 샘플 데이터 */
+const SAMPLE = {
+  dDay: "D-10",
+  title: "우물밖개구리 프로젝트",
+  endDate: "2025-09-05",
+  progressText: "개구리가 햇빛을 보기 시작했어요!",
+  progress: 50,
+  steps: [
+    { stepDate: "2025-09-02", stepOrder: 1, description: "ToDo ERD 설계", count: 0, isCompleted: false },
+    { stepDate: "2025-09-03", stepOrder: 2, description: "ToDo ERD 설계2", count: 0, isCompleted: false },
+    { stepDate: "2025-09-04", stepOrder: 3, description: "ToDo ERD 설계3", count: 0, isCompleted: false },
+    { stepDate: "2025-09-05", stepOrder: 4, description: "ToDo ERD 설계4", count: 0, isCompleted: false },
+    { stepDate: "2025-09-05", stepOrder: 5, description: "ToDo ERD 설계5", count: 0, isCompleted: false },
+    { stepDate: "2025-09-06", stepOrder: 6, description: "ToDo ERD 설계6", count: 0, isCompleted: false },
+  ],
+};
+
+export default function TodayStepsSheet({ goalId, onHeightChange }) {
   const [open, setOpen] = React.useState(false);
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
@@ -24,15 +41,13 @@ export default function TodayStepsSheet({ todoId, onHeightChange }) {
 
   // 부모에서 내려준 id 사용(+ 폴백)
   const targetId = React.useMemo(
-    () => (todoId ?? homeGoals?.contents?.[0]?.id ?? null),
-    [todoId]
+    () => (goalId ?? homeGoals?.contents?.[0]?.id ?? null),
+    [goalId]
   );
 
-  // mocks 기반 데이터 선택
-  const data = React.useMemo(
-    () => (targetId != null ? selectStepsByGoalId(homeGoals, targetId) : null),
-    [targetId]
-  );
+  // !!! API !!!
+  // 더미 데이터 사용
+  const data = SAMPLE;
 
   // ===== 1) 섹션 분류(오늘/미래=prep, 과거=carried) + 모든 아이템 기본 pause =====
   const baseGroups = React.useMemo(() => {
@@ -93,7 +108,7 @@ export default function TodayStepsSheet({ todoId, onHeightChange }) {
     ];
   }, [data]);
 
-  // todoId 바뀌면 모두 pause로 초기화
+  // goalId 바뀌면 모두 pause로 초기화
   React.useEffect(() => {
     setPlayingKey(null);
   }, [targetId]);

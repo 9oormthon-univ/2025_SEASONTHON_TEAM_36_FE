@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PageModal from "../../../common/components/PageModal";
 import GreenButton from "../../../common/components/GreenButton";
 import styled from "styled-components";
+import { ModalContainer } from "../styles/ModalContainer";
 /**
  * DailyCheckInModal
  * props:
@@ -17,11 +18,11 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
   const [location, setLocation] = useState(null);
 
   const LOCATIONS = [
-    { id: "home", label: "🏠 집" },
-    { id: "office", label: "🏢 직장" },
-    { id: "cafe", label: "☕ 카페" },
-    { id: "library", label: "📚 도서관" },
-    { id: "class", label: "🏫 강의실" },
+    { id: "home", label: "집" },
+    { id: "office", label: "직장" },
+    { id: "cafe", label: "카페" },
+    { id: "library", label: "도서관" },
+    { id: "class", label: "강의실" },
     { id: "etc", label: "기타" },
   ];
 
@@ -30,14 +31,14 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
       open={open}
       onClose={onClose}
     >
-      <Container>
+      <ModalContainer>
         <Header>
-          <Title>오늘의 도약 전</Title>
+          <Title className="typo-h2">오늘의 도약 전</Title>
           <Subtitle>지금의 마음 상태를 알려주세요 🖤</Subtitle>
         </Header>
 
         <Section>
-          <Question>지금 느끼는 감정은?</Question>
+          <Question className="typo-h3">지금 느끼는 감정은?</Question>
           <RangeBox>
             <RangeInput
               type="range"
@@ -46,7 +47,7 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
               value={feeling}
               onChange={(e) => setFeeling(Number(e.target.value))}
             />
-            <RangeLabels>
+            <RangeLabels className="typo-label-s">
               <span>매우 좋지 않음</span>
               <span>매우 좋음</span>
             </RangeLabels>
@@ -54,7 +55,7 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
         </Section>
 
         <Section>
-          <Question>지금 나에게 남아있는 에너지는?</Question>
+          <Question className="typo-h3">지금 나의 에너지는?</Question>
           <RangeBox>
             <RangeInput
               type="range"
@@ -63,7 +64,7 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
               value={energy}
               onChange={(e) => setEnergy(Number(e.target.value))}
             />
-            <RangeLabels>
+            <RangeLabels className="typo-label-s">
               <span>기운 없음</span>
               <span>에너지 넘침</span>
             </RangeLabels>
@@ -71,10 +72,11 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
         </Section>
 
         <Section>
-          <Question>어디에서 일을 진행하나요?</Question>
+          <Question className="typo-h3">어디에서 일을 진행하나요?</Question>
           <ButtonGrid>
             {LOCATIONS.map((loc) => (
               <ChoiceButton
+              className="typo-label-l"
                 key={loc.id}
                 type="button"
                 $active={location === loc.id}
@@ -87,45 +89,48 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
         </Section>
 
         <Bottom>
-          <GreenButton>START</GreenButton>
+          <GreenButton disabled={!location}>START</GreenButton>
         </Bottom>
-      </Container>
+      </ModalContainer>
     </PageModal>
   );
 }
 
-const Container = styled.div`
-  min-height: 100dvh;
+const Header = styled.header`
   display: flex;
   flex-direction: column;
-  background: var(--bg-1);
-  color: var(--text-1);
-  padding: 20px;
-`;
-
-const Header = styled.header`
-  margin-bottom: 20px;
+  gap: 2vh;
 `;
 
 const Title = styled.h1`
-  font-size: clamp(16px, 4vw, 20px);
-  font-weight: 700;
-  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: stretch;
+  color: var(--text-1, #000);
 `;
 
 const Subtitle = styled.p`
-  font-size: clamp(12px, 3vw, 14px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: stretch;
   color: var(--text-2);
+  font-size: var(--fs-lg, 16px);
+  font-style: normal;
+  font-weight: 500;
+  line-height: 100%; /* 16px */
+  letter-spacing: var(--ls-2, 0);
 `;
 
 const Section = styled.section`
-  margin-bottom: 28px;
+    display: flex;
+  flex-direction: column;
+  gap: 2vh;
 `;
 
-const Question = styled.h2`
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 12px;
+const Question = styled.h3`
+  color: var(--text-1, #000);
 `;
 
 const RangeBox = styled.div`
@@ -159,30 +164,29 @@ const RangeInput = styled.input`
 const RangeLabels = styled.div`
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
-  color: var(--text-2);
+  color: var(--text-1);
 `;
 
 const ButtonGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 14px;
 `;
 
 const ChoiceButton = styled.button`
   flex: 1 0 calc(33% - 10px);
-  padding: 10px 12px;
+  padding: 5% 13px;
   border-radius: 20px;
   border: 1px solid var(--surface-2);
-  background: ${(p) => (p.$active ? "var(--brand-1)" : "var(--surface-1)")};
+  background: ${(p) => (p.$active ? "var(--primary-1)" : "var(--natural-200)")};
   color: ${(p) => (p.$active ? "var(--text-w1)" : "var(--text-1)")};
-  font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
 `;
 
 const Bottom = styled.div`
   margin-top: auto;
+  margin-bottom: 3vh;
   display: flex;
   justify-content: center;
 `;

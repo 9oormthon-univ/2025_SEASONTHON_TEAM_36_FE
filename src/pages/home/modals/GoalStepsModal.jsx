@@ -15,11 +15,11 @@ const SAMPLE = {
   progress: 50,
   steps: [
     { stepDate: "2025-09-02", stepOrder: 1, description: "ToDo ERD 설계", count: 0, isCompleted: false },
-    { stepDate: "2025-09-02", stepOrder: 2, description: "ToDo ERD 설계2", count: 0, isCompleted: false },
-    { stepDate: "2025-09-02", stepOrder: 3, description: "ToDo ERD 설계3", count: 0, isCompleted: false },
-    { stepDate: "2025-09-02", stepOrder: 4, description: "ToDo ERD 설계4", count: 0, isCompleted: false },
-    { stepDate: "2025-09-02", stepOrder: 5, description: "ToDo ERD 설계5", count: 0, isCompleted: false },
-    { stepDate: "2025-09-02", stepOrder: 6, description: "ToDo ERD 설계6", count: 0, isCompleted: false },
+    { stepDate: "2025-09-03", stepOrder: 2, description: "ToDo ERD 설계2", count: 0, isCompleted: false },
+    { stepDate: "2025-09-04", stepOrder: 3, description: "ToDo ERD 설계3", count: 0, isCompleted: false },
+    { stepDate: "2025-09-05", stepOrder: 4, description: "ToDo ERD 설계4", count: 0, isCompleted: false },
+    { stepDate: "2025-09-05", stepOrder: 5, description: "ToDo ERD 설계5", count: 0, isCompleted: false },
+    { stepDate: "2025-09-06", stepOrder: 6, description: "ToDo ERD 설계6", count: 0, isCompleted: false },
   ],
 };
 
@@ -39,7 +39,7 @@ export default function GoalStepsModal({ open, onClose, goalId }) {
 
   return (
     <PageModal open={open} onClose={onClose} headerVariant="back-left" viewNavBar>
-      {/* ⭐️ 모달 내부 레이아웃 루트 (헤더 위, 컨텐츠 아래) */}
+      {/* 모달 내부 레이아웃 루트 (헤더 위, 컨텐츠 아래) */}
       <Body>
         <HeaderWrapper>
           <Header>
@@ -56,7 +56,7 @@ export default function GoalStepsModal({ open, onClose, goalId }) {
           <WarmMsg>{view.warmMessage}</WarmMsg>
         </HeaderWrapper>
 
-        {/* ⭐️ 헤더 '아래'에 배치되는 스크롤 컨텐츠 */}
+        {/* 헤더 '아래'에 배치되는 스크롤 컨텐츠 */}
         <Content role="region" aria-label="단계 진행 영역">
           <FrogWrap>
             <FrogBar progress={view.progress} />
@@ -83,7 +83,6 @@ export default function GoalStepsModal({ open, onClose, goalId }) {
   );
 }
 
-/* ---------------- styles ---------------- */
 
 const Body = styled.div`
   /* 모달 내부 전체를 수직 레이아웃으로 구성 */
