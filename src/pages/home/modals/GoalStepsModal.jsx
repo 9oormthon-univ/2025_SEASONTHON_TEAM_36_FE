@@ -4,8 +4,9 @@ import PageModal from "../../../common/components/PageModal";
 import { DDayIcon } from "../styles/DDayIcon";
 import trashIcon from "@/assets/images/trash.svg";
 import FrogBar from "../components/FrogBar";
+import detailsTri from "@/assets/images/details-tri.svg";
 
-/** 🔸 하드코딩된 steps 포함 샘플 데이터 */
+/** !!! API !!! 하드코딩된 steps 포함 샘플 데이터 */
 const SAMPLE = {
   dDay: "D-10",
   title: "우물밖개구리 프로젝트",
@@ -13,217 +14,242 @@ const SAMPLE = {
   progressText: "개구리가 햇빛을 보기 시작했어요!",
   progress: 50,
   steps: [
-    {
-      stepDate: "2025-09-02",
-      stepOrder: 1,
-      description: "ToDo ERD 설계",
-      count: 0,
-      isCompleted: false,
-    },
-    {
-      stepDate: "2025-09-02",
-      stepOrder: 2,
-      description: "ToDo ERD 설계2",
-      count: 0,
-      isCompleted: false,
-    },
-    {
-      stepDate: "2025-09-02",
-      stepOrder: 3,
-      description: "ToDo ERD 설계3",
-      count: 0,
-      isCompleted: false,
-    },
-    {
-      stepDate: "2025-09-02",
-      stepOrder: 4,
-      description: "ToDo ERD 설계4",
-      count: 0,
-      isCompleted: false,
-    },
-    {
-      stepDate: "2025-09-02",
-      stepOrder: 5,
-      description: "ToDo ERD 설계5",
-      count: 0,
-      isCompleted: false,
-    },
-    {
-      stepDate: "2025-09-02",
-      stepOrder: 6,
-      description: "ToDo ERD 설계6",
-      count: 0,
-      isCompleted: false,
-    },
+    { stepDate: "2025-09-02", stepOrder: 1, description: "ToDo ERD 설계", count: 0, isCompleted: false },
+    { stepDate: "2025-09-02", stepOrder: 2, description: "ToDo ERD 설계2", count: 0, isCompleted: false },
+    { stepDate: "2025-09-02", stepOrder: 3, description: "ToDo ERD 설계3", count: 0, isCompleted: false },
+    { stepDate: "2025-09-02", stepOrder: 4, description: "ToDo ERD 설계4", count: 0, isCompleted: false },
+    { stepDate: "2025-09-02", stepOrder: 5, description: "ToDo ERD 설계5", count: 0, isCompleted: false },
+    { stepDate: "2025-09-02", stepOrder: 6, description: "ToDo ERD 설계6", count: 0, isCompleted: false },
   ],
 };
 
-/**
- * steps 표시 모달
- * props:
- *  - open: boolean
- *  - onClose: () => void
- *  - goal: { id, dday|dDay, title, progress, warmMessage|progressText, dueDate|endDate }
- *    ⚠️ steps는 prop을 무시하고 위 SAMPLE.steps를 사용합니다.
- */
-export default function GoalStepsModal({ open, onClose, goal }) {
-  // 표시용 뷰 모델: goal → 없으면 SAMPLE 값으로 보강, steps는 항상 SAMPLE.steps 사용
+export default function GoalStepsModal({ open, onClose, goalId }) {
+  // goalId를 이용해 데이터를 가져왔다고 가정
   const view = React.useMemo(() => {
-    const g = goal ?? {};
+    const g = SAMPLE;
     return {
-      dday: g.dday ?? g.dDay ?? SAMPLE.dDay,
-      dueDate: g.dueDate ?? g.endDate ?? SAMPLE.endDate,
-      title: g.title ?? SAMPLE.title,
-      warmMessage: g.warmMessage ?? g.progressText ?? SAMPLE.progressText,
-      progress: Number.isFinite(+g.progress) ? +g.progress : SAMPLE.progress,
-      steps: SAMPLE.steps, // ✅ 하드코딩
+      dday: g.dday ?? g.dDay,
+      dueDate: g.dueDate ?? g.endDate,
+      title: g.title,
+      warmMessage: g.warmMessage ?? g.progressText,
+      progress: Number.isFinite(+g.progress) ? +g.progress : 0,
+      steps: g.steps ?? [],
     };
-  }, [goal]);
+  }, [goalId]);
 
   return (
     <PageModal open={open} onClose={onClose} headerVariant="back-left" viewNavBar>
-      <Header>
-        <DDayIcon>{view.dday}</DDayIcon>
-        <DueDate>마감일: {view.dueDate}</DueDate>
-        <DeleteButton type="button" aria-label="목표 삭제">
-          <img src={trashIcon} alt="삭제" />
-        </DeleteButton>
-      </Header>
+      {/* ⭐️ 모달 내부 레이아웃 루트 (헤더 위, 컨텐츠 아래) */}
+      <Body>
+        <HeaderWrapper>
+          <Header>
+            <HeaderGroup>
+              <DDayIcon className="typo-body-xs">{view.dday ?? "D-0"}</DDayIcon>
+              <DueDate>마감일: {view.dueDate ?? "-"}</DueDate>
+              <DeleteButton type="button" title="삭제">
+                <img src={trashIcon} alt="삭제" />
+              </DeleteButton>
+            </HeaderGroup>
+          </Header>
 
-      <Title>{view.title}</Title>
-      <WarmMsg>{view.warmMessage}</WarmMsg>
+          <Title className="typo-h2">{view.title}</Title>
+          <WarmMsg>{view.warmMessage}</WarmMsg>
+        </HeaderWrapper>
 
-      <Content>
-        <FrogWrap>
-          <FrogBar progress={view.progress} />
-        </FrogWrap>
+        {/* ⭐️ 헤더 '아래'에 배치되는 스크롤 컨텐츠 */}
+        <Content role="region" aria-label="단계 진행 영역">
+          <FrogWrap>
+            <FrogBar progress={view.progress} />
+          </FrogWrap>
 
-        <Steps role="list" aria-label="진행 단계 목록">
-          {view.steps.map((s) => (
-            <StepItem key={s.stepOrder} role="listitem">
-              <StepDate>{s.stepDate}</StepDate>
-              <StepTitle>{s.description}</StepTitle>
+         <Steps role="list" aria-label="진행 단계 목록">
+  {view.steps.map((s) => (
+    <StepItem key={s.stepOrder} role="listitem">
+      <StepDate className="typo-body-s">{s.stepDate}</StepDate>
 
-              {/* count가 의미 있을 때 작은 배지로 표기(0이면 숨김) */}
-              {s.count > 0 && <CountBadge aria-label={`횟수 ${s.count}`}>{s.count}</CountBadge>}
-
-              <StepButton
-                type="button"
-                title={s.isCompleted ? "완료됨" : "시작"}
-                aria-label={s.isCompleted ? "완료됨" : "시작"}
-                disabled={s.isCompleted}
-              >
-                {s.isCompleted ? "✔" : "▶"}
-              </StepButton>
-            </StepItem>
-          ))}
-        </Steps>
-      </Content>
+      {/* 타이틀 + 아이콘 한 줄 */}
+      <StepTitleRow>
+        <StepTitle>{s.description}</StepTitle>
+        <DetailsBtn type="button" aria-label="자세히 보기">
+          <img src={detailsTri} alt="" aria-hidden="true" />
+        </DetailsBtn>
+      </StepTitleRow>
+    </StepItem>
+  ))}
+</Steps>
+        </Content>
+      </Body>
     </PageModal>
   );
 }
 
-/* ===== styled-components ===== */
+/* ---------------- styles ---------------- */
+
+const Body = styled.div`
+  /* 모달 내부 전체를 수직 레이아웃으로 구성 */
+  display: flex;
+  flex-direction: column;
+
+  /* PageModal이 높이를 제공한다는 가정하에, 100% 높이로 컨텐츠 영역 확보 */
+  height: 100%;
+  min-height: 0; /* 자식 overflow가 작동하도록 중요 */
+`;
+
+const HeaderWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* Header, Title, WarmMsg 간격 */
+  margin: 12px 0 16px;
+
+  /* 헤더가 스크롤 영역 위에 고정되길 원하면 주석 해제
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg-1);
+  padding-top: 8px;
+  */
+`;
 
 const Header = styled.header`
+  width: 72vw;
+  max-width: 680px;
+  margin: 0 auto;
+
+  display: flex;
+  justify-content: center;  /* 그룹을 가운데 배치 */
+  align-items: center;
+`;
+
+const HeaderGroup = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 16px;
 `;
 
 const DueDate = styled.span`
-  font-size: clamp(12px, 2.5vw, 16px);
-  color: var(--text-2);
-  flex: 1;
+  color: var(--text-2, #6F737B);
+  font-size: var(--fs-lg, 16px);
+  font-weight: 500;
+  line-height: var(--lh-l, 100%); /* 16px */
+  letter-spacing: var(--ls-2, 0);
 `;
 
 const DeleteButton = styled.button`
   border: none;
   background: transparent;
-  padding: 4px;
   cursor: pointer;
-  img { width: 18px; height: auto; display: block; }
+  padding: 0;
+  img {
+    width: 24px;
+    height: auto;
+    display: block;
+  }
 `;
 
-const Title = styled.h1`
-  font-size: clamp(16px, 3.5vw, 24px);
-  font-weight: 700;
-  margin: 16px 0 8px;
+const Title = styled.h2`
+  color: var(--text-1, #000);
   text-align: center;
+  margin: 0;
 `;
 
 const WarmMsg = styled.p`
-  font-size: clamp(12px, 2.5vw, 16px);
-  color: var(--text-2);
+  color: var(--text-2, #6F737B);
+  font-size: var(--fs-xs, 12px);
+  font-weight: 400;
+  line-height: var(--lh-l, 140%); /* 16.8px */
+  letter-spacing: var(--ls-2, 0);
   text-align: center;
-  margin-bottom: 16px;
+  margin: 0;
 `;
 
 const Content = styled.div`
+  position: relative;
+  flex: 1 1 auto;
   display: flex;
-  gap: 16px;
-  flex: 1;
+  align-items: stretch;
+  justify-content: center;
+  border-radius: 12px;
+  overflow: hidden;
   min-height: 0;
+  gap: 12%
 `;
 
 const FrogWrap = styled.div`
-  flex: 0 0 40px; /* FrogBar 영역 */
+  flex: 0 0 10vw;     /* 세로 바 폭 */
   display: flex;
   justify-content: center;
+  align-items: stretch;   /* 부모 높이를 그대로 차지하도록 */
 `;
 
 const Steps = styled.ul`
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 5%;
   min-width: 0;
+  padding: 1.5%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 `;
 
+/* Step 리스트 아이템 */
 const StepItem = styled.li`
-  background: var(--surface-1);
-  border-radius: 12px;
-  padding: 12px 16px;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  width: 92%;
+  padding: 3% 8%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5%; /* 날짜와 타이틀 줄 간격 */
+  border-radius: 16px;
+  background: var(--natural-0, #FFF);
+  /* shadow */
+  box-shadow:
+    -0.3px -0.3px 5px 0 var(--natural-400, #D6D9E0),
+     0.3px  0.3px 5px 0 var(--natural-400, #D6D9E0);
 `;
 
 const StepDate = styled.span`
-  font-size: 12px;
-  color: var(--text-2);
+  color: var(--text-2, #333);
   white-space: nowrap;
 `;
 
+/* 타이틀 줄: 타이틀 왼쪽, 아이콘 오른쪽 */
+const StepTitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+`;
+
 const StepTitle = styled.span`
-  flex: 1;
-  font-size: 14px;
-  font-weight: 500;
+  flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--text-1, #000);
+  font-size: var(--fs-xs, 12px);
+  font-weight: 500;
+  line-height: var(--lh-S, 16px);
+  letter-spacing: var(--ls-1, 0.6px);
 `;
 
-const CountBadge = styled.span`
-  background: var(--surface-2, rgba(0,0,0,0.06));
-  color: var(--text-2);
-  font-size: 12px;
-  border-radius: 10px;
-  padding: 2px 6px;
-`;
-
-const StepButton = styled.button`
+/* 우측 details 삼각형 버튼 */
+const DetailsBtn = styled.button`
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 14px;
-  color: var(--brand-1);
-  padding: 4px 6px;
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: default;
+  img {
+    width: 16px;
+    height: 16px;
+    display: block;
+    filter: var(--icon, none); /* 토큰 쓰신다면 아이콘 톤 맞춰줘요 */
   }
 `;
