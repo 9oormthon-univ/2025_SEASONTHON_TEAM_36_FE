@@ -4,18 +4,18 @@ import SwipeCarousel from "../../../layout/SwipeCarousel";
 import DotIndicator from "./DotIndicator";
 import GoalCard from "./GoalCard";
 
-/** tasks: [{ id, dday, title, progress, warmMessage }] */
+/** goals: [{ id, dDay, title, progress, warmMessage, ... }] */
 export default function CardsCarousel({
-  tasks = [],
+  goals = [],
   activeId,
   onActiveIdChange,
-  shrink = 1,   // ✅ 부모에서 받은 shrink
+  shrink = 1,
 }) {
   const [innerIndex, setInnerIndex] = useState(0);
 
   const ids = useMemo(
-    () => tasks.map((t, i) => t?.id ?? `${t?.title ?? "task"}-${i}`),
-    [tasks]
+    () => goals.map((g, i) => g?.id ?? `${g?.title ?? "goal"}-${i}`),
+    [goals]
   );
 
   const controlledIndex = useMemo(() => {
@@ -26,13 +26,13 @@ export default function CardsCarousel({
 
   const index = Number.isInteger(controlledIndex)
     ? controlledIndex
-    : clamp(innerIndex, 0, Math.max(0, tasks.length - 1));
+    : clamp(innerIndex, 0, Math.max(0, goals.length - 1));
 
   const setIndexBoth = (next) => {
     const nextVal = clamp(
       typeof next === "function" ? next(index) : next,
       0,
-      Math.max(0, tasks.length - 1)
+      Math.max(0, goals.length - 1)
     );
     if (controlledIndex == null) setInnerIndex(nextVal);
     const nextId = ids[nextVal];
@@ -40,30 +40,26 @@ export default function CardsCarousel({
   };
 
   useEffect(() => {
-    if (tasks.length === 0) return;
+    if (goals.length === 0) return;
     setIndexBoth(index);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tasks.length]);
+  }, [goals.length]);
 
   return (
     <>
       <CarouselWrap>
         <SwipeCarousel index={index} onIndexChange={setIndexBoth}>
-          {tasks.map((t, i) => (
+          {goals.map((g, i) => (
             <GoalCard
               key={ids[i]}
-              id={ids[i]}
-              dday={t.dday ?? "D-0"}
-              title={t.title ?? ""}
-              progress={+t.progress || 0}
-              warmMessage={t.warmMessage ?? ""}
-              shrink={shrink}   // ✅ GoalCard에도 shrink 전달
+              goal={g}        // 각각의 goal 객체 자체 전달
+              shrink={shrink}
             />
           ))}
         </SwipeCarousel>
       </CarouselWrap>
       <IndicatorRow>
-        <DotIndicator index={index} total={tasks.length} maxDots={5} />
+        <DotIndicator index={index} total={goals.length} maxDots={5} />
       </IndicatorRow>
     </>
   );
@@ -74,11 +70,13 @@ function clamp(v, lo, hi) {
   if (!Number.isFinite(n)) return lo;
   return Math.max(lo, Math.min(hi, n));
 }
+
 const CarouselWrap = styled.section`
   width: 100%;
   max-width: 560px;
   margin: 1.2% auto;
 `;
+
 const IndicatorRow = styled.div`
   margin-top: 8px;
   display: flex;
