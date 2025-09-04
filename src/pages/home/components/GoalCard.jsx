@@ -24,7 +24,7 @@ export default function GoalCard({ goal, shrink = 1, className }) {
     const n = parseInt(m[2], 10);
     return { sign: s, num: Number.isNaN(n) ? null : n };
   }, [dDay]);
-  const isUrgent = sign <= 0 && (num === 0 || num === 1);
+  const isUrgent = sign <= 0 && (num <= 3);
 
   const [openSteps, setOpenSteps] = React.useState(false);
   const [openAdjust, setOpenAdjust] = React.useState(false);
@@ -158,7 +158,7 @@ const TitleWrap = styled.div`
 
 const TaskTitle = styled.h3`
   display: inline-block;
-  font-size: clamp(12px, 2.9vw, 30px);
+  font-size: clamp(12px, 3.5vw, 30px);
   font-weight: 700;
   color: var(--text-1);
 `;
@@ -168,7 +168,6 @@ const SirenButton = styled.button`
   border: 0;
   background: transparent;
   margin-left: 6px;
-  padding: 6px;
   border-radius: 9999px;
   line-height: 0;
   cursor: pointer;
@@ -182,13 +181,13 @@ const SirenButton = styled.button`
 `;
 
 const SirenIcon = styled.img`
-  width: clamp(14px, 4vw, 20px);
+  width: clamp(14px, 6vw, 50px);
   height: auto;
   display: block;
 `;
 
 const CheerMsg = styled.p`
-  font-size: clamp(10px, 2.7vw, 24px);
+  font-size: clamp(10px, 3vw, 24px);
   font-weight: 500;
   color: var(--text-2, #6F737B);
 `;
