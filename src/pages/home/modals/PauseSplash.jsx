@@ -1,13 +1,13 @@
 // FrogNotiModal.jsx
 import React, { useEffect } from "react";
-import frog1 from "@/assets/images/frog-1.svg";
+import frogSwim from "@/assets/images/frog-swim.svg";
 import PageModal from "../../../common/components/PageModal";
 import FrogNoti from "../../../common/components/FrogNoti";
 
 /**
  * PageModal + FrogNoti 조합 컴포넌트
  */
-export default function DayStartSplash({ open, onClose }) {
+export default function PauseSplash({ open, onClose }) {
   // open 상태가 true가 되면 3초 뒤 자동 닫기
   useEffect(() => {
     if (!open) return;
@@ -22,9 +22,9 @@ export default function DayStartSplash({ open, onClose }) {
   return (
     <PageModal open={open} onClose={onClose} headerVariant="close-right">
       <FrogNoti
-        topText={"시작이 반이다!\\n오늘도 화이팅이에요!"}
-        imageSrc={frog1}
-        bottomText={"개구리가 도움닫기를\\n하고 있어요"}
+        topText={"작은 도전이\\n큰 변화를 만들어요!"}
+        imageSrc={frogSwim}
+        bottomText={"개구리가\\n한 단계 올라왔어요"} // 여기 
       />
     </PageModal>
   );

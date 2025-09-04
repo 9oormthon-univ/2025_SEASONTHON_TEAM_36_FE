@@ -4,11 +4,15 @@ import GreenButton from "../../../common/components/GreenButton";
 import styled from "styled-components";
 import { ModalContainer } from "../styles/ModalContainer";
 import DotsSelector from "../components/DotsSelector";
+import DayStartSplash from "./DayStartSplash";
 
 export default function DailyCheckInModal({ open, onClose, title, step, isPlaying }) {
   const [feeling, setFeeling] = useState(3);
   const [energy, setEnergy] = useState(3);
   const [location, setLocation] = useState(null);
+
+  // START 클릭 시 띄울 모달 상태 
+  const [splashOpen, setSplashOpen] = useState(false);
 
   const LOCATIONS = [
     { id: "home", label: "집" },
@@ -20,63 +24,75 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
   ];
 
   const canStart = location != null;
+  const onStart = () => {
+    // if (!canStart) return;
+    setSplashOpen(true);
+    onClose?.() // 현재 모달은 닫기
+  };
 
   return (
-    <PageModal open={open} onClose={onClose}>
-      <ModalContainer $gap="7%">
-        <Header>
-          <Title className="typo-h2">오늘의 도약 전</Title>
-          <Subtitle>지금의 마음 상태를 알려주세요 🖤</Subtitle>
-        </Header>
+    <>
+      <PageModal open={open} onClose={onClose}>
+        <ModalContainer $gap="7%">
+          <Header>
+            <Title className="typo-h2">오늘의 도약 전</Title>
+            <Subtitle>지금의 마음 상태를 알려주세요 🖤</Subtitle>
+          </Header>
 
-        <Section>
-          <Question className="typo-h3">지금 느끼는 감정은?</Question>
-          <DotsSelector
-            name="feeling"
-            value={feeling}
-            onChange={setFeeling}
-            min={1}
-            max={5}
-            leftLabel="매우 좋지 않음"
-            rightLabel="매우 좋음"
-          />
-        </Section>
+          <Section>
+            <Question className="typo-h3">지금 느끼는 감정은?</Question>
+            <DotsSelector
+              name="feeling"
+              value={feeling}
+              onChange={setFeeling}
+              min={1}
+              max={5}
+              leftLabel="매우 좋지 않음"
+              rightLabel="매우 좋음"
+            />
+          </Section>
 
-        <Section>
-          <Question className="typo-h3">지금 나의 에너지는?</Question>
-          <DotsSelector
-            name="energy"
-            value={energy}
-            onChange={setEnergy}
-            min={1}
-            max={5}
-            leftLabel="기운 없음"
-            rightLabel="에너지 넘침"
-          />
-        </Section>
+          <Section>
+            <Question className="typo-h3">지금 나의 에너지는?</Question>
+            <DotsSelector
+              name="energy"
+              value={energy}
+              onChange={setEnergy}
+              min={1}
+              max={5}
+              leftLabel="기운 없음"
+              rightLabel="에너지 넘침"
+            />
+          </Section>
 
-        <Section>
-          <Question className="typo-h3">어디에서 일을 진행하나요?</Question>
-          <ButtonGrid>
-            {LOCATIONS.map((loc) => (
-              <ChoiceButton
-                className="typo-label-l"
-                key={loc.id}
-                type="button"
-                $active={location === loc.id}
-                onClick={() => setLocation(loc.id)}
-                aria-pressed={location === loc.id}
-              >
-                {loc.label}
-              </ChoiceButton>
-            ))}
-          </ButtonGrid>
-        </Section>
-        <ButtonRow>
-          <GreenButton disabled={!canStart}>START</GreenButton>
-        </ButtonRow>
-      </ModalContainer>
-    </PageModal>
+          <Section>
+            <Question className="typo-h3">어디에서 일을 진행하나요?</Question>
+            <ButtonGrid>
+              {LOCATIONS.map((loc) => (
+                <ChoiceButton
+                  className="typo-label-l"
+                  key={loc.id}
+                  type="button"
+                  $active={location === loc.id}
+                  onClick={() => setLocation(loc.id)}
+                  aria-pressed={location === loc.id}
+                >
+                  {loc.label}
+                </ChoiceButton>
+              ))}
+            </ButtonGrid>
+          </Section>
+          <ButtonRow>
+            <GreenButton disabled={!canStart} onClick={onStart}>START</GreenButton>
+          </ButtonRow>
+        </ModalContainer>
+      </PageModal>
+
+      <DayStartSplash
+        open={splashOpen}
+        onClose={() => setSplashOpen(false)}
+      />
+    </>
   );
 }
 
