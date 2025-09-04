@@ -3,7 +3,7 @@ import styled from "styled-components";
 import FrogBar from "./FrogBar";
 import { pickRandomFrog } from "../store/frogs";
 import sirenIcon from "@/assets/images/siren.svg";
-import AdjustGoalModal from "../modals/AdjustGoalModal";  
+import AdjustGoalModal from "../modals/AdjustGoalModal";
 import GoalStepsModal from "../modals/GoalStepsModal";
 
 export default function GoalCard({
@@ -125,12 +125,10 @@ const Container = styled.div`
 
   width: 80%;
   aspect-ratio: 327 / 368;
-  height: auto;
 
-  margin: clamp(8px, 4vh, 48px) auto 0;
+  margin: clamp(8px, 2.5vh, 48px) auto 0;
   padding: clamp(12px, 4.3vw, 40px) clamp(12px, 3vw, 40px);
 
-  flex-shrink: 0;
   border-radius: clamp(12px, 4vw, 16px);
   box-shadow:
     -0.27px -0.27px 4.495px 0 var(--natural-400),
@@ -232,24 +230,4 @@ const Illust = styled.figure`
   height: auto;
   pointer-events: none;
   img { width: 100%; height: 100%; display: block; object-fit: contain; }
-`;
-
-// 모달 내용
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-const Label = styled.span`
-  color: var(--text-2, #6F737B);
-  font-size: 13px;
-`;
-const Value = styled.span`
-  color: var(--text-1, #000);
-  font-weight: 700;
-`;
-const Warm = styled.p`
-  margin: 4px 0 0;
-  font-size: 14px;
-  color: var(--text-1, #111);
 `;

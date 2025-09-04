@@ -131,7 +131,7 @@ export default function TodayStepsSheet({ todoId, onHeightChange }) {
         onClose={closeSheet}
         ariaLabel="할 일 목록"
         peekHeight={PEEK_HEIGHT}
-        size="26vh"
+        size="30vh"
         onHeightChange={onHeightChange}
       >
         {open ? (

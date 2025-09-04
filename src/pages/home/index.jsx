@@ -22,7 +22,7 @@ export default function HomePage() {
   const [activeId, setActiveId] = useState(null);
 
   // BottomSheet 높이(px)
-  const [sheetHeight, setSheetHeight] = useState(58);
+  const [sheetHeight, setSheetHeight] = useState(0);
   useEffect(() => {
     console.log("✅ sheetHeight updated:", sheetHeight);
   }, [sheetHeight]);
@@ -48,18 +48,16 @@ export default function HomePage() {
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
         <DateView />
-
-        <CarouselWrapper>
-          {hasTasks ? (
-            <CardsCarousel
-              tasks={tasks}
-              activeId={activeId}
-              onActiveIdChange={setActiveId}
-            />
-          ) : (
-            <EmptyState />
-          )}
-        </CarouselWrapper>
+        {hasTasks ? (
+          <CardsCarousel
+            tasks={tasks}
+            activeId={activeId}
+            onActiveIdChange={setActiveId}
+          />
+        ) : (
+          <EmptyState />
+        )}
+        <BottomSpacing />
       </Body>
 
       {hasTasks ? (
@@ -87,34 +85,29 @@ const Page = styled.section`
  *  - 기본 남는 높이: (100dvh - sheetHeight - nav)
  *  - 여기에 shrink 계수를 곱해 '더 많이' 줄임
  *    → open 시 0.68배, 닫힘 시 1배
- *  - AppLayout.Main이 이미 padding-bottom: var(--navbar-height)라면
- *    - var(--navbar-height, 0px) 부분을 제거해도 됩니다.
  */
 const Body = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   width: 100%;
   min-height: 0;
-  /* 더 많이 줄이기: 남는 높이에 $shrink 적용 */
   height: calc(
     (100dvh - ${(p) => p.$sheetHeight}px - var(--navbar-height, 0px))
     * ${(p) => p.$shrink}
   );
 `;
 
-const CarouselWrapper = styled.div`
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  overflow: hidden;
-`;
-
 const TopSpacing = styled.div`
   height: calc(45px + env(safe-area-inset-top, 0px));
   @media (min-height: 700px) {
     height: calc(75px + env(safe-area-inset-top, 0px));
+  }
+`;
+
+const BottomSpacing = styled.div`
+  height: calc(54px + env(safe-area-inset-top, 0px));
+  @media (min-height: 700px) {
+    height: calc(90px + env(safe-area-inset-top, 0px));
   }
 `;

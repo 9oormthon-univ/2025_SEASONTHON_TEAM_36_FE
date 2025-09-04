@@ -55,13 +55,13 @@ export default function CardsCarousel({
   }, [tasks.length]);
 
   return (
-    <Wrap>
+    <>
       <CarouselWrap>
         <SwipeCarousel index={index} onIndexChange={setIndexBoth}>
           {tasks.map((t, i) => (
             <GoalCard
               key={ids[i]}
-               id={ids[i]}  // GoalCard에서 모달 열 때 사용할 id 넘겨줌
+              id={ids[i]}  // GoalCard에서 모달 열 때 사용할 id 넘겨줌
               dday={t.dday ?? "D-0"}
               title={t.title ?? ""}
               progress={Number.isFinite(+t.progress) ? +t.progress : 0}
@@ -70,11 +70,11 @@ export default function CardsCarousel({
           ))}
         </SwipeCarousel>
       </CarouselWrap>
-
       <IndicatorRow>
         <DotIndicator index={index} total={tasks.length} maxDots={5} />
       </IndicatorRow>
-    </Wrap>
+      </>
+
   );
 }
 
@@ -83,8 +83,6 @@ function clamp(v, lo, hi) {
   if (!Number.isFinite(n)) return lo;
   return Math.max(lo, Math.min(hi, n));
 }
-
-const Wrap = styled.div` width: 100%; `;
 const CarouselWrap = styled.section`
   width: 100%;
   max-width: 560px;

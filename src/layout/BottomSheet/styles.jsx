@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 export const Backdrop = styled.div`
   position: fixed;
   inset: 0 0 var(--navbar-height, 0px) 0;
-  background: rgba(0,0,0,0.36);
-  backdrop-filter: saturate(120%) blur(2px);
+  // background: rgba(0,0,0,0.36);
+  // backdrop-filter: saturate(120%) blur(2px);
   z-index: 900;
 `;
 
@@ -18,9 +18,9 @@ export const Panel = styled(motion.div)`
   bottom: calc(var(--navbar-height, 0px) - var(--nav-border-top, 0px));
   width: 100vw;
   height: ${({ $size }) => $size};
-  background: var(--surface-1, #fff);
+  background: var(--bg-1, #fff);
   color: var(--text-1, #101014);
-  box-shadow: 0 -12px 36px rgba(0,0,0,0.18);
+  box-shadow: -0.3px -0.3px 5px 0 var(--natural-400, #D6D9E0), 0.3px 0.3px 5px 0 var(--natural-400, #D6D9E0);
   outline: none;
   border-radius: 40px 40px 0 0;
   display: flex;
