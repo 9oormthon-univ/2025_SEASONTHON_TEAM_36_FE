@@ -3,8 +3,10 @@ import CustomCalendar from './components/CustomCalendar';
 import ToDoList from './components/ToDoList';
 import Modal from './components/Modal';
 import styled from 'styled-components';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { dummy9 } from './utils/dummy';
+import axios from 'axios';
+import { getAccessToken } from '../../common/utils/token';
 
 const CalendarScreenStyle = styled.div`
   height: ${props => props.$height}px;
@@ -18,9 +20,29 @@ const CalendarScreen = () => {
     `${new Date().getFullYear()}-${new Date().getMonth() + 1}`,
   );
   const [day, setDay] = useState(new Date().getDate());
+  const [allToDo, setAllToDo] = useState({});
   const [allToDoOfMonth, setAllToDoOfMonth] = useState(dummy9);
   const [toDo, setToDo] = useState(dummy9[new Date().getDate()] ?? {});
   const modalRef = useRef(null);
+
+  // useEffect(() => {
+  //   const getMyToDo = async () => {
+  //     try {
+  //       const accessToken = getAccessToken();
+  //       console.log(accessToken);
+  //       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}`, {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //         withCredentials: true,
+  //       });
+  //       console.log(response.data);
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
+  //   getMyToDo();
+  // }, []);
 
   const handleShowModal = useCallback(() => {
     modalRef.current.style.top = isShowing ? `${window.innerHeight}px` : 0;

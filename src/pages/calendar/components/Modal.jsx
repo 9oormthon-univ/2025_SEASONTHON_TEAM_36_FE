@@ -1,6 +1,8 @@
 import styled from 'styled-components';
-import CancelImg from '../../../assets/images/cancel.png';
+import CloseImg from '../../../assets/images/close.png';
 import Title from './Title';
+import TextInput from './TextInput';
+import { useState } from 'react';
 
 const ModalStyle = styled.div`
   background-color: white;
@@ -33,24 +35,40 @@ const CreateGoalFormChild = styled.div`
   }
 `;
 
-const TextInput = styled.input`
-  width: 100%;
-  padding: 12px 16px;
-  border: none;
+const GoalContent = styled.div`
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+`;
+
+const Description = styled.div`
+  color: var(--natural-800);
+  font-size: var(--fs-md);
+  line-height: 24px;
+  letter-spacing: var(--ls-3);
+  white-space: pre-wrap;
+`;
+
+const LetterCount = styled.div`
+  display: flex;
+  position: absolute;
+  bottom: 24px;
+  right: 10px;
+`;
+
+const Count = styled.span`
+  color: var(--text-3);
+  font-size: var(--fs-lg);
+`;
+
+const Trick = styled.div`
   border-bottom: 1px solid var(--natural-400);
-  letter-spacing: -0.25px;
-
-  &:focus {
-    outline: none;
-  }
-
-  &::placeholder {
-    color: var(--text-2);
-    font-size: var(--fs-md);
-  }
 `;
 
 const Modal = ({ modalRef, handleShowModal }) => {
+  const [curLetterCount, setCurLetterCount] = useState(0);
   return (
     <ModalStyle ref={modalRef} $width={window.innerWidth} $height={window.innerHeight}>
       <Header>
@@ -59,7 +77,7 @@ const Modal = ({ modalRef, handleShowModal }) => {
             handleShowModal();
           }}
         >
-          <img src={CancelImg} alt="취소" width="24" height="24" />
+          <img src={CloseImg} alt="취소" width="24" height="24" />
         </button>
       </Header>
       <CreateGoalForm
@@ -72,17 +90,48 @@ const Modal = ({ modalRef, handleShowModal }) => {
         </div>
         <CreateGoalFormChild>
           <Title $fontSize={'var(--fs-xl)'}>업무명</Title>
-          <TextInput type="text" name="업무명" placeholder="업무명 입력" />
+          <Trick>
+            <TextInput type="text" name="업무명" placeholder="업무명 입력" />
+          </Trick>
         </CreateGoalFormChild>
         <CreateGoalFormChild>
           <Title $fontSize={'var(--fs-xl)'}>과제 내용</Title>
-          
+          <GoalContent>
+            <Description>
+              {
+                '완료해야 할 일을 상세하게 작성해주세요!\n\nex) 메가커피 마케팅 전략 조사 및 새로운 전략 도출\n\tppt 10장 내로\n\tSWOT 조사 필수'
+              }
+            </Description>
+            <Trick>
+              <TextInput
+                type="text"
+                name="업무 내용"
+                maxLength="1000"
+                style={{
+                  paddingRight: '80px',
+                }}
+                onChange={e => {
+                  setCurLetterCount(e.target.value.length);
+                }}
+              />
+              <LetterCount>
+                <Count>{curLetterCount}</Count>
+                <Count>/1000</Count>
+              </LetterCount>
+            </Trick>
+          </GoalContent>
         </CreateGoalFormChild>
         <CreateGoalFormChild>
           <Title $fontSize={'var(--fs-xl)'}>업무 수행 시작일</Title>
+          <Trick>
+            <TextInput type="date" name="업무 시작일" placeholder="YYYY.MM.DD" />
+          </Trick>
         </CreateGoalFormChild>
         <CreateGoalFormChild>
           <Title $fontSize={'var(--fs-xl)'}>업무 수행 마감일</Title>
+          <Trick>
+            <TextInput type="date" name="업무 시작일" placeholder="YYYY.MM.DD" />
+          </Trick>
         </CreateGoalFormChild>
         <CreateGoalFormChild>
           <Title $fontSize={'var(--fs-xl)'}>업무 수행 예정일</Title>
