@@ -3,7 +3,7 @@ import CustomCalendar from './components/CustomCalendar';
 import ToDoList from './components/ToDoList';
 import Modal from './components/Modal';
 import styled from 'styled-components';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { dummy } from './utils/dummy';
 
 const CalendarScreenStyle = styled.div`
@@ -37,9 +37,7 @@ const getLastDayOfMonth = date => {
 const CalendarScreen = () => {
   const [open, setOpen] = useState(false);
   const [view, setView] = useState(true);
-  const [yearMonth, setYearMonth] = useState(
-    `${new Date().getFullYear()}-${new Date().getMonth() + 1}`,
-  );
+  const [date, setDate] = useState(new Date());
   const [day, setDay] = useState(new Date().getDate());
   const [allToDoOfMonth, setAllToDoOfMonth] = useState(dummy);
   const [toDo, setToDo] = useState(dummy[new Date().getDate()] ?? {});
@@ -60,19 +58,19 @@ const CalendarScreen = () => {
 
   const handleMoveMonth = useCallback(
     move => {
-      const prevDate = new Date(yearMonth);
+      const prevDate = new Date(date);
       const prevYear = prevDate.getFullYear();
       const prevMonth = prevDate.getMonth() + 1;
       const tmp = prevMonth + move;
       const nextYear = tmp <= 0 ? prevYear - 1 : tmp > 12 ? prevYear + 1 : prevYear;
       const nextMonth = tmp <= 0 ? 12 : tmp > 12 ? 1 : tmp;
       console.log(nextYear, nextMonth);
-      setYearMonth(`${nextYear}-${nextMonth}`);
+      setDate(`${nextYear}-${nextMonth}`);
       setDay(1);
       setToDo(allToDoOfMonth[1] ?? {});
       console.log(`${nextYear}-${nextMonth}`);
     },
-    [yearMonth, setYearMonth, setDay],
+    [date, setDate, setDay],
   );
 
   const handleView = useCallback(() => {
@@ -83,7 +81,7 @@ const CalendarScreen = () => {
     <CalendarScreenStyle>
       <div style={{ height: '100%', overflow: 'auto', position: 'relative' }}>
         <CustomCalendar
-          curDate={new Date(`${yearMonth}-${day}`)}
+          curDate={new Date()}
           calView={view}
           allToDo={allToDoOfMonth}
           maxSteps={6} // 하드코딩
