@@ -5,13 +5,13 @@ import { Backdrop, Panel, GrabHandle, SheetViewport } from "./styles";
 /** Bottom-only Drawer (BottomSheet)
  * props:
  *  - open: boolean
- *  - onOpen?: () => void       // 드래그 업으로만 열기 (탭 불가)
+ *  - onOpen?: () => void // 드래그 업으로만 열기 (탭 불가)
  *  - onClose: () => void
  *  - size: number | string (default: "56vh")
  *  - peekHeight: number (default: 28)
+ *  - onHeightChange?: (px: number) => void   // 현재 차지하는 높이 전달
  *  - ariaLabel?: string
  *  - children: ReactNode
- *
  * 특징:
  *  - ESC/Backdrop 닫기
  *  - body 스크롤 잠금(열렸을 때)
@@ -25,6 +25,7 @@ export default function BottomSheet({
   onClose,
   size = "56vh",
   peekHeight = 28,
+  onHeightChange,
   ariaLabel = "bottom drawer",
   children,
 }) {
@@ -55,6 +56,28 @@ export default function BottomSheet({
     return () => clearTimeout(t);
   }, [open]);
 
+  // 부모로 현재 높이 전달
+  React.useEffect(() => {
+    if (!onHeightChange) return;
+
+    const vh = window.innerHeight;
+    let px;
+
+    if (open) {
+      // size가 "56vh" 같은 비율 문자열일 수도 있음
+      if (typeof size === "string" && size.endsWith("vh")) {
+        const ratio = parseFloat(size) / 100;
+        px = vh * ratio;
+      } else {
+        px = Number(size);
+      }
+    } else {
+      px = peekHeight;
+    }
+
+    onHeightChange(px);
+  }, [open, size, peekHeight, onHeightChange]);
+
   // 열림/피크 애니메이션
   const variants = {
     open: { y: 0, transition: { type: "spring", stiffness: 420, damping: 42 } },
@@ -74,16 +97,12 @@ export default function BottomSheet({
     const vy = info.velocity.y;      // 위로 플릭하면 음수
 
     if (open) {
-      // 열려있을 때: 충분히 아래로 끌거나 빠르게 아래로 플릭하면 닫기
-      const dragDown =
-        offsetY > THRESHOLD_CLOSE || vy > FAST_VELOCITY;
+      const dragDown = offsetY > THRESHOLD_CLOSE || vy > FAST_VELOCITY;
       if (dragDown) onClose?.();
       return;
     }
 
-    // 닫혀있을 때: 살짝이라도 위로 끌거나 빠르게 위로 플릭하면 열기
-    const dragUp =
-      offsetY < -THRESHOLD_OPEN || vy < -FAST_VELOCITY;
+    const dragUp = offsetY < -THRESHOLD_OPEN || vy < -FAST_VELOCITY;
     if (dragUp) onOpen?.();
   };
 
@@ -101,7 +120,6 @@ export default function BottomSheet({
         />
       )}
 
-      {/* 패널: 닫힘 상태에는 peek만 보임 */}
       <Panel
         ref={panelRef}
         as={motion.div}
@@ -124,10 +142,7 @@ export default function BottomSheet({
         <GrabHandle
           role="button"
           tabIndex={0}
-          aria-label={
-            open ? "바텀시트 끌어서 닫기" : "바텀시트 끌어서 열기"
-          }
-          // 닫힘 상태에서는 탭/엔터/스페이스로 '열기' 금지 (드래그만 허용)
+          aria-label={open ? "바텀시트 끌어서 닫기" : "바텀시트 끌어서 열기"}
           onClick={(e) => {
             if (open) {
               onClose?.();
@@ -142,7 +157,6 @@ export default function BottomSheet({
                 e.preventDefault();
                 onClose?.();
               } else {
-                // 닫힘 상태에서는 키로 열지 않음 (드래그만)
                 e.preventDefault();
               }
             }
@@ -152,7 +166,6 @@ export default function BottomSheet({
           <span />
         </GrabHandle>
 
-        {/* 닫힘(peek) 상태에서는 내용 클릭/스크롤 불가 */}
         <SheetViewport aria-hidden={!open}>{children}</SheetViewport>
       </Panel>
     </>

@@ -12,7 +12,7 @@ import DailyCheckInModal from "../modals/DailyCheckInModal";
 
 const PEEK_HEIGHT = 58; // 닫힘 상태에서 보일 높이 (BottomSheet의 peekHeight와 동일)
 
-export default function TodayStepsSheet({ todoId }) {
+export default function TodayStepsSheet({ todoId, onHeightChange }) {
   const [open, setOpen] = React.useState(false);
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
@@ -131,7 +131,8 @@ export default function TodayStepsSheet({ todoId }) {
         onClose={closeSheet}
         ariaLabel="할 일 목록"
         peekHeight={PEEK_HEIGHT}
-        size="56vh"
+        size="26vh"
+        onHeightChange={onHeightChange}
       >
         {open ? (
           <SheetBody>
@@ -174,8 +175,6 @@ export default function TodayStepsSheet({ todoId }) {
     </>
   );
 }
-
-/* ===================== styles ===================== */
 
 const SheetBody = styled.div`
   display: flex;
