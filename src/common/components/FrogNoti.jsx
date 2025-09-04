@@ -10,7 +10,7 @@ export default function FrogNoti({
   return (
     <Container>
       <TopText className="typo-h2">
-        {topText.split("\n").map((line, idx) => (
+        {topText.split("\\n").map((line, idx) => (
           <span key={idx}>
             {line}
             <br />
@@ -19,7 +19,7 @@ export default function FrogNoti({
       </TopText>
       {imageSrc && <FrogImg src={imageSrc} alt="" />}
       <BottomText className="typo-h3">
-        {bottomText.split("\n").map((line, idx) => (
+        {bottomText.split("\\n").map((line, idx) => (
           <span key={idx}>
             {line}
             <br />
