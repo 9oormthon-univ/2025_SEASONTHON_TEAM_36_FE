@@ -4,7 +4,7 @@ export const ModalContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10%;
+  gap: ${(p) => p.$gap ?? "10%"}; 
   padding: 10px;
   background: var(--bg-1);
   color: var(--text-1);
