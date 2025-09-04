@@ -1,10 +1,24 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
-import frogFace from "@/assets/images/frog-face.svg";
+
+/* 자리별 아이콘 (1~5) */
+import frogFace1 from "@/assets/images/frog-face-1.svg";
+import frogFace2 from "@/assets/images/frog-face-2.svg";
+import frogFace3 from "@/assets/images/frog-face-3.svg";
+import frogFace4 from "@/assets/images/frog-face-4.svg";
+import frogFace5 from "@/assets/images/frog-face-5.svg";
+
+const frogFaces = {
+  1: frogFace1,
+  2: frogFace2,
+  3: frogFace3,
+  4: frogFace4,
+  5: frogFace5,
+};
 
 /**
  * DotsSelector (1~5)
- * - 활성 버튼은 frog-face.svg로 표시
+ * - 활성 버튼은 자리별로 frog-face-1..5.svg 표시
  * - 연한 초록 → 진한 초록 그라데이션 라인 위에 점 배치
  */
 export default function DotsSelector({
@@ -44,9 +58,10 @@ export default function DotsSelector({
         onKeyDown={handleKey}
       >
         {Array.from({ length: max - min + 1 }).map((_, i) => {
-          const n = i + min;
-          const active = value === n;
+          const n = i + min;                 // 자리(1~5)
+          const active = value === n;        // 현재 선택 여부
           const tone = tones[i] ?? "500";
+          const faceSrc = frogFaces[n];      // 자리별 아이콘
           return (
             <DotButton
               key={n}
@@ -58,7 +73,7 @@ export default function DotsSelector({
               $tone={tone}
               onClick={() => onChange(n)}
             >
-              {active ? <FrogImg src={frogFace} alt="" aria-hidden="true" /> : <InnerDot />}
+              {active ? <FrogImg src={faceSrc} alt="" aria-hidden="true" /> : <InnerDot />}
             </DotButton>
           );
         })}
@@ -87,7 +102,7 @@ const DotsRow = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding: 8px 0; /* 라인 여유 */
+  padding: 8px 4px; /* 라인 여유 */
   outline: none;
 
   /* 초록 그라데이션 라인 */
@@ -152,7 +167,7 @@ const InnerDot = styled.span`
   border-radius: 50%;
 `;
 
-/* 활성 상태에서 보이는 개구리 얼굴 */
+/* 활성 상태에서 보이는 개구리 얼굴 (자리별) */
 const FrogImg = styled.img`
   width: 100%;
   height: 100%;
