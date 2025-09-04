@@ -1,12 +1,13 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+
+import AppLayout from './layout/AppLayout';
+import ProtectedRoute from './layout/ProtectedRoute';
+import Calendar from './pages/calendar';
+import HomePage from './pages/home';
 import Login from './pages/login';
 import OAuthCallback from './pages/oauth';
 import SignUpDone from './pages/signup';
-import AppLayout from './layout/AppLayout';
-import ProtectedRoute from './layout/ProtectedRoute';
-import { useEffect } from 'react';
-import HomePage from './pages/home';
-import Calendar from './pages/calendar';
 
 // 테스트를 위한 임시 페이지 콘텐츠, 추후 삭제 예정
 const Screen = ({ title }) => (
@@ -17,7 +18,6 @@ const Screen = ({ title }) => (
 );
 
 function App() {
-
   // 앱 시작 시 기본 테마 지정 (라이트/다크)
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'light');
@@ -25,7 +25,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-      <Route element={<ProtectedRoute />}>
+        <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Login />} />
           <Route path="/oauth/callback/kakao" element={<OAuthCallback />} />
           <Route path="/signup/done" element={<SignUpDone />} />
@@ -37,8 +37,6 @@ function App() {
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
-
-        
       </Routes>
     </BrowserRouter>
   );
