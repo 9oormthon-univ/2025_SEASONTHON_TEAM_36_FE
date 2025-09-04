@@ -3,15 +3,10 @@ import LeftArrow from '../../../assets/images/left-arrow.png';
 import RightArrow from '../../../assets/images/right-arrow.png';
 import { useCallback, useEffect, useState } from 'react';
 
-// 선택된 날짜의 주 시작일(월요일 기준)
-const getStartOfWeek = date => {
-  const day = date.getDay(); // 0=일요일, 1=월요일 ...
-  const diff = date.getDate() - day + (day === 0 ? -6 : 1); // 월요일 기준
-  return new Date(date.setDate(diff));
-};
-
 const CustomCalendar = ({
   curDate,
+  startOfWeek,
+  endOfWeek,
   calView,
   allToDo,
   maxSteps,
@@ -20,21 +15,10 @@ const CustomCalendar = ({
   handleView,
 }) => {
   const [selectedDate, setSelectedDate] = useState(curDate);
-  const [weekStart, setWeekStart] = useState(getStartOfWeek(new Date(curDate)));
-  const [startOfWeek, setStartOfWeek] = useState(getStartOfWeek(new Date(curDate)));
-  const [endOfWeek, setEndOfWeek] = useState(
-    new Date(new Date(curDate).setDate(getStartOfWeek(new Date(curDate)).getDate() + 6)),
-  );
-  console.log(startOfWeek);
-  console.log(endOfWeek);
-  function moveWeek(offset) {
-    const newDate = new Date(weekStart);
-    console.log(newDate);
-    newDate.setDate(weekStart.getDate() + offset * 7);
-    setWeekStart(newDate);
-    setStartOfWeek(newDate);
-    setEndOfWeek(new Date(new Date(newDate).setDate(newDate.getDate() + 6)));
-  }
+
+  useEffect(() => {
+    setSelectedDate(curDate);
+  }, [curDate]);
 
   const formatDay = (locale, date) => {
     const isSameDate = date.toDateString() === selectedDate.toDateString();
@@ -117,12 +101,8 @@ const CustomCalendar = ({
           alt="left-arrow"
           width="24"
           onClick={e => {
-            if (calView) {
-              handleMoveMonth(-1);
-            } else {
-              e.stopPropagation();
-              moveWeek(-1);
-            }
+            handleMoveMonth(-1);
+            setSelectedDate(curDate);
           }}
         />
       }
@@ -132,12 +112,8 @@ const CustomCalendar = ({
           alt="right-arrow"
           width="24"
           onClick={e => {
-            if (calView) {
-              handleMoveMonth(1);
-            } else {
-              e.stopPropagation();
-              moveWeek(1);
-            }
+            handleMoveMonth(1);
+            setSelectedDate(curDate);
           }}
         />
       }

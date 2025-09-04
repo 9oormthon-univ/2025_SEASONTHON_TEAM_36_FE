@@ -122,3 +122,8 @@
 .react-calendar__month-view__days__day:disabled {
   display: none;
 }
+
+/* .selected-week {
+  background: #bbdefb !important;
+  border-radius: 8px;
+} */

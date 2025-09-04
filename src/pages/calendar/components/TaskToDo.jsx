@@ -1,5 +1,5 @@
 import Title from './Title';
-import CreateGoalButton from './CreateGoalButton';
+import ModalOpenButton from './ModalOpenButton';
 import styled from 'styled-components';
 
 const TaskToDoStyle = styled.div`
@@ -7,11 +7,11 @@ const TaskToDoStyle = styled.div`
   align-items: center;
 `;
 
-const TaskToDo = ({handleShowModal}) => {
+const TaskToDo = ({ handleShowModal }) => {
   return (
     <TaskToDoStyle>
       <Title $fontSize={'var(--fs-lg)'}>Task To-Do</Title>
-      <CreateGoalButton handleShowModal={handleShowModal} />
+      <ModalOpenButton handleShowModal={handleShowModal} />
     </TaskToDoStyle>
   );
 };
