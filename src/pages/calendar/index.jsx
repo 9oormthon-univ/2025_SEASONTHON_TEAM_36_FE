@@ -3,19 +3,17 @@ import CustomCalendar from './components/CustomCalendar';
 import ToDoList from './components/ToDoList';
 import Modal from './components/Modal';
 import styled from 'styled-components';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { dummy9 } from './utils/dummy';
-import axios from 'axios';
-import { getAccessToken } from '../../common/utils/token';
 
 const CalendarScreenStyle = styled.div`
-  height: ${props => props.$height}px;
+  height: 100vh;
   position: relative;
   overflow: hidden;
 `;
 
 const CalendarScreen = () => {
-  const [isShowing, setIsShowing] = useState(false);
+  const [open, setOpen] = useState(false);
   const [yearMonth, setYearMonth] = useState(
     `${new Date().getFullYear()}-${new Date().getMonth() + 1}`,
   );
@@ -25,29 +23,9 @@ const CalendarScreen = () => {
   const [toDo, setToDo] = useState(dummy9[new Date().getDate()] ?? {});
   const modalRef = useRef(null);
 
-  // useEffect(() => {
-  //   const getMyToDo = async () => {
-  //     try {
-  //       const accessToken = getAccessToken();
-  //       console.log(accessToken);
-  //       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}`, {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //         withCredentials: true,
-  //       });
-  //       console.log(response.data);
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
-  //   getMyToDo();
-  // }, []);
-
   const handleShowModal = useCallback(() => {
-    modalRef.current.style.top = isShowing ? `${window.innerHeight}px` : 0;
-    setIsShowing(prev => !prev);
-  }, [isShowing]);
+    setOpen(prev => !prev);
+  }, [open]);
 
   const handleToDo = useCallback(
     selectedDate => {
@@ -84,7 +62,7 @@ const CalendarScreen = () => {
   }, [yearMonth, setYearMonth, setDay]);
 
   return (
-    <CalendarScreenStyle $height={window.innerHeight}>
+    <CalendarScreenStyle>
       <div style={{ height: '100%', overflow: 'auto', position: 'relative' }}>
         <CustomCalendar
           curDate={new Date(`${yearMonth}-${day}`)}
@@ -96,7 +74,7 @@ const CalendarScreen = () => {
         />
         <ToDoList toDo={toDo} handleShowModal={handleShowModal} />
       </div>
-      <Modal modalRef={modalRef} handleShowModal={handleShowModal} />
+      <Modal open={open} handleShowModal={handleShowModal} />
     </CalendarScreenStyle>
   );
 };
