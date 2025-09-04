@@ -66,6 +66,12 @@ const Container = styled.div`
   padding: 20px;
   background: var(--bg-1);
   color: var(--text-1);
+
+  /* h <= 700px: 여백 축소 */
+  @media (max-height: 700px) {
+    gap: 4%;
+    padding: 12px;
+  }
 `;
 
 const Section = styled.section`
