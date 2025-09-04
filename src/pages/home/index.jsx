@@ -23,14 +23,10 @@ export default function HomePage() {
 
   // BottomSheet 높이(px)
   const [sheetHeight, setSheetHeight] = useState(0);
-  useEffect(() => {
-    console.log("✅ sheetHeight updated:", sheetHeight);
-  }, [sheetHeight]);
 
   // 시트가 열렸다고 판단할 임계값(픽셀)
   const OPEN_THRESHOLD_PX = 100;
-  // 열렸을 때 더 많이 줄이기 위한 계수 (0.68 = 32% 추가 축소)
-  const SHRINK_OPEN = 0.68;
+  const SHRINK_OPEN = 0.89;
   const SHRINK_CLOSED = 1;
   const shrink = sheetHeight > OPEN_THRESHOLD_PX ? SHRINK_OPEN : SHRINK_CLOSED;
 
@@ -53,6 +49,7 @@ export default function HomePage() {
             tasks={tasks}
             activeId={activeId}
             onActiveIdChange={setActiveId}
+            shrink={shrink}   // ✅ shrink 내려줌
           />
         ) : (
           <EmptyState />
@@ -70,7 +67,6 @@ export default function HomePage() {
 /* ===== styled-components ===== */
 
 const Page = styled.section`
-  /* AppLayout/Main이 전체 높이를 관리, 100%로 두는 것이 안전 */
   min-height: 100%;
   background: var(--bg-1);
   color: var(--text-1);
@@ -81,11 +77,6 @@ const Page = styled.section`
   width: 100%;
 `;
 
-/** 핵심: 상단(TopSpacing + DateView + Carousel)을 감싸는 컨테이너
- *  - 기본 남는 높이: (100dvh - sheetHeight - nav)
- *  - 여기에 shrink 계수를 곱해 '더 많이' 줄임
- *    → open 시 0.68배, 닫힘 시 1배
- */
 const Body = styled.div`
   display: flex;
   flex-direction: column;

@@ -10,17 +10,16 @@ export default function GoalCard({
   id: goalId,
   dday = "D-0",
   title = "오늘의 할 일",
-  progress = 0, // 0~100
+  progress = 0,
   warmMessage,
+  shrink = 1,   // ✅ shrink prop
   className,
 }) {
-  // frog: 인스턴스당 1회 랜덤(리렌더에도 유지)
   const frogRef = React.useRef(null);
   if (frogRef.current == null) {
     frogRef.current = pickRandomFrog();
   }
 
-  // D-Day 파서
   const { sign, num } = React.useMemo(() => {
     const m = /D\s*([+-])?\s*(\d+)/i.exec(String(dday));
     if (!m) return { sign: 0, num: null };
@@ -30,9 +29,8 @@ export default function GoalCard({
   }, [dday]);
   const isUrgent = sign <= 0 && (num === 0 || num === 1);
 
-  // 모달 상태 분리
-  const [openSteps, setOpenSteps] = React.useState(false);     // ✅ 카드 → Steps(상세)
-  const [openAdjust, setOpenAdjust] = React.useState(false);   // ✅ 사이렌 → AdjustGoalModal
+  const [openSteps, setOpenSteps] = React.useState(false);
+  const [openAdjust, setOpenAdjust] = React.useState(false);
   const anyOpen = openSteps || openAdjust;
 
   const openStepsModal = () => setOpenSteps(true);
@@ -40,10 +38,11 @@ export default function GoalCard({
   const openAdjustModal = () => setOpenAdjust(true);
   const closeAdjustModal = () => setOpenAdjust(false);
 
-  // ESC + body 스크롤 잠금 (두 모달 중 하나라도 열리면)
   React.useEffect(() => {
     if (!anyOpen) return;
-    const onKey = (e) => e.key === "Escape" && (openAdjust ? closeAdjustModal() : closeStepsModal());
+    const onKey = (e) =>
+      e.key === "Escape" &&
+      (openAdjust ? closeAdjustModal() : closeStepsModal());
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -53,7 +52,6 @@ export default function GoalCard({
     };
   }, [anyOpen, openAdjust]);
 
-  // 카드 키보드 접근성 (Enter / Space → Steps)
   const onCardKeyDown = (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -68,9 +66,10 @@ export default function GoalCard({
         tabIndex={0}
         className={className}
         aria-label="Task card"
-        onClick={openStepsModal}      // ✅ 카드 클릭 → Steps
+        onClick={openStepsModal}
         onKeyDown={onCardKeyDown}
         data-goal-id={goalId}
+        $shrink={shrink}   // ✅ styled-components에 전달
       >
         <HeaderRow>
           <DDayIcon>{dday}</DDayIcon>
@@ -82,8 +81,8 @@ export default function GoalCard({
                 title="마감 임박: 목표 조정"
                 aria-label="마감 임박: 목표 조정"
                 onClick={(e) => {
-                  e.stopPropagation(); // 카드 onClick 막기
-                  openAdjustModal();   // ✅ 사이렌 클릭 → AdjustGoalModal
+                  e.stopPropagation();
+                  openAdjustModal();
                 }}
               >
                 <SirenIcon src={sirenIcon} alt="" aria-hidden="true" />
@@ -102,7 +101,6 @@ export default function GoalCard({
         </ImgContainer>
       </Container>
 
-
       <GoalStepsModal
         open={openSteps}
         onClose={closeStepsModal}
@@ -118,13 +116,14 @@ export default function GoalCard({
   );
 }
 
-
 const Container = styled.div`
   background: var(--bg-1);
   color: inherit;
 
-  width: 80%;
+  /* shrink 반영 */
+  width: ${(p) => 80 * p.$shrink}%;
   aspect-ratio: 327 / 368;
+  max-height: calc(100% - 24px);
 
   margin: clamp(8px, 2.5vh, 48px) auto 0;
   padding: clamp(12px, 4.3vw, 40px) clamp(12px, 3vw, 40px);
@@ -140,12 +139,16 @@ const Container = styled.div`
   text-align: center;
   cursor: pointer;
 
+  transition: width 0.25s ease;
+
   &:focus-visible {
     outline: 2px solid var(--brand-1, #18A904);
     outline-offset: 2px;
     border-radius: clamp(12px, 4vw, 16px);
   }
-  &:active { transform: scale(0.996); }
+  &:active {
+    transform: scale(0.996);
+  }
 `;
 
 const HeaderRow = styled.div`

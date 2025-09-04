@@ -1,4 +1,3 @@
-// src/components/TrackCardsCarousel.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import SwipeCarousel from "../../../layout/SwipeCarousel";
@@ -8,19 +7,17 @@ import GoalCard from "./GoalCard";
 /** tasks: [{ id, dday, title, progress, warmMessage }] */
 export default function CardsCarousel({
   tasks = [],
-  activeId,                 // ✅ 현재 활성 카드 id (optional: controlled)
-  onActiveIdChange,         // ✅ 활성 카드 id 변경 콜백
+  activeId,
+  onActiveIdChange,
+  shrink = 1,   // ✅ 부모에서 받은 shrink
 }) {
-  // 내부 인덱스 (uncontrolled 모드에서 사용)
   const [innerIndex, setInnerIndex] = useState(0);
 
-  // id 목록
   const ids = useMemo(
     () => tasks.map((t, i) => t?.id ?? `${t?.title ?? "task"}-${i}`),
     [tasks]
   );
 
-  // activeId가 주어지면 id → index로 역매핑해서 controlled로 동작
   const controlledIndex = useMemo(() => {
     if (activeId == null) return null;
     const idx = ids.indexOf(activeId);
@@ -37,19 +34,13 @@ export default function CardsCarousel({
       0,
       Math.max(0, tasks.length - 1)
     );
-
-    // 내부 인덱스 갱신 (uncontrolled일 때만)
     if (controlledIndex == null) setInnerIndex(nextVal);
-
-    // ✅ id 콜백 올려주기
     const nextId = ids[nextVal];
     if (nextId != null) onActiveIdChange?.(nextId);
   };
 
-  // tasks 길이가 변할 때 현재 index/id 보정
   useEffect(() => {
     if (tasks.length === 0) return;
-    // 현재 index를 한 번 보정 → 부모에도 id 알려줌
     setIndexBoth(index);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tasks.length]);
@@ -61,11 +52,12 @@ export default function CardsCarousel({
           {tasks.map((t, i) => (
             <GoalCard
               key={ids[i]}
-              id={ids[i]}  // GoalCard에서 모달 열 때 사용할 id 넘겨줌
+              id={ids[i]}
               dday={t.dday ?? "D-0"}
               title={t.title ?? ""}
-              progress={Number.isFinite(+t.progress) ? +t.progress : 0}
+              progress={+t.progress || 0}
               warmMessage={t.warmMessage ?? ""}
+              shrink={shrink}   // ✅ GoalCard에도 shrink 전달
             />
           ))}
         </SwipeCarousel>
@@ -73,8 +65,7 @@ export default function CardsCarousel({
       <IndicatorRow>
         <DotIndicator index={index} total={tasks.length} maxDots={5} />
       </IndicatorRow>
-      </>
-
+    </>
   );
 }
 
@@ -86,7 +77,7 @@ function clamp(v, lo, hi) {
 const CarouselWrap = styled.section`
   width: 100%;
   max-width: 560px;
-  margin: 0 auto;
+  margin: 1.2% auto;
 `;
 const IndicatorRow = styled.div`
   margin-top: 8px;
