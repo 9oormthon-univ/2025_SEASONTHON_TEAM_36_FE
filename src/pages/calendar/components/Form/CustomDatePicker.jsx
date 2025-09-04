@@ -9,11 +9,6 @@ export default function CustomDatePicker() {
   const [value, setValue] = useState(null);
   const [open, setOpen] = useState(false);
 
-  // 선택된 날짜 출력
-  useEffect(() => {
-    console.log('선택된 날짜:', value?.format('YYYY.MM.DD') ?? '없음');
-  }, [value]);
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker

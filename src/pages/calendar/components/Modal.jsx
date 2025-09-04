@@ -5,6 +5,7 @@ import Form from './Form';
 import FrogNoti from '../../../common/components/FrogNoti';
 
 import { useCallback, useState } from 'react';
+import GoalDeadline from './GoalDeadline';
 
 const ModalStyle = styled.div`
   background-color: white;
@@ -72,7 +73,7 @@ const Modal = ({ open, handleShowModal }) => {
           bottomText="조금만 기다려주세요..."
         />
       ) : (
-        <div>처리 완료!</div>
+        <GoalDeadline />
       )}
     </ModalStyle>
   );

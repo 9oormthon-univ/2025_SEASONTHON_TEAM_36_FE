@@ -11,7 +11,7 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const CreateGoalButton = ({handleShowModal}) => {
+const ModalOpenButton = ({handleShowModal}) => {
   return (
     <Button onClick={() => {
 		handleShowModal();
@@ -21,4 +21,4 @@ const CreateGoalButton = ({handleShowModal}) => {
   );
 };
 
-export default CreateGoalButton;
+export default ModalOpenButton;
