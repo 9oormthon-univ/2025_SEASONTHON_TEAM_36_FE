@@ -3,10 +3,12 @@ import './styles/index.css';
 import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import { deleteStep, modifyStep } from '../../apis/step';
 import { fetchTodos } from '../../apis/todo';
 import CustomCalendar from './components/CustomCalendar';
 import Modal from './components/Modal';
 import ToDoList from './components/ToDoList';
+import { dateToFormatString } from './utils/dateUtils';
 
 const CalendarScreenStyle = styled.div`
   height: 100vh;
@@ -19,6 +21,39 @@ const CalendarScreen = () => {
   const [date, setDate] = useState(new Date());
   const [allToDo, setAllToDo] = useState(null);
   const [curToDo, setCurToDo] = useState({});
+
+  const handleModifyStep = useCallback(
+    (goalId, stepId, description) => {
+      modifyStep(stepId, description).then(resp => {
+        const tmpAllToDo = { ...allToDo };
+        console.log(tmpAllToDo);
+        console.log(resp);
+        const steps = tmpAllToDo[dateToFormatString(date)][goalId].steps;
+        steps.forEach(step => {
+          if (step.id === stepId) step.name = description;
+        });
+        tmpAllToDo[dateToFormatString(date)][goalId].steps = steps;
+        setAllToDo(tmpAllToDo);
+      });
+    },
+    [allToDo, date],
+  );
+
+  const handleDeleteStep = useCallback(
+    (goalId, stepId) => {
+      deleteStep(stepId).then(resp => {
+        const tmpAllToDo = { ...allToDo };
+        console.log(tmpAllToDo);
+        console.log(resp);
+        const steps = tmpAllToDo[dateToFormatString(date)][goalId].steps;
+        tmpAllToDo[dateToFormatString(date)][goalId].steps = steps.filter(
+          step => step.id != stepId,
+        );
+        setAllToDo(tmpAllToDo);
+      });
+    },
+    [allToDo, date],
+  );
 
   useEffect(() => {
     try {
@@ -87,12 +122,17 @@ const CalendarScreen = () => {
     },
     [date],
   );
-  console.log(allToDo);
+
   return (
     <CalendarScreenStyle>
       <div style={{ height: '100%', overflow: 'auto', position: 'relative' }}>
         <CustomCalendar curDate={date} handleToDo={handleToDo} handleMoveMonth={handleMoveMonth} />
-        <ToDoList toDo={curToDo} handleShowModal={handleShowModal} />
+        <ToDoList
+          toDo={curToDo}
+          handleShowModal={handleShowModal}
+          handleModifyStep={handleModifyStep}
+          handleDeleteStep={handleDeleteStep}
+        />
       </div>
       <Modal open={open} handleShowModal={handleShowModal} />
     </CalendarScreenStyle>

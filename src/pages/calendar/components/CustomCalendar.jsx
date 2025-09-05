@@ -4,12 +4,7 @@ import Calendar from 'react-calendar';
 import { calendarApi } from '../../../apis/calendar';
 import LeftArrow from '../../../assets/images/left-arrow.png';
 import RightArrow from '../../../assets/images/right-arrow.png';
-
-const dateToFormatString = date => {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
-    date.getDate(),
-  ).padStart(2, '0')}`;
-};
+import { dateToFormatString } from '../utils/dateUtils';
 
 const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
   const [stepCountOfDay, setStepCountOfDay] = useState(null);
@@ -54,6 +49,7 @@ const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
     return 'var(--green-500)';
   }, []);
 
+  console.log(stepCountOfDay);
   const getTileContent = ({ activeStartDate, date, view }) => {
     // 월 보기일 때만 div 추가
     if (view === 'month') {

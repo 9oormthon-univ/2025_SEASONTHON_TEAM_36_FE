@@ -1,9 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { addTodo } from '../../../apis/todo';
 import CloseImg from '../../../assets/images/close.png';
-import FrogOneImg from '../../../assets/images/frog1.svg';
+import FrogRunImg from '../../../assets/images/frog-run.svg';
 import FrogNoti from '../../../common/components/FrogNoti';
 import Form from './Form';
 import GoalDeadline from './GoalDeadline';
@@ -51,35 +51,72 @@ const Modal = ({ open, handleShowModal }) => {
     [false, false, false, false, false, false, false],
   ]);
   const [stepsOfNewGoal, setStepsOfNewGoal] = useState([]);
+  // AbortController ref to manage API request cancellation
+  const abortControllerRef = useRef(null);
 
   const handleSubmit = useCallback(() => {
-    addTodo({
-      title: formContents[0],
-      content: formContents[1],
-      startDate: formContents[2],
-      endDate: formContents[3],
-      expectedDays: DAYS.filter((_, index) => formContents[4][index]),
-    }).then(resp => {
-      console.log(resp);
-      setStepsOfNewGoal(resp.stepsResponses);
-      setStatus(prev => prev + 1);
-    });
+    // Create new AbortController for this request
+    abortControllerRef.current = new AbortController();
     setStatus(prev => prev + 1);
-  }, [formContents, setStatus]);
+    addTodo(
+      {
+        title: formContents[0],
+        content: formContents[1],
+        startDate: formContents[2],
+        endDate: formContents[3],
+        expectedDays: DAYS.filter((_, index) => formContents[4][index]),
+      },
+      {
+        signal: abortControllerRef.current.signal, // AbortController signal 전달
+      },
+    )
+      .then(resp => {
+        setStepsOfNewGoal(resp.stepsResponses);
+        setStatus(prev => prev + 1);
+      })
+      .catch(error => {
+        if (error.name === 'AbortError') {
+          console.log('API 요청이 취소되었습니다.');
+          // 요청이 취소된 경우 상태를 초기화
+          setStatus(0);
+        } else {
+          console.error('API 요청 중 오류 발생:', error);
+          // 다른 오류의 경우 적절한 에러 처리
+          setStatus(0);
+        }
+      })
+      .finally(() => {
+        // 요청 완료 후 AbortController 정리
+        abortControllerRef.current = null;
+      });
+  }, [formContents]);
+
+  const handleClose = useCallback(() => {
+    // 진행 중인 API 요청이 있다면 취소
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+
+    handleShowModal();
+    setStatus(0);
+    setStepsOfNewGoal([]); // 새로운 목표 단계도 초기화
+  }, [handleShowModal, setStatus, setStepsOfNewGoal]);
+
+  // 컴포넌트 언마운트 시 진행 중인 요청 정리
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   return (
     <ModalStyle $open={open}>
       <Header>
         <button>
-          <img
-            src={CloseImg}
-            alt="취소"
-            width="24"
-            height="24"
-            onClick={() => {
-              handleShowModal();
-              setStatus(0);
-            }}
-          />
+          <img src={CloseImg} alt="취소" width="24" height="24" onClick={handleClose} />
         </button>
       </Header>
       {status === 0 ? (
@@ -91,7 +128,7 @@ const Modal = ({ open, handleShowModal }) => {
       ) : status === 1 ? (
         <FrogNoti
           topText="개구리를 탈출시킬 계획을\n다시 수립하고 있어요"
-          imageSrc={FrogOneImg}
+          imageSrc={FrogRunImg}
           bottomText="조금만 기다려주세요..."
         />
       ) : (

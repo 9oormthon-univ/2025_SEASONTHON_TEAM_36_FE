@@ -8,11 +8,15 @@ const ToDoListStyle = styled.div`
   padding: 0 26px 90px 26px;
 `;
 
-const ToDoList = ({ toDo, handleShowModal }) => {
+const ToDoList = ({ toDo, handleShowModal, handleModifyStep, handleDeleteStep }) => {
   return (
     <ToDoListStyle>
       <TaskToDo handleShowModal={handleShowModal} />
-      <GoalList toDo={toDo} />
+      <GoalList
+        toDo={toDo}
+        handleModifyStep={handleModifyStep}
+        handleDeleteStep={handleDeleteStep}
+      />
     </ToDoListStyle>
   );
 };

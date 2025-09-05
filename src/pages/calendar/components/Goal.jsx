@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+
 import DotImg from '../../../assets/images/dot.png';
+import Input from './Input';
 import StepManager from './StepManager';
 
 const GoalStyle = styled.div`
@@ -37,6 +40,7 @@ const Step = styled.div`
 const StepContent = styled.div`
   display: flex;
   align-items: center;
+  width: 100%;
 `;
 
 const StepCheckBox = styled.div`
@@ -53,7 +57,17 @@ const StepName = styled.span`
   font-weight: 500;
 `;
 
-const Goal = ({ goal, steps }) => {
+const Goal = ({ goalId, goal, steps, handleModifyStep, handleDeleteStep }) => {
+  const [updateSteps, setUpdateSteps] = useState([]);
+  const [isModify, setIsModify] = useState(steps.map(_ => false));
+
+  useEffect(() => {
+    setBackupSteps(steps);
+    setUpdateSteps(steps);
+  }, [steps]);
+
+  console.log(isModify);
+
   return (
     <GoalStyle>
       <GoalContainer>
@@ -61,14 +75,36 @@ const Goal = ({ goal, steps }) => {
         <GoalName>{goal}</GoalName>
       </GoalContainer>
       <StepList>
-        {steps.map(step => {
+        {steps.map((step, index) => {
           return (
             <Step key={step.id} id={step.id}>
               <StepContent>
                 <StepCheckBox $did={step.done} />
-                <StepName>{step.name}</StepName>
+                <Input
+                  type="text"
+                  value={step.name}
+                  disabled={!isModify[index]}
+                  onChange={e => {
+                    setUpdateSteps(e.target.value);
+                  }}
+                  $fontSize={'var(--fs-md)'}
+                />
               </StepContent>
-              <StepManager />
+              <StepManager
+                isModify={isModify[index]}
+                setIsModify={() => {
+                  const tmp = [...isModify];
+                  tmp[index] = !tmp[index];
+                  setIsModify(tmp);
+                }}
+                handleModifyStep={() => {
+                  console.log(updateSteps[index]);
+                  handleModifyStep(goalId, step.id, updateSteps[index]);
+                }}
+                handleDeleteStep={() => {
+                  handleDeleteStep(goalId, step.id);
+                }}
+              />
             </Step>
           );
         })}

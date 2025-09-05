@@ -7,7 +7,7 @@ const GoalListStyle = styled.div`
   padding-bottom: 30px;
 `;
 
-const GoalList = ({ toDo }) => {
+const GoalList = ({ toDo, handleModifyStep, handleDeleteStep }) => {
   return (
     <GoalListStyle>
       {toDo &&
@@ -16,7 +16,16 @@ const GoalList = ({ toDo }) => {
           const objToArray = oneGoal.steps.map(step => {
             return { name: step.name, id: step.id, done: step.done };
           });
-          return <Goal key={index} goal={oneGoal.name} steps={objToArray} />;
+          return (
+            <Goal
+              key={index}
+              goalId={goal}
+              goal={oneGoal.name}
+              steps={objToArray}
+              handleModifyStep={handleModifyStep}
+              handleDeleteStep={handleDeleteStep}
+            />
+          );
         })}
     </GoalListStyle>
   );

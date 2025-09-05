@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 import GreenButton from '../../../../common/components/GreenButton';
-import TextInput from '../TextInput';
+import TextInput from '../ModalTextInput';
 import CustomDatePicker from './CustomDatePicker';
 import Header from './Header';
 import SubItem from './Input';
