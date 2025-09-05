@@ -17,7 +17,6 @@ const CalendarScreenStyle = styled.div`
 const CalendarScreen = () => {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());
-  const [day, setDay] = useState(new Date().getDate());
   const [allToDo, setAllToDo] = useState(null);
   const [curToDo, setCurToDo] = useState({});
 
@@ -30,17 +29,16 @@ const CalendarScreen = () => {
           const goalTitle = content.title;
           const goalSteps = content.stepResponses;
           goalSteps.forEach(step => {
-            const stepDate = new Date(step.stepDate);
-            const year = stepDate.getFullYear();
-            const month = stepDate.getMonth();
-            const day = stepDate.getDate();
-            if (!tmpAllToDo[year][month][day][goalId]) {
-              tmpAllToDo[year][month][day][goalId] = {
+            if (!tmpAllToDo[step.stepDate]) {
+              tmpAllToDo[step.stepDate] = {};
+            }
+            if (!tmpAllToDo[step.stepDate][goalId]) {
+              tmpAllToDo[step.stepDate][goalId] = {
                 name: goalTitle,
                 steps: [],
               };
             }
-            tmpAllToDo[year][month][day][goalId]['steps'].push({
+            tmpAllToDo[step.stepDate][goalId]['steps'].push({
               id: step.stepId,
               name: step.description,
               done: step.isCompleted,
@@ -48,11 +46,16 @@ const CalendarScreen = () => {
           });
         });
         setAllToDo(tmpAllToDo);
+        const dateToString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+          2,
+          '0',
+        )}-${String(date.getDate()).padStart(2, '0')}`;
+        setCurToDo(tmpAllToDo[dateToString]);
       });
     } catch (error) {
       console.log(error);
     }
-  }, [setAllToDo]);
+  }, [date, setAllToDo]);
 
   const handleShowModal = useCallback(() => {
     setOpen(prev => !prev);
@@ -61,10 +64,12 @@ const CalendarScreen = () => {
   const handleToDo = useCallback(
     selectedDate => {
       const date = new Date(selectedDate);
-      const dayOfSelectedDate = date.getDate();
       setDate(date);
-      setDay(dayOfSelectedDate);
-      setCurToDo(allToDo[date.getFullYear()][date.getMonth()][date.getDate()]);
+      const dateToString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        '0',
+      )}-${String(date.getDate()).padStart(2, '0')}`;
+      setCurToDo(allToDo[dateToString]);
     },
     [allToDo],
   );
@@ -78,7 +83,6 @@ const CalendarScreen = () => {
       const nextYear = tmp < 0 ? prevYear - 1 : tmp > 12 ? prevYear + 1 : prevYear;
       const nextMonth = tmp < 0 ? 11 : tmp >= 12 ? 0 : tmp;
       setDate(new Date(nextYear, nextMonth, 1));
-      setDay(1);
     },
     [date],
   );

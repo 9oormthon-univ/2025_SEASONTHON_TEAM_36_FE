@@ -1,12 +1,12 @@
-import styled from 'styled-components';
 import { useCallback, useState } from 'react';
+import styled from 'styled-components';
 
-import TextInput from '../TextInput';
-import SubItem from './Input';
-import Header from './Header';
-import CustomDatePicker from './CustomDatePicker';
-import WeekButtons from './WeekButtons';
 import GreenButton from '../../../../common/components/GreenButton';
+import TextInput from '../TextInput';
+import CustomDatePicker from './CustomDatePicker';
+import Header from './Header';
+import SubItem from './Input';
+import WeekButtons from './WeekButtons';
 
 const FormStyle = styled.form`
   display: flex;
@@ -56,16 +56,35 @@ const Submit = styled.div`
   text-align: center;
 `;
 
-export default function Form({ handleSubmit }) {
+export default function Form({ formContents, setFormContents, handleSubmit }) {
   const [curLetterCount, setCurLetterCount] = useState(0);
-  const [days, setDays] = useState([false, false, false, false, false, false, false]);
+
+  const isNotAllInput = useCallback(() => {
+    return (
+      formContents[0].length === 0 ||
+      (formContents[1].length === 0 && formContents[2] === null) ||
+      formContents[3] === null ||
+      formContents[4].every(value => value === true)
+    );
+  }, [formContents]);
+
+  const handleFormContents = useCallback(
+    (index, newValue) => {
+      const prevFormContents = [...formContents];
+      prevFormContents[index] = newValue;
+      setFormContents(prevFormContents);
+    },
+    [formContents, setFormContents],
+  );
+
   const handleDays = useCallback(
     index => {
+      const days = formContents[4];
       const prev = [...days];
       prev[index] = !prev[index];
-      setDays(prev);
+      handleFormContents(4, prev);
     },
-    [days, setDays],
+    [formContents, handleFormContents],
   );
   return (
     <FormStyle
@@ -77,7 +96,14 @@ export default function Form({ handleSubmit }) {
       <Header />
       <SubItem title="업무명">
         <BottomLineContainer>
-          <TextInput type="text" name="업무명" placeholder="업무명 입력" />
+          <TextInput
+            type="text"
+            name="업무명"
+            placeholder="업무명 입력"
+            onSubmit={e => {
+              handleFormContents(0, e.target.value);
+            }}
+          />
         </BottomLineContainer>
       </SubItem>
       <SubItem title="과제 내용">
@@ -96,7 +122,11 @@ export default function Form({ handleSubmit }) {
                 paddingRight: '80px',
               }}
               onChange={e => {
+                if (formContents[1].length >= 1000) {
+                  return;
+                }
                 setCurLetterCount(e.target.value.length);
+                handleFormContents(1, e.target.value);
               }}
             />
             <LetterCount>
@@ -107,16 +137,16 @@ export default function Form({ handleSubmit }) {
         </GoalContent>
       </SubItem>
       <SubItem title="업무 수행 시작일">
-        <CustomDatePicker />
+        <CustomDatePicker index={2} onChange={handleFormContents} />
       </SubItem>
       <SubItem title="업무 수행 마감일">
-        <CustomDatePicker />
+        <CustomDatePicker index={3} onChange={handleFormContents} />
       </SubItem>
       <SubItem title="업무 수행 예정일">
-        <WeekButtons checkDays={days} handleDays={handleDays} />
+        <WeekButtons checkDays={formContents} handleDays={handleDays} />
       </SubItem>
       <Submit>
-        <GreenButton onClick={() => {}}>할 일 나누기</GreenButton>
+        <GreenButton disabled={isNotAllInput()}>할 일 나누기</GreenButton>
       </Submit>
     </FormStyle>
   );

@@ -60,7 +60,7 @@ const Modal = ({ open, handleShowModal }) => {
       endDate: formContents[3],
       expectedDays: DAYS.filter((_, index) => formContents[4][index]),
     }).then(resp => {
-      return;
+      setStepsOfNewGoal(resp.stepsResponses);
     });
     setStatus(prev => prev + 1);
     setTimeout(() => {
@@ -85,7 +85,11 @@ const Modal = ({ open, handleShowModal }) => {
         </button>
       </Header>
       {status === 0 ? (
-        <Form handleSubmit={handleSubmit} />
+        <Form
+          formContents={formContents}
+          setFormContents={setFormContents}
+          handleSubmit={handleSubmit}
+        />
       ) : status === 1 ? (
         <FrogNoti
           topText="개구리를 탈출시킬 계획을\n다시 수립하고 있어요"

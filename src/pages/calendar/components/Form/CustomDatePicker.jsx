@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { InputAdornment, IconButton, TextField } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { useState } from 'react';
+
 import CalendarImg from '../../../../assets/images/calendar-input.svg';
 
-export default function CustomDatePicker() {
+export default function CustomDatePicker({ index, onChange }) {
   const [value, setValue] = useState(null);
   const [open, setOpen] = useState(false);
 
@@ -13,7 +14,10 @@ export default function CustomDatePicker() {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         value={value}
-        onChange={newValue => setValue(newValue)}
+        onChange={newValue => {
+          setValue(newValue);
+          onChange(index, newValue);
+        }}
         format="YYYY.MM.DD"
         open={open}
         onOpen={() => setOpen(true)}

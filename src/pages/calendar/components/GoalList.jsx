@@ -10,13 +10,14 @@ const GoalListStyle = styled.div`
 const GoalList = ({ toDo }) => {
   return (
     <GoalListStyle>
-      {Object.keys(toDo).map((goal, index) => {
-        const oneGoal = toDo[goal];
-        const objToArray = Object.keys(oneGoal).map(step => {
-          return { name: step, id: oneGoal[step].id, done: oneGoal[step].done };
-        });
-        return <Goal key={index} goal={goal} steps={objToArray} />;
-      })}
+      {toDo &&
+        Object.keys(toDo)?.map((goal, index) => {
+          const oneGoal = toDo[goal];
+          const objToArray = oneGoal.steps.map(step => {
+            return { name: step.name, id: step.id, done: step.done };
+          });
+          return <Goal key={index} goal={oneGoal.name} steps={objToArray} />;
+        })}
     </GoalListStyle>
   );
 };
