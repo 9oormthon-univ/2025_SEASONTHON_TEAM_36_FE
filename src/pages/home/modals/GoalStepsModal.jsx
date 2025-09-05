@@ -6,37 +6,48 @@ import trashIcon from "@/assets/images/trash.svg";
 import FrogBar from "../components/FrogBar";
 import detailsTri from "@/assets/images/details-tri.svg";
 import ConfirmModal from "../../../common/components/ConfirmModal";
-
-/** !!! API !!! 하드코딩된 steps 포함 샘플 데이터 */
-const SAMPLE = {
-  dDay: "D-10",
-  title: "우물밖개구리 프로젝트",
-  endDate: "2025-09-05",
-  progressText: "개구리가 햇빛을 보기 시작했어요!",
-  progress: 50,
-  steps: [
-    { stepDate: "2025-09-02", stepOrder: 1, description: "ToDo ERD 설계", count: 0, isCompleted: false },
-    { stepDate: "2025-09-03", stepOrder: 2, description: "ToDo ERD 설계2", count: 0, isCompleted: false },
-    { stepDate: "2025-09-04", stepOrder: 3, description: "ToDo ERD 설계3", count: 0, isCompleted: false },
-    { stepDate: "2025-09-05", stepOrder: 4, description: "ToDo ERD 설계4", count: 0, isCompleted: false },
-    { stepDate: "2025-09-05", stepOrder: 5, description: "ToDo ERD 설계5", count: 0, isCompleted: false },
-    { stepDate: "2025-09-06", stepOrder: 6, description: "ToDo ERD 설계6", count: 0, isCompleted: false },
-  ],
-};
+import { fetchSteps } from "@/apis/step";
 
 export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
-  // goalId를 이용해 데이터를 가져왔다고 가정
-  const view = React.useMemo(() => {
-    const g = SAMPLE;
-    return {
-      dday: g.dday ?? g.dDay,
-      dueDate: g.dueDate ?? g.endDate,
-      title: g.title,
-      warmMessage: g.warmMessage ?? g.progressText,
-      progress: Number.isFinite(+g.progress) ? +g.progress : 0,
-      steps: g.steps ?? [],
+  const [steps, setSteps] = React.useState(null);      // 서버 원본
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+
+  // 서버 데이터 로드 
+  React.useEffect(() => {
+    if (!open || goalId == null) return; // 모달 열릴 때만 호출
+    let alive = true;
+    setLoading(true);
+    setError(null);
+
+    fetchSteps(goalId)
+      .then((data) => {
+        if (!alive) return;
+        setSteps(data);
+      })
+      .catch((e) => {
+        if (!alive) return;
+        setError(e);
+      })
+      .finally(() => alive && setLoading(false));
+
+    return () => {
+      alive = false;
     };
-  }, [goalId]);
+  }, [open, goalId]);
+
+  // 화면에 데이터를 표시하기 위한 뷰 모델 
+  const view = React.useMemo(() => {
+    const s = steps || {};
+    return {
+      dday: s.dDay ?? "D-0",
+      title: s.title ?? "",
+      endDate: s.endDate ?? "-",
+      progressText: s.progressText ?? "",
+      progress: Number.isFinite(+s.progress) ? +s.progress : 0,
+      steps: Array.isArray(s.steps) ? s.steps : [],
+    };
+  }, [steps]);
 
   /** 스크롤 필요 여부를 감지해서 Steps 중앙 정렬 여부 결정 */
   const stepsRef = React.useRef(null);
@@ -89,7 +100,6 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const openConfirm = () => setConfirmOpen(true);
   const closeConfirm = () => setConfirmOpen(false);
-
   const handleConfirmDelete = async () => {
     try {
       await onDelete?.(goalId);
@@ -106,37 +116,33 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
         <HeaderWrapper>
           <Header>
             <HeaderGroup>
-              <DDayIcon className="typo-body-xs">{view.dday ?? "D-0"}</DDayIcon>
-              <DueDate>마감일: {view.dueDate ?? "-"}</DueDate>
+              <DDayIcon className="typo-body-xs">{loading ? "…" : view.dday}</DDayIcon>
+              <DueDate>마감일: {loading ? "…" : view.endDate}</DueDate>
 
-              {/* ✅ 삭제 버튼 → 확인 모달 오픈 */}
-              <DeleteButton type="button" title="삭제" onClick={openConfirm} aria-haspopup="dialog">
+              <DeleteButton type="button" title="삭제" onClick={openConfirm} aria-haspopup="dialog" disabled={loading || error}>
                 <img src={trashIcon} alt="삭제" />
               </DeleteButton>
             </HeaderGroup>
           </Header>
 
-          <Title className="typo-h2">{view.title}</Title>
-          <WarmMsg>{view.warmMessage}</WarmMsg>
+          <Title className="typo-h2">{loading ? "불러오는 중…" : view.title}</Title>
+          <WarmMsg>{loading ? "" : view.progressText}</WarmMsg>
         </HeaderWrapper>
 
-        {/* 헤더 '아래'에 배치되는 스크롤 컨텐츠 */}
         <Content role="region" aria-label="단계 진행 영역">
           <FrogWrap>
-            <FrogBar progress={view.progress} />
+            <FrogBar progress={loading ? 0 : view.progress} />
           </FrogWrap>
 
           <Steps
             ref={stepsRef}
             role="list"
             aria-label="진행 단계 목록"
-            $center={centerList}   // ✅ 스크롤 없을 때만 중앙 정렬
+            $center={centerList} 
           >
-            {view.steps.map((s) => (
+            {(loading ? [] : view.steps).map((s) => (
               <StepItem key={s.stepOrder} role="listitem">
                 <StepDate className="typo-body-s">{s.stepDate}</StepDate>
-
-                {/* 타이틀 + 아이콘 한 줄 */}
                 <StepTitleRow>
                   <StepTitle>{s.description}</StepTitle>
                   <DetailsBtn type="button" aria-label="자세히 보기">
@@ -145,11 +151,13 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
                 </StepTitleRow>
               </StepItem>
             ))}
+            {!loading && view.steps.length === 0 && (
+                <div style={{ padding: 12, color: "#6F737B" }}>등록된 스텝이 없습니다.</div>
+              )}
           </Steps>
         </Content>
       </Body>
 
-      {/* 삭제 확인 모달 */}
       <ConfirmModal
         open={confirmOpen}
         onConfirm={handleConfirmDelete}
@@ -162,13 +170,11 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
   );
 }
 
-/* ========== Styles ========== */
-
 const Body = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 0; /* ✅ 스크롤 컨테이너 전파 */
+  min-height: 0; /* 스크롤 컨테이너 전파 */
 `;
 
 const HeaderWrapper = styled.div`
@@ -234,7 +240,7 @@ const WarmMsg = styled.p`
 const Content = styled.div`
   position: relative;
   flex: 1 1 auto;
-  min-height: 0; /* ✅ 스크롤 컨테이너 전파 */
+  min-height: 0; /* 스크롤 컨테이너 전파 */
   display: flex;
   align-items: stretch;
   justify-content: center;
