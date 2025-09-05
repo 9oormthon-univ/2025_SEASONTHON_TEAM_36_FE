@@ -30,7 +30,7 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/home" element={<HomePage />} />
             <Route path="/calendar" element={<Screen title="캘린더" />} />
-            <Route path="/diary" element={<Screen title="다이어리" />} />
+            <Route path="/diary" element={<Diary />} />
             <Route path="/profile" element={<Screen title="프로필" />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
