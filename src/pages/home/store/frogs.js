@@ -1,8 +1,12 @@
 import frog1 from "@/assets/images/frog-1.svg";
-import frog2 from "@/assets/images/frog-2.svg";
+import frog2 from "@/assets/images/frog-glasses.svg";
+import frog3 from "@/assets/images/frog-complete.svg";
+import frog4 from "@/assets/images/frog-swim.svg";
+import frog5 from "@/assets/images/frog-running-start.svg";
+import frog6 from "@/assets/images/frog-escape.svg";
 
 // 사용 가능한 개구리 이미지 목록
-const frogs = [frog1, frog2];
+const frogs = [frog1, frog2, frog3, frog4, frog5, frog6];
 export default frogs; 
 
 
