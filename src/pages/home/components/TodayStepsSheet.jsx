@@ -7,8 +7,8 @@ import SheetListSection from "./SheetListSection";
 import TodayStepsList from "./TodayStepsList";
 
 import homeGoals from "../store/todos.mock.json";
-import { selectStepsByGoalId } from "../store/selectStepsByGoalId";
 import DailyCheckInModal from "../modals/DailyCheckInModal";
+import PauseSplash from "../modals/PauseSplash";
 
 const PEEK_HEIGHT = 58; // 닫힘 상태에서 보일 높이 (BottomSheet의 peekHeight와 동일)
 
@@ -38,6 +38,9 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [selectedStep, setSelectedStep] = React.useState(null);
   const [playingKey, setPlayingKey] = React.useState(null);
+
+  // PauseSplash 모달 상태
+  const [pauseOpen, setPauseOpen] = React.useState(false);
 
   // 부모에서 내려준 id 사용(+ 폴백)
   const targetId = React.useMemo(
@@ -81,7 +84,6 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
       return dt.getTime() > today.getTime();
     };
 
-    // 미완료 스텝만 사용
     const allSteps = Array.isArray(data.steps) ? data.steps : [];
     const steps = allSteps.filter((s) => s && s.isCompleted === false);
 
@@ -91,16 +93,9 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
       state: "pause", // 기본 상태는 전부 pause
     });
 
-    // steps 중 미래는 제외
     const nonFuture = steps.filter((s) => !isFuture(s.stepDate));
-    // 오늘
-    const prepItems = nonFuture
-      .filter((s) => isToday(s.stepDate))
-      .map(toPausedItem("prep"));
-    // 과거
-    const carriedItems = nonFuture
-      .filter((s) => !isToday(s.stepDate))
-      .map(toPausedItem("carried"));
+    const prepItems = nonFuture.filter((s) => isToday(s.stepDate)).map(toPausedItem("prep"));
+    const carriedItems = nonFuture.filter((s) => !isToday(s.stepDate)).map(toPausedItem("carried"));
 
     return [
       { id: "prep", title: "우물 밖으로 나갈 준비", defaultOpen: true, items: prepItems },
@@ -126,16 +121,20 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
 
   // 액션 (재생/정지)
   const handleAction = (it) => {
-    setPlayingKey((prev) => {
-      const next = prev === it.id ? null : it.id;
-      if (next) {
-        setSelectedStep(it);
-        setModalOpen(true);
-      } else {
-        setModalOpen(false);
-      }
-      return next;
-    });
+    const isPlaying = playingKey === it.id;
+    setSelectedStep(it);
+
+    if (isPlaying) {
+      // 현재 재생 중 → 다시 누르면 PauseSplash 오픈
+      setPauseOpen(true);
+      setModalOpen(false);
+      setPlayingKey(null);
+    } else {
+      // 재생 시작 → DailyCheckInModal 오픈
+      setPlayingKey(it.id);
+      setModalOpen(true);
+      setPauseOpen(false);
+    }
   };
 
   return (
@@ -157,7 +156,6 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
                   <img src={arrowDown} alt="arrow-down" width={14} style={{ height: "auto" }} />
                 </CloseDownBtn>
               </TopRow>
-
             </TopBar>
 
             <ScrollArea role="list">
@@ -183,12 +181,20 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
         />
       )}
 
+      {/* 시작 전 체크인 모달 */}
       <DailyCheckInModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         title={data?.title ?? "목표"}
         step={selectedStep}
         isPlaying={!!playingKey}
+      />
+
+      {/* ✅ 일시정지 스플래시 모달 */}
+      <PauseSplash
+        open={pauseOpen}
+        onClose={() => setPauseOpen(false)}
+        step={selectedStep}
       />
     </>
   );
@@ -207,12 +213,13 @@ const TopBar = styled.div`
   position: sticky;
   top: 0;
   z-index: 1;
-  background: transparent;
+  background: var(--bg-1);      /* 상단 바 배경 */
   border-bottom: 1px solid var(--bg-2);
 `;
 
-const TopRow = styled.div`  
-  min-height: 20px;  
+const TopRow = styled.div`
+  position: relative;           /* 절대배치 버튼 기준 */
+  min-height: 20px;
 `;
 
 const CloseDownBtn = styled.button`
@@ -229,9 +236,7 @@ const CloseDownBtn = styled.button`
   padding: 0 6px;
   margin: 0 1% 0 0;
   border-radius: 8px;
-  &:hover {
-    background: var(--text-w2);
-  }
+  &:hover { background: var(--text-w2); }
 `;
 
 const ScrollArea = styled.div`

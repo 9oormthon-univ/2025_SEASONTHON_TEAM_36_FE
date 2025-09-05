@@ -24,7 +24,7 @@ export default function PauseSplash({ open, onClose }) {
       <FrogNoti
         topText={"작은 도전이\\n큰 변화를 만들어요!"}
         imageSrc={frogSwim}
-        bottomText={"개구리가\\n한 단계 올라왔어요"} // 여기 
+        bottomText={"Step 하나를 완료했습니다!\\n\\n개구리가\\n`한 단계` 올라왔어요"} // 여기 
       />
     </PageModal>
   );
