@@ -1,18 +1,27 @@
 import { useCallback, useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 
+import { calendarApi } from '../../../apis/calendar';
 import LeftArrow from '../../../assets/images/left-arrow.png';
 import RightArrow from '../../../assets/images/right-arrow.png';
 
-const CustomCalendar = ({ curDate, maxSteps, handleMoveMonth }) => {
-  const [selectedDate, setSelectedDate] = useState(curDate);
+const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
+  const [stepCountOfDay, setStepCountOfDay] = useState(null);
 
   useEffect(() => {
-    setSelectedDate(curDate);
+    try {
+      const getResponse = async () => {
+        const response = await calendarApi(curDate.getFullYear(), curDate.getMonth() + 1);
+        setStepCountOfDay(response);
+      };
+      getResponse();
+    } catch (error) {
+      alert(error);
+    }
   }, [curDate]);
 
   const formatDay = (locale, date) => {
-    const isSameDate = date.toDateString() === selectedDate.toDateString();
+    const isSameDate = date.toDateString() === curDate.toDateString();
     return (
       <div
         style={{
@@ -31,17 +40,17 @@ const CustomCalendar = ({ curDate, maxSteps, handleMoveMonth }) => {
     );
   };
 
-  const selectGreen = useCallback(count => {
-    const quotient = Math.floor(maxSteps / 5);
-    const remain = maxSteps % 5;
-    const twentyPercent = quotient;
-    const fortyPercent = quotient * 2 + (remain >= 4 ? remain - 3 : 0);
-    const sixtyPercent = quotient * 3 + (remain >= 3 ? remain - 2 : 0);
-    const eightyPercent = quotient * 4 + (remain >= 2 ? remain - 1 : 0);
-    if (count <= twentyPercent) return 'var(--green-100)';
-    if (count <= fortyPercent) return 'var(--green-200)';
-    if (count <= sixtyPercent) return 'var(--green-300)';
-    if (count <= eightyPercent) return 'var(--green-400)';
+  const selectGreen = useCallback(ratio => {
+    // const quotient = Math.floor(maxSteps / 5);
+    // const remain = maxSteps % 5;
+    // const twentyPercent = quotient;
+    // const fortyPercent = quotient * 2 + (remain >= 4 ? remain - 3 : 0);
+    // const sixtyPercent = quotient * 3 + (remain >= 3 ? remain - 2 : 0);
+    // const eightyPercent = quotient * 4 + (remain >= 2 ? remain - 1 : 0);
+    if (ratio <= 20) return 'var(--green-100)';
+    if (ratio <= 40) return 'var(--green-200)';
+    if (ratio <= 60) return 'var(--green-300)';
+    if (ratio <= 80) return 'var(--green-400)';
     return 'var(--green-500)';
   }, []);
 
@@ -68,7 +77,7 @@ const CustomCalendar = ({ curDate, maxSteps, handleMoveMonth }) => {
   return (
     <Calendar
       onClickDay={(value, event) => {
-        setSelectedDate(value);
+        handleToDo(value);
       }}
       formatDay={formatDay}
       tileContent={getTileContent}
@@ -79,7 +88,6 @@ const CustomCalendar = ({ curDate, maxSteps, handleMoveMonth }) => {
           width="24"
           onClick={() => {
             handleMoveMonth(-1);
-            setSelectedDate(curDate);
           }}
         />
       }
@@ -90,7 +98,6 @@ const CustomCalendar = ({ curDate, maxSteps, handleMoveMonth }) => {
           width="24"
           onClick={_ => {
             handleMoveMonth(1);
-            setSelectedDate(curDate);
           }}
         />
       }

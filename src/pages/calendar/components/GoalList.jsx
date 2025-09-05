@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+
 import Goal from './Goal';
 
 const GoalListStyle = styled.div`

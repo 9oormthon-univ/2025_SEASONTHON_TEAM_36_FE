@@ -37,7 +37,6 @@ const getLastDayOfMonth = date => {
 
 const CalendarScreen = () => {
   const [open, setOpen] = useState(false);
-  const [view, setView] = useState(true);
   const [date, setDate] = useState(new Date());
   const [day, setDay] = useState(new Date().getDate());
   const [toDo, setToDo] = useState({});
@@ -49,6 +48,7 @@ const CalendarScreen = () => {
   const handleToDo = useCallback(selectedDate => {
     const date = new Date(selectedDate);
     const dayOfSelectedDate = date.getDate();
+    setDate(date);
     setDay(dayOfSelectedDate);
   }, []);
 
@@ -56,31 +56,20 @@ const CalendarScreen = () => {
     move => {
       const prevDate = new Date(date);
       const prevYear = prevDate.getFullYear();
-      const prevMonth = prevDate.getMonth() + 1;
+      const prevMonth = prevDate.getMonth();
       const tmp = prevMonth + move;
-      const nextYear = tmp <= 0 ? prevYear - 1 : tmp > 12 ? prevYear + 1 : prevYear;
-      const nextMonth = tmp <= 0 ? 12 : tmp > 12 ? 1 : tmp;
-      setDate(new Date(nextYear, nextMonth));
+      const nextYear = tmp < 0 ? prevYear - 1 : tmp > 12 ? prevYear + 1 : prevYear;
+      const nextMonth = tmp < 0 ? 11 : tmp >= 12 ? 0 : tmp;
+      setDate(new Date(nextYear, nextMonth, 1));
       setDay(1);
     },
     [date],
   );
 
-  const handleView = useCallback(() => {
-    setView(prev => !prev);
-  }, []);
-
   return (
     <CalendarScreenStyle>
       <div style={{ height: '100%', overflow: 'auto', position: 'relative' }}>
-        <CustomCalendar
-          curDate={new Date()}
-          calView={view}
-          maxSteps={6} // 하드코딩
-          handleToDo={handleToDo}
-          handleMoveMonth={handleMoveMonth}
-          handleView={handleView}
-        />
+        <CustomCalendar curDate={date} handleToDo={handleToDo} handleMoveMonth={handleMoveMonth} />
         <ToDoList toDo={toDo} handleShowModal={handleShowModal} />
       </div>
       <Modal open={open} handleShowModal={handleShowModal} />
