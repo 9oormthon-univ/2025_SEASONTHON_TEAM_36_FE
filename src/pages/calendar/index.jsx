@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { deleteStep, modifyStep } from '../../apis/step';
-import { fetchTodos } from '../../apis/todo';
+import { deleteTodo, fetchTodos } from '../../apis/todo';
 import CustomCalendar from './components/CustomCalendar';
 import Modal from './components/Modal';
 import ToDoList from './components/ToDoList';
@@ -24,7 +24,7 @@ const CalendarScreen = () => {
 
   const handleModifyStep = useCallback(
     (goalId, stepId, description) => {
-      modifyStep(stepId, description).then(resp => {
+      modifyStep(stepId, description).then(_ => {
         const tmpAllToDo = { ...allToDo };
         const steps = tmpAllToDo[dateToFormatString(date)][goalId].steps;
 
@@ -40,15 +40,22 @@ const CalendarScreen = () => {
 
   const handleDeleteStep = useCallback(
     (goalId, stepId) => {
-      deleteStep(stepId).then(resp => {
-        const tmpAllToDo = { ...allToDo };
-        console.log(tmpAllToDo);
-        console.log(resp);
-        const steps = tmpAllToDo[dateToFormatString(date)][goalId].steps;
+      const tmpAllToDo = { ...allToDo };
+      const steps = tmpAllToDo[dateToFormatString(date)][goalId].steps;
+      deleteStep(stepId).then(_ => {
         tmpAllToDo[dateToFormatString(date)][goalId].steps = steps.filter(
-          step => step.id != stepId,
+          step => step.id !== stepId,
         );
         setAllToDo(tmpAllToDo);
+        console.log(tmpAllToDo);
+        console.log(tmpAllToDo[dateToFormatString(date)][goalId].steps);
+        if (tmpAllToDo[dateToFormatString(date)][goalId].steps.length === 0) {
+          deleteTodo(goalId).then(_ => {
+            const tmpAllToDo = { ...allToDo };
+            delete tmpAllToDo[dateToFormatString(date)][goalId];
+            setAllToDo(tmpAllToDo);
+          });
+        }
       });
     },
     [allToDo, date],
@@ -58,7 +65,6 @@ const CalendarScreen = () => {
     try {
       fetchTodos().then(resp => {
         const tmpAllToDo = {};
-
         resp.contents.forEach(content => {
           const goalId = content.id;
           const goalTitle = content.title;
@@ -133,7 +139,7 @@ const CalendarScreen = () => {
           handleDeleteStep={handleDeleteStep}
         />
       </div>
-      <Modal open={open} handleShowModal={handleShowModal} />
+      <Modal open={open} handleModifyStep={handleModifyStep} handleShowModal={handleShowModal} />
     </CalendarScreenStyle>
   );
 };

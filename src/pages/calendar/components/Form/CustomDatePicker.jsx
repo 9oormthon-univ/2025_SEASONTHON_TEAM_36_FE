@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useState } from 'react';
 
 import CalendarImg from '../../../../assets/images/calendar-input.svg';
+import { dateToFormatString } from '../../utils/dateUtils';
 
 export default function CustomDatePicker({ index, onChange }) {
   const [value, setValue] = useState(null);
@@ -16,7 +17,7 @@ export default function CustomDatePicker({ index, onChange }) {
         value={value}
         onChange={newValue => {
           setValue(newValue);
-          onChange(index, newValue.$d);
+          onChange(index, dateToFormatString(newValue.$d));
         }}
         format="YYYY.MM.DD"
         open={open}

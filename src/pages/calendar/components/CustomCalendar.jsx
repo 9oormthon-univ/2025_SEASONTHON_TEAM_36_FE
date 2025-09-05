@@ -49,7 +49,6 @@ const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
     return 'var(--green-500)';
   }, []);
 
-  console.log(stepCountOfDay);
   const getTileContent = ({ activeStartDate, date, view }) => {
     // 월 보기일 때만 div 추가
     if (view === 'month') {

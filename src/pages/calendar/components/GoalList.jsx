@@ -4,7 +4,7 @@ import Goal from './Goal';
 
 const GoalListStyle = styled.div`
   padding: 2px 10px;
-  padding-bottom: 30px;
+  padding-bottom: 76px;
 `;
 
 const GoalList = ({ toDo, handleModifyStep, handleDeleteStep }) => {

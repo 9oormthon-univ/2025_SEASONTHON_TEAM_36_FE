@@ -68,14 +68,13 @@ const Goal = ({ goalId, goal, steps, handleModifyStep, handleDeleteStep }) => {
       </GoalContainer>
       <StepList>
         {steps.map((step, index) => {
-          console.log(updateSteps[index]);
           return (
             <Step key={step.id} id={step.id}>
               <StepContent>
                 <StepCheckBox $did={step.done} />
                 <Input
                   type="text"
-                  value={updateSteps[index]?.name}
+                  value={updateSteps[index]?.name ?? ''}
                   disabled={!isModify[index]}
                   onChange={e => {
                     const tmpSteps = [...updateSteps];

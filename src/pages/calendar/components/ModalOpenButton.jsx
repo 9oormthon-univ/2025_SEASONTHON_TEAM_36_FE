@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+
 import Plus from '../../../assets/images/plus.png';
 
 const Button = styled.button`
@@ -11,11 +12,13 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const ModalOpenButton = ({handleShowModal}) => {
+const ModalOpenButton = ({ handleShowModal }) => {
   return (
-    <Button onClick={() => {
-		handleShowModal();
-	}}>
+    <Button
+      onClick={() => {
+        handleShowModal();
+      }}
+    >
       <img src={Plus} alt="plus" width="18" height="18" />
     </Button>
   );

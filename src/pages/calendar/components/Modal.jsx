@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { destructToDoByAI } from '../../../apis/ai';
 import { addTodo } from '../../../apis/todo';
 import CloseImg from '../../../assets/images/close.png';
 import FrogRunImg from '../../../assets/images/frog-run.svg';
@@ -36,7 +37,7 @@ const Header = styled.div`
 
 const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
 
-const Modal = ({ open, handleShowModal }) => {
+const Modal = ({ open, handleModifyStep, handleShowModal }) => {
   /**
    * 0: 폼 작성
    * 1: 폼 처리 중
@@ -58,21 +59,38 @@ const Modal = ({ open, handleShowModal }) => {
     // Create new AbortController for this request
     abortControllerRef.current = new AbortController();
     setStatus(prev => prev + 1);
-    addTodo(
-      {
-        title: formContents[0],
-        content: formContents[1],
-        startDate: formContents[2],
-        endDate: formContents[3],
-        expectedDays: DAYS.filter((_, index) => formContents[4][index]),
-      },
-      {
-        signal: abortControllerRef.current.signal, // AbortController signal 전달
-      },
-    )
+    const payload = {
+      title: formContents[0],
+      content: formContents[1],
+      startDate: formContents[2],
+      endDate: formContents[3],
+      expectedDays: DAYS.filter((_, index) => formContents[4][index]),
+    };
+    const options = {
+      signal: abortControllerRef.current.signal, // AbortController signal 전달
+    };
+    destructToDoByAI(payload, options)
       .then(resp => {
-        setStepsOfNewGoal(resp.stepsResponses);
-        setStatus(prev => prev + 1);
+        setStepsOfNewGoal(resp.steps);
+        addTodo(payload, options)
+          .then(resp => {
+            setStatus(prev => prev + 1);
+          })
+          .catch(error => {
+            if (error.name === 'AbortError') {
+              console.log('API 요청이 취소되었습니다.');
+              // 요청이 취소된 경우 상태를 초기화
+              setStatus(0);
+            } else {
+              console.error('API 요청 중 오류 발생:', error);
+              // 다른 오류의 경우 적절한 에러 처리
+              setStatus(0);
+            }
+          })
+          .finally(() => {
+            // 요청 완료 후 AbortController 정리
+            abortControllerRef.current = null;
+          });
       })
       .catch(error => {
         if (error.name === 'AbortError') {
@@ -136,6 +154,7 @@ const Modal = ({ open, handleShowModal }) => {
           steps={stepsOfNewGoal}
           setStatus={setStatus}
           setStepsOfNewGoal={setStepsOfNewGoal}
+          handleModifyStep={handleModifyStep}
           handleShowModal={handleShowModal}
         />
       )}

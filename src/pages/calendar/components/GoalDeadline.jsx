@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import ModifyImg from '../../../assets/images/modify.png';
@@ -56,18 +57,16 @@ const StepContent = styled.div`
   justify-content: space-between;
 `;
 
-const GoalDeadline = ({ steps, setStatus, setStepsOfNewGoal, handleShowModal }) => {
+const GoalDeadline = ({
+  steps,
+  setStatus,
+  setStepsOfNewGoal,
+  handleModifyStep,
+  handleShowModal,
+}) => {
+  const [isModify, setIsModify] = useState(steps.map(_ => false));
+  const [updateSteps, setUpdateSteps] = useState(steps.map(step => step));
   // 수정 버튼 클릭 → 편집 모드 토글
-  const handleEditClick = index => {
-    // setSteps(prev =>
-    //   prev.map((step, i) => (i === index ? { ...step, isEditing: !step.isEditing } : step)),
-    // );
-  };
-
-  // input 변경 → text 업데이트
-  const handleChange = (index, value) => {
-    // setSteps(prev => prev.map((step, i) => (i === index ? { ...step, text: value } : step)));
-  };
   return (
     <GoalDeadlineStyle>
       <div style={{ width: '100%' }}>
@@ -87,12 +86,30 @@ const GoalDeadline = ({ steps, setStatus, setStepsOfNewGoal, handleShowModal }) 
               <Input
                 type="text"
                 value={step.description}
-                disabled={true}
-                onChange={e => handleChange(index, e.target.value)}
+                disabled={!isModify[index]}
+                onChange={e => {
+                  const tmpUpdateSteps = [...steps];
+                  tmpUpdateSteps[index].description = e.target.value;
+                  setUpdateSteps(tmpUpdateSteps);
+                }}
                 $fontSize={'var(--fs-lg)'}
                 autoFocus={false}
               />
-              <button style={{ marginLeft: '11.5px' }} onClick={() => handleEditClick(index)}>
+              <button
+                style={{ marginLeft: '11.5px' }}
+                onClick={() => {
+                  if (isModify[index]) {
+                    const tmpIsModify = [...isModify];
+                    tmpIsModify[index] = !tmpIsModify[index];
+                    setIsModify(tmpIsModify);
+                    handleModifyStep(step.todoId, step.stepId, updateSteps[index].description);
+                  } else {
+                    const tmpIsModify = [...isModify];
+                    tmpIsModify[index] = !tmpIsModify[index];
+                    setIsModify(tmpIsModify);
+                  }
+                }}
+              >
                 <img src={ModifyImg} alt="수정하기" width="16" height="16" />
               </button>
             </StepContent>
