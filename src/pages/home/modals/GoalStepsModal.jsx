@@ -5,7 +5,7 @@ import { DDayIcon } from "../styles/DDayIcon";
 import trashIcon from "@/assets/images/trash.svg";
 import FrogBar from "../components/FrogBar";
 import detailsTri from "@/assets/images/details-tri.svg";
-import ConfirmMoal from "../../../common/components/ConfirmModal";
+import ConfirmModal from "../../../common/components/ConfirmModal";
 
 /** !!! API !!! 하드코딩된 steps 포함 샘플 데이터 */
 const SAMPLE = {
@@ -42,29 +42,48 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
   const stepsRef = React.useRef(null);
   const [centerList, setCenterList] = React.useState(true); // 기본: 중앙 정렬
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const el = stepsRef.current;
     if (!el) return;
 
-    const compute = () => {
-      const hasOverflow = el.scrollHeight > el.clientHeight + 1;
-      setCenterList(!hasOverflow);
+    let rafId = 0;
+    let ro = null;
+    let mo = null;
+
+    const measure = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        // 레이아웃이 확정된 다음 프레임에서 측정
+        const hasOverflow = el.scrollHeight > el.clientHeight + 1;
+        setCenterList(!hasOverflow);
+      });
     };
 
-    compute();
+    // 초기 2프레임 측정 (폰트/이미지 로딩 영향 흡수)
+    measure();
+    rafId = requestAnimationFrame(measure);
 
-    let ro = null;
+    // 컨테이너/상위 크기 변화 감지
     if (typeof ResizeObserver !== "undefined") {
-      ro = new ResizeObserver(compute);
+      ro = new ResizeObserver(measure);
       ro.observe(el);
+      if (el.parentElement) ro.observe(el.parentElement);
     }
-    window.addEventListener("resize", compute);
+
+    // 자식 추가/삭제/텍스트 변경 감지
+    mo = new MutationObserver(measure);
+    mo.observe(el, { childList: true, subtree: true, characterData: true });
+
+    // 윈도우 리사이즈
+    window.addEventListener("resize", measure);
 
     return () => {
-      window.removeEventListener("resize", compute);
-      if (ro) ro.disconnect();
+      window.removeEventListener("resize", measure);
+      cancelAnimationFrame(rafId);
+      ro && ro.disconnect();
+      mo && mo.disconnect();
     };
-  }, [view.steps.length]);
+  }, [view.steps.length, open]);
 
   // 삭제 확인 모달 제어
   const [confirmOpen, setConfirmOpen] = React.useState(false);
@@ -72,12 +91,10 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
   const closeConfirm = () => setConfirmOpen(false);
 
   const handleConfirmDelete = async () => {
-    // 외부에서 전달된 삭제 콜백 실행
     try {
       await onDelete?.(goalId);
     } finally {
       setConfirmOpen(false);
-      // 삭제 후 현재 모달 닫기(선택)
       onClose?.();
     }
   };
@@ -133,7 +150,7 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
       </Body>
 
       {/* 삭제 확인 모달 */}
-      <ConfirmMoal
+      <ConfirmModal
         open={confirmOpen}
         onConfirm={handleConfirmDelete}
         onCancel={closeConfirm}
@@ -145,11 +162,13 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
   );
 }
 
+/* ========== Styles ========== */
+
 const Body = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 0;
+  min-height: 0; /* ✅ 스크롤 컨테이너 전파 */
 `;
 
 const HeaderWrapper = styled.div`
@@ -215,17 +234,18 @@ const WarmMsg = styled.p`
 const Content = styled.div`
   position: relative;
   flex: 1 1 auto;
+  min-height: 0; /* ✅ 스크롤 컨테이너 전파 */
   display: flex;
   align-items: stretch;
   justify-content: center;
   border-radius: 12px;
   overflow: hidden;
-  min-height: 0;
   gap: 12%;
 `;
 
 const FrogWrap = styled.div`
   flex: 0 0 10vw;
+  max-width: 120px;
   display: flex;
   justify-content: center;
   align-items: stretch;
@@ -233,13 +253,14 @@ const FrogWrap = styled.div`
 
 const Steps = styled.ul`
   flex: 1 1 auto;
+  height: 100%;     /* 스크롤 영역 명시 */
+  min-height: 0;    /* 부모 기준 높이 전파 */
   display: flex;
   flex-direction: column;
   gap: 5%;
   min-width: 0;
 
-  padding: 1.5%;
-  padding-block: calc(1.5% + 12px);
+  padding: 12px;
   scroll-padding-top: 12px;
   scroll-padding-bottom: 12px;
 
@@ -252,12 +273,12 @@ const Steps = styled.ul`
 const StepItem = styled.li`
   display: flex;
   width: 92%;
-  padding: 3% 8%;
+  padding: 12px 16px; 
   flex-direction: column;
   align-items: flex-start;
-  gap: 5%;
+  gap: 8px;
   border-radius: 16px;
-  background: var(--natural-0, #FFF);
+  background: var(--surface-1, var(--natural-0, #FFF));
   box-shadow:
     -0.3px -0.3px 5px 0 var(--natural-400, #D6D9E0),
      0.3px  0.3px 5px 0 var(--natural-400, #D6D9E0);

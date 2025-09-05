@@ -12,7 +12,7 @@ import styled from "styled-components";
  * - confirmText?: string (default: "예")
  * - cancelText?: string (default: "아니오")
  */
-export default function ConfirmMoal({
+export default function ConfirmModal({
   open,
   onConfirm,
   onCancel,
