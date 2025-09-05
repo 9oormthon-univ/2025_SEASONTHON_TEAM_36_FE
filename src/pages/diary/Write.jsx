@@ -22,16 +22,15 @@ export default function Write({ date: dateProp }) {
 
   const goals = [
     { id: 1, name: "Goal 1", note: "마케팅 기획서 작성하기", color: "var(--green-200)" },
-    { id: 2, name: "Goal 2",  note: "우물 밖 개구리 프로젝트 작업하기",color: "var(--green-300)" },
+    { id: 2, name: "Goal 2", note: "우물 밖 개구리 프로젝트 작업하기", color: "var(--green-300)" },
     { id: 3, name: "Goal 3", note: "구름톤 유니브 해커톤 참가하기", color: "var(--green-400)" },
   ];
-
 
   const photoUrl = null; // URL or null
 
 
   const [memo, setMemo] = React.useState("");
-    const [emotion, setEmotion] = React.useState(null); // { id, label } 형태로 받을 예정
+  const [emotion, setEmotion] = React.useState(null); // { id, label } 형태로 받을 예정
   const [focus, setFocus] = React.useState(null); // { id, label }
   const [completion, setCompletion] = React.useState(3); // 1~5 점
 
@@ -69,7 +68,7 @@ export default function Write({ date: dateProp }) {
       {/* 집중도 */}
       <Section>
         <Label className="typo-h4">오늘 집중도는?</Label>
-         <FocusSelector
+        <FocusSelector
           value={focus?.id ?? null}
           onChange={(item) => setFocus(item)}   // { id, label }
         />
