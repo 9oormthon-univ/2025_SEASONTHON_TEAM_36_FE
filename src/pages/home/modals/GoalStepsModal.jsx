@@ -1,3 +1,4 @@
+// src/pages/home/components/GoalStepsModal.jsx
 import React from "react";
 import styled from "styled-components";
 import PageModal from "../../../common/components/PageModal";
@@ -6,52 +7,52 @@ import trashIcon from "@/assets/images/trash.svg";
 import FrogBar from "../components/FrogBar";
 import detailsTri from "@/assets/images/details-tri.svg";
 import ConfirmModal from "../../../common/components/ConfirmModal";
-import { fetchSteps } from "@/apis/step";
+import { getGoalStepsView } from "../utils/stepsView";
 
 export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
-  const [steps, setSteps] = React.useState(null);      // 서버 원본
+  const [view, setView] = React.useState(null);   // 뷰 모델(state 단일화)
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
 
-  // 서버 데이터 로드 
+  // 서버 데이터 로드 (모달 열릴 때만)
   React.useEffect(() => {
-    if (!open || goalId == null) return; // 모달 열릴 때만 호출
+    if (!open || goalId == null) return;
     let alive = true;
     setLoading(true);
     setError(null);
 
-    fetchSteps(goalId)
-      .then((data) => {
+    getGoalStepsView(goalId)
+      .then((vm) => {
         if (!alive) return;
-        setSteps(data);
+        setView(vm);
       })
       .catch((e) => {
         if (!alive) return;
         setError(e);
       })
-      .finally(() => alive && setLoading(false));
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
 
     return () => {
       alive = false;
     };
   }, [open, goalId]);
 
-  // 화면에 데이터를 표시하기 위한 뷰 모델 
-  const view = React.useMemo(() => {
-    const s = steps || {};
-    return {
-      dday: s.dDay ?? "D-0",
-      title: s.title ?? "",
-      endDate: s.endDate ?? "-",
-      progressText: s.progressText ?? "",
-      progress: Number.isFinite(+s.progress) ? +s.progress : 0,
-      steps: Array.isArray(s.steps) ? s.steps : [],
-    };
-  }, [steps]);
+  // 안전한 렌더링용 폴백
+  const vm = view ?? {
+    dday: "D-0",
+    title: "",
+    endDate: "-",
+    progressText: "",
+    progress: 0,
+    steps: [],
+  };
 
   /** 스크롤 필요 여부를 감지해서 Steps 중앙 정렬 여부 결정 */
   const stepsRef = React.useRef(null);
   const [centerList, setCenterList] = React.useState(true); // 기본: 중앙 정렬
+  const stepsCount = vm.steps.length;
 
   React.useLayoutEffect(() => {
     const el = stepsRef.current;
@@ -94,7 +95,7 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
       ro && ro.disconnect();
       mo && mo.disconnect();
     };
-  }, [view.steps.length, open]);
+  }, [stepsCount, open]);
 
   // 삭제 확인 모달 제어
   const [confirmOpen, setConfirmOpen] = React.useState(false);
@@ -116,32 +117,38 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
         <HeaderWrapper>
           <Header>
             <HeaderGroup>
-              <DDayIcon className="typo-body-xs">{loading ? "…" : view.dday}</DDayIcon>
-              <DueDate>마감일: {loading ? "…" : view.endDate}</DueDate>
+              <DDayIcon className="typo-body-xs">{loading ? "…" : vm.dday}</DDayIcon>
+              <DueDate>마감일: {loading ? "…" : vm.endDate}</DueDate>
 
-              <DeleteButton type="button" title="삭제" onClick={openConfirm} aria-haspopup="dialog" disabled={loading || error}>
+              <DeleteButton
+                type="button"
+                title="삭제"
+                onClick={openConfirm}
+                aria-haspopup="dialog"
+                disabled={loading || error}
+              >
                 <img src={trashIcon} alt="삭제" />
               </DeleteButton>
             </HeaderGroup>
           </Header>
 
-          <Title className="typo-h2">{loading ? "불러오는 중…" : view.title}</Title>
-          <WarmMsg>{loading ? "" : view.progressText}</WarmMsg>
+          <Title className="typo-h2">{loading ? "불러오는 중…" : vm.title}</Title>
+          <WarmMsg>{loading ? "" : vm.progressText}</WarmMsg>
         </HeaderWrapper>
 
         <Content role="region" aria-label="단계 진행 영역">
           <FrogWrap>
-            <FrogBar progress={loading ? 0 : view.progress} />
+            <FrogBar progress={loading ? 0 : vm.progress} />
           </FrogWrap>
 
           <Steps
             ref={stepsRef}
             role="list"
             aria-label="진행 단계 목록"
-            $center={centerList} 
+            $center={centerList}
           >
-            {(loading ? [] : view.steps).map((s) => (
-              <StepItem key={s.stepOrder} role="listitem">
+            {(loading ? [] : vm.steps).map((s) => (
+              <StepItem key={s.stepId ?? s.stepOrder} role="listitem">
                 <StepDate className="typo-body-s">{s.stepDate}</StepDate>
                 <StepTitleRow>
                   <StepTitle>{s.description}</StepTitle>
@@ -151,9 +158,9 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
                 </StepTitleRow>
               </StepItem>
             ))}
-            {!loading && view.steps.length === 0 && (
-                <div style={{ padding: 12, color: "#6F737B" }}>등록된 스텝이 없습니다.</div>
-              )}
+            {!loading && vm.steps.length === 0 && (
+              <div style={{ padding: 12, color: "#6F737B" }}>등록된 스텝이 없습니다.</div>
+            )}
           </Steps>
         </Content>
       </Body>
@@ -279,7 +286,7 @@ const Steps = styled.ul`
 const StepItem = styled.li`
   display: flex;
   width: 92%;
-  padding: 12px 16px; 
+  padding: 12px 16px;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;

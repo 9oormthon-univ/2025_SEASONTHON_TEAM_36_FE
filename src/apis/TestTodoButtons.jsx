@@ -7,10 +7,10 @@ export default function TestTodoButtons() {
   const handleAdd = async () => {
     try {
       const created = await addTodo({
-        "title": "우물밖개구리 프로젝트777",
-        "content": "TODO API 개발하기, 회원 API 개발하기, api 테스트",
+        "title": "우물밖개구리 프로젝트",
+        "content": "TODO API 개발하기, 회원 API 개발하기",
         "startDate": "2025-09-02",
-        "endDate": "2025-09-03",
+        "endDate": "2025-09-06",
         "expectedDays": [
           "MONDAY",
           "TUESDAY"
