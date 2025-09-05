@@ -1,8 +1,4 @@
-// 시작 시각: 매번 재생 시작 시 기록
-// 종료 시각: 정지 버튼 or 다른 step 시작 or goal 전환 시 즉시 기록
-// DailyCheckInModal: 하루 한 번만 띄움 (이후엔 아무 창도 안 뜸) - 지금은 렌더링 기준, 나중에는 실제 데이터 POST 기준으로 상태 관리
-// DayStartSplash: 사용 안 함
-// TodayStepsList에 startTimes/endTimes 전달
+// src/pages/home/components/TodayStepsSheet.jsx
 import React from "react";
 import styled from "styled-components";
 import BottomSheet from "../../../layout/BottomSheet";
@@ -14,8 +10,10 @@ import TodayStepsList from "./TodayStepsList";
 import homeGoals from "../store/todos.mock.json";
 import DailyCheckInModal from "../modals/DailyCheckInModal";
 import PauseSplash from "../modals/PauseSplash";
+import { getDailyShown, markDailyShown } from "../utils/storage";
+import { buildBaseGroupsFromSteps, applyPlayingState } from "../utils/steps";
 
-const PEEK_HEIGHT = 58; // 닫힘 상태에서 보일 높이 (BottomSheet의 peekHeight와 동일)
+const PEEK_HEIGHT = 58;
 
 /** !!! API !!! 하드코딩된 steps 포함 샘플 데이터 */
 const SAMPLE = {
@@ -34,21 +32,12 @@ const SAMPLE = {
   ],
 };
 
-function todayKey() {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-}
-const STORAGE_KEY_PREFIX = "daily-checkin-shown:";
-
 export default function TodayStepsSheet({ goalId, onHeightChange }) {
   const [open, setOpen] = React.useState(false);
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
 
-  // DailyCheckInModal (하루 1회)
+  // 하루 1회 체크인 모달
   const [modalOpen, setModalOpen] = React.useState(false);
   const [dailyShown, setDailyShown] = React.useState(false);
 
@@ -59,22 +48,17 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
   // PauseSplash 모달
   const [pauseOpen, setPauseOpen] = React.useState(false);
 
-  // 시작/종료 시각 저장용: { [itemId]: Date }
+  // 시작/종료 시각 저장
   const [startTimes, setStartTimes] = React.useState({});
   const [endTimes, setEndTimes] = React.useState({});
 
   // 오늘 DailyCheckInModal 이미 보여줬는지 확인
   React.useEffect(() => {
-    try {
-      const key = STORAGE_KEY_PREFIX + todayKey();
-      setDailyShown(localStorage.getItem(key) === "1");
-    } catch {}
+    setDailyShown(getDailyShown());
   }, []);
-  const markDailyShown = React.useCallback(() => {
-    try {
-      const key = STORAGE_KEY_PREFIX + todayKey();
-      localStorage.setItem(key, "1");
-    } catch {}
+
+  const markDaily = React.useCallback(() => {
+    markDailyShown();
     setDailyShown(true);
   }, []);
 
@@ -87,77 +71,24 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
   // !!! API !!! 더미 데이터 사용
   const data = SAMPLE;
 
-  // ===== 섹션 분류(오늘/미래=prep, 과거=carried) + 모든 아이템 기본 pause =====
-  const baseGroups = React.useMemo(() => {
-    if (!data) {
-      return [
-        { id: "prep", title: "우물 밖으로 나갈 준비", defaultOpen: true, items: [] },
-        { id: "carried", title: "이월된 일", defaultOpen: true, items: [] },
-      ];
-    }
+  // 섹션 그룹핑 (기본은 전부 pause)
+  const baseGroups = React.useMemo(
+    () => buildBaseGroupsFromSteps(data?.steps ?? []),
+    [data]
+  );
 
-    const parseISODateLocal = (iso) => {
-      if (!iso || typeof iso !== "string") return null;
-      const [y, m, d] = iso.split("-").map(Number);
-      if (!y || !m || !d) return null;
-      return new Date(y, m - 1, d);
-    };
+  // 재생 상태 반영
+  const groups = React.useMemo(
+    () => applyPlayingState(baseGroups, playingKey),
+    [baseGroups, playingKey]
+  );
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const isToday = (iso) => {
-      const dt = parseISODateLocal(iso);
-      if (!dt) return false;
-      dt.setHours(0, 0, 0, 0);
-      return dt.getTime() === today.getTime();
-    };
-    const isFuture = (iso) => {
-      const dt = parseISODateLocal(iso);
-      if (!dt) return false;
-      dt.setHours(0, 0, 0, 0);
-      return dt.getTime() > today.getTime();
-    };
-
-    const allSteps = Array.isArray(data.steps) ? data.steps : [];
-    const steps = allSteps.filter((s) => s && s.isCompleted === false);
-
-    const toPausedItem = (prefix) => (s, i) => ({
-      id: `${prefix}-${s.stepOrder ?? i ?? 0}`,
-      title: s.description ?? "",
-      state: "pause", // 기본 상태는 전부 pause
-    });
-
-    const nonFuture = steps.filter((s) => !isFuture(s.stepDate));
-    const prepItems = nonFuture.filter((s) => isToday(s.stepDate)).map(toPausedItem("prep"));
-    const carriedItems = nonFuture.filter((s) => !isToday(s.stepDate)).map(toPausedItem("carried"));
-
-    return [
-      { id: "prep", title: "우물 밖으로 나갈 준비", defaultOpen: true, items: prepItems },
-      { id: "carried", title: "이월된 일", defaultOpen: true, items: carriedItems },
-    ];
-  }, [data]);
-
-  // 렌더링 시, 현재 playingKey에 맞춰 상태 반영
-  const groups = React.useMemo(() => {
-    return baseGroups.map((g) => ({
-      ...g,
-      items: g.items.map((it) => ({
-        ...it,
-        state: it.id === playingKey ? "play" : "pause",
-      })),
-    }));
-  }, [baseGroups, playingKey]);
-
-  // ✅ goalId(=targetId) 변경 시: 재생 중이던 step 종료 기록 후 재생 해제
+  // goal 전환 시 재생 종료 기록
   const prevTargetRef = React.useRef(targetId);
   React.useEffect(() => {
     if (prevTargetRef.current !== targetId) {
       if (playingKey) {
-        setEndTimes((prev) => ({
-          ...prev,
-          [playingKey]: new Date(),
-        }));
+        setEndTimes((prev) => ({ ...prev, [playingKey]: new Date() }));
         setPlayingKey(null);
       }
       prevTargetRef.current = targetId;
@@ -170,52 +101,34 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
     setSelectedStep(it);
 
     if (isPlaying) {
-      // 같은 항목을 다시 눌러 정지
+      // 정지
       setPauseOpen(true);
       setModalOpen(false);
       setPlayingKey(null);
-
-      // 시작 시각은 유지, 종료 시각만 기록
-      setEndTimes((prev) => ({
-        ...prev,
-        [it.id]: new Date(),
-      }));
+      setEndTimes((prev) => ({ ...prev, [it.id]: new Date() }));
     } else {
-      // 다른 step이 재생 중이면 먼저 종료 기록
+      // 다른 step이 재생 중이면 종료 기록
       if (playingKey && playingKey !== it.id) {
-        setEndTimes((prev) => ({
-          ...prev,
-          [playingKey]: new Date(),
-        }));
+        setEndTimes((prev) => ({ ...prev, [playingKey]: new Date() }));
       }
-
-      // 새 항목 재생 시작
+      // 새 항목 재생
       setPlayingKey(it.id);
       setPauseOpen(false);
-
-      // ✅ 시작 시각은 '항상' 기록 (하루 1회 모달과 무관)
-      setStartTimes((prev) => ({
-        ...prev,
-        [it.id]: new Date(),
-      }));
-      // 재시작 시 과거 종료 시각 초기화(선택)
+      setStartTimes((prev) => ({ ...prev, [it.id]: new Date() }));
+      // 과거 종료 시각 초기화(선택)
       setEndTimes((prev) => {
         const { [it.id]: _, ...rest } = prev;
         return rest;
       });
-
-      // ✅ 하루 한 번만 DailyCheckInModal 띄우고, 이후엔 아무 창도 안 띄움
-      if (!dailyShown) {
-        setModalOpen(true);
-      }
+      // 하루 1회 체크인 모달
+      if (!dailyShown) setModalOpen(true);
     }
   };
 
-  // DailyCheckInModal 닫힐 때: 오늘은 이미 띄움으로 표시
   const handleCloseDaily = React.useCallback(() => {
     setModalOpen(false);
-    markDailyShown(); // 오늘 하루 체크인 완료 기록
-  }, [markDailyShown]);
+    markDaily();
+  }, [markDaily]);
 
   return (
     <>
@@ -256,7 +169,6 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
         )}
       </BottomSheet>
 
-      {/* 패널 밖(뷰포트)에 고정된 화살표 */}
       {!open && (
         <FloatingArrow
           src={dragUp}
@@ -266,7 +178,6 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
         />
       )}
 
-      {/* 하루 1회만 뜨는 체크인 모달 */}
       <DailyCheckInModal
         open={modalOpen}
         onClose={handleCloseDaily}
@@ -275,16 +186,12 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
         isPlaying={!!playingKey}
       />
 
-      {/* 일시정지 스플래시 */}
-      <PauseSplash
-        open={pauseOpen}
-        onClose={() => setPauseOpen(false)}
-        step={selectedStep}
-      />
+      <PauseSplash open={pauseOpen} onClose={() => setPauseOpen(false)} step={selectedStep} />
     </>
   );
 }
 
+/* ===== styled ===== */
 const SheetBody = styled.div`
   display: flex;
   flex-direction: column;

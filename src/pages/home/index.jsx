@@ -5,6 +5,8 @@ import TodayStepsSheet from "./components/TodayStepsSheet";
 import { useMemo, useState, useEffect } from "react";
 import CardsCarousel from "./components/CardsCarousel";
 import { fetchTodos } from "@/apis/todo"; // API 사용 !!!
+import TestTodoButtons from "../../apis/TestTodoButtons";
+import TestStepButtons from "../../apis/TestStepButtons";
 
 export default function HomePage() {
   const [goals, setGoals] = useState([]); // 서버 데이터 !!!
@@ -65,6 +67,8 @@ export default function HomePage() {
 
   return (
     <Page>
+      <TestTodoButtons />
+      <TestStepButtons />
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
         <DateView />
