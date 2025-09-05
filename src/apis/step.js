@@ -23,7 +23,6 @@ export async function fetchSteps(todoId) {
 export async function startStep(stepId) {
   if (stepId == null) throw new Error("Step 기록 시작을 위해 stepId가 필요합니다.");
   try {
-    // body 없을 경우 null 전달
     const { data } = await mainApi.post(`${BASE}/${stepId}/start`, null, {
       headers: { Accept: "application/json" },
     });
@@ -35,7 +34,24 @@ export async function startStep(stepId) {
   }
 }
 
+/** [POST] Step 기록 종료 */
+export async function stopStep(stepId) {
+  if (stepId == null) throw new Error("Step 기록 종료를 위해 stepId가 필요합니다.");
+  try {
+    const { data } = await mainApi.post(`${BASE}/${stepId}/stop`, null, {
+      headers: { Accept: "application/json" },
+    });
+    return data; // { stepId, userId, startTime, endTime, duration }
+  } catch (err) {
+    const status = err?.response?.status;
+    if (status === 403) throw new Error("Step에 접근할 권한이 없습니다.");
+    if (status === 404) throw new Error("시작되지 않은 Step입니다.");
+    throw err;
+  }
+}
+
 export default {
   fetchSteps,
   startStep,
+  stopStep,
 };
