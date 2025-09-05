@@ -1,3 +1,8 @@
+// 시작 시각: 매번 재생 시작 시 기록
+// 종료 시각: 정지 버튼 or 다른 step 시작 or goal 전환 시 즉시 기록
+// DailyCheckInModal: 하루 한 번만 띄움 (이후엔 아무 창도 안 뜸) - 지금은 렌더링 기준, 나중에는 실제 데이터 POST 기준으로 상태 관리
+// DayStartSplash: 사용 안 함
+// TodayStepsList에 startTimes/endTimes 전달
 import React from "react";
 import styled from "styled-components";
 import BottomSheet from "../../../layout/BottomSheet";
@@ -29,22 +34,49 @@ const SAMPLE = {
   ],
 };
 
+function todayKey() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+const STORAGE_KEY_PREFIX = "daily-checkin-shown:";
+
 export default function TodayStepsSheet({ goalId, onHeightChange }) {
   const [open, setOpen] = React.useState(false);
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
 
-  // DailyCheckInModal 관련
+  // DailyCheckInModal (하루 1회)
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [dailyShown, setDailyShown] = React.useState(false);
+
+  // Step/재생 상태
   const [selectedStep, setSelectedStep] = React.useState(null);
   const [playingKey, setPlayingKey] = React.useState(null);
 
-  // PauseSplash 모달 상태
+  // PauseSplash 모달
   const [pauseOpen, setPauseOpen] = React.useState(false);
 
   // 시작/종료 시각 저장용: { [itemId]: Date }
   const [startTimes, setStartTimes] = React.useState({});
   const [endTimes, setEndTimes] = React.useState({});
+
+  // 오늘 DailyCheckInModal 이미 보여줬는지 확인
+  React.useEffect(() => {
+    try {
+      const key = STORAGE_KEY_PREFIX + todayKey();
+      setDailyShown(localStorage.getItem(key) === "1");
+    } catch {}
+  }, []);
+  const markDailyShown = React.useCallback(() => {
+    try {
+      const key = STORAGE_KEY_PREFIX + todayKey();
+      localStorage.setItem(key, "1");
+    } catch {}
+    setDailyShown(true);
+  }, []);
 
   // 부모에서 내려준 id 사용(+ 폴백)
   const targetId = React.useMemo(
@@ -117,7 +149,7 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
     }));
   }, [baseGroups, playingKey]);
 
-  // goalId(=targetId) 변경 시: 재생 중이던 step을 종료 처리(+ 종료시간 기록) 후 재생 해제
+  // ✅ goalId(=targetId) 변경 시: 재생 중이던 step 종료 기록 후 재생 해제
   const prevTargetRef = React.useRef(targetId);
   React.useEffect(() => {
     if (prevTargetRef.current !== targetId) {
@@ -159,21 +191,31 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
 
       // 새 항목 재생 시작
       setPlayingKey(it.id);
-      setModalOpen(true);
       setPauseOpen(false);
 
-      // 시작 시각 기록 (현재 시각)
+      // ✅ 시작 시각은 '항상' 기록 (하루 1회 모달과 무관)
       setStartTimes((prev) => ({
         ...prev,
         [it.id]: new Date(),
       }));
-      // 해당 항목의 과거 종료 시각은 재시작 시 초기화(선택)
+      // 재시작 시 과거 종료 시각 초기화(선택)
       setEndTimes((prev) => {
         const { [it.id]: _, ...rest } = prev;
         return rest;
       });
+
+      // ✅ 하루 한 번만 DailyCheckInModal 띄우고, 이후엔 아무 창도 안 띄움
+      if (!dailyShown) {
+        setModalOpen(true);
+      }
     }
   };
+
+  // DailyCheckInModal 닫힐 때: 오늘은 이미 띄움으로 표시
+  const handleCloseDaily = React.useCallback(() => {
+    setModalOpen(false);
+    markDailyShown(); // 오늘 하루 체크인 완료 기록
+  }, [markDailyShown]);
 
   return (
     <>
@@ -224,16 +266,16 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
         />
       )}
 
-      {/* 시작 전 체크인 모달 */}
+      {/* 하루 1회만 뜨는 체크인 모달 */}
       <DailyCheckInModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={handleCloseDaily}
         title={data?.title ?? "목표"}
         step={selectedStep}
         isPlaying={!!playingKey}
       />
 
-      {/* 일시정지 스플래시 모달 */}
+      {/* 일시정지 스플래시 */}
       <PauseSplash
         open={pauseOpen}
         onClose={() => setPauseOpen(false)}
