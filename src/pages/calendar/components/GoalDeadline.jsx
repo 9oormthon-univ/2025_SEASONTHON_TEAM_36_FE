@@ -71,8 +71,7 @@ const StepContent = styled.div`
   justify-content: space-between;
 `;
 
-const GoalDeadline = ({ steps, setStepsOfNewGoal, handleShowModal }) => {
-  const navigate = useNavigate();
+const GoalDeadline = ({ steps, setStatus, setStepsOfNewGoal, handleShowModal }) => {
   // 수정 버튼 클릭 → 편집 모드 토글
   const handleEditClick = index => {
     // setSteps(prev =>
@@ -120,6 +119,7 @@ const GoalDeadline = ({ steps, setStepsOfNewGoal, handleShowModal }) => {
         onClick={() => {
           handleShowModal();
           setStepsOfNewGoal([]);
+          setStatus(0);
         }}
       >
         투두 재적용하기

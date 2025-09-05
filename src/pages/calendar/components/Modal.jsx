@@ -97,6 +97,7 @@ const Modal = ({ open, handleShowModal }) => {
       ) : (
         <GoalDeadline
           steps={stepsOfNewGoal}
+          setStatus={setStatus}
           setStepsOfNewGoal={setStepsOfNewGoal}
           handleShowModal={handleShowModal}
         />
