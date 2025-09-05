@@ -8,17 +8,17 @@ import RightArrow from '../../../assets/images/right-arrow.png';
 const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
   const [stepCountOfDay, setStepCountOfDay] = useState(null);
 
-  useEffect(() => {
-    try {
-      const getResponse = async () => {
-        const response = await calendarApi(curDate.getFullYear(), curDate.getMonth() + 1);
-        setStepCountOfDay(response);
-      };
-      getResponse();
-    } catch (error) {
-      alert(error);
-    }
-  }, [curDate]);
+  // useEffect(() => {
+  //   try {
+  //     const getResponse = async () => {
+  //       const response = await calendarApi(curDate.getFullYear(), curDate.getMonth() + 1);
+  //       setStepCountOfDay(response);
+  //     };
+  //     getResponse();
+  //   } catch (error) {
+  //     alert(error);
+  //   }
+  // }, [curDate]);
 
   const formatDay = (locale, date) => {
     const isSameDate = date.toDateString() === curDate.toDateString();

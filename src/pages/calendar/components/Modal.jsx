@@ -1,10 +1,11 @@
+import { useCallback, useState } from 'react';
 import styled from 'styled-components';
+
+import { addTodo } from '../../../apis/todo';
 import CloseImg from '../../../assets/images/close.png';
 import FrogOneImg from '../../../assets/images/frog1.svg';
-import Form from './Form';
 import FrogNoti from '../../../common/components/FrogNoti';
-
-import { useCallback, useState } from 'react';
+import Form from './Form';
 import GoalDeadline from './GoalDeadline';
 
 const ModalStyle = styled.div`
@@ -33,6 +34,8 @@ const Header = styled.div`
   padding: 3px 24px;
 `;
 
+const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+
 const Modal = ({ open, handleShowModal }) => {
   /**
    * 0: 폼 작성
@@ -40,13 +43,30 @@ const Modal = ({ open, handleShowModal }) => {
    * 2: 폼 처리 완료
    */
   const [status, setStatus] = useState(0);
+  const [formContents, setFormContents] = useState([
+    '',
+    '',
+    '',
+    '',
+    [false, false, false, false, false, false, false],
+  ]);
+  const [stepsOfNewGoal, setStepsOfNewGoal] = useState([]);
 
   const handleSubmit = useCallback(() => {
+    addTodo({
+      title: formContents[0],
+      content: formContents[1],
+      startDate: formContents[2],
+      endDate: formContents[3],
+      expectedDays: DAYS.filter((_, index) => formContents[4][index]),
+    }).then(resp => {
+      return;
+    });
     setStatus(prev => prev + 1);
     setTimeout(() => {
       setStatus(prev => prev + 1);
     }, 2000);
-  }, [setStatus]);
+  }, [formContents, setStatus]);
 
   return (
     <ModalStyle $open={open}>
