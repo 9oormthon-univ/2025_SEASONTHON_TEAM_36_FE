@@ -60,14 +60,12 @@ const Modal = ({ open, handleShowModal }) => {
       endDate: formContents[3],
       expectedDays: DAYS.filter((_, index) => formContents[4][index]),
     }).then(resp => {
+      console.log(resp);
       setStepsOfNewGoal(resp.stepsResponses);
+      setStatus(prev => prev + 1);
     });
     setStatus(prev => prev + 1);
-    setTimeout(() => {
-      setStatus(prev => prev + 1);
-    }, 2000);
   }, [formContents, setStatus]);
-
   return (
     <ModalStyle $open={open}>
       <Header>
@@ -97,7 +95,11 @@ const Modal = ({ open, handleShowModal }) => {
           bottomText="조금만 기다려주세요..."
         />
       ) : (
-        <GoalDeadline />
+        <GoalDeadline
+          steps={stepsOfNewGoal}
+          setStepsOfNewGoal={setStepsOfNewGoal}
+          handleShowModal={handleShowModal}
+        />
       )}
     </ModalStyle>
   );

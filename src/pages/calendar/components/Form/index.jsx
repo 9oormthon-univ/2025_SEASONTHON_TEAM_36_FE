@@ -62,9 +62,12 @@ export default function Form({ formContents, setFormContents, handleSubmit }) {
   const isNotAllInput = useCallback(() => {
     return (
       formContents[0].length === 0 ||
-      (formContents[1].length === 0 && formContents[2] === null) ||
+      formContents[1].length === 0 ||
+      formContents[2] === null ||
+      formContents[2].length === 0 ||
       formContents[3] === null ||
-      formContents[4].every(value => value === true)
+      formContents[3].length === 0 ||
+      formContents[4].every(value => value === false)
     );
   }, [formContents]);
 
@@ -100,7 +103,7 @@ export default function Form({ formContents, setFormContents, handleSubmit }) {
             type="text"
             name="업무명"
             placeholder="업무명 입력"
-            onSubmit={e => {
+            onChange={e => {
               handleFormContents(0, e.target.value);
             }}
           />
@@ -143,7 +146,7 @@ export default function Form({ formContents, setFormContents, handleSubmit }) {
         <CustomDatePicker index={3} onChange={handleFormContents} />
       </SubItem>
       <SubItem title="업무 수행 예정일">
-        <WeekButtons checkDays={formContents} handleDays={handleDays} />
+        <WeekButtons checkDays={formContents[4]} handleDays={handleDays} />
       </SubItem>
       <Submit>
         <GreenButton disabled={isNotAllInput()}>할 일 나누기</GreenButton>

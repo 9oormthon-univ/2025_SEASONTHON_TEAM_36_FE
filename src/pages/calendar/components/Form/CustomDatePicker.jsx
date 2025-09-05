@@ -16,7 +16,7 @@ export default function CustomDatePicker({ index, onChange }) {
         value={value}
         onChange={newValue => {
           setValue(newValue);
-          onChange(index, newValue);
+          onChange(index, newValue.$d);
         }}
         format="YYYY.MM.DD"
         open={open}

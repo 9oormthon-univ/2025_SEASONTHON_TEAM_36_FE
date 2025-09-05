@@ -24,6 +24,7 @@ const CalendarScreen = () => {
     try {
       fetchTodos().then(resp => {
         const tmpAllToDo = {};
+
         resp.contents.forEach(content => {
           const goalId = content.id;
           const goalTitle = content.title;
@@ -86,7 +87,7 @@ const CalendarScreen = () => {
     },
     [date],
   );
-
+  console.log(allToDo);
   return (
     <CalendarScreenStyle>
       <div style={{ height: '100%', overflow: 'auto', position: 'relative' }}>

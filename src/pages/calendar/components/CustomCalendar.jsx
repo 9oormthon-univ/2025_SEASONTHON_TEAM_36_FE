@@ -5,20 +5,26 @@ import { calendarApi } from '../../../apis/calendar';
 import LeftArrow from '../../../assets/images/left-arrow.png';
 import RightArrow from '../../../assets/images/right-arrow.png';
 
+const dateToFormatString = date => {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+    date.getDate(),
+  ).padStart(2, '0')}`;
+};
+
 const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
   const [stepCountOfDay, setStepCountOfDay] = useState(null);
 
-  // useEffect(() => {
-  //   try {
-  //     const getResponse = async () => {
-  //       const response = await calendarApi(curDate.getFullYear(), curDate.getMonth() + 1);
-  //       setStepCountOfDay(response);
-  //     };
-  //     getResponse();
-  //   } catch (error) {
-  //     alert(error);
-  //   }
-  // }, [curDate]);
+  useEffect(() => {
+    try {
+      const getResponse = async () => {
+        const response = await calendarApi(curDate.getFullYear(), curDate.getMonth() + 1);
+        setStepCountOfDay(response);
+      };
+      getResponse();
+    } catch (error) {
+      alert(error);
+    }
+  }, [curDate]);
 
   const formatDay = (locale, date) => {
     const isSameDate = date.toDateString() === curDate.toDateString();
@@ -41,12 +47,6 @@ const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
   };
 
   const selectGreen = useCallback(ratio => {
-    // const quotient = Math.floor(maxSteps / 5);
-    // const remain = maxSteps % 5;
-    // const twentyPercent = quotient;
-    // const fortyPercent = quotient * 2 + (remain >= 4 ? remain - 3 : 0);
-    // const sixtyPercent = quotient * 3 + (remain >= 3 ? remain - 2 : 0);
-    // const eightyPercent = quotient * 4 + (remain >= 2 ? remain - 1 : 0);
     if (ratio <= 20) return 'var(--green-100)';
     if (ratio <= 40) return 'var(--green-200)';
     if (ratio <= 60) return 'var(--green-300)';
@@ -55,16 +55,19 @@ const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
   }, []);
 
   const getTileContent = ({ activeStartDate, date, view }) => {
-    let count = 0;
     // 월 보기일 때만 div 추가
     if (view === 'month') {
+      const isSameDate = stepCountOfDay?.calendar.length
+        ? dateToFormatString(date) === stepCountOfDay?.calendar[0].calendarDate
+        : false;
+      const percentage = isSameDate ? stepCountOfDay?.calendar[0].percentage : 0;
       return (
         <div
           style={{
             width: '23px',
             height: '23px',
-            border: count > 0 ? 'none' : '1px solid var(--natural-400)',
-            backgroundColor: count > 0 ? selectGreen(count) : '#ffffff',
+            border: isSameDate && percentage ? 'none' : '1px solid var(--natural-400)',
+            backgroundColor: isSameDate && percentage ? selectGreen(percentage) : '#ffffff',
             borderRadius: '4px',
             marginBottom: '2px',
           }}

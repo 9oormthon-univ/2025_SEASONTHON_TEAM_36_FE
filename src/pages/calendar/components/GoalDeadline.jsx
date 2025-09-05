@@ -1,8 +1,10 @@
-import ModifyImg from '../../../assets/images/modify.png';
-import styled from 'styled-components';
-import Title from './Title';
-import GreenButton from '../../../common/components/GreenButton';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+import ModifyImg from '../../../assets/images/modify.png';
+import GreenButton from '../../../common/components/GreenButton';
+import Title from './Title';
 
 const GoalDeadlineStyle = styled.div`
   display: flex;
@@ -69,24 +71,18 @@ const StepContent = styled.div`
   justify-content: space-between;
 `;
 
-const GoalDeadline = () => {
-  // Step 목록 상태
-  const [steps, setSteps] = useState([
-    { date: '8월 24일', text: 'LG 전자 과거 마케팅사례 조사하기', isEditing: false },
-    { date: '9월 1일', text: '삼성전자 과거 마케팅사례 조사하기', isEditing: false },
-    { date: '9월 1일', text: '삼성전자 과거 마케팅사례 조사하기', isEditing: false },
-  ]);
-
+const GoalDeadline = ({ steps, setStepsOfNewGoal, handleShowModal }) => {
+  const navigate = useNavigate();
   // 수정 버튼 클릭 → 편집 모드 토글
   const handleEditClick = index => {
-    setSteps(prev =>
-      prev.map((step, i) => (i === index ? { ...step, isEditing: !step.isEditing } : step)),
-    );
+    // setSteps(prev =>
+    //   prev.map((step, i) => (i === index ? { ...step, isEditing: !step.isEditing } : step)),
+    // );
   };
 
   // input 변경 → text 업데이트
   const handleChange = (index, value) => {
-    setSteps(prev => prev.map((step, i) => (i === index ? { ...step, text: value } : step)));
+    // setSteps(prev => prev.map((step, i) => (i === index ? { ...step, text: value } : step)));
   };
   return (
     <GoalDeadlineStyle>
@@ -100,16 +96,16 @@ const GoalDeadline = () => {
       <SizedBox $height={30} />
 
       <StepList>
-        {steps.map((step, index) => (
+        {steps?.map((step, index) => (
           <Step key={index}>
-            <StepDate>{step.date}</StepDate>
+            <StepDate>{step.stepDate}</StepDate>
             <StepContent>
               <Input
                 type="text"
-                value={step.text}
-                disabled={!step.isEditing}
+                value={step.description}
+                disabled={true}
                 onChange={e => handleChange(index, e.target.value)}
-                autoFocus={step.isEditing}
+                autoFocus={false}
               />
               <button style={{ marginLeft: '11.5px' }} onClick={() => handleEditClick(index)}>
                 <img src={ModifyImg} alt="수정하기" width="16" height="16" />
@@ -120,7 +116,14 @@ const GoalDeadline = () => {
       </StepList>
 
       <SizedBox $height={91} />
-      <GreenButton>투두 재적용하기</GreenButton>
+      <GreenButton
+        onClick={() => {
+          handleShowModal();
+          setStepsOfNewGoal([]);
+        }}
+      >
+        투두 재적용하기
+      </GreenButton>
     </GoalDeadlineStyle>
   );
 };
