@@ -5,6 +5,7 @@ import { DDayIcon } from "../styles/DDayIcon";
 import trashIcon from "@/assets/images/trash.svg";
 import FrogBar from "../components/FrogBar";
 import detailsTri from "@/assets/images/details-tri.svg";
+import ConfirmMoal from "../../../common/components/ConfirmModal";
 
 /** !!! API !!! 하드코딩된 steps 포함 샘플 데이터 */
 const SAMPLE = {
@@ -23,7 +24,7 @@ const SAMPLE = {
   ],
 };
 
-export default function GoalStepsModal({ open, onClose, goalId }) {
+export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
   // goalId를 이용해 데이터를 가져왔다고 가정
   const view = React.useMemo(() => {
     const g = SAMPLE;
@@ -46,22 +47,17 @@ export default function GoalStepsModal({ open, onClose, goalId }) {
     if (!el) return;
 
     const compute = () => {
-      // overflow 발생 여부 판단
       const hasOverflow = el.scrollHeight > el.clientHeight + 1;
       setCenterList(!hasOverflow);
     };
 
-    // 최초 계산
     compute();
 
-    // 요소 크기 변화 관찰 (내용/컨테이너 변화 모두 대응)
     let ro = null;
     if (typeof ResizeObserver !== "undefined") {
       ro = new ResizeObserver(compute);
       ro.observe(el);
     }
-
-    // 윈도우 리사이즈도 대응
     window.addEventListener("resize", compute);
 
     return () => {
@@ -69,6 +65,22 @@ export default function GoalStepsModal({ open, onClose, goalId }) {
       if (ro) ro.disconnect();
     };
   }, [view.steps.length]);
+
+  // 삭제 확인 모달 제어
+  const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const openConfirm = () => setConfirmOpen(true);
+  const closeConfirm = () => setConfirmOpen(false);
+
+  const handleConfirmDelete = async () => {
+    // 외부에서 전달된 삭제 콜백 실행
+    try {
+      await onDelete?.(goalId);
+    } finally {
+      setConfirmOpen(false);
+      // 삭제 후 현재 모달 닫기(선택)
+      onClose?.();
+    }
+  };
 
   return (
     <PageModal open={open} onClose={onClose} headerVariant="back-left" viewNavBar>
@@ -79,7 +91,9 @@ export default function GoalStepsModal({ open, onClose, goalId }) {
             <HeaderGroup>
               <DDayIcon className="typo-body-xs">{view.dday ?? "D-0"}</DDayIcon>
               <DueDate>마감일: {view.dueDate ?? "-"}</DueDate>
-              <DeleteButton type="button" title="삭제">
+
+              {/* ✅ 삭제 버튼 → 확인 모달 오픈 */}
+              <DeleteButton type="button" title="삭제" onClick={openConfirm} aria-haspopup="dialog">
                 <img src={trashIcon} alt="삭제" />
               </DeleteButton>
             </HeaderGroup>
@@ -117,34 +131,33 @@ export default function GoalStepsModal({ open, onClose, goalId }) {
           </Steps>
         </Content>
       </Body>
+
+      {/* 삭제 확인 모달 */}
+      <ConfirmMoal
+        open={confirmOpen}
+        onConfirm={handleConfirmDelete}
+        onCancel={closeConfirm}
+        message="정말 삭제하겠습니까?"
+        confirmText="삭제"
+        cancelText="취소"
+      />
     </PageModal>
   );
 }
 
 const Body = styled.div`
-  /* 모달 내부 전체를 수직 레이아웃으로 구성 */
   display: flex;
   flex-direction: column;
-
-  /* PageModal이 높이를 제공한다는 가정하에, 100% 높이로 컨텐츠 영역 확보 */
   height: 100%;
-  min-height: 0; /* 자식 overflow가 작동하도록 중요 */
+  min-height: 0;
 `;
 
 const HeaderWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px; /* Header, Title, WarmMsg 간격 */
+  gap: 8px;
   margin: 12px 0 16px;
-
-  /* 헤더가 스크롤 영역 위에 고정되길 원하면 주석 해제
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--bg-1);
-  padding-top: 8px;
-  */
 `;
 
 const Header = styled.header`
@@ -153,7 +166,7 @@ const Header = styled.header`
   margin: 0 auto;
 
   display: flex;
-  justify-content: center;  /* 그룹을 가운데 배치 */
+  justify-content: center;
   align-items: center;
 `;
 
@@ -167,7 +180,7 @@ const DueDate = styled.span`
   color: var(--text-2, #6F737B);
   font-size: var(--fs-lg, 16px);
   font-weight: 500;
-  line-height: var(--lh-l, 100%); /* 16px */
+  line-height: var(--lh-l, 100%);
   letter-spacing: var(--ls-2, 0);
 `;
 
@@ -193,7 +206,7 @@ const WarmMsg = styled.p`
   color: var(--text-2, #6F737B);
   font-size: var(--fs-xs, 12px);
   font-weight: 400;
-  line-height: var(--lh-l, 140%); /* 16.8px */
+  line-height: var(--lh-l, 140%);
   letter-spacing: var(--ls-2, 0);
   text-align: center;
   margin: 0;
@@ -212,10 +225,10 @@ const Content = styled.div`
 `;
 
 const FrogWrap = styled.div`
-  flex: 0 0 10vw;     /* 세로 바 폭 */
+  flex: 0 0 10vw;
   display: flex;
   justify-content: center;
-  align-items: stretch;   /* 부모 높이를 그대로 차지하도록 */
+  align-items: stretch;
 `;
 
 const Steps = styled.ul`
@@ -225,7 +238,6 @@ const Steps = styled.ul`
   gap: 5%;
   min-width: 0;
 
-  /* 첫/마지막 아이템 그림자, 둥근 모서리 클리핑 방지 */
   padding: 1.5%;
   padding-block: calc(1.5% + 12px);
   scroll-padding-top: 12px;
@@ -234,21 +246,18 @@ const Steps = styled.ul`
   overflow-y: auto;
   overscroll-behavior: contain;
 
-  /* ✅ 스크롤 없을 때만 중앙 정렬 */
   ${({ $center }) => ($center ? "justify-content: center;" : "justify-content: flex-start;")}
 `;
 
-/* Step 리스트 아이템 */
 const StepItem = styled.li`
   display: flex;
   width: 92%;
   padding: 3% 8%;
   flex-direction: column;
   align-items: flex-start;
-  gap: 5%; /* 날짜와 타이틀 줄 간격 */
+  gap: 5%;
   border-radius: 16px;
   background: var(--natural-0, #FFF);
-  /* shadow */
   box-shadow:
     -0.3px -0.3px 5px 0 var(--natural-400, #D6D9E0),
      0.3px  0.3px 5px 0 var(--natural-400, #D6D9E0);
@@ -259,7 +268,6 @@ const StepDate = styled.span`
   white-space: nowrap;
 `;
 
-/* 타이틀 줄: 타이틀 왼쪽, 아이콘 오른쪽 */
 const StepTitleRow = styled.div`
   display: flex;
   align-items: center;
@@ -280,7 +288,6 @@ const StepTitle = styled.span`
   letter-spacing: var(--ls-1, 0.6px);
 `;
 
-/* 우측 details 삼각형 버튼 */
 const DetailsBtn = styled.button`
   flex: 0 0 auto;
   display: inline-flex;
