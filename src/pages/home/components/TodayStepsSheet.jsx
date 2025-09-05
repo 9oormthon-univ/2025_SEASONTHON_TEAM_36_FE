@@ -7,30 +7,14 @@ import dragUp from "@/assets/images/drag-up.svg";
 import SheetListSection from "./SheetListSection";
 import TodayStepsList from "./TodayStepsList";
 
-import homeGoals from "../store/todos.mock.json";
 import DailyCheckInModal from "../modals/DailyCheckInModal";
 import PauseSplash from "../modals/PauseSplash";
 import { getDailyShown, markDailyShown } from "../utils/storage";
-import { buildBaseGroupsFromSteps, applyPlayingState } from "../utils/steps";
+import { applyPlayingState } from "../utils/steps";
+import { startStep, stopStep } from "@/apis/step"; // 서버 기록 API
+import { getTodayAndPastLists } from "../utils/stepsView";
 
 const PEEK_HEIGHT = 58;
-
-/** !!! API !!! 하드코딩된 steps 포함 샘플 데이터 */
-const SAMPLE = {
-  dDay: "D-10",
-  title: "우물밖개구리 프로젝트",
-  endDate: "2025-09-05",
-  progressText: "개구리가 햇빛을 보기 시작했어요!",
-  progress: 50,
-  steps: [
-    { stepDate: "2025-09-02", stepOrder: 1, description: "ToDo ERD 설계", count: 0, isCompleted: false },
-    { stepDate: "2025-09-03", stepOrder: 2, description: "ToDo ERD 설계2", count: 0, isCompleted: false },
-    { stepDate: "2025-09-04", stepOrder: 3, description: "ToDo ERD 설계3", count: 0, isCompleted: false },
-    { stepDate: "2025-09-05", stepOrder: 4, description: "ToDo ERD 설계4", count: 0, isCompleted: false },
-    { stepDate: "2025-09-05", stepOrder: 5, description: "ToDo ERD 설계5", count: 0, isCompleted: false },
-    { stepDate: "2025-09-06", stepOrder: 6, description: "ToDo ERD 설계6", count: 0, isCompleted: false },
-  ],
-};
 
 export default function TodayStepsSheet({ goalId, onHeightChange }) {
   const [open, setOpen] = React.useState(false);
@@ -40,6 +24,10 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
   // 하루 1회 체크인 모달
   const [modalOpen, setModalOpen] = React.useState(false);
   const [dailyShown, setDailyShown] = React.useState(false);
+
+  // 서버 데이터 (오늘/과거 분리)
+  const [parted, setParted] = React.useState({ meta: null, today: [], past: [] });
+  const [loading, setLoading] = React.useState(false);
 
   // Step/재생 상태
   const [selectedStep, setSelectedStep] = React.useState(null);
@@ -52,6 +40,9 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
   const [startTimes, setStartTimes] = React.useState({});
   const [endTimes, setEndTimes] = React.useState({});
 
+  // 동작 중복 방지
+  const actionBusyRef = React.useRef(false);
+
   // 오늘 DailyCheckInModal 이미 보여줬는지 확인
   React.useEffect(() => {
     setDailyShown(getDailyShown());
@@ -62,20 +53,47 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
     setDailyShown(true);
   }, []);
 
-  // 부모에서 내려준 id 사용(+ 폴백)
-  const targetId = React.useMemo(
-    () => (goalId ?? homeGoals?.contents?.[0]?.id ?? null),
-    [goalId]
-  );
+  // 서버에서 '오늘/과거' 분리 리스트 로드
+  React.useEffect(() => {
+    let alive = true;
+    if (goalId == null) {
+      setParted({ meta: null, today: [], past: [] });
+      return;
+    }
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await getTodayAndPastLists(goalId);
+        if (alive) setParted(res ?? { meta: null, today: [], past: [] });
+      } catch (e) {
+        console.error("[TodayStepsSheet] getTodayAndPastLists error:", e);
+        if (alive) {
+          setParted({ meta: null, today: [], past: [] });
+          alert(e?.message ?? "할 일(step) 목록을 불러오지 못했습니다.");
+        }
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [goalId]);
 
-  // !!! API !!! 더미 데이터 사용
-  const data = SAMPLE;
+  // 리스트 → UI 아이템 (기본 state=pause) + stepId 포함
+  const toPaused = React.useCallback((prefix) => (s, i) => ({
+    id: `${prefix}-${s.stepId ?? s.stepOrder ?? i}`, // 내부용 고유키
+    title: s.description ?? "",
+    state: "pause",
+    stepId: s.stepId ?? null, // 서버 호출용
+  }), []);
 
-  // 섹션 그룹핑 (기본은 전부 pause)
-  const baseGroups = React.useMemo(
-    () => buildBaseGroupsFromSteps(data?.steps ?? []),
-    [data]
-  );
+  const baseGroups = React.useMemo(() => {
+    const todayItems = parted.today.map(toPaused("today"));
+    const pastItems = parted.past.map(toPaused("past"));
+    return [
+      { id: "today", title: "오늘 할 일", defaultOpen: true, items: todayItems },
+      { id: "past", title: "이월된 일", defaultOpen: true, items: pastItems },
+    ];
+  }, [parted.today, parted.past, toPaused]);
 
   // 재생 상태 반영
   const groups = React.useMemo(
@@ -83,45 +101,97 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
     [baseGroups, playingKey]
   );
 
-  // goal 전환 시 재생 종료 기록
-  const prevTargetRef = React.useRef(targetId);
+  // goalId 전환 시 재생 종료 기록(+ 서버 stop)
+  const prevGoalRef = React.useRef(goalId);
   React.useEffect(() => {
-    if (prevTargetRef.current !== targetId) {
-      if (playingKey) {
-        setEndTimes((prev) => ({ ...prev, [playingKey]: new Date() }));
+    if (prevGoalRef.current !== goalId) {
+      const prevKey = playingKey;
+      if (prevKey) {
+        // 현재 그룹에서 이전 아이템 찾아 stepId 획득
+        const allItems = groups.flatMap((g) => g.items);
+        const prevItem = allItems.find((it) => it.id === prevKey);
+        const prevStepId = prevItem?.stepId ?? null;
+
+        (async () => {
+          try {
+            if (prevStepId != null) await stopStep(prevStepId);
+          } catch (e) {
+            console.error("[TodayStepsSheet] stop on goal change failed:", e);
+          }
+        })();
+
+        // 로컬 종료 기록
+        setEndTimes((prev) => ({ ...prev, [prevKey]: new Date() }));
         setPlayingKey(null);
       }
-      prevTargetRef.current = targetId;
+      prevGoalRef.current = goalId;
     }
-  }, [targetId, playingKey]);
+  }, [goalId, playingKey, groups]);
 
-  // 액션 (재생/정지)
-  const handleAction = (it) => {
-    const isPlaying = playingKey === it.id;
-    setSelectedStep(it);
+  // 액션 (재생/정지) → 서버 start/stop 기록
+  const handleAction = async (it) => {
+    if (actionBusyRef.current) return;
+    actionBusyRef.current = true;
+    try {
+      const isPlaying = playingKey === it.id;
+      setSelectedStep(it);
 
-    if (isPlaying) {
-      // 정지
-      setPauseOpen(true);
-      setModalOpen(false);
-      setPlayingKey(null);
-      setEndTimes((prev) => ({ ...prev, [it.id]: new Date() }));
-    } else {
-      // 다른 step이 재생 중이면 종료 기록
-      if (playingKey && playingKey !== it.id) {
-        setEndTimes((prev) => ({ ...prev, [playingKey]: new Date() }));
+      if (isPlaying) {
+        // ===== 정지 처리 =====
+        setPauseOpen(true);
+        setModalOpen(false);
+        setPlayingKey(null);
+        setEndTimes((prev) => ({ ...prev, [it.id]: new Date() }));
+
+        if (it.stepId != null) {
+          try {
+            await stopStep(it.stepId);
+          } catch (e) {
+            console.error("[TodayStepsSheet] stopStep error:", e);
+            alert(e?.message ?? "정지 로그 저장에 실패했습니다.");
+          }
+        }
+      } else {
+        // 다른 항목이 재생 중이면 일단 종료 
+        if (playingKey && playingKey !== it.id) {
+          // 이전 아이템 찾아 stepId
+          const allItems = groups.flatMap((g) => g.items);
+          const prevItem = allItems.find((x) => x.id === playingKey);
+          const prevStepId = prevItem?.stepId ?? null;
+
+          setEndTimes((prev) => ({ ...prev, [playingKey]: new Date() }));
+          if (prevStepId != null) {
+            try {
+              await stopStep(prevStepId);
+            } catch (e) {
+              console.error("[TodayStepsSheet] stopStep(prev) error:", e);
+            }
+          }
+        }
+
+        // 새 항목 재생 시작 
+        setPlayingKey(it.id);
+        setPauseOpen(false);
+        setStartTimes((prev) => ({ ...prev, [it.id]: new Date() }));
+        // 과거 종료 시각 초기화
+        setEndTimes((prev) => {
+          const { [it.id]: _, ...rest } = prev;
+          return rest;
+        });
+
+        if (it.stepId != null) {
+          try {
+            await startStep(it.stepId);
+          } catch (e) {
+            console.error("[TodayStepsSheet] startStep error:", e);
+            alert(e?.message ?? "시작 로그 저장에 실패했습니다.");
+          }
+        }
+
+        if (!dailyShown) setModalOpen(true);
       }
-      // 새 항목 재생
-      setPlayingKey(it.id);
-      setPauseOpen(false);
-      setStartTimes((prev) => ({ ...prev, [it.id]: new Date() }));
-      // 과거 종료 시각 초기화(선택)
-      setEndTimes((prev) => {
-        const { [it.id]: _, ...rest } = prev;
-        return rest;
-      });
-      // 하루 1회 체크인 모달
-      if (!dailyShown) setModalOpen(true);
+    } finally {
+      actionBusyRef.current = false;
     }
   };
 
@@ -151,11 +221,11 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
               </TopRow>
             </TopBar>
 
-            <ScrollArea role="list">
+            <ScrollArea role="list" aria-busy={loading}>
               {groups.map((g) => (
                 <SheetListSection key={g.id} title={g.title} defaultOpen={g.defaultOpen}>
                   <TodayStepsList
-                    items={g.items}
+                    items={g.items}          // 각 item에 stepId 포함
                     onAction={handleAction}
                     startTimes={startTimes}
                     endTimes={endTimes}
@@ -181,7 +251,7 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
       <DailyCheckInModal
         open={modalOpen}
         onClose={handleCloseDaily}
-        title={data?.title ?? "목표"}
+        title={parted.meta?.title ?? "목표"}
         step={selectedStep}
         isPlaying={!!playingKey}
       />
@@ -191,7 +261,6 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
   );
 }
 
-/* ===== styled ===== */
 const SheetBody = styled.div`
   display: flex;
   flex-direction: column;

@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import playIcon from "@/assets/images/play.svg";
-import pauseIcon from "@/assets/images/pause.svg";
+import StepActionBtn from "./StepActionBtn";
 
 /**
  * TodayStepsList
@@ -20,9 +19,6 @@ export default function TodayStepsList({
     <List role="list">
       {items.map((it) => {
         const isPlaying = it.state === "play";
-        const aria = isPlaying ? "중지" : "시작";
-        const iconSrc = isPlaying ? pauseIcon : playIcon;
-
         const startedAt = startTimes?.[it.id] ?? null;
         const endedAt = endTimes?.[it.id] ?? null;
 
@@ -40,13 +36,11 @@ export default function TodayStepsList({
                 </Times>
               )}
 
-              <PlayBtn
-                type="button"
-                aria-label={aria}
+              <StepActionBtn
+                isPlaying={isPlaying}
                 onClick={() => onAction?.(it)}
-              >
-                <IconImg src={iconSrc} alt="" aria-hidden="true" />
-              </PlayBtn>
+                size={29}
+              />
             </Right>
           </Item>
         );
@@ -127,20 +121,4 @@ const Separator = styled.span`
   display: inline-block;
   padding: 0 2px;
   opacity: 0.7;
-`;
-
-const PlayBtn = styled.button`
-  appearance: none;
-  border: 0;
-  cursor: pointer;
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const IconImg = styled.img`
-  width: 29px;
-  height: 29px;
-  display: block;
 `;
