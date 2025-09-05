@@ -98,7 +98,6 @@ const Goal = ({ goalId, goal, steps, handleModifyStep, handleDeleteStep }) => {
                   setIsModify(tmp);
                 }}
                 handleModifyStep={() => {
-                  console.log(updateSteps[index]);
                   handleModifyStep(goalId, step.id, updateSteps[index]);
                 }}
                 handleDeleteStep={() => {
