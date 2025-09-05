@@ -2,7 +2,11 @@ import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import AppLayout from './layout/AppLayout';
+import DiaryLayout from './layout/DiaryLayout';
 import ProtectedRoute from './layout/ProtectedRoute';
+import Diary from './pages/diary';
+import Read from './pages/diary/Read';
+import Write from './pages/diary/Write';
 import HomePage from './pages/home';
 import Login from './pages/login';
 import OAuthCallback from './pages/oauth';
@@ -32,6 +36,10 @@ function App() {
             <Route path="/calendar" element={<Screen title="캘린더" />} />
             <Route path="/diary" element={<Diary />} />
             <Route path="/profile" element={<Screen title="프로필" />} />
+          </Route>
+          <Route element={<DiaryLayout />}>
+            <Route path="/diary/writing" element={<Write />} />
+            <Route path="/diary/:id" element={<Read />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
