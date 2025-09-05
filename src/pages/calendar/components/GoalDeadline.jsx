@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import ModifyImg from '../../../assets/images/modify.png';
 import GreenButton from '../../../common/components/GreenButton';
+import Input from './Input';
 import Title from './Title';
 
 const GoalDeadlineStyle = styled.div`
@@ -11,20 +12,6 @@ const GoalDeadlineStyle = styled.div`
   align-items: center;
   width: 100%;
   padding: 56px 37px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  border: none;
-  border-bottom: ${props => (props.disabled ? 'none' : '1px solid black')};
-  padding: 4px 0;
-  background: none;
-  color: black;
-  font-size: var(--fs-lg);
-  font-weight: 500;
-  &:focus {
-    outline: none;
-  }
 `;
 
 const SizedBox = styled.div`
@@ -102,6 +89,7 @@ const GoalDeadline = ({ steps, setStatus, setStepsOfNewGoal, handleShowModal }) 
                 value={step.description}
                 disabled={true}
                 onChange={e => handleChange(index, e.target.value)}
+                $fontSize={'var(--fs-lg)'}
                 autoFocus={false}
               />
               <button style={{ marginLeft: '11.5px' }} onClick={() => handleEditClick(index)}>

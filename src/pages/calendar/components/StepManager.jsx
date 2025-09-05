@@ -58,13 +58,21 @@ const StepManager = ({ isModify, setIsModify, handleModifyStep, handleDeleteStep
     <StepManagerStyle>
       <MoreButton
         onClick={() => {
-          isModify ? handleModifyStep() : handleShowManager();
+          if (isModify) {
+            handleModifyStep();
+            setIsModify(prev => !prev);
+          } else handleShowManager();
         }}
       >
         <img src={MoreImg} alt="더보기" width="24" height="24" />
       </MoreButton>
       <StepManagerOptions ref={managerRef} $isShowing={isShowing}>
-        <StepManagerOption onClick={() => setIsModify(prev => !prev)}>
+        <StepManagerOption
+          onClick={() => {
+            setIsModify(prev => !prev);
+            handleShowManager();
+          }}
+        >
           <span>수정하기</span>
           <img src={ModifyImg} alt="수정" width="18" height="18" />
         </StepManagerOption>

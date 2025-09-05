@@ -26,9 +26,8 @@ const CalendarScreen = () => {
     (goalId, stepId, description) => {
       modifyStep(stepId, description).then(resp => {
         const tmpAllToDo = { ...allToDo };
-        console.log(tmpAllToDo);
-        console.log(resp);
         const steps = tmpAllToDo[dateToFormatString(date)][goalId].steps;
+
         steps.forEach(step => {
           if (step.id === stepId) step.name = description;
         });

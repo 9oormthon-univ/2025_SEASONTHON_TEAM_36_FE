@@ -52,21 +52,13 @@ const StepCheckBox = styled.div`
   border-radius: 4px;
 `;
 
-const StepName = styled.span`
-  font-size: var(--fs-md);
-  font-weight: 500;
-`;
-
 const Goal = ({ goalId, goal, steps, handleModifyStep, handleDeleteStep }) => {
   const [updateSteps, setUpdateSteps] = useState([]);
   const [isModify, setIsModify] = useState(steps.map(_ => false));
 
   useEffect(() => {
-    setBackupSteps(steps);
     setUpdateSteps(steps);
   }, [steps]);
-
-  console.log(isModify);
 
   return (
     <GoalStyle>
@@ -76,16 +68,19 @@ const Goal = ({ goalId, goal, steps, handleModifyStep, handleDeleteStep }) => {
       </GoalContainer>
       <StepList>
         {steps.map((step, index) => {
+          console.log(updateSteps[index]);
           return (
             <Step key={step.id} id={step.id}>
               <StepContent>
                 <StepCheckBox $did={step.done} />
                 <Input
                   type="text"
-                  value={step.name}
+                  value={updateSteps[index]?.name}
                   disabled={!isModify[index]}
                   onChange={e => {
-                    setUpdateSteps(e.target.value);
+                    const tmpSteps = [...updateSteps];
+                    tmpSteps[index].name = e.target.value;
+                    setUpdateSteps(tmpSteps);
                   }}
                   $fontSize={'var(--fs-md)'}
                 />
@@ -98,7 +93,7 @@ const Goal = ({ goalId, goal, steps, handleModifyStep, handleDeleteStep }) => {
                   setIsModify(tmp);
                 }}
                 handleModifyStep={() => {
-                  handleModifyStep(goalId, step.id, updateSteps[index]);
+                  handleModifyStep(goalId, step.id, updateSteps[index].name);
                 }}
                 handleDeleteStep={() => {
                   handleDeleteStep(goalId, step.id);
