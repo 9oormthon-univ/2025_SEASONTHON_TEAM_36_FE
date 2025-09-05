@@ -29,22 +29,21 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Login />} />
-          <Route path="/oauth/callback/kakao" element={<OAuthCallback />} />
-          <Route path="/signup/done" element={<SignUpDone />} />
-          <Route element={<AppLayout />}>
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/diary" element={<Diary />} />
-            <Route path="/profile" element={<Screen title="프로필" />} />
-          </Route>
-          <Route element={<DiaryLayout />}>
-            <Route path="/diary/writing" element={<Write />} />
-            <Route path="/diary/:id" element={<Read />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
+        <Route element={<ProtectedRoute />}></Route>
+        <Route path="/" element={<Login />} />
+        <Route path="/oauth/callback/kakao" element={<OAuthCallback />} />
+        <Route path="/signup/done" element={<SignUpDone />} />
+        <Route element={<AppLayout />}>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/diary" element={<Diary />} />
+          <Route path="/profile" element={<Screen title="프로필" />} />
         </Route>
+        <Route element={<DiaryLayout />}>
+          <Route path="/diary/writing" element={<Write />} />
+          <Route path="/diary/:id" element={<Read />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
