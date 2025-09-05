@@ -42,17 +42,20 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
   // PauseSplash 모달 상태
   const [pauseOpen, setPauseOpen] = React.useState(false);
 
+  // 시작/종료 시각 저장용: { [itemId]: Date }
+  const [startTimes, setStartTimes] = React.useState({});
+  const [endTimes, setEndTimes] = React.useState({});
+
   // 부모에서 내려준 id 사용(+ 폴백)
   const targetId = React.useMemo(
     () => (goalId ?? homeGoals?.contents?.[0]?.id ?? null),
     [goalId]
   );
 
-  // !!! API !!!
-  // 더미 데이터 사용
+  // !!! API !!! 더미 데이터 사용
   const data = SAMPLE;
 
-  // ===== 1) 섹션 분류(오늘/미래=prep, 과거=carried) + 모든 아이템 기본 pause =====
+  // ===== 섹션 분류(오늘/미래=prep, 과거=carried) + 모든 아이템 기본 pause =====
   const baseGroups = React.useMemo(() => {
     if (!data) {
       return [
@@ -103,11 +106,6 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
     ];
   }, [data]);
 
-  // goalId 바뀌면 모두 pause로 초기화
-  React.useEffect(() => {
-    setPlayingKey(null);
-  }, [targetId]);
-
   // 렌더링 시, 현재 playingKey에 맞춰 상태 반영
   const groups = React.useMemo(() => {
     return baseGroups.map((g) => ({
@@ -119,21 +117,61 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
     }));
   }, [baseGroups, playingKey]);
 
+  // goalId(=targetId) 변경 시: 재생 중이던 step을 종료 처리(+ 종료시간 기록) 후 재생 해제
+  const prevTargetRef = React.useRef(targetId);
+  React.useEffect(() => {
+    if (prevTargetRef.current !== targetId) {
+      if (playingKey) {
+        setEndTimes((prev) => ({
+          ...prev,
+          [playingKey]: new Date(),
+        }));
+        setPlayingKey(null);
+      }
+      prevTargetRef.current = targetId;
+    }
+  }, [targetId, playingKey]);
+
   // 액션 (재생/정지)
   const handleAction = (it) => {
     const isPlaying = playingKey === it.id;
     setSelectedStep(it);
 
     if (isPlaying) {
-      // 현재 재생 중 → 다시 누르면 PauseSplash 오픈
+      // 같은 항목을 다시 눌러 정지
       setPauseOpen(true);
       setModalOpen(false);
       setPlayingKey(null);
+
+      // 시작 시각은 유지, 종료 시각만 기록
+      setEndTimes((prev) => ({
+        ...prev,
+        [it.id]: new Date(),
+      }));
     } else {
-      // 재생 시작 → DailyCheckInModal 오픈
+      // 다른 step이 재생 중이면 먼저 종료 기록
+      if (playingKey && playingKey !== it.id) {
+        setEndTimes((prev) => ({
+          ...prev,
+          [playingKey]: new Date(),
+        }));
+      }
+
+      // 새 항목 재생 시작
       setPlayingKey(it.id);
       setModalOpen(true);
       setPauseOpen(false);
+
+      // 시작 시각 기록 (현재 시각)
+      setStartTimes((prev) => ({
+        ...prev,
+        [it.id]: new Date(),
+      }));
+      // 해당 항목의 과거 종료 시각은 재시작 시 초기화(선택)
+      setEndTimes((prev) => {
+        const { [it.id]: _, ...rest } = prev;
+        return rest;
+      });
     }
   };
 
@@ -161,7 +199,12 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
             <ScrollArea role="list">
               {groups.map((g) => (
                 <SheetListSection key={g.id} title={g.title} defaultOpen={g.defaultOpen}>
-                  <TodayStepsList items={g.items} onAction={handleAction} />
+                  <TodayStepsList
+                    items={g.items}
+                    onAction={handleAction}
+                    startTimes={startTimes}
+                    endTimes={endTimes}
+                  />
                 </SheetListSection>
               ))}
             </ScrollArea>
@@ -190,7 +233,7 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
         isPlaying={!!playingKey}
       />
 
-      {/* ✅ 일시정지 스플래시 모달 */}
+      {/* 일시정지 스플래시 모달 */}
       <PauseSplash
         open={pauseOpen}
         onClose={() => setPauseOpen(false)}
@@ -213,12 +256,12 @@ const TopBar = styled.div`
   position: sticky;
   top: 0;
   z-index: 1;
-  background: var(--bg-1);      /* 상단 바 배경 */
+  background: var(--bg-1);
   border-bottom: 1px solid var(--bg-2);
 `;
 
 const TopRow = styled.div`
-  position: relative;           /* 절대배치 버튼 기준 */
+  position: relative;
   min-height: 20px;
 `;
 
@@ -245,7 +288,9 @@ const ScrollArea = styled.div`
 `;
 
 const FloatingArrow = styled.img`
-  position: fixed; left: 50%; transform: translateX(-50%);
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
   bottom: calc(env(safe-area-inset-bottom, 0px) + var(--peek, 58px) + var(--gap, 14px) + var(--navbar-height));
   width: 14px;
   height: auto;
