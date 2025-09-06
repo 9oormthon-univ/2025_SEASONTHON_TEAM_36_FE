@@ -202,7 +202,8 @@ const CheerMsg = styled.p`
 
 const ImgContainer = styled.div`
   position: relative;
-  flex: 1 1 auto;
+  flex: 1 0 70%;         
+  min-height: 0;            /* 줄어드는 상황에서도 넘침 방지 */
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -211,15 +212,19 @@ const ImgContainer = styled.div`
 `;
 
 const Illust = styled.figure`
-  position: absolute;
-  bottom: 3%;
-  width: 80%;
-  height: auto;
+  margin: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
+  display: flex;
+  align-items: flex-end;     /* 아래 정렬 */
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  padding-bottom: 3%;        /* 바닥에서 살짝 띄우기 (옵션) */
   img {
-    width: 100%;
-    height: 100%;
     display: block;
-    object-fit: contain;
+    max-width: 85%;          /* 카드 대비 가로 최대치 */
+    max-height: 96%;         /* 컨테이너 높이를 넘지 않음 */
+    height: auto;
+    object-fit: contain;     /* 비율 유지하며 내부에 맞춤 */
   }
 `;

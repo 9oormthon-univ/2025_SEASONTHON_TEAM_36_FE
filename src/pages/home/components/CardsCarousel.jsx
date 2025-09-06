@@ -79,7 +79,7 @@ function clamp(v, lo, hi) {
 const CarouselWrap = styled.section`
   width: 100%;
   max-width: 560px;
-  margin: 1.2% auto;
+  margin: 5% auto 0;
 `;
 
 const IndicatorRow = styled.div`
