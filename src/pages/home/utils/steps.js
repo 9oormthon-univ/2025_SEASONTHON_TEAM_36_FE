@@ -1,5 +1,4 @@
 // src/pages/home/utils/steps.js
-import { isFutureISO,isTodayISO } from "./dates";
 /**
  * steps 배열(백엔드 도메인) → UI 섹션 2개(prep/carried)로 변환
  * - 완료(isCompleted) 된 항목 제외
