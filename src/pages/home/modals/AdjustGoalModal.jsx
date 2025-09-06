@@ -4,12 +4,14 @@ import styled from "styled-components";
 import { destructToDoByAI } from "@/apis/ai";    // 단계 자동 생성
 import { updateTodo } from "@/apis/todo";        // PUT /api/v1/todos/{todoId}
 
-import FrogRunImg from "../../../assets/images/frog-run.svg";
+import FrogEscapeImg from "../../../assets/images/frog-escape-new.svg";
+// import FrogRunImg from "../../../assets/images/frog-run.svg";
 import FrogNoti from "../../../common/components/FrogNoti";
 import GreenButton from "../../../common/components/GreenButton";
 import PageModal from "../../../common/components/PageModal";
 import GoalDeadline from "../../calendar/components/GoalDeadline";
 import { ModalContainer } from "../styles/ModalContainer";
+
 
 /**
  * 목표 조정 모달
@@ -176,8 +178,8 @@ export default function AdjustGoalModal({ open, onClose, goal, onUpdated}) {
 
       {status === 1 && (
         <FrogNoti
-          topText={"개구리를 탈출시킬 계획을\n다시 수립하고 있어요"}
-          imageSrc={FrogRunImg}
+          topText={"개구리를 탈출시킬 계획을\\n다시 수립하고 있어요"}
+          imageSrc={FrogEscapeImg}
           bottomText={"조금만 기다려주세요..."}
         />
       )}
