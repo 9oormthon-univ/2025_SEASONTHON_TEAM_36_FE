@@ -20,13 +20,13 @@ function formatKoreanDate(d = new Date()) {
 }
 
 // TODO: 실제 데이터 props 또는 API 연결 필요
-export default function Write({ date: dateProp }) {
+export default function Read({ date: dateProp }) {
   const date = dateProp ?? formatKoreanDate(); // 외부 date 우선, 없으면 오늘 날짜
 
   const goals = [
-    { id: 1, name: "Goal 1", note: "마케팅 기획서 작성하기", color: "var(--green-200)" },
-    { id: 2, name: "Goal 2", note: "우물 밖 개구리 프로젝트 작업하기", color: "var(--green-300)" },
-    { id: 3, name: "Goal 3", note: "구름톤 유니브 해커톤 참가하기", color: "var(--green-400)" },
+    { id: 1, name: "LG 전자제품 IMC 기획서 작성", color: "var(--green-200)" },
+    { id: 2, name: "총균쇠 독후감 작성하기", color: "var(--green-300)" },
+    { id: 3, name: "브랜딩 광고 영상 ppt 만들기", color: "var(--green-400)" },
   ];
 
   const photoUrl = null; // URL or null
@@ -43,6 +43,17 @@ export default function Write({ date: dateProp }) {
       <ChartBox>
         <CircleChart />
       </ChartBox>
+            <Legend>
+        {goals.map((g) => (
+          <LegendItem key={g.id}>
+            <LegendLeft>
+              <ColorDot style={{ background: g.color }} />
+              <span className="typo-h4">{g.name}</span>
+            </LegendLeft>
+            {/* <LegendRight className="typo-label-l">{g.note ?? "—"}</LegendRight> */}
+          </LegendItem>
+        ))}
+      </Legend>
       <Section>
         <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
         <Row>
@@ -63,6 +74,7 @@ export default function Write({ date: dateProp }) {
           />
         </Row>
       </Section>
+      
 
       <Section>
         <Label className="typo-h4">오늘의 여정을 끝낸 후</Label>
@@ -264,4 +276,35 @@ const ImageWrapper = styled.div`
     max-height: 100%;
     object-fit: contain;
   }
+`;
+const Legend = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 14px;
+`;
+const LegendItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 2px 0;
+`;
+const LegendLeft = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0; /* ellipsis를 위해 필요 */
+  > span {
+    color: var(--text-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 64vw; /* 이름이 길 때 줄바꿈 대신 말줄임 */
+  }
+`;
+const ColorDot = styled.span`
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
 `;
