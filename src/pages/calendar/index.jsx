@@ -47,8 +47,6 @@ const CalendarScreen = () => {
           step => step.id !== stepId,
         );
         setAllToDo(tmpAllToDo);
-        console.log(tmpAllToDo);
-        console.log(tmpAllToDo[dateToFormatString(date)][goalId].steps);
         if (tmpAllToDo[dateToFormatString(date)][goalId].steps.length === 0) {
           deleteTodo(goalId).then(_ => {
             const tmpAllToDo = { ...allToDo };
@@ -93,6 +91,7 @@ const CalendarScreen = () => {
         )}-${String(date.getDate()).padStart(2, '0')}`;
         setCurToDo(tmpAllToDo[dateToString]);
       });
+
     } catch (error) {
       console.log(error);
     }
