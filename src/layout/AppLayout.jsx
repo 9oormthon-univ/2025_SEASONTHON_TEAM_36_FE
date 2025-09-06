@@ -9,13 +9,18 @@ const Shell = styled.div`
   background: var(--bg-1);
   color: var(--text-1);
 
-  /* iOS safe-area + NavBar 실제 높이(패딩+아이템영역+라벨영역) */
+  /* iOS safe-area 값 */
+  --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --navbar-height: calc(16px + 54px + 34px + var(--safe-bottom));
+
+  --navbar-height: calc(54px + 34px + var(--safe-bottom));
 
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  
+  /* 상단 상태바 여백 */
+  padding-top: var(--safe-top);
 `;
 
 /** 메인 콘텐츠 영역: NavBar 공간만큼 하단 패딩 확보 */
