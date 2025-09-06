@@ -3,6 +3,9 @@ import styled from "styled-components";
 
 import leftBtnDiaryImg from "@/assets/images/left-btn-diary.svg";
 import rightBtnDiaryImg from "@/assets/images/right-btn-diary.svg";
+import starImg from "@/assets/images/stars/star-0.svg";
+
+import { AUGUST, NOVEMBER, OCTOBER, SEPTEMBER } from "./constants/constellation";
 
 const Screen = styled.div`
   /* Main 영역을 꽉 채우도록 flex 설정 */
@@ -37,6 +40,19 @@ const ThisMonth = styled.h1`
   color: white;
   font-size: var(--fs-xl);
 `;
+
+const Constellation = styled.div`
+  position: relative;
+  width: 352px;
+  height: 451px;
+`;
+
+const MONTH = {
+  8: AUGUST,
+  9: SEPTEMBER,
+  10: OCTOBER,
+  11: NOVEMBER,
+};
 
 export default function Diary() {
   const [date, setDate] = useState(new Date());
@@ -85,6 +101,17 @@ export default function Diary() {
           <img src={rightBtnDiaryImg} alt="왼쪽 버튼" width="" height="" />
         </button>
       </NightSkyOfMonth>
+      <Constellation>
+        {MONTH[date.getMonth() + 1] &&
+          Object.keys(MONTH[date.getMonth() + 1]).map(day => {
+            <img
+              src={starImg}
+              alt="별"
+              width={MONTH[date.getMonth() + 1][day].big ? "34.2" : "16"}
+              height={MONTH[date.getMonth() + 1][day].big ? "34.2" : "16"}
+            />;
+          })}
+      </Constellation>
     </Screen>
   );
 }
