@@ -4,7 +4,6 @@ import styled from "styled-components";
 
 import { fetchTodos } from "@/apis/todo"; // 서버 API 호출
 
-import TestTodoButtons from "../../apis/TestTodoButtons";
 import CardsCarousel from "./components/CardsCarousel";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
@@ -82,7 +81,6 @@ export default function HomePage() {
 
   return (
     <Page>
-      <TestTodoButtons />
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
         <DateView />

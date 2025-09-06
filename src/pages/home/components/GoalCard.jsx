@@ -110,7 +110,7 @@ export default function GoalCard({ goal, shrink = 1, className, onDeleted }) {
       <AdjustGoalModal
         open={openAdjust}
         onClose={closeAdjustModal}
-        goalId={goalId}
+        goal={goal}
       />
     </>
   );

@@ -26,7 +26,7 @@ export async function deleteTodo(todoId) {
   const { data } = await mainApi.delete(`${BASE}/${todoId}`, {
     headers: { Accept: 'application/json' },
   });
-  return data; 
+  return data;
 }
 
 /** [PUT] ToDo 목표 재설정 */
@@ -36,7 +36,7 @@ export async function updateTodo(todoId, payload, options = {}) {
     headers: { 'Content-Type': 'application/json' },
     signal: options.signal,
   });
-  return data; 
+  return data;
 }
 
 export default {
