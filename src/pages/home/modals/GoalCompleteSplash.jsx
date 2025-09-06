@@ -24,9 +24,9 @@ export default function GoalCompleteSplash({ open, onClose }) {
   return (
     <PageModal open={open} onClose={onClose} headerVariant="close-right">
       <FrogNoti
-        topText={"해낼 줄 알았어요!"}
+        topText={`해낼 줄 알았어요!`}
         imageSrc={frogCompl}
-        bottomText={"개구리가 우물 탈출에\\n성공했어요!"}
+        bottomText={`개구리가 우물 탈출에\n성공했어요!`}
       />
     </PageModal>
   );

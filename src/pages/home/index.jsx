@@ -84,7 +84,7 @@ export default function HomePage() {
     <Page>
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
-        {!isSheetOpen && <DateView />}
+        <DateView hideYear={isSheetOpen} />
         {hasGoals ? (
           <CardsCarousel
             goals={goals}
