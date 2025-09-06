@@ -12,6 +12,7 @@ import HomePage from "./pages/home";
 import Login from "./pages/login";
 import OAuthCallback from "./pages/oauth";
 import SignUpDone from "./pages/signup";
+import Profile from "./pages/profile";
 
 // 테스트를 위한 임시 페이지 콘텐츠, 추후 삭제 예정
 const Screen = ({ title }) => (
@@ -37,7 +38,7 @@ function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/diary" element={<Diary />} />
-          <Route path="/profile" element={<Screen title="프로필" />} />
+          <Route path="/profile" element={<Profile/>} />
         </Route>
         <Route element={<DiaryLayout />}>
           <Route path="/diary/writing" element={<Write />} />
