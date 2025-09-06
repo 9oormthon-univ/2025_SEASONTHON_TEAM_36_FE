@@ -26,11 +26,22 @@ export async function deleteTodo(todoId) {
   const { data } = await mainApi.delete(`${BASE}/${todoId}`, {
     headers: { Accept: 'application/json' },
   });
-  return data; // 서버가 반환하는 JSON이 있으면 그대로 반환
+  return data;
+}
+
+/** [PUT] ToDo 목표 재설정 */
+export async function updateTodo(todoId, payload, options = {}) {
+  if (todoId == null) throw new Error('todoId is required');
+  const { data } = await mainApi.put(`${BASE}/${todoId}`, payload, {
+    headers: { 'Content-Type': 'application/json' },
+    signal: options.signal,
+  });
+  return data;
 }
 
 export default {
   fetchTodos,
   addTodo,
   deleteTodo,
+  updateTodo,
 };

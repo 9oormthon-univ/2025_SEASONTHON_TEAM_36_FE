@@ -1,12 +1,12 @@
-import { useCallback, useState } from 'react';
-import styled from 'styled-components';
+import { useCallback, useState } from "react";
+import styled from "styled-components";
 
-import GreenButton from '../../../../common/components/GreenButton';
-import TextInput from '../ModalTextInput';
-import CustomDatePicker from './CustomDatePicker';
-import Header from './Header';
-import SubItem from './Input';
-import WeekButtons from './WeekButtons';
+import GreenButton from "../../../../common/components/GreenButton";
+import TextInput from "../ModalTextInput";
+import CustomDatePicker from "./CustomDatePicker";
+import Header from "./Header";
+import SubItem from "./Input";
+import WeekButtons from "./WeekButtons";
 
 const FormStyle = styled.form`
   display: flex;
@@ -27,19 +27,31 @@ const GoalContent = styled.div`
   position: relative;
 `;
 
-const Description = styled.div`
-  color: var(--natural-800);
-  font-size: var(--fs-md);
-  line-height: 24px;
-  letter-spacing: var(--ls-3);
-  white-space: pre-wrap;
+const Textarea = styled.textarea`
+  width: 100%;
+  min-height: 200px;
+  resize: vertical;
+  padding: 12px;
+
+  border-radius: 4px;
+  border: 0.5px solid var(--natural-400);
+  background: var(--bg-1);
+  resize: none;
+
+  &::placeholder {
+    color: var(--natural-800, #6f737b);
+  }
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 const LetterCount = styled.div`
   display: flex;
   position: absolute;
   bottom: 24px;
-  right: 10px;
+  right: 15px;
 `;
 
 const Count = styled.span`
@@ -56,7 +68,30 @@ const Submit = styled.div`
   text-align: center;
 `;
 
-export default function Form({ formContents, setFormContents, handleSubmit }) {
+const Toggle = styled.div`
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
+
+const CheckBox = styled.div`
+  width: 23px;
+  height: 23px;
+  border: ${props => (props.$toggle ? "none" : "1px solid var(--natural-400)")};
+  border-radius: 4px;
+  background-color: ${props => (props.$toggle ? "var(--green-500)" : "#ffffff")};
+  transition: background-color 0.1s linear, border 0.1s linear;
+`;
+
+const EveryDay = styled.span`
+  display: block;
+  margin: 0 8px;
+  font-size: var(--fs-xl);
+`;
+
+export default function Form({ toggle, setToggle, formContents, setFormContents, handleSubmit }) {
   const [curLetterCount, setCurLetterCount] = useState(0);
 
   const isNotAllInput = useCallback(() => {
@@ -89,6 +124,7 @@ export default function Form({ formContents, setFormContents, handleSubmit }) {
     },
     [formContents, handleFormContents],
   );
+
   return (
     <FormStyle
       onSubmit={e => {
@@ -111,27 +147,21 @@ export default function Form({ formContents, setFormContents, handleSubmit }) {
       </SubItem>
       <SubItem title="과제 내용">
         <GoalContent>
-          <Description>
-            {
-              '완료해야 할 일을 상세하게 작성해주세요!\n\nex) 메가커피 마케팅 전략 조사 및 새로운 전략 도출\n\tppt 10장 내로\n\tSWOT 조사 필수'
+          <Textarea
+            className="typo-body-m"
+            placeholder={
+              "완료해야 할 일을 상세하게 작성해주세요!\n\nex)\n메가커피 마케팅 전략 조사 및 새로운 전략 도출\n  ppt 10장 내로\n  SWOT 조사 필수"
             }
-          </Description>
+            maxLength={1000}
+            onChange={e => {
+              if (formContents[1].length >= 1000) {
+                return;
+              }
+              setCurLetterCount(e.target.value.length);
+              handleFormContents(1, e.target.value);
+            }}
+          />
           <BottomLineContainer>
-            <TextInput
-              type="text"
-              name="업무 내용"
-              maxLength="1000"
-              style={{
-                paddingRight: '80px',
-              }}
-              onChange={e => {
-                if (formContents[1].length >= 1000) {
-                  return;
-                }
-                setCurLetterCount(e.target.value.length);
-                handleFormContents(1, e.target.value);
-              }}
-            />
             <LetterCount>
               <Count>{curLetterCount}</Count>
               <Count>/1000</Count>
@@ -146,6 +176,19 @@ export default function Form({ formContents, setFormContents, handleSubmit }) {
         <CustomDatePicker index={3} onChange={handleFormContents} />
       </SubItem>
       <SubItem title="업무 수행 예정일">
+        <Toggle>
+          <CheckBox
+            $toggle={toggle}
+            onClick={() => {
+              const prevFormContents = [...formContents];
+              formContents[4].forEach((_, index) => {
+                prevFormContents[4][index] = !toggle;
+              });
+              setToggle(prev => !prev);
+            }}
+          ></CheckBox>
+          <EveryDay>매일</EveryDay>
+        </Toggle>
         <WeekButtons checkDays={formContents[4]} handleDays={handleDays} />
       </SubItem>
       <Submit>

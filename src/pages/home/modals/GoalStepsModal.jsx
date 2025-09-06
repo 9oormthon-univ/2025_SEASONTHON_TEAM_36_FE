@@ -2,16 +2,18 @@
 import React from "react";
 import styled from "styled-components";
 
+import { deleteTodo } from "@/apis/todo"; // 실제 삭제 API 임포트
 import detailsTri from "@/assets/images/details-tri.svg";
 import trashIcon from "@/assets/images/trash.svg";
 
 import ConfirmModal from "../../../common/components/ConfirmModal";
 import PageModal from "../../../common/components/PageModal";
 import FrogBar from "../components/FrogBar";
+import StepDetailsPopup from "../components/StepDetailsPopup";
 import { DDayIcon } from "../styles/DDayIcon";
 import { getGoalStepsView } from "../utils/stepsView";
 
-export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
+export default function GoalStepsModal({ open, onClose, goalId, onDelete, onDeleted }) {
   const [view, setView] = React.useState(null);   // 뷰 모델(state 단일화)
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
@@ -101,16 +103,35 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
 
   // 삭제 확인 모달 제어
   const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false); // ✅ 삭제 진행 상태
   const openConfirm = () => setConfirmOpen(true);
   const closeConfirm = () => setConfirmOpen(false);
+
+  // 실제 API 호출로 삭제
   const handleConfirmDelete = async () => {
+    if (goalId == null || deleting) return;
+    setDeleting(true);
     try {
-      await onDelete?.(goalId);
-    } finally {
+      await deleteTodo(goalId);          // 서버에서 실제 삭제
+      onDelete?.(goalId);                // 부모가 목록/상태 갱신하도록 콜백 (선택)
+      onDeleted?.();                     // 상위에서 fetch 재실행
       setConfirmOpen(false);
-      onClose?.();
+      onClose?.();                       // 모달 닫기
+    } catch (e) {
+      console.error("삭제 실패:", e);
+      alert("삭제에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setDeleting(false);
     }
   };
+
+  const [detailOpen, setDetailOpen] = React.useState(false);
+  const [selectedStep, setSelectedStep] = React.useState(null);
+  const openDetails = (step) => {
+    setSelectedStep(step);
+    setDetailOpen(true);
+  };
+  const closeDetails = () => setDetailOpen(false);
 
   return (
     <PageModal open={open} onClose={onClose} headerVariant="back-left" viewNavBar>
@@ -127,7 +148,8 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
                 title="삭제"
                 onClick={openConfirm}
                 aria-haspopup="dialog"
-                disabled={loading || error}
+                aria-busy={deleting}
+                disabled={loading || error || deleting} // 삭제중 비활성화
               >
                 <img src={trashIcon} alt="삭제" />
               </DeleteButton>
@@ -150,11 +172,15 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
             $center={centerList}
           >
             {(loading ? [] : vm.steps).map((s) => (
-              <StepItem key={s.stepId ?? s.stepOrder} role="listitem">
+              <StepItem key={s.stepId} role="listitem">
                 <StepDate className="typo-body-s">{s.stepDate}</StepDate>
                 <StepTitleRow>
                   <StepTitle>{s.description}</StepTitle>
-                  <DetailsBtn type="button" aria-label="자세히 보기">
+                  <DetailsBtn
+                    type="button"
+                    aria-label="자세히 보기"
+                    onClick={() => openDetails(s)}
+                  >
                     <img src={detailsTri} alt="" aria-hidden="true" />
                   </DetailsBtn>
                 </StepTitleRow>
@@ -171,9 +197,14 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
         open={confirmOpen}
         onConfirm={handleConfirmDelete}
         onCancel={closeConfirm}
-        message="정말 삭제하겠습니까?"
-        confirmText="삭제"
+        message={deleting ? "삭제 중..." : "정말 삭제하겠습니까?"}
+        confirmText={deleting ? "삭제 중" : "삭제"}
         cancelText="취소"
+      />
+      <StepDetailsPopup
+        open={detailOpen}
+        onClose={closeDetails}
+        step={selectedStep}
       />
     </PageModal>
   );

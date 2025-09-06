@@ -6,6 +6,7 @@ const Day = styled.div`
   background-color: ${props => (props.$checked ? 'var(--green-500)' : 'var(--natural-200)')};
   color: ${props => (props.$checked ? 'white' : 'black')};
   font-size: var(--fs-sm);
+  transition: background-color 0.1s linear, color 0.1s linear;
 `;
 
 const Days = styled.div`

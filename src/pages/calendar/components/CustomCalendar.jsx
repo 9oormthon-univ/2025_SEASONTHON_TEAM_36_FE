@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
-import Calendar from 'react-calendar';
+import { useCallback, useEffect, useState } from "react";
+import Calendar from "react-calendar";
 
-import { calendarApi } from '../../../apis/calendar';
-import LeftArrow from '../../../assets/images/left-arrow.png';
-import RightArrow from '../../../assets/images/right-arrow.png';
-import { dateToFormatString } from '../utils/dateUtils';
+import { calendarApi } from "../../../apis/calendar";
+import LeftArrow from "../../../assets/images/left-arrow.png";
+import RightArrow from "../../../assets/images/right-arrow.png";
+import { dateToFormatString } from "../utils/dateUtils";
 
 const CustomCalendar = ({
   curDate,
@@ -16,13 +16,17 @@ const CustomCalendar = ({
   monthMode,
   handleMonthMode,
 }) => {
-  const [stepCountOfDay, setStepCountOfDay] = useState(null);
+  const [percentageOfDay, setPercentageOfDay] = useState(null);
 
   useEffect(() => {
     try {
       const getResponse = async () => {
         const response = await calendarApi(curDate.getFullYear(), curDate.getMonth() + 1);
-        setStepCountOfDay(response);
+        const tmpPercentageOfDay = {};
+        response?.calendar.forEach(value => {
+          tmpPercentageOfDay[value.calendarDate] = value.percentage;
+        });
+        setPercentageOfDay(tmpPercentageOfDay);
       };
       getResponse();
     } catch (error) {
@@ -35,14 +39,14 @@ const CustomCalendar = ({
     return (
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '20px',
-          height: '20px',
-          backgroundColor: isSameDate ? 'var(--natural-400)' : 'transparent',
-          borderRadius: '50%',
-          fontSize: 'var(--fs-xs)',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "20px",
+          height: "20px",
+          backgroundColor: isSameDate ? "var(--natural-400)" : "transparent",
+          borderRadius: "50%",
+          fontSize: "var(--fs-xs)",
         }}
       >
         {date.getDate().toString()}
@@ -51,29 +55,27 @@ const CustomCalendar = ({
   };
 
   const selectGreen = useCallback(ratio => {
-    if (ratio <= 20) return 'var(--green-100)';
-    if (ratio <= 40) return 'var(--green-200)';
-    if (ratio <= 60) return 'var(--green-300)';
-    if (ratio <= 80) return 'var(--green-400)';
-    return 'var(--green-500)';
+    if (ratio <= 20) return "var(--green-100)";
+    if (ratio <= 40) return "var(--green-200)";
+    if (ratio <= 60) return "var(--green-300)";
+    if (ratio <= 80) return "var(--green-400)";
+    return "var(--green-500)";
   }, []);
 
   const getTileContent = ({ activeStartDate, date, view }) => {
     // 월 보기일 때만 div 추가
-    if (view === 'month') {
-      const isSameDate = stepCountOfDay?.calendar.length
-        ? dateToFormatString(date) === stepCountOfDay?.calendar[0].calendarDate
-        : false;
-      const percentage = isSameDate ? stepCountOfDay?.calendar[0].percentage : 0;
+    if (view === "month") {
+      const isSameDate = percentageOfDay ? percentageOfDay[date] !== null : false;
+      const percentage = percentageOfDay && (percentageOfDay[date] ?? 0);
       return (
         <div
           style={{
-            width: '23px',
-            height: '23px',
-            border: isSameDate && percentage ? 'none' : '1px solid var(--natural-400)',
-            backgroundColor: isSameDate && percentage ? selectGreen(percentage) : '#ffffff',
-            borderRadius: '4px',
-            marginBottom: '2px',
+            width: "23px",
+            height: "23px",
+            border: isSameDate && percentage ? "none" : "1px solid var(--natural-400)",
+            backgroundColor: isSameDate && percentage ? selectGreen(percentage) : "#ffffff",
+            borderRadius: "4px",
+            marginBottom: "2px",
           }}
         ></div>
       );
@@ -82,7 +84,7 @@ const CustomCalendar = ({
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: "relative" }}>
       <Calendar
         onClickDay={(value, event) => {
           handleToDo(value);
@@ -141,20 +143,20 @@ const CustomCalendar = ({
       />
       <span
         style={{
-          borderRadius: '10px',
-          padding: '4px 10px',
-          backgroundColor: 'var(--natural-200)',
-          fontSize: 'var(--fs-xs)',
-          cursor: 'pointer',
-          position: 'absolute',
-          top: '16px',
-          right: '25px',
+          borderRadius: "10px",
+          padding: "4px 10px",
+          backgroundColor: "var(--natural-200)",
+          fontSize: "var(--fs-xs)",
+          cursor: "pointer",
+          position: "absolute",
+          top: "16px",
+          right: "25px",
         }}
         onClick={_ => {
           handleMonthMode();
         }}
       >
-        {monthMode ? '월' : '주'}
+        {monthMode ? "월" : "주"}
       </span>
     </div>
   );
