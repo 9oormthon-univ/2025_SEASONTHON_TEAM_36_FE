@@ -154,7 +154,7 @@ const Modal = ({ open, handleAllToDo, handleShowModal }) => {
         />
       ) : status === 1 ? (
         <FrogNoti
-          topText="개구리를 탈출시킬 계획을\n다시 수립하고 있어요"
+          topText="개구리가 우물을 탈출할\n계획을 짜고 있어요"
           imageSrc={FrogEscapeImg}
           bottomText="조금만 기다려주세요..."
         />
