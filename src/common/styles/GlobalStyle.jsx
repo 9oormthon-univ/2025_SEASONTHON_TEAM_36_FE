@@ -224,7 +224,7 @@ export const GlobalStyle = createGlobalStyle`
 
 
   /* ===== 5) Global base ===== */
-  html, body, #root { height: 100%; }
+  html, body, #root { height: 100%; overflow-x: hidden;}
   body {
     margin: 0;
     background: var(--bg-1);

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import { fetchSteps, startStep, stopStep } from "@/apis/step";
 
 /**
@@ -84,8 +85,8 @@ export default function TestStepButtons() {
         {loading
           ? "⏳ 요청 중..."
           : result
-          ? JSON.stringify(result, null, 2)
-          : "👉 API 호출 결과가 여기에 표시됩니다."}
+            ? JSON.stringify(result, null, 2)
+            : "👉 API 호출 결과가 여기에 표시됩니다."}
       </pre>
     </div>
   );

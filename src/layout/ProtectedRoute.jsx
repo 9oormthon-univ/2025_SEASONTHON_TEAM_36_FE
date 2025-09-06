@@ -1,6 +1,7 @@
-import { getAccessToken } from '../common/utils/token';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
+
 import { loginRoutes, noLoginRoutes } from '../common/utils/routes';
+import { getAccessToken } from '../common/utils/token';
 
 const ProtectedRoute = () => {
   const location = useLocation();
