@@ -1,31 +1,17 @@
 // FrogPage.jsx
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 export default function FrogNoti({
-  topText = '', //
+  topText = "", //
   imageSrc, // 개구리 이미지를 받아옴
-  bottomText = '',
+  bottomText = "",
 }) {
   return (
     <Container>
-      <TopText className="typo-h2">
-        {topText.split('\\n').map((line, idx) => (
-          <span key={idx}>
-            {line}
-            <br />
-          </span>
-        ))}
-      </TopText>
+      <TopText>{topText}</TopText>
       {imageSrc && <FrogImg src={imageSrc} alt="" />}
-      <BottomText className="typo-h3">
-        {bottomText.split('\\n').map((line, idx) => (
-          <span key={idx}>
-            {line}
-            <br />
-          </span>
-        ))}
-      </BottomText>
+      <BottomText>{bottomText}</BottomText>
     </Container>
   );
 }
@@ -46,6 +32,7 @@ const Container = styled.div`
 const TopText = styled.h2`
   color: var(--text-1, #000);
   text-align: center;
+  white-space: pre-wrap;
   line-height: 1.7;
 `;
 
@@ -57,4 +44,5 @@ const FrogImg = styled.img`
 const BottomText = styled.h3`
   color: var(--text-3, #666);
   text-align: center;
+  white-space: pre-wrap;
 `;
