@@ -9,7 +9,7 @@ export default function DateView({ hideYear = false }) {
   return (
     <DateBox>
       {!hideYear && <Year className="typo-h2">{year}</Year>}
-      <DateLine className="typo-h1">{dateStr}</DateLine>
+      <DateLine className={hideYear ? "typo-h2" : "typo-h1"}>{dateStr}</DateLine>
     </DateBox>
   );
 }
