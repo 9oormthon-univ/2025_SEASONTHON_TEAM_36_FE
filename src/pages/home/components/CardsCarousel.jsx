@@ -83,7 +83,6 @@ const CarouselWrap = styled.section`
 `;
 
 const IndicatorRow = styled.div`
-  margin-top: 8px;
   display: flex;
   justify-content: center;
 `;
