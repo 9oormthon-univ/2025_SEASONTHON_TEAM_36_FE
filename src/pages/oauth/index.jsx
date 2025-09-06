@@ -11,7 +11,6 @@ const OAuthCallback = () => {
   const accessToken = searchParams.get("accessToken");
 
   useEffect(() => {
-    console.log(accessToken);
     if (accessToken) {
       setCookie("access_token", accessToken, 3600 * 7);
       setToken(accessToken);
