@@ -13,7 +13,7 @@ import StepDetailsPopup from "../components/StepDetailsPopup";
 import { DDayIcon } from "../styles/DDayIcon";
 import { getGoalStepsView } from "../utils/stepsView";
 
-export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
+export default function GoalStepsModal({ open, onClose, goalId, onDelete, onDeleted }) {
   const [view, setView] = React.useState(null);   // 뷰 모델(state 단일화)
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
@@ -107,13 +107,14 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
   const openConfirm = () => setConfirmOpen(true);
   const closeConfirm = () => setConfirmOpen(false);
 
-  // ✅ 실제 API 호출로 삭제
+  // 실제 API 호출로 삭제
   const handleConfirmDelete = async () => {
     if (goalId == null || deleting) return;
     setDeleting(true);
     try {
       await deleteTodo(goalId);          // 서버에서 실제 삭제
       onDelete?.(goalId);                // 부모가 목록/상태 갱신하도록 콜백 (선택)
+      onDeleted?.();                     // 상위에서 fetch 재실행
       setConfirmOpen(false);
       onClose?.();                       // 모달 닫기
     } catch (e) {
@@ -147,6 +148,7 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
                 title="삭제"
                 onClick={openConfirm}
                 aria-haspopup="dialog"
+                aria-busy={deleting}
                 disabled={loading || error || deleting} // 삭제중 비활성화
               >
                 <img src={trashIcon} alt="삭제" />
@@ -170,7 +172,7 @@ export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {
             $center={centerList}
           >
             {(loading ? [] : vm.steps).map((s) => (
-              <StepItem key={s.stepId ?? s.stepOrder} role="listitem">
+              <StepItem key={s.stepId} role="listitem">
                 <StepDate className="typo-body-s">{s.stepDate}</StepDate>
                 <StepTitleRow>
                   <StepTitle>{s.description}</StepTitle>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo,useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import SwipeCarousel from "../../../layout/SwipeCarousel";
@@ -11,6 +11,7 @@ export default function CardsCarousel({
   activeId,
   onActiveIdChange,
   shrink = 1,
+  onGoalDeleted,
 }) {
   const [innerIndex, setInnerIndex] = useState(0);
 
@@ -55,6 +56,7 @@ export default function CardsCarousel({
               key={ids[i]}
               goal={g}        // 각각의 goal 객체 자체 전달
               shrink={shrink}
+              onDeleted={onGoalDeleted}
             />
           ))}
         </SwipeCarousel>

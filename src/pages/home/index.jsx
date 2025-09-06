@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { fetchTodos } from "@/apis/todo"; // 서버 API 호출
 
+import TestTodoButtons from "../../apis/TestTodoButtons";
 import CardsCarousel from "./components/CardsCarousel";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
@@ -42,6 +43,16 @@ export default function HomePage() {
       alive = false;
     };
   }, []);
+  // goalcard에서 todo 삭제 후 재조회
+  const reloadTodos = async () => {
+    try {
+      const res = await fetchTodos();
+      const contents = Array.isArray(res?.contents) ? res.contents : [];
+      setGoals(contents);
+    } catch (e) {
+      console.error("재로드 실패:", e);
+    }
+  };
 
   // goals가 갱신될 때 activeId가 없으면 첫 goal을 기본 선택
   useEffect(() => {
@@ -71,6 +82,7 @@ export default function HomePage() {
 
   return (
     <Page>
+      <TestTodoButtons />
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
         <DateView />
@@ -80,6 +92,7 @@ export default function HomePage() {
             activeId={activeId}
             onActiveIdChange={setActiveId}
             shrink={shrink}
+            onGoalDeleted={reloadTodos}
           />
         ) : (
           <EmptyState />
