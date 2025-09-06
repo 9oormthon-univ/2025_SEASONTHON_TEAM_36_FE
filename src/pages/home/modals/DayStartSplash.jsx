@@ -24,9 +24,9 @@ export default function DayStartSplash({ open, onClose }) {
   return (
     <PageModal open={open} onClose={onClose} headerVariant="close-right">
       <FrogNoti
-        topText={"개구리의 여정이 시작되었어요!\\n오늘도 화이팅!"}
+        topText={`개구리의 여정이 시작되었어요!\n오늘도 화이팅!`}
         imageSrc={frogStart}
-        bottomText={"개구리가 도움닫기를\\n시도하고 있어요"}
+        bottomText={`개구리가 도움닫기를\n시도하고 있어요`}
       />
     </PageModal>
   );

@@ -24,9 +24,9 @@ export default function DayCompleteSplash({ open, onClose }) {
   return (
     <PageModal open={open} onClose={onClose} headerVariant="close-right">
       <FrogNoti
-        topText={"오늘의 여정이 끝났어요.\\n오늘도 수고 많았어요!"}
+        topText={`오늘의 여정이 끝났어요.\n오늘도 수고 많았어요!`}
         imageSrc={frogCompl}
-        bottomText={"개구리가 내일의 여정을 위해\\n쉬고 있어요"}
+        bottomText={`개구리가 내일의 여정을 위해\n쉬고 있어요`}
       />
     </PageModal>
   );

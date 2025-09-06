@@ -5,12 +5,11 @@ import styled from "styled-components";
 import addPhotoIcon from "@/assets/images/add.svg";
 // import EmotionSelector from "./components/EmotionSelector";
 import img1 from "@/assets/images/emotions/joy.svg";
+import imgC from "@/assets/images/frog-face-1.svg";
 import img2 from "@/assets/images/frog-face-3.svg";
+import imgA from "@/assets/images/frog-face-5.svg";
+import imgB from "@/assets/images/places/cafe.svg";
 
-import GreenButton from "../../common/components/GreenButton";
-import CompletionSelector from "./components/CompletionSelector";
-import EmotionSelector from "./components/EmotionSelector";
-import FocusSelector from "./components/FocusSelector";
 import timetable from "./dummyImages/시간표.png";
 import img3 from "./dummyImages/완성도.svg"
 
@@ -33,9 +32,6 @@ export default function Write({ date: dateProp }) {
   const photoUrl = null; // URL or null
 
   const [memo, setMemo] = React.useState("오늘 하루 뿌듯했다");
-  const [emotion, setEmotion] = React.useState(null); // { id, label } 형태로 받을 예정
-  const [focus, setFocus] = React.useState(null); // { id, label }
-  const [completion, setCompletion] = React.useState(3); // 1~5 점
 
   return (
     <Page>
@@ -47,24 +43,47 @@ export default function Write({ date: dateProp }) {
       <ChartBox>
         <CircleChart />
       </ChartBox>
+      <Section>
+        <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
+        <Row>
+          <InfoCard
+            title="감정"
+            imgSrc={imgA}
+            label="좋음"
+          />
+          <InfoCard
+            title="잔여 에너지"
+            imgSrc={imgC}
+            label="기운 없음"
+          />
+          <InfoCard
+            title="장소"
+            imgSrc={imgB}
+            label="카페"
+          />
+        </Row>
+      </Section>
 
-      <Row>
-        <InfoCard
-          title="감정"
-          imgSrc={img1}
-          label="즐거웠어"
-        />
-        <InfoCard
-          title="집중도"
-          imgSrc={img2}
-          label="집중됨"
-        />
-        <InfoCard
-          title="완성도"
-          imgSrc={img3}
-          label="70%"
-        />
-      </Row>
+      <Section>
+        <Label className="typo-h4">오늘의 여정을 끝낸 후</Label>
+        <Row>
+          <InfoCard
+            title="감정"
+            imgSrc={img1}
+            label="즐거웠어"
+          />
+          <InfoCard
+            title="집중도"
+            imgSrc={img2}
+            label="집중됨"
+          />
+          <InfoCard
+            title="완성도"
+            imgSrc={img3}
+            label="70%"
+          />
+        </Row>
+      </Section>
 
       {/* 메모 */}
       <Section>
@@ -132,43 +151,6 @@ const CircleChart = styled.img.attrs({ src: timetable, alt: "시간표" })`
   width: 75%;
 `;
 
-const Legend = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 0 14px;
-`;
-const LegendItem = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-  padding: 2px 0;
-`;
-const LegendLeft = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0; /* ellipsis를 위해 필요 */
-  > span {
-    color: var(--text-1);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 64vw; /* 이름이 길 때 줄바꿈 대신 말줄임 */
-  }
-`;
-
-const LegendRight = styled.span`
-  color: var(--text-2);
-  white-space: nowrap;
-`;
-const ColorDot = styled.span`
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-`;
-
 const Section = styled.section`
   display: flex;
   flex-direction: column;
@@ -178,14 +160,6 @@ const Section = styled.section`
 const Label = styled.span`
   color: var(--text-1);
   margin: 10px 0;
-`;
-
-const CompletionRow = styled.div`
-  display: flex;
-  flex-direction: column;   /* 세로로 쌓기 */
-  width: 100%;              /* 부모 가로 전체 */
-  align-items: stretch;     /* 내부 요소도 가로 꽉 차도록 */
-  gap: 8px;
 `;
 
 const MemoFieldWrap = styled.div`
@@ -216,13 +190,6 @@ const MemoInput = styled.textarea`
   ::placeholder {
     color: var(--text-3);
   }
-`;
-
-const InlineCounter = styled.div`
-  position: absolute;
-  right: 0;
-  bottom: 10px;                         /* 밑줄 윗부분에 맞춤 */
-  color: var(--text-3);
 `;
 
 const PhotoBox = styled.div`
