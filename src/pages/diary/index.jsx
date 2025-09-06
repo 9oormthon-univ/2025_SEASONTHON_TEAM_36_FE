@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import leftBtnDiaryImg from "@/assets/images/left-btn-diary.svg";
@@ -18,7 +19,6 @@ import star10Img from "@/assets/images/stars/star-10.svg";
 import { dateToFormatString } from "../calendar/utils/dateUtils";
 import { AUGUST, NOVEMBER, OCTOBER, SEPTEMBER } from "./constants/constellation";
 import { dummy } from "./constants/dummy";
-import { useNavigate } from "react-router-dom";
 
 const Screen = styled.div`
   /* Main 영역을 꽉 채우도록 flex 설정 */
@@ -65,6 +65,12 @@ const Star = styled.div`
   position: absolute;
   left: ${props => props.$x}px;
   top: ${props => props.$y}px;
+`;
+
+const Message = styled.h3`
+  font-size: var(--fs-md);
+  margin-top: 47px;
+  color: white;
 `;
 
 const MONTH = {
@@ -139,8 +145,10 @@ export default function Diary() {
       <Constellation>
         {MONTH[date.getMonth() + 1] &&
           Object.keys(MONTH[date.getMonth() + 1]).map((day, index) => {
-            const diaryInfo =
-              dummy[dateToFormatString(new Date(date.getFullYear(), date.getMonth(), day))];
+            const dateString = dateToFormatString(
+              new Date(date.getFullYear(), date.getMonth(), day),
+            );
+            const diaryInfo = dummy[dateString];
             const image = diaryInfo ? EMOTION_IMG[diaryInfo.emotion] : starImg;
             return (
               <Star
@@ -148,7 +156,9 @@ export default function Diary() {
                 $x={MONTH[date.getMonth() + 1][day].star.x}
                 $y={MONTH[date.getMonth() + 1][day].star.y}
                 onClick={() => {
-                  (diaryInfo) ? navigate(`/diary/${diaryInfo.id}`, {state: diaryInfo}) : navigate('/diary/writing', {state: });
+                  diaryInfo
+                    ? navigate(`/diary/${diaryInfo.id}`, { state: diaryInfo })
+                    : navigate("/diary/writing", { state: dateString });
                 }}
               >
                 <img
@@ -157,11 +167,12 @@ export default function Diary() {
                   width={MONTH[date.getMonth() + 1][day].big ? 34.2 : 16}
                   height={MONTH[date.getMonth() + 1][day].big ? 34.2 : 16}
                 />
-                <span>{day}</span>
+                <span style={{ color: "white", fontSize: "var(--fs-xs)" }}>{day}</span>
               </Star>
             );
           })}
       </Constellation>
+      <Message>{"개구리가 우물 안에서 볼 밤하늘을 밝혀주세요"}</Message>
     </Screen>
   );
 }
