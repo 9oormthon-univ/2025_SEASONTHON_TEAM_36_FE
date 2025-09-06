@@ -12,6 +12,7 @@ export default function CardsCarousel({
   onActiveIdChange,
   shrink = 1,
   onGoalDeleted,
+  onGoalAdjusted,
 }) {
   const [innerIndex, setInnerIndex] = useState(0);
 
@@ -57,6 +58,7 @@ export default function CardsCarousel({
               goal={g}        // 각각의 goal 객체 자체 전달
               shrink={shrink}
               onDeleted={onGoalDeleted}
+              onGoalAdjusted={onGoalAdjusted}
             />
           ))}
         </SwipeCarousel>

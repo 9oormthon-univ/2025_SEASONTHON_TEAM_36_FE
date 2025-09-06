@@ -9,7 +9,7 @@ import { pickRandomFrog } from "../store/frogs";
 import { DDayIcon } from "../styles/DDayIcon";
 import FrogBar from "./FrogBar";
 
-export default function GoalCard({ goal, shrink = 1, className, onDeleted }) {
+export default function GoalCard({ goal, shrink = 1, className, onDeleted, onGoalAdjusted}) {
   if (!goal) return null;
 
   const { id: goalId, dDay, title, progress = 0, warmMessage } = goal;
@@ -111,6 +111,7 @@ export default function GoalCard({ goal, shrink = 1, className, onDeleted }) {
         open={openAdjust}
         onClose={closeAdjustModal}
         goal={goal}
+        onUpdated={onGoalAdjusted}
       />
     </>
   );

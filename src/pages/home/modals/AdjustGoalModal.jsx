@@ -19,7 +19,7 @@ import { ModalContainer } from "../styles/ModalContainer";
  *  - goal: { id, title, stepResponses: [...] }
  *  - onUpdated?: () => void -> 지금은 적용안함
  */
-export default function AdjustGoalModal({ open, onClose, goal}) {
+export default function AdjustGoalModal({ open, onClose, goal, onUpdated}) {
   if (!goal) return null;
 
   const { id: goalId, title, stepResponses = [] } = goal;
@@ -89,7 +89,7 @@ export default function AdjustGoalModal({ open, onClose, goal}) {
       await updateTodo(goalId, payload, options);
 
       // 상위 재조회 필요시
-      // onUpdated?.();
+      onUpdated?.();
 
       // AI 단계 생성
       const result = await destructToDoByAI(goalId, options);
@@ -112,7 +112,7 @@ export default function AdjustGoalModal({ open, onClose, goal}) {
   };
 
   const handleAfterDeadline = () => {
-    // onUpdated?.();
+    onUpdated?.();
     onClose?.();
   };
 

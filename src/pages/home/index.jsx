@@ -91,6 +91,7 @@ export default function HomePage() {
             onActiveIdChange={setActiveId}
             shrink={shrink}
             onGoalDeleted={reloadTodos}
+            onGoalAdjusted={reloadTodos}
           />
         ) : (
           <EmptyState />
