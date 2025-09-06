@@ -91,7 +91,6 @@ const CalendarScreen = () => {
         )}-${String(date.getDate()).padStart(2, '0')}`;
         setCurToDo(tmpAllToDo[dateToString]);
       });
-
     } catch (error) {
       console.log(error);
     }
