@@ -9,8 +9,7 @@ import PageModal from "../../../common/components/PageModal";
 /**
  * PageModal + FrogNoti 조합 컴포넌트
  */
-export default function PauseSplash({ open, onClose }) {
-  const progress = 30;
+export default function PauseSplash({ open, onClose, progress }) {
   // open 상태가 true가 되면 3초 뒤 자동 닫기
   useEffect(() => {
     if (!open) return;

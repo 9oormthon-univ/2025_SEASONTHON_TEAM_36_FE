@@ -101,7 +101,10 @@ export default function HomePage() {
       </Body>
 
       {hasGoals && (
-        <TodayStepsSheet goalId={activeId} onHeightChange={setSheetHeight} />
+        <TodayStepsSheet
+          goalId={activeId}
+          onHeightChange={setSheetHeight}
+          onStepCompl={reloadTodos} />
       )}
     </Page>
   );
