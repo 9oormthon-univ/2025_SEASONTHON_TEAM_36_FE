@@ -89,7 +89,6 @@ export default function Form({ formContents, setFormContents, handleSubmit }) {
     },
     [formContents, handleFormContents],
   );
-  console.log(formContents);
   return (
     <FormStyle
       onSubmit={e => {

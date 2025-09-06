@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
+import { modifyStep } from '../../../apis/step';
 import ModifyImg from '../../../assets/images/modify.png';
 import GreenButton from '../../../common/components/GreenButton';
 import Input from './Input';
@@ -60,8 +61,8 @@ const StepContent = styled.div`
 const GoalDeadline = ({
   steps,
   setStatus,
+  setFormContents,
   setStepsOfNewGoal,
-  handleModifyStep,
   handleShowModal,
 }) => {
   const [isModify, setIsModify] = useState(steps.map(_ => false));
@@ -99,15 +100,13 @@ const GoalDeadline = ({
                 style={{ marginLeft: '11.5px' }}
                 onClick={() => {
                   if (isModify[index]) {
-                    const tmpIsModify = [...isModify];
-                    tmpIsModify[index] = !tmpIsModify[index];
-                    setIsModify(tmpIsModify);
-                    handleModifyStep(step.todoId, step.stepId, updateSteps[index].description);
-                  } else {
-                    const tmpIsModify = [...isModify];
-                    tmpIsModify[index] = !tmpIsModify[index];
-                    setIsModify(tmpIsModify);
+                    modifyStep(updateSteps[index].stepId, updateSteps[index].description).then(
+                      resp => resp,
+                    );
                   }
+                  const tmpIsModify = [...isModify];
+                  tmpIsModify[index] = !tmpIsModify[index];
+                  setIsModify(tmpIsModify);
                 }}
               >
                 <img src={ModifyImg} alt="수정하기" width="16" height="16" />
@@ -122,6 +121,7 @@ const GoalDeadline = ({
         onClick={() => {
           handleShowModal();
           setStepsOfNewGoal([]);
+          setFormContents(['', '', '', '', [false, false, false, false, false, false, false]]);
           setStatus(0);
         }}
       >

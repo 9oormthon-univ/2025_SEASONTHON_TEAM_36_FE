@@ -69,11 +69,12 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
     const options = {
       signal: abortControllerRef.current.signal, // AbortController signal 전달
     };
-    destructToDoByAI(payload, options)
+    addTodo(payload, options)
       .then(resp => {
-        setStepsOfNewGoal(resp.steps);
-        addTodo(payload, options)
+        console.log(resp.id);
+        destructToDoByAI(resp.id, options)
           .then(resp => {
+            setStepsOfNewGoal(resp.steps);
             setStatus(prev => prev + 1);
           })
           .catch(error => {
@@ -118,6 +119,7 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
 
     handleShowModal();
     setStatus(0);
+    setFormContents(['', '', '', '', [false, false, false, false, false, false, false]]);
     setStepsOfNewGoal([]); // 새로운 목표 단계도 초기화
   }, [handleShowModal, setStatus, setStepsOfNewGoal]);
 
@@ -154,6 +156,7 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
           steps={stepsOfNewGoal}
           setStatus={setStatus}
           setStepsOfNewGoal={setStepsOfNewGoal}
+          setFormContents={setFormContents}
           handleModifyStep={handleModifyStep}
           handleShowModal={handleShowModal}
         />
