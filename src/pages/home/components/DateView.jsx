@@ -17,7 +17,7 @@ export default function DateView({ hideYear = false }) {
 const DateBox = styled.header`
   display: grid;
   gap: 8px;
-  margin: 18px 0 8px;
+  margin: 18px 0 4px;
   text-align: center;
   @media (min-width: 375px) {
     gap: 12px;
