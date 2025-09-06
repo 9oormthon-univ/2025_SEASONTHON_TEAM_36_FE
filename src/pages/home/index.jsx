@@ -19,9 +19,10 @@ export default function HomePage() {
 
   // 시트가 열렸다고 판단할 임계값(픽셀)
   const OPEN_THRESHOLD_PX = 100;
+  const isSheetOpen = sheetHeight > OPEN_THRESHOLD_PX;
   const SHRINK_OPEN = 0.89;
   const SHRINK_CLOSED = 1;
-  const shrink = sheetHeight > OPEN_THRESHOLD_PX ? SHRINK_OPEN : SHRINK_CLOSED;
+  const shrink = isSheetOpen ? SHRINK_OPEN : SHRINK_CLOSED;
 
   // 최초 로딩 - 실제 API 호출
   useEffect(() => {
@@ -83,7 +84,7 @@ export default function HomePage() {
     <Page>
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
-        <DateView />
+        {!isSheetOpen && <DateView />}
         {hasGoals ? (
           <CardsCarousel
             goals={goals}
