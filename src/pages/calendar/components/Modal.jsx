@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { destructToDoByAI } from "../../../apis/ai";
 import { addTodo } from "../../../apis/todo";
 import CloseImg from "../../../assets/images/close.png";
-import FrogRunImg from "../../../assets/images/frog-run.svg";
+import FrogEscapeImg from "../../../assets/images/frog-escape-new.svg";
 import FrogNoti from "../../../common/components/FrogNoti";
 import Form from "./Form";
 import GoalDeadline from "./GoalDeadline";
@@ -155,7 +155,7 @@ const Modal = ({ open, handleAllToDo, handleShowModal }) => {
       ) : status === 1 ? (
         <FrogNoti
           topText="개구리를 탈출시킬 계획을\n다시 수립하고 있어요"
-          imageSrc={FrogRunImg}
+          imageSrc={FrogEscapeImg}
           bottomText="조금만 기다려주세요..."
         />
       ) : (
