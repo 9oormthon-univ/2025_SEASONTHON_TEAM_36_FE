@@ -6,7 +6,7 @@ import styled from "styled-components";
 import frogWell from "@/assets/images/frog-well.png";
 
 export default function EmptyState({
-  title = "아직 업무가 없어요!",
+  title = "오늘은 하루가 비어있어요!",
   subtitle = "캘린더에서 업무를 추가해 주세요.",
 }) {
   return (

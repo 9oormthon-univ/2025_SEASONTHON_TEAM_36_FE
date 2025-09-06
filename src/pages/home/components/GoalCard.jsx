@@ -90,7 +90,7 @@ export default function GoalCard({ goal, shrink = 1, className, onDeleted, onGoa
           </TitleWrap>
         </HeaderRow>
 
-        <CheerMsg>{warmMessage || "파이팅! 오늘도 한 걸음."}</CheerMsg>
+        <CheerMsg className="typo-label-l">{warmMessage || "파이팅! 오늘도 한 걸음."}</CheerMsg>
 
         <ImgContainer>
           <FrogBar progress={progress} />
@@ -194,6 +194,10 @@ const CheerMsg = styled.p`
   font-size: clamp(10px, 3.5vw, 24px);
   font-weight: 500;
   color: var(--text-2, #6F737B);
+  white-space: normal;        /* 기본 줄바꿈 허용 */
+  word-break: keep-all;       /* 공백 단위로 줄바꿈 (한국어 단어는 그대로 유지) */
+  overflow-wrap: anywhere;    /* 너무 긴 영어 단어나 URL만 예외적으로 잘라줌 */
+  line-height: 1.4;
 `;
 
 const ImgContainer = styled.div`

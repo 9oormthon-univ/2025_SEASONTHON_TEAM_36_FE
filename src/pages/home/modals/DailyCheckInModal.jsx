@@ -37,11 +37,11 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
         <ModalContainer $gap="7%">
           <Header>
             <Title className="typo-h2">오늘의 도약 전</Title>
-            <Subtitle>지금의 마음 상태를 알려주세요 🖤</Subtitle>
+            <Subtitle>새로운 여정을 떠나기 전 준비를 해봐요.</Subtitle>
           </Header>
 
           <Section>
-            <Question className="typo-h3">지금 느끼는 감정은?</Question>
+            <Question className="typo-h3">지금 느끼는 감정이 어떤가요?</Question>
             <DotsSelector
               name="feeling"
               value={feeling}
@@ -54,7 +54,7 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
           </Section>
 
           <Section>
-            <Question className="typo-h3">지금 나의 에너지는?</Question>
+            <Question className="typo-h3">여정을 떠날 에너지가 있나요?</Question>
             <DotsSelector
               name="energy"
               value={energy}
@@ -67,7 +67,7 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
           </Section>
 
           <Section>
-            <Question className="typo-h3">어디에서 일을 진행하나요?</Question>
+            <Question className="typo-h3">오늘의 여정은 어디서 진행되나요?</Question>
             <ButtonGrid>
               {LOCATIONS.map((loc) => (
                 <ChoiceButton
