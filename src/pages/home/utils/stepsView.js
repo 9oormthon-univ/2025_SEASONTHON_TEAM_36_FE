@@ -11,6 +11,7 @@ export async function getStepsRaw(goalId) {
 }
 
 /** 서버 원본 → 공통 뷰 모델로 변환 */
+/** 서버 원본 → 공통 뷰 모델로 변환 */
 export function toGoalStepsView(raw) {
   const s = raw ?? {};
   const progressNum = Number.isFinite(+s.progress) ? +s.progress : 0;
@@ -26,7 +27,16 @@ export function toGoalStepsView(raw) {
       count: Number.isFinite(+x.count) ? +x.count : 0,
       isCompleted: !!x.isCompleted,
     }))
-    .sort((a, b) => a.stepOrder - b.stepOrder);
+    .sort((a, b) => {
+      // 날짜 최신순 정렬 (stepDate 내림차순)
+      const dateA = new Date(a.stepDate).getTime();
+      const dateB = new Date(b.stepDate).getTime();
+      if (!isNaN(dateA) && !isNaN(dateB) && dateA !== dateB) {
+        return dateB - dateA; // 최신 날짜 먼저
+      }
+      // 날짜가 같거나 없으면 stepOrder 오름차순
+      return a.stepOrder - b.stepOrder;
+    });
 
   return {
     dday: s.dDay ?? "D-0",

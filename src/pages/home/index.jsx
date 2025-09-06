@@ -1,19 +1,18 @@
-import { useEffect,useMemo, useState } from "react";
+// src/pages/home/HomePage.jsx
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { fetchTodos } from "@/apis/todo"; // API 사용 !!!
+import { fetchTodos } from "@/apis/todo"; // 서버 API 호출
 
-import TestStepButtons from "../../apis/TestStepButtons";
-import TestTodoButtons from "../../apis/TestTodoButtons";
 import CardsCarousel from "./components/CardsCarousel";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TodayStepsSheet from "./components/TodayStepsSheet";
 
 export default function HomePage() {
-  const [goals, setGoals] = useState([]); // 서버 데이터 !!!
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [goals, setGoals] = useState([]);        // 서버에서 불러온 ToDo 목록
+  const [loading, setLoading] = useState(true);  // 로딩 상태
+  const [error, setError] = useState(null);      // 에러 상태
 
   const [activeId, setActiveId] = useState(null); // 현재 화면에 표시되는 goal id
   const [sheetHeight, setSheetHeight] = useState(0);
@@ -24,7 +23,7 @@ export default function HomePage() {
   const SHRINK_CLOSED = 1;
   const shrink = sheetHeight > OPEN_THRESHOLD_PX ? SHRINK_OPEN : SHRINK_CLOSED;
 
-  // 최초 로딩 - 실제 API 호출 !
+  // 최초 로딩 - 실제 API 호출
   useEffect(() => {
     let alive = true;
     setLoading(true);
@@ -39,10 +38,22 @@ export default function HomePage() {
         setError(e);
       })
       .finally(() => alive && setLoading(false));
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, []);
+  // goalcard에서 todo 삭제 후 재조회
+  const reloadTodos = async () => {
+    try {
+      const res = await fetchTodos();
+      const contents = Array.isArray(res?.contents) ? res.contents : [];
+      setGoals(contents);
+    } catch (e) {
+      console.error("재로드 실패:", e);
+    }
+  };
 
-  // 화면에 표시되는 card의 id -> activeId 기본값 세팅
+  // goals가 갱신될 때 activeId가 없으면 첫 goal을 기본 선택
   useEffect(() => {
     if (!goals.length) return;
     if (activeId == null || !goals.some((t) => t.id === activeId)) {
@@ -59,6 +70,7 @@ export default function HomePage() {
       </Page>
     );
   }
+
   if (error) {
     return (
       <Page>
@@ -78,6 +90,8 @@ export default function HomePage() {
             activeId={activeId}
             onActiveIdChange={setActiveId}
             shrink={shrink}
+            onGoalDeleted={reloadTodos}
+            onGoalAdjusted={reloadTodos}
           />
         ) : (
           <EmptyState />
@@ -85,9 +99,9 @@ export default function HomePage() {
         <BottomSpacing />
       </Body>
 
-      {hasGoals ? (
+      {hasGoals && (
         <TodayStepsSheet goalId={activeId} onHeightChange={setSheetHeight} />
-      ) : null}
+      )}
     </Page>
   );
 }
@@ -123,8 +137,8 @@ const TopSpacing = styled.div`
 `;
 
 const BottomSpacing = styled.div`
-  height: calc(54px + env(safe-area-inset-top, 0px));
+  height: calc(54px + env(safe-area-inset-bottom, 0px));
   @media (min-height: 700px) {
-    height: calc(90px + env(safe-area-inset-top, 0px));
+    height: calc(90px + env(safe-area-inset-bottom, 0px));
   }
 `;
