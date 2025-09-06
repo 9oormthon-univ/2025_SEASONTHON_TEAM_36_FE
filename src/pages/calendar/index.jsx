@@ -1,14 +1,14 @@
-import './styles/index.css';
+import "./styles/index.css";
 
-import { useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import { useCallback, useEffect, useState } from "react";
+import styled from "styled-components";
 
-import { deleteStep, modifyStep } from '../../apis/step';
-import { deleteTodo, fetchTodos } from '../../apis/todo';
-import CustomCalendar from './components/CustomCalendar';
-import Modal from './components/Modal';
-import ToDoList from './components/ToDoList';
-import { checkWeekPosition, dateToFormatString, getWeekRange } from './utils/dateUtils';
+import { deleteStep, modifyStep } from "../../apis/step";
+import { deleteTodo, fetchTodos } from "../../apis/todo";
+import CustomCalendar from "./components/CustomCalendar";
+import Modal from "./components/Modal";
+import ToDoList from "./components/ToDoList";
+import { dateToFormatString, getWeekRange } from "./utils/dateUtils";
 
 const CalendarScreenStyle = styled.div`
   height: 100vh;
@@ -80,7 +80,7 @@ const CalendarScreen = () => {
                 steps: [],
               };
             }
-            tmpAllToDo[step.stepDate][goalId]['steps'].push({
+            tmpAllToDo[step.stepDate][goalId]["steps"].push({
               id: step.stepId,
               name: step.description,
               done: step.isCompleted,
@@ -90,8 +90,8 @@ const CalendarScreen = () => {
         setAllToDo(tmpAllToDo);
         const dateToString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
           2,
-          '0',
-        )}-${String(date.getDate()).padStart(2, '0')}`;
+          "0",
+        )}-${String(date.getDate()).padStart(2, "0")}`;
         setCurToDo(tmpAllToDo[dateToString]);
       });
       const weekRange = getWeekRange(date);
@@ -112,8 +112,8 @@ const CalendarScreen = () => {
       setDate(date);
       const dateToString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
-        '0',
-      )}-${String(date.getDate()).padStart(2, '0')}`;
+        "0",
+      )}-${String(date.getDate()).padStart(2, "0")}`;
       setCurToDo(allToDo[dateToString]);
       const weekRange = getWeekRange(date);
       setStartDayOfWeek(weekRange.monday);
@@ -157,7 +157,7 @@ const CalendarScreen = () => {
 
   return (
     <CalendarScreenStyle>
-      <div style={{ height: '100%', overflow: 'auto', position: 'relative' }}>
+      <div style={{ height: "100%", overflow: "auto", position: "relative" }}>
         <CustomCalendar
           curDate={date}
           handleToDo={handleToDo}
