@@ -197,7 +197,7 @@ const CheerMsg = styled.p`
   white-space: normal;        /* 기본 줄바꿈 허용 */
   word-break: keep-all;       /* 공백 단위로 줄바꿈 (한국어 단어는 그대로 유지) */
   overflow-wrap: anywhere;    /* 너무 긴 영어 단어나 URL만 예외적으로 잘라줌 */
-  line-height: 1.4;
+  line-height: 1.6;
 `;
 
 const ImgContainer = styled.div`
