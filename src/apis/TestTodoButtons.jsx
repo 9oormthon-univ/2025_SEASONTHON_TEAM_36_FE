@@ -1,7 +1,8 @@
 // Todo API 테스트를 위한 코드입니다. 추후 삭제 예정 !!!
 
 import React from "react";
-import { addTodo, fetchTodos, deleteTodo } from "@/apis/todo";
+
+import { addTodo, deleteTodo,fetchTodos } from "@/apis/todo";
 
 export default function TestTodoButtons() {
   const handleAdd = async () => {
@@ -100,7 +101,6 @@ export default function TestTodoButtons() {
     </div>
   );
 }
-
 
 // 버튼 html 코드 예시
 /**

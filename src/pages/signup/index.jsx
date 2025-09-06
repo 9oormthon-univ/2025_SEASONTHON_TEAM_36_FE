@@ -1,7 +1,8 @@
-import Well from './components/Well';
-import SignUpDoneMessage from './components/SignUpDoneMessage';
-import GetOutButton from './components/GetOutButton';
 import styled from 'styled-components';
+
+import GetOutButton from './components/GetOutButton';
+import SignUpDoneMessage from './components/SignUpDoneMessage';
+import Well from './components/Well';
 
 const SignUpDoneStyle = styled.div`
   display: flex;

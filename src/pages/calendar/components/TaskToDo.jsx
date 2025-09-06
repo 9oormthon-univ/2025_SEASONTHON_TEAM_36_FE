@@ -1,6 +1,7 @@
-import Title from './Title';
-import ModalOpenButton from './ModalOpenButton';
 import styled from 'styled-components';
+
+import ModalOpenButton from './ModalOpenButton';
+import Title from './Title';
 
 const TaskToDoStyle = styled.div`
   display: flex;
