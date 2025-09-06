@@ -4,8 +4,21 @@ import styled from "styled-components";
 import leftBtnDiaryImg from "@/assets/images/left-btn-diary.svg";
 import rightBtnDiaryImg from "@/assets/images/right-btn-diary.svg";
 import starImg from "@/assets/images/stars/star-0.svg";
+import star1Img from "@/assets/images/stars/star-1.svg";
+import star2Img from "@/assets/images/stars/star-2.svg";
+import star3Img from "@/assets/images/stars/star-3.svg";
+import star4Img from "@/assets/images/stars/star-4.svg";
+import star5Img from "@/assets/images/stars/star-5.svg";
+import star6Img from "@/assets/images/stars/star-6.svg";
+import star7Img from "@/assets/images/stars/star-7.svg";
+import star8Img from "@/assets/images/stars/star-8.svg";
+import star9Img from "@/assets/images/stars/star-9.svg";
+import star10Img from "@/assets/images/stars/star-10.svg";
 
+import { dateToFormatString } from "../calendar/utils/dateUtils";
 import { AUGUST, NOVEMBER, OCTOBER, SEPTEMBER } from "./constants/constellation";
+import { dummy } from "./constants/dummy";
+import { useNavigate } from "react-router-dom";
 
 const Screen = styled.div`
   /* Main 영역을 꽉 채우도록 flex 설정 */
@@ -61,7 +74,21 @@ const MONTH = {
   11: NOVEMBER,
 };
 
+const EMOTION_IMG = {
+  1: star1Img,
+  2: star2Img,
+  3: star3Img,
+  4: star4Img,
+  5: star5Img,
+  6: star6Img,
+  7: star7Img,
+  8: star8Img,
+  9: star9Img,
+  10: star10Img,
+};
+
 export default function Diary() {
+  const navigate = useNavigate();
   const [date, setDate] = useState(new Date());
   useEffect(() => {
     // 다이어리 화면에 들어올 때 스크롤 차단
@@ -112,14 +139,20 @@ export default function Diary() {
       <Constellation>
         {MONTH[date.getMonth() + 1] &&
           Object.keys(MONTH[date.getMonth() + 1]).map((day, index) => {
+            const diaryInfo =
+              dummy[dateToFormatString(new Date(date.getFullYear(), date.getMonth(), day))];
+            const image = diaryInfo ? EMOTION_IMG[diaryInfo.emotion] : starImg;
             return (
               <Star
                 key={index}
                 $x={MONTH[date.getMonth() + 1][day].star.x}
                 $y={MONTH[date.getMonth() + 1][day].star.y}
+                onClick={() => {
+                  (diaryInfo) ? navigate(`/diary/${diaryInfo.id}`, {state: diaryInfo}) : navigate('/diary/writing', {state: });
+                }}
               >
                 <img
-                  src={starImg}
+                  src={image}
                   alt="별"
                   width={MONTH[date.getMonth() + 1][day].big ? 34.2 : 16}
                   height={MONTH[date.getMonth() + 1][day].big ? 34.2 : 16}
