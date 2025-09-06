@@ -57,13 +57,7 @@
 }
 
 .react-calendar__navigation__next-button {
-  margin-right: 16px !important;
-}
-
-.react-calendar__navigation__next2-button {
-  border-radius: 10px;
-  padding: 4px 10px;
-  background-color: var(--natural-200);
+  margin-right: 47px !important;
 }
 
 /* */
@@ -119,6 +113,7 @@
 }
 
 .react-calendar__navigation__prev2-button,
+.react-calendar__navigation__next2-button,
 .react-calendar__month-view__days__day:disabled {
   display: none;
 }

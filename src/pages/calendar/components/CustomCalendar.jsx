@@ -6,7 +6,16 @@ import LeftArrow from '../../../assets/images/left-arrow.png';
 import RightArrow from '../../../assets/images/right-arrow.png';
 import { dateToFormatString } from '../utils/dateUtils';
 
-const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
+const CustomCalendar = ({
+  curDate,
+  handleToDo,
+  handleMoveMonth,
+  handleMoveWeek,
+  startDayOfWeek,
+  endDayOfWeek,
+  monthMode,
+  handleMonthMode,
+}) => {
   const [stepCountOfDay, setStepCountOfDay] = useState(null);
 
   useEffect(() => {
@@ -73,43 +82,81 @@ const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
   };
 
   return (
-    <Calendar
-      onClickDay={(value, event) => {
-        handleToDo(value);
-      }}
-      formatDay={formatDay}
-      tileContent={getTileContent}
-      prevLabel={
-        <img
-          src={LeftArrow}
-          alt="left-arrow"
-          width="24"
-          onClick={() => {
-            handleMoveMonth(-1);
-          }}
-        />
-      }
-      nextLabel={
-        <img
-          src={RightArrow}
-          alt="right-arrow"
-          width="24"
-          onClick={_ => {
-            handleMoveMonth(1);
-          }}
-        />
-      }
-      next2Label={
-        <span
-          style={{ fontSize: 'var(--fs-xs)' }}
-          onClick={e => {
-            e.stopPropagation();
-          }}
-        >
-          {'월'}
-        </span>
-      }
-    />
+    <div style={{ position: 'relative' }}>
+      <Calendar
+        onClickDay={(value, event) => {
+          handleToDo(value);
+        }}
+        formatDay={formatDay}
+        tileContent={getTileContent}
+        tileDisabled={({ date }) => {
+          if (!monthMode) {
+            const dateStr = dateToFormatString(date);
+            return (
+              dateStr < dateToFormatString(startDayOfWeek) ||
+              dateStr > dateToFormatString(endDayOfWeek)
+            );
+          }
+        }}
+        prevLabel={
+          <img
+            src={LeftArrow}
+            alt="left-arrow"
+            width="24"
+            onClick={e => {
+              if (monthMode) {
+                handleMoveMonth(-1);
+              } else {
+                const nextDate = new Date(curDate);
+                nextDate.setDate(nextDate.getDate() + -1 * 7);
+                if (nextDate.getMonth() == curDate.getMonth()) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+                handleMoveWeek(-1);
+              }
+            }}
+          />
+        }
+        nextLabel={
+          <img
+            src={RightArrow}
+            alt="right-arrow"
+            width="24"
+            onClick={e => {
+              if (monthMode) {
+                handleMoveMonth(1);
+              } else {
+                const nextDate = new Date(curDate);
+                nextDate.setDate(nextDate.getDate() + 1 * 7);
+                if (nextDate.getMonth() == curDate.getMonth()) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+                handleMoveWeek(1);
+              }
+            }}
+          />
+        }
+      />
+      <span
+        style={{
+          borderRadius: '10px',
+          padding: '4px 10px',
+          backgroundColor: 'var(--natural-200)',
+          fontSize: 'var(--fs-xs)',
+          cursor: 'pointer',
+          position: 'absolute',
+          top: '16px',
+          right: '25px',
+        }}
+        onClick={_ => {
+          handleMonthMode();
+        }}
+      >
+        {monthMode ? '월' : '주'}
+      </span>
+    </div>
   );
 };
 

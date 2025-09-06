@@ -8,7 +8,7 @@ import { deleteTodo, fetchTodos } from '../../apis/todo';
 import CustomCalendar from './components/CustomCalendar';
 import Modal from './components/Modal';
 import ToDoList from './components/ToDoList';
-import { dateToFormatString } from './utils/dateUtils';
+import { checkWeekPosition, dateToFormatString, getWeekRange } from './utils/dateUtils';
 
 const CalendarScreenStyle = styled.div`
   height: 100vh;
@@ -19,8 +19,11 @@ const CalendarScreenStyle = styled.div`
 const CalendarScreen = () => {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());
+  const [startDayOfWeek, setStartDayOfWeek] = useState(null);
+  const [endDayOfWeek, setEndDayOfWeek] = useState(null);
   const [allToDo, setAllToDo] = useState(null);
   const [curToDo, setCurToDo] = useState({});
+  const [monthMode, setMonthMode] = useState(true);
 
   const handleModifyStep = useCallback(
     (goalId, stepId, description) => {
@@ -91,6 +94,9 @@ const CalendarScreen = () => {
         )}-${String(date.getDate()).padStart(2, '0')}`;
         setCurToDo(tmpAllToDo[dateToString]);
       });
+      const weekRange = getWeekRange(date);
+      setStartDayOfWeek(weekRange.monday);
+      setEndDayOfWeek(weekRange.sunday);
     } catch (error) {
       console.log(error);
     }
@@ -109,10 +115,12 @@ const CalendarScreen = () => {
         '0',
       )}-${String(date.getDate()).padStart(2, '0')}`;
       setCurToDo(allToDo[dateToString]);
+      const weekRange = getWeekRange(date);
+      setStartDayOfWeek(weekRange.monday);
+      setEndDayOfWeek(weekRange.sunday);
     },
     [allToDo],
   );
-
   const handleMoveMonth = useCallback(
     move => {
       const prevDate = new Date(date);
@@ -126,10 +134,40 @@ const CalendarScreen = () => {
     [date],
   );
 
+  const handleMoveWeek = useCallback(
+    move => {
+      const nextDate = new Date(date);
+      nextDate.setDate(nextDate.getDate() + move * 7);
+      const { monday, sunday } = getWeekRange(nextDate);
+      setStartDayOfWeek(monday);
+      setEndDayOfWeek(sunday);
+
+      if (move > 0) {
+        setDate(monday);
+      } else {
+        setDate(sunday);
+      }
+    },
+    [date],
+  );
+
+  const handleMonthMode = useCallback(() => {
+    setMonthMode(prev => !prev);
+  }, []);
+
   return (
     <CalendarScreenStyle>
       <div style={{ height: '100%', overflow: 'auto', position: 'relative' }}>
-        <CustomCalendar curDate={date} handleToDo={handleToDo} handleMoveMonth={handleMoveMonth} />
+        <CustomCalendar
+          curDate={date}
+          handleToDo={handleToDo}
+          handleMoveMonth={handleMoveMonth}
+          handleMoveWeek={handleMoveWeek}
+          startDayOfWeek={startDayOfWeek}
+          endDayOfWeek={endDayOfWeek}
+          monthMode={monthMode}
+          handleMonthMode={handleMonthMode}
+        />
         <ToDoList
           toDo={curToDo}
           handleShowModal={handleShowModal}
