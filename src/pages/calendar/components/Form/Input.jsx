@@ -1,13 +1,15 @@
-import styled from 'styled-components';
-import Title from '../Title';
+import styled from "styled-components";
+
+import Title from "../Title";
 
 const InputStyle = styled.div`
+  position: relative;
   > :first-child {
     margin-bottom: 16px;
   }
 `;
 
-const Input = ({ title = '', fontSize = 'var(--fs-xl)', children }) => {
+const Input = ({ title = "", fontSize = "var(--fs-xl)", children }) => {
   return (
     <InputStyle>
       <Title $fontSize={fontSize}>{title}</Title>

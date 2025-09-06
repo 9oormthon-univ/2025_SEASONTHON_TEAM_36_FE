@@ -102,6 +102,16 @@ const CalendarScreen = () => {
     }
   }, [date, setAllToDo]);
 
+  // useEffect(() => {
+  //   // 다이어리 화면에 들어올 때 스크롤 차단
+  //   document.body.style.overflow = "hidden";
+
+  //   // 나갈 때는 다시 복구
+  //   return () => {
+  //     document.body.style.overflow = "auto";
+  //   };
+  // }, []);
+
   const handleShowModal = useCallback(() => {
     setOpen(prev => !prev);
   }, []);

@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import { useCallback, useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 
-import { destructToDoByAI } from '../../../apis/ai';
-import { addTodo } from '../../../apis/todo';
-import CloseImg from '../../../assets/images/close.png';
-import FrogRunImg from '../../../assets/images/frog-run.svg';
-import FrogNoti from '../../../common/components/FrogNoti';
-import Form from './Form';
-import GoalDeadline from './GoalDeadline';
+import { destructToDoByAI } from "../../../apis/ai";
+import { addTodo } from "../../../apis/todo";
+import CloseImg from "../../../assets/images/close.png";
+import FrogRunImg from "../../../assets/images/frog-run.svg";
+import FrogNoti from "../../../common/components/FrogNoti";
+import Form from "./Form";
+import GoalDeadline from "./GoalDeadline";
 
 const ModalStyle = styled.div`
   background-color: white;
@@ -35,7 +35,7 @@ const Header = styled.div`
   padding: 3px 24px;
 `;
 
-const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
 const Modal = ({ open, handleModifyStep, handleShowModal }) => {
   /**
@@ -45,13 +45,14 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
    */
   const [status, setStatus] = useState(0);
   const [formContents, setFormContents] = useState([
-    '',
-    '',
-    '',
-    '',
+    "",
+    "",
+    "",
+    "",
     [false, false, false, false, false, false, false],
   ]);
   const [stepsOfNewGoal, setStepsOfNewGoal] = useState([]);
+  const [toggle, setToggle] = useState(false);
   // AbortController ref to manage API request cancellation
   const abortControllerRef = useRef(null);
 
@@ -78,12 +79,12 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
             setStatus(prev => prev + 1);
           })
           .catch(error => {
-            if (error.name === 'AbortError') {
-              console.log('API 요청이 취소되었습니다.');
+            if (error.name === "AbortError") {
+              console.log("API 요청이 취소되었습니다.");
               // 요청이 취소된 경우 상태를 초기화
               setStatus(0);
             } else {
-              console.error('API 요청 중 오류 발생:', error);
+              console.error("API 요청 중 오류 발생:", error);
               // 다른 오류의 경우 적절한 에러 처리
               setStatus(0);
             }
@@ -94,12 +95,12 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
           });
       })
       .catch(error => {
-        if (error.name === 'AbortError') {
-          console.log('API 요청이 취소되었습니다.');
+        if (error.name === "AbortError") {
+          console.log("API 요청이 취소되었습니다.");
           // 요청이 취소된 경우 상태를 초기화
           setStatus(0);
         } else {
-          console.error('API 요청 중 오류 발생:', error);
+          console.error("API 요청 중 오류 발생:", error);
           // 다른 오류의 경우 적절한 에러 처리
           setStatus(0);
         }
@@ -119,8 +120,9 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
 
     handleShowModal();
     setStatus(0);
-    setFormContents(['', '', '', '', [false, false, false, false, false, false, false]]);
+    setFormContents(["", "", "", "", [false, false, false, false, false, false, false]]);
     setStepsOfNewGoal([]); // 새로운 목표 단계도 초기화
+    setToggle(false);
   }, [handleShowModal, setStatus, setStepsOfNewGoal]);
 
   // 컴포넌트 언마운트 시 진행 중인 요청 정리
@@ -141,6 +143,8 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
       </Header>
       {status === 0 ? (
         <Form
+          toggle={toggle}
+          setToggle={setToggle}
           formContents={formContents}
           setFormContents={setFormContents}
           handleSubmit={handleSubmit}
