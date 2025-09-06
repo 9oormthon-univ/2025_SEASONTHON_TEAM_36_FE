@@ -37,7 +37,7 @@ const Header = styled.div`
 
 const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
-const Modal = ({ open, handleModifyStep, handleShowModal }) => {
+const Modal = ({ open, handleAllToDo, handleShowModal }) => {
   /**
    * 0: 폼 작성
    * 1: 폼 처리 중
@@ -72,7 +72,6 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
     };
     addTodo(payload, options)
       .then(resp => {
-        console.log(resp.id);
         destructToDoByAI(resp.id, options)
           .then(resp => {
             setStepsOfNewGoal(resp.steps);
@@ -123,7 +122,11 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
     setFormContents(["", "", "", "", [false, false, false, false, false, false, false]]);
     setStepsOfNewGoal([]); // 새로운 목표 단계도 초기화
     setToggle(false);
-  }, [handleShowModal, setStatus, setStepsOfNewGoal]);
+
+    if (status === 2) {
+      handleAllToDo();
+    }
+  }, [handleAllToDo, handleShowModal, status]);
 
   // 컴포넌트 언마운트 시 진행 중인 요청 정리
   useEffect(() => {
@@ -161,7 +164,7 @@ const Modal = ({ open, handleModifyStep, handleShowModal }) => {
           setStatus={setStatus}
           setStepsOfNewGoal={setStepsOfNewGoal}
           setFormContents={setFormContents}
-          handleModifyStep={handleModifyStep}
+          handleAllToDo={handleAllToDo}
           handleShowModal={handleShowModal}
         />
       )}

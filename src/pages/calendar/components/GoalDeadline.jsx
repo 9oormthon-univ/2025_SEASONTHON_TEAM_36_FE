@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import styled from 'styled-components';
+import { useState } from "react";
+import styled from "styled-components";
 
-import { modifyStep } from '../../../apis/step';
-import ModifyImg from '../../../assets/images/modify.png';
-import GreenButton from '../../../common/components/GreenButton';
-import Input from './Input';
-import Title from './Title';
+import { modifyStep } from "../../../apis/step";
+import ModifyImg from "../../../assets/images/modify.png";
+import GreenButton from "../../../common/components/GreenButton";
+import Input from "./Input";
+import Title from "./Title";
 
 const GoalDeadlineStyle = styled.div`
   display: flex;
@@ -63,18 +63,20 @@ const GoalDeadline = ({
   setStatus,
   setFormContents,
   setStepsOfNewGoal,
+  handleAllToDo,
   handleShowModal,
 }) => {
   const [isModify, setIsModify] = useState(steps.map(_ => false));
   const [updateSteps, setUpdateSteps] = useState(steps.map(step => step));
+  console.log(updateSteps);
   // 수정 버튼 클릭 → 편집 모드 토글
   return (
     <GoalDeadlineStyle>
-      <div style={{ width: '100%' }}>
-        <Title fontSize={'var(--fs-2xl)'}>Goal</Title>
+      <div style={{ width: "100%" }}>
+        <Title fontSize={"var(--fs-2xl)"}>Goal</Title>
       </div>
       <SizedBox $height={30} />
-      <div style={{ width: '100%' }}>
+      <div style={{ width: "100%" }}>
         <Title>목표 마감일</Title>
       </div>
       <SizedBox $height={30} />
@@ -93,11 +95,11 @@ const GoalDeadline = ({
                   tmpUpdateSteps[index].description = e.target.value;
                   setUpdateSteps(tmpUpdateSteps);
                 }}
-                $fontSize={'var(--fs-lg)'}
+                $fontSize={"var(--fs-lg)"}
                 autoFocus={false}
               />
               <button
-                style={{ marginLeft: '11.5px' }}
+                style={{ marginLeft: "11.5px" }}
                 onClick={() => {
                   if (isModify[index]) {
                     modifyStep(updateSteps[index].stepId, updateSteps[index].description).then(
@@ -120,12 +122,13 @@ const GoalDeadline = ({
       <GreenButton
         onClick={() => {
           handleShowModal();
+          handleAllToDo();
           setStepsOfNewGoal([]);
-          setFormContents(['', '', '', '', [false, false, false, false, false, false, false]]);
+          setFormContents(["", "", "", "", [false, false, false, false, false, false, false]]);
           setStatus(0);
         }}
       >
-        투두 재적용하기
+        투두 적용하기
       </GreenButton>
     </GoalDeadlineStyle>
   );
