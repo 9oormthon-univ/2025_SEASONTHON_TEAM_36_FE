@@ -1,4 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
+
+import { getAccessToken } from "@/common/utils/token.js";
 
 export const mainApi = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -7,7 +9,7 @@ export const mainApi = axios.create({
 
 mainApi.interceptors.request.use(
   config => {
-    const token = import.meta.env.VITE_API_TOKEN;
+    const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
