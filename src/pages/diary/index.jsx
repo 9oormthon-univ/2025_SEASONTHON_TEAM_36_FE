@@ -43,8 +43,15 @@ const ThisMonth = styled.h1`
 
 const Constellation = styled.div`
   position: relative;
+  margin-top: 35px;
   width: 352px;
   height: 451px;
+`;
+
+const Star = styled.div`
+  position: absolute;
+  left: ${props => props.$x}px;
+  top: ${props => props.$y}px;
 `;
 
 const MONTH = {
@@ -101,15 +108,25 @@ export default function Diary() {
           <img src={rightBtnDiaryImg} alt="왼쪽 버튼" width="" height="" />
         </button>
       </NightSkyOfMonth>
+
       <Constellation>
         {MONTH[date.getMonth() + 1] &&
-          Object.keys(MONTH[date.getMonth() + 1]).map(day => {
-            <img
-              src={starImg}
-              alt="별"
-              width={MONTH[date.getMonth() + 1][day].big ? "34.2" : "16"}
-              height={MONTH[date.getMonth() + 1][day].big ? "34.2" : "16"}
-            />;
+          Object.keys(MONTH[date.getMonth() + 1]).map((day, index) => {
+            return (
+              <Star
+                key={index}
+                $x={MONTH[date.getMonth() + 1][day].star.x}
+                $y={MONTH[date.getMonth() + 1][day].star.y}
+              >
+                <img
+                  src={starImg}
+                  alt="별"
+                  width={MONTH[date.getMonth() + 1][day].big ? 34.2 : 16}
+                  height={MONTH[date.getMonth() + 1][day].big ? 34.2 : 16}
+                />
+                <span>{day}</span>
+              </Star>
+            );
           })}
       </Constellation>
     </Screen>
