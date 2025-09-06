@@ -1,4 +1,3 @@
-// src/pages/home/components/TodayStepsSheet.jsx
 import React from "react";
 import styled from "styled-components";
 
@@ -14,10 +13,12 @@ import { getTodayAndPastLists } from "../utils/stepsView";
 import { getDailyShown, markDailyShown } from "../utils/storage";
 import SheetListSection from "./SheetListSection";
 import TodayStepsList from "./TodayStepsList";
+import GoalCompleteSplash from "../modals/GoalCompleteSplash";
+import DayCompleteSplash from "../modals/DayCompleteSplash";
 
 const PEEK_HEIGHT = 58;
 
-export default function TodayStepsSheet({ goalId, onHeightChange }) {
+export default function TodayStepsSheet({ goalId, onHeightChange, onStepCompl }) {
   const [open, setOpen] = React.useState(false);
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
@@ -34,8 +35,13 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
   const [selectedStep, setSelectedStep] = React.useState(null);
   const [playingKey, setPlayingKey] = React.useState(null);
 
-  // PauseSplash 모달
+  // Splash 모달
   const [pauseOpen, setPauseOpen] = React.useState(false);
+  const [goalCompleteOpen, setGoalCompleteOpen] = React.useState(false);
+  const [dayCompleteOpen, setDayCompleteOpen] = React.useState(false);
+
+  // 진행률
+  const [lastProgress, setLastProgress] = React.useState(null);
 
   // 시작/종료 시각 저장
   const [startTimes, setStartTimes] = React.useState({});
@@ -102,34 +108,72 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
     [baseGroups, playingKey]
   );
 
+// ==== 공통: stop 응답 처리(렌더링 기준을 stopStep으로) ====
+// isCompletedTodaySteps가 true면 GoalCompleteSplash는 절대 띄우지 않음
+const processStopResult = React.useCallback((res) => {
+  const rawDone = res?.isCompletedTodaySteps;
+  // 문자열 "true"/"false"까지 안전하게 처리
+  const doneToday =
+    rawDone === true ||
+    rawDone === "true" ||
+    rawDone === 1 ||
+    rawDone === "1";
+
+  const p = Number(res?.progress);
+  if (Number.isFinite(p)) setLastProgress(p);
+
+  // 1) 오늘 스텝 모두 완료 → DayComplete만 (GoalComplete는 절대 X)
+  if (doneToday) {
+    setModalOpen(false);
+    setPauseOpen(false);
+    setPlayingKey(null);
+    setDayCompleteOpen(true);
+    return true;
+  }
+
+  // 2) 목표 100% 달성 → GoalComplete (단, doneToday가 아닐 때만)
+  if (!doneToday && Number.isFinite(p) && p >= 100) {
+    setModalOpen(false);
+    setPauseOpen(false);
+    setPlayingKey(null);
+    setGoalCompleteOpen(true);
+    return true;
+  }
+
+  // 3) 둘 다 아니면 PauseSplash 유지
+  return false;
+}, []);
+
+
   // goalId 전환 시 재생 종료 기록(+ 서버 stop)
   const prevGoalRef = React.useRef(goalId);
   React.useEffect(() => {
     if (prevGoalRef.current !== goalId) {
       const prevKey = playingKey;
       if (prevKey) {
-        // 현재 그룹에서 이전 아이템 찾아 stepId 획득
         const allItems = groups.flatMap((g) => g.items);
         const prevItem = allItems.find((it) => it.id === prevKey);
         const prevStepId = prevItem?.stepId ?? null;
 
         (async () => {
           try {
-            if (prevStepId != null) await stopStep(prevStepId);
+            if (prevStepId != null) {
+              const res = await stopStep(prevStepId);
+              processStopResult(res);
+            }
           } catch (e) {
             console.error("[TodayStepsSheet] stop on goal change failed:", e);
           }
         })();
 
-        // 로컬 종료 기록
         setEndTimes((prev) => ({ ...prev, [prevKey]: new Date() }));
         setPlayingKey(null);
       }
       prevGoalRef.current = goalId;
     }
-  }, [goalId, playingKey, groups]);
+  }, [goalId, playingKey, groups, processStopResult]);
 
-  // 액션 (재생/정지) → 서버 start/stop 기록
+  // 액션 (재생/정지)
   const handleAction = async (it) => {
     if (actionBusyRef.current) return;
     actionBusyRef.current = true;
@@ -139,23 +183,27 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
 
       if (isPlaying) {
         // ===== 정지 처리 =====
-        setPauseOpen(true);
-        setModalOpen(false);
-        setPlayingKey(null);
         setEndTimes((prev) => ({ ...prev, [it.id]: new Date() }));
+        setPauseOpen(true);          // 일단 PauseSplash를 띄우되,
+        setModalOpen(false);
+        setPlayingKey(null);         // 재생 해제
 
         if (it.stepId != null) {
           try {
-            await stopStep(it.stepId);
+            const res = await stopStep(it.stepId);
+            // stop 응답으로 스플래시 판정(우선순위 처리)
+            const intercepted = processStopResult(res);
+            if (!intercepted) {
+              // 특별 스플래시가 없으면 PauseSplash 유지
+            }
           } catch (e) {
             console.error("[TodayStepsSheet] stopStep error:", e);
             alert(e?.message ?? "정지 로그 저장에 실패했습니다.");
           }
         }
       } else {
-        // 다른 항목이 재생 중이면 일단 종료
+        // ===== 다른 항목 재생 중이면 먼저 정지 =====
         if (playingKey && playingKey !== it.id) {
-          // 이전 아이템 찾아 stepId
           const allItems = groups.flatMap((g) => g.items);
           const prevItem = allItems.find((x) => x.id === playingKey);
           const prevStepId = prevItem?.stepId ?? null;
@@ -163,18 +211,23 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
           setEndTimes((prev) => ({ ...prev, [playingKey]: new Date() }));
           if (prevStepId != null) {
             try {
-              await stopStep(prevStepId);
+              const resPrev = await stopStep(prevStepId);
+              // 전 항목 stop 응답도 동일 로직으로 처리
+              const interceptedPrev = processStopResult(resPrev);
+              if (interceptedPrev) {
+                // 만약 여기서 Day/Goal 완료가 뜨면, 새 재생은 시작하지 않음
+                return;
+              }
             } catch (e) {
               console.error("[TodayStepsSheet] stopStep(prev) error:", e);
             }
           }
         }
 
-        // 새 항목 재생 시작
+        // ===== 새 항목 재생 시작 =====
         setPlayingKey(it.id);
         setPauseOpen(false);
         setStartTimes((prev) => ({ ...prev, [it.id]: new Date() }));
-        // 과거 종료 시각 초기화
         setEndTimes((prev) => {
           const { [it.id]: _, ...rest } = prev;
           return rest;
@@ -182,7 +235,11 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
 
         if (it.stepId != null) {
           try {
-            await startStep(it.stepId);
+            const res = await startStep(it.stepId);
+            // ★ 여기서는 스플래시를 띄우지 않는다(렌더링 기준을 stop으로 변경)
+            const prog = Number(res?.progress);
+            if (Number.isFinite(prog)) setLastProgress(prog);
+            onStepCompl?.();
           } catch (e) {
             console.error("[TodayStepsSheet] startStep error:", e);
             alert(e?.message ?? "시작 로그 저장에 실패했습니다.");
@@ -226,7 +283,7 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
               {groups.map((g) => (
                 <SheetListSection key={g.id} title={g.title} defaultOpen={g.defaultOpen}>
                   <TodayStepsList
-                    items={g.items}          // 각 item에 stepId 포함
+                    items={g.items}
                     onAction={handleAction}
                     startTimes={startTimes}
                     endTimes={endTimes}
@@ -257,7 +314,23 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
         isPlaying={!!playingKey}
       />
 
-      <PauseSplash open={pauseOpen} onClose={() => setPauseOpen(false)} step={selectedStep} />
+      <PauseSplash
+        open={pauseOpen}
+        onClose={() => setPauseOpen(false)}
+        step={selectedStep}
+        progress={lastProgress ?? 0}
+      />
+
+      <GoalCompleteSplash
+        open={goalCompleteOpen}
+        onClose={() => setGoalCompleteOpen(false)}
+        title={parted.meta?.title ?? "목표 달성!"}
+      />
+      <DayCompleteSplash
+        open={dayCompleteOpen}
+        onClose={() => setDayCompleteOpen(false)}
+        title={"오늘의 할 일을 모두 끝냈어요!"}
+      />
     </>
   );
 }
@@ -275,7 +348,7 @@ const TopBar = styled.div`
   position: sticky;
   top: 0;
   z-index: 1;
-  background: var(--bg-1);
+  background: transparent;
   border-bottom: 1px solid var(--bg-2);
 `;
 
