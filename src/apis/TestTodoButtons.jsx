@@ -8,13 +8,13 @@ export default function TestTodoButtons() {
   const handleAdd = async () => {
     try {
       const created = await addTodo({
-        "title": "우물밖개구리 프로젝트",
-        "content": "TODO API 개발하기, 회원 API 개발하기",
-        "startDate": "2025-09-02",
-        "endDate": "2025-09-06",
+        "title": "투두 삭제 테스트",
+        "content": "삭제 버튼 연결, todoid 관리",
+        "startDate": "2025-09-06",
+        "endDate": "2025-09-07",
         "expectedDays": [
           "MONDAY",
-          "TUESDAY"
+          "FRIDAY"
         ]
       });
       console.log("✅ 생성된 ToDo:", created);
