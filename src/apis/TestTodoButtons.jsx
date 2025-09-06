@@ -1,24 +1,21 @@
 // Todo API 테스트를 위한 코드입니다. 추후 삭제 예정 !!!
 
 import React from "react";
-import { addTodo, fetchTodos, deleteTodo } from "@/apis/todo";
+
+import { addTodo, deleteTodo,fetchTodos } from "@/apis/todo";
 
 export default function TestTodoButtons() {
   const handleAdd = async () => {
     try {
       const created = await addTodo({
-        title: "test5",
-        content: "test, 5555",
-        startDate: "2025-09-03",
-        endDate: "2025-09-07",
-        expectedDays: ["MONDAY", "TUESDAY"],
-        todoSteps: [
-          {
-            stepDate: "2025-09-03",
-            stepOrder: 1,
-            description: "ToDo ERD 설계",
-          },
-        ],
+        "title": "투두 삭제 테스트",
+        "content": "삭제 버튼 연결, todoid 관리",
+        "startDate": "2025-09-06",
+        "endDate": "2025-09-07",
+        "expectedDays": [
+          "MONDAY",
+          "FRIDAY"
+        ]
       });
       console.log("✅ 생성된 ToDo:", created);
       alert("ToDo 생성 완료! 콘솔을 확인하세요.");
@@ -100,7 +97,6 @@ export default function TestTodoButtons() {
     </div>
   );
 }
-
 
 // 버튼 html 코드 예시
 /**

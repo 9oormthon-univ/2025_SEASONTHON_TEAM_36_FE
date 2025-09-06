@@ -1,7 +1,8 @@
-import styled, { keyframes } from 'styled-components';
-import AppTitle from './AppTitle';
-import CheerSentence from '../components/CheerSentence';
-import AppLogoWell from './AppLogoWell';
+import styled, { keyframes } from "styled-components";
+
+import CheerSentence from "../components/CheerSentence";
+import AppLogoWell from "./AppLogoWell";
+import AppTitle from "./AppTitle";
 
 const fadeOut = keyframes`
 	0% {
@@ -16,7 +17,7 @@ const fadeOut = keyframes`
 `;
 
 const SplashScreenStyle = styled.div`
-  display: ${props => (props.$show ? 'flex' : 'none')};
+  display: ${props => (props.$show ? "flex" : "none")};
   flex-direction: column;
   align-items: center;
   animation: ${fadeOut} 1.5s forwards;

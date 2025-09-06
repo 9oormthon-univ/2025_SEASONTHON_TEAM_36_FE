@@ -1,14 +1,15 @@
+import styled from "styled-components";
+
+import img9 from "@/assets/images/emotions/angry.svg";
+import img7 from "@/assets/images/emotions/blue.svg";
+import img10 from "@/assets/images/emotions/disappointed.svg";
+import img5 from "@/assets/images/emotions/excited.svg";
+import img6 from "@/assets/images/emotions/frustrated.svg";
+import img8 from "@/assets/images/emotions/hollow.svg";
 import img1 from "@/assets/images/emotions/joy.svg";
 import img2 from "@/assets/images/emotions/love.svg";
 import img3 from "@/assets/images/emotions/peace.svg";
 import img4 from "@/assets/images/emotions/soso.svg";
-import img5 from "@/assets/images/emotions/excited.svg";
-import img6 from "@/assets/images/emotions/frustrated.svg";
-import img7 from "@/assets/images/emotions/blue.svg";
-import img8 from "@/assets/images/emotions/hollow.svg";
-import img9 from "@/assets/images/emotions/angry.svg";
-import img10 from "@/assets/images/emotions/disappointed.svg";
-import styled from "styled-components";
 
 const EMOTIONS = [
   { id: 1, label: "즐거웠어", img: img1 },

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 const CheerSentence = styled.h3`
   margin-top: 31px;

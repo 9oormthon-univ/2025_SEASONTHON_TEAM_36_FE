@@ -1,6 +1,7 @@
-import styled from 'styled-components';
-import AppLogos from './AppLogos';
-import KakaoLoginButton from './KakaoLoginButton';
+import styled from "styled-components";
+
+import AppLogos from "./AppLogos";
+import KakaoLoginButton from "./KakaoLoginButton";
 
 const LoginScreenStyle = styled.div`
   display: flex;
