@@ -45,8 +45,8 @@ const Bar = styled.div`
 
   /* 조정용 변수 */
   --p-clamped: clamp(9, var(--p, 0), 100);
-  --wave-h: 18px;        /* 파도 높이 */
-  --wave-size-x: 160px;  /* 파도 한 주기 가로 길이 */
+  --wave-h: 40px;        /* 파도 높이 */
+  --wave-size-x: 90px;  /* 파도 한 주기 가로 길이 */
   --wave-offset: 16px;   /* 물결이 물 위로 얼마나 올라오게 할지(덮임 깊이) */
 
   .track {
