@@ -1,14 +1,14 @@
-import './styles/index.css';
+import "./styles/index.css";
 
-import { useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import { useCallback, useEffect, useState } from "react";
+import styled from "styled-components";
 
-import { deleteStep, modifyStep } from '../../apis/step';
-import { deleteTodo, fetchTodos } from '../../apis/todo';
-import CustomCalendar from './components/CustomCalendar';
-import Modal from './components/Modal';
-import ToDoList from './components/ToDoList';
-import { checkWeekPosition, dateToFormatString, getWeekRange } from './utils/dateUtils';
+import { deleteStep, modifyStep } from "../../apis/step";
+import { deleteTodo, fetchTodos } from "../../apis/todo";
+import CustomCalendar from "./components/CustomCalendar";
+import Modal from "./components/Modal";
+import ToDoList from "./components/ToDoList";
+import { dateToFormatString, getWeekRange } from "./utils/dateUtils";
 
 const CalendarScreenStyle = styled.div`
   height: 100vh;
@@ -62,45 +62,60 @@ const CalendarScreen = () => {
     [allToDo, date],
   );
 
-  useEffect(() => {
-    try {
-      fetchTodos().then(resp => {
-        const tmpAllToDo = {};
-        resp.contents.forEach(content => {
-          const goalId = content.id;
-          const goalTitle = content.title;
-          const goalSteps = content.stepResponses;
-          goalSteps.forEach(step => {
-            if (!tmpAllToDo[step.stepDate]) {
-              tmpAllToDo[step.stepDate] = {};
-            }
-            if (!tmpAllToDo[step.stepDate][goalId]) {
-              tmpAllToDo[step.stepDate][goalId] = {
-                name: goalTitle,
-                steps: [],
-              };
-            }
-            tmpAllToDo[step.stepDate][goalId]['steps'].push({
-              id: step.stepId,
-              name: step.description,
-              done: step.isCompleted,
-            });
+  const handleAllToDo = useCallback(() => {
+    fetchTodos().then(resp => {
+      const tmpAllToDo = {};
+      resp.contents.forEach(content => {
+        const goalId = content.id;
+        const goalTitle = content.title;
+        const goalSteps = content.stepResponses;
+        goalSteps.forEach(step => {
+          if (!tmpAllToDo[step.stepDate]) {
+            tmpAllToDo[step.stepDate] = {};
+          }
+          if (!tmpAllToDo[step.stepDate][goalId]) {
+            tmpAllToDo[step.stepDate][goalId] = {
+              name: goalTitle,
+              steps: [],
+            };
+          }
+          tmpAllToDo[step.stepDate][goalId]["steps"].push({
+            id: step.stepId,
+            name: step.description,
+            done: step.isCompleted,
           });
         });
-        setAllToDo(tmpAllToDo);
-        const dateToString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-          2,
-          '0',
-        )}-${String(date.getDate()).padStart(2, '0')}`;
-        setCurToDo(tmpAllToDo[dateToString]);
       });
-      const weekRange = getWeekRange(date);
-      setStartDayOfWeek(weekRange.monday);
-      setEndDayOfWeek(weekRange.sunday);
+      setAllToDo(tmpAllToDo);
+      const dateToString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        "0",
+      )}-${String(date.getDate()).padStart(2, "0")}`;
+      setCurToDo(tmpAllToDo[dateToString]);
+      console.log(tmpAllToDo);
+    });
+    const weekRange = getWeekRange(date);
+    setStartDayOfWeek(weekRange.monday);
+    setEndDayOfWeek(weekRange.sunday);
+  }, [date]);
+
+  useEffect(() => {
+    try {
+      handleAllToDo();
     } catch (error) {
       console.log(error);
     }
-  }, [date, setAllToDo]);
+  }, [handleAllToDo]);
+
+  // useEffect(() => {
+  //   // 다이어리 화면에 들어올 때 스크롤 차단
+  //   document.body.style.overflow = "hidden";
+
+  //   // 나갈 때는 다시 복구
+  //   return () => {
+  //     document.body.style.overflow = "auto";
+  //   };
+  // }, []);
 
   const handleShowModal = useCallback(() => {
     setOpen(prev => !prev);
@@ -112,8 +127,8 @@ const CalendarScreen = () => {
       setDate(date);
       const dateToString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
-        '0',
-      )}-${String(date.getDate()).padStart(2, '0')}`;
+        "0",
+      )}-${String(date.getDate()).padStart(2, "0")}`;
       setCurToDo(allToDo[dateToString]);
       const weekRange = getWeekRange(date);
       setStartDayOfWeek(weekRange.monday);
@@ -157,7 +172,7 @@ const CalendarScreen = () => {
 
   return (
     <CalendarScreenStyle>
-      <div style={{ height: '100%', overflow: 'auto', position: 'relative' }}>
+      <div style={{ height: "100%", overflow: "auto", position: "relative" }}>
         <CustomCalendar
           curDate={date}
           handleToDo={handleToDo}
@@ -175,7 +190,7 @@ const CalendarScreen = () => {
           handleDeleteStep={handleDeleteStep}
         />
       </div>
-      <Modal open={open} handleModifyStep={handleModifyStep} handleShowModal={handleShowModal} />
+      <Modal open={open} handleAllToDo={handleAllToDo} handleModifyStep={handleModifyStep} handleShowModal={handleShowModal} />
     </CalendarScreenStyle>
   );
 };
