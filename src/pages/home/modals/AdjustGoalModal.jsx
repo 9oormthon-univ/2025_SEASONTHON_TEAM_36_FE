@@ -177,7 +177,7 @@ export default function AdjustGoalModal({ open, onClose, goal, onUpdated}) {
 
       {status === 1 && (
         <FrogNoti
-          topText={"개구리를 탈출시킬 계획을\\n다시 수립하고 있어요"}
+          topText={`개구리를 탈출시킬 계획을\n다시 수립하고 있어요`}
           imageSrc={FrogEscapeImg}
           bottomText={"조금만 기다려주세요..."}
         />
