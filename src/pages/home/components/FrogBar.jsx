@@ -66,7 +66,7 @@ const Bar = styled.div`
   .marker {
     position: absolute;
     left: 50%;
-    bottom: calc(var(--p-clamped) * 1%);
+    bottom: calc(var(--p-clamped) * 2%);
     transform: translate(-50%, 50%);
     width: 26px;
     height: 26px;
