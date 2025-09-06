@@ -1,6 +1,7 @@
 // src/components/EmptyState.js
 
 import styled from "styled-components";
+
 // Illust 컴포넌트에서 사용하던 이미지를 직접 가져옵니다.
 import frogWell from "@/assets/images/frog-well.png";
 

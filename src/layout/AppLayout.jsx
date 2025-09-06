@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
+
 import NavBar from "./NavBar";
 
 /** 전체 레이아웃 컨테이너 */

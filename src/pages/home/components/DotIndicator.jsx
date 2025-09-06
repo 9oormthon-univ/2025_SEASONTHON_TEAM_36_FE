@@ -23,7 +23,7 @@ export default function DotIndicator({
 }) {
   const clampedTotal = Math.max(0, Number(total) || 0);
   if (clampedTotal <= 1) return null;
-  
+
   const clampedIndex = clamp(index, 0, Math.max(0, clampedTotal - 1));
   const visible = Math.min(maxDots, Math.max(1, clampedTotal));
 

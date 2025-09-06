@@ -30,11 +30,11 @@ function normalizeEntry(e) {
     progress: Number(e.progress ?? 0),
     steps: Array.isArray(e.steps)
       ? e.steps.map((s, i) => ({
-          stepDate: s.stepDate ?? "",
-          stepOrder: Number.isFinite(+s.stepOrder) ? +s.stepOrder : i + 1,
-          description: s.description ?? "",
-          isCompleted: !!s.isCompleted,
-        }))
+        stepDate: s.stepDate ?? "",
+        stepOrder: Number.isFinite(+s.stepOrder) ? +s.stepOrder : i + 1,
+        description: s.description ?? "",
+        isCompleted: !!s.isCompleted,
+      }))
       : [],
   };
 }

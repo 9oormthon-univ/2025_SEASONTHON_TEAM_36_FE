@@ -1,5 +1,5 @@
-import styled from "styled-components";
 import { motion } from "framer-motion";
+import styled from "styled-components";
 
 /** Backdrop: 네비 영역은 가리지 않음 */
 export const Backdrop = styled.div`

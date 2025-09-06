@@ -1,8 +1,10 @@
 // FrogNotiModal.jsx
 import React, { useEffect } from "react";
+
 import frogCompl from "@/assets/images/frog-complete.svg";
-import PageModal from "../../../common/components/PageModal";
+
 import FrogNoti from "../../../common/components/FrogNoti";
+import PageModal from "../../../common/components/PageModal";
 
 /**
  * PageModal + FrogNoti 조합 컴포넌트

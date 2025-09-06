@@ -7,13 +7,12 @@ export default function DateView() {
   const dateStr = `${now.getMonth() + 1}월 ${now.getDate()}일 ${days[now.getDay()]}`;
 
   return (
-          <DateBox>
-            <Year className="typo-h2">{year}</Year>
-            <DateLine className="typo-h1">{dateStr}</DateLine>
-          </DateBox>
+    <DateBox>
+      <Year className="typo-h2">{year}</Year>
+      <DateLine className="typo-h1">{dateStr}</DateLine>
+    </DateBox>
   );
 }
-
 
 const DateBox = styled.header`
   display: grid;

@@ -1,14 +1,15 @@
 import React from "react";
-import { useLocation, NavLink } from "react-router-dom";
+import { NavLink,useLocation } from "react-router-dom";
 
-import home from "@/assets/images/home.svg";
-import homeActive from "@/assets/images/home-active.svg";
 import calendar from "@/assets/images/calendar.svg";
 import calendarActive from "@/assets/images/calendar-active.svg";
 import diary from "@/assets/images/diary.svg";
 import diaryActive from "@/assets/images/diary-active.svg";
+import home from "@/assets/images/home.svg";
+import homeActive from "@/assets/images/home-active.svg";
 import profile from "@/assets/images/profile.svg";
 import profileActive from "@/assets/images/profile-active.svg";
+
 import { Bar, IconImg, Inner, Item, Label } from "./styles";
 
 const DEFAULT_ITEMS = [

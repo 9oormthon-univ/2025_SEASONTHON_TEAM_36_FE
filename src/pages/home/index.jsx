@@ -1,12 +1,14 @@
+import { useEffect,useMemo, useState } from "react";
 import styled from "styled-components";
+
+import { fetchTodos } from "@/apis/todo"; // API 사용 !!!
+
+import TestStepButtons from "../../apis/TestStepButtons";
+import TestTodoButtons from "../../apis/TestTodoButtons";
+import CardsCarousel from "./components/CardsCarousel";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TodayStepsSheet from "./components/TodayStepsSheet";
-import { useMemo, useState, useEffect } from "react";
-import CardsCarousel from "./components/CardsCarousel";
-import { fetchTodos } from "@/apis/todo"; // API 사용 !!!
-import TestTodoButtons from "../../apis/TestTodoButtons";
-import TestStepButtons from "../../apis/TestStepButtons";
 
 export default function HomePage() {
   const [goals, setGoals] = useState([]); // 서버 데이터 !!!
@@ -40,7 +42,7 @@ export default function HomePage() {
     return () => { alive = false; };
   }, []);
 
-  // 화면에 표시되는 card의 id -> activeId 기본값 세팅 
+  // 화면에 표시되는 card의 id -> activeId 기본값 세팅
   useEffect(() => {
     if (!goals.length) return;
     if (activeId == null || !goals.some((t) => t.id === activeId)) {

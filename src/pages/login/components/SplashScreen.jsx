@@ -1,7 +1,8 @@
 import styled, { keyframes } from 'styled-components';
-import AppTitle from './AppTitle';
+
 import CheerSentence from '../components/CheerSentence';
 import AppLogoWell from './AppLogoWell';
+import AppTitle from './AppTitle';
 
 const fadeOut = keyframes`
 	0% {

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+
 import SplashScreenAppTitle from '../../../assets/images/app-title.png';
 
 const AppTitleStyle = styled.div`

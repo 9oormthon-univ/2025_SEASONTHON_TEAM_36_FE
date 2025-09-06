@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import SplashScreen from './components/SplashScreen';
-import LoginScreen from './components/LoginScreen';
 import styled from 'styled-components';
+
+import LoginScreen from './components/LoginScreen';
+import SplashScreen from './components/SplashScreen';
 
 const LoginStyle = styled.div`
   position: relative;

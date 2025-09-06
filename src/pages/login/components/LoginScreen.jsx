@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+
 import AppLogos from './AppLogos';
 import KakaoLoginButton from './KakaoLoginButton';
 

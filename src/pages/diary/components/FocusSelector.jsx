@@ -1,9 +1,10 @@
+import styled from "styled-components";
+
 import img1 from "@/assets/images/frog-face-1.svg";
 import img2 from "@/assets/images/frog-face-2.svg";
 import img3 from "@/assets/images/frog-face-3.svg";
 import img4 from "@/assets/images/frog-face-4.svg";
 import img5 from "@/assets/images/frog-face-5.svg";
-import styled from "styled-components";
 
 const FOCUSES = [
   { id: 1, label: "산만함", img: img1 },

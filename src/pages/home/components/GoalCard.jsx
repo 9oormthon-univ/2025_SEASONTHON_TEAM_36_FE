@@ -1,11 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import FrogBar from "./FrogBar";
-import { pickRandomFrog } from "../store/frogs";
+
 import sirenIcon from "@/assets/images/siren.svg";
+
 import AdjustGoalModal from "../modals/AdjustGoalModal";
 import GoalStepsModal from "../modals/GoalStepsModal";
+import { pickRandomFrog } from "../store/frogs";
 import { DDayIcon } from "../styles/DDayIcon";
+import FrogBar from "./FrogBar";
 
 export default function GoalCard({ goal, shrink = 1, className }) {
   if (!goal) return null;

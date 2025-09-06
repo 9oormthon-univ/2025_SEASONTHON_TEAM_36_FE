@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import PageModal from "../../../common/components/PageModal";
-import GreenButton from "../../../common/components/GreenButton";
 import styled from "styled-components";
-import { ModalContainer } from "../styles/ModalContainer";
+
+import GreenButton from "../../../common/components/GreenButton";
+import PageModal from "../../../common/components/PageModal";
 import DotsSelector from "../components/DotsSelector";
+import { ModalContainer } from "../styles/ModalContainer";
 import DayStartSplash from "./DayStartSplash";
 
 export default function DailyCheckInModal({ open, onClose, title, step, isPlaying }) {
@@ -11,7 +12,7 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
   const [energy, setEnergy] = useState(3);
   const [location, setLocation] = useState(null);
 
-  // START 클릭 시 띄울 모달 상태 
+  // START 클릭 시 띄울 모달 상태
   const [splashOpen, setSplashOpen] = useState(false);
 
   const LOCATIONS = [

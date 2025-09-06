@@ -1,12 +1,14 @@
 // src/pages/home/components/GoalStepsModal.jsx
 import React from "react";
 import styled from "styled-components";
-import PageModal from "../../../common/components/PageModal";
-import { DDayIcon } from "../styles/DDayIcon";
-import trashIcon from "@/assets/images/trash.svg";
-import FrogBar from "../components/FrogBar";
+
 import detailsTri from "@/assets/images/details-tri.svg";
+import trashIcon from "@/assets/images/trash.svg";
+
 import ConfirmModal from "../../../common/components/ConfirmModal";
+import PageModal from "../../../common/components/PageModal";
+import FrogBar from "../components/FrogBar";
+import { DDayIcon } from "../styles/DDayIcon";
 import { getGoalStepsView } from "../utils/stepsView";
 
 export default function GoalStepsModal({ open, onClose, goalId, onDelete }) {

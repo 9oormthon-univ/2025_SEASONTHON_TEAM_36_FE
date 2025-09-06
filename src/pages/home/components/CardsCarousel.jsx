@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo,useState } from "react";
 import styled from "styled-components";
+
 import SwipeCarousel from "../../../layout/SwipeCarousel";
 import DotIndicator from "./DotIndicator";
 import GoalCard from "./GoalCard";

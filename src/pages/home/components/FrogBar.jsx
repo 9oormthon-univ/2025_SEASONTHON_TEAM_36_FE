@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+
 import frogIndicator from "@/assets/images/frog-indicator.svg";
 
 /** 진행 막대 + 마커 + 물결오버레이 */

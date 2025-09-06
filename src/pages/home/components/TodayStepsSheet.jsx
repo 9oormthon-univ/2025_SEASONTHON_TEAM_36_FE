@@ -1,18 +1,19 @@
 // src/pages/home/components/TodayStepsSheet.jsx
 import React from "react";
 import styled from "styled-components";
-import BottomSheet from "../../../layout/BottomSheet";
+
+import { startStep, stopStep } from "@/apis/step"; // 서버 기록 API
 import arrowDown from "@/assets/images/arrow-down.svg";
 import dragUp from "@/assets/images/drag-up.svg";
-import SheetListSection from "./SheetListSection";
-import TodayStepsList from "./TodayStepsList";
 
+import BottomSheet from "../../../layout/BottomSheet";
 import DailyCheckInModal from "../modals/DailyCheckInModal";
 import PauseSplash from "../modals/PauseSplash";
-import { getDailyShown, markDailyShown } from "../utils/storage";
 import { applyPlayingState } from "../utils/steps";
-import { startStep, stopStep } from "@/apis/step"; // 서버 기록 API
 import { getTodayAndPastLists } from "../utils/stepsView";
+import { getDailyShown, markDailyShown } from "../utils/storage";
+import SheetListSection from "./SheetListSection";
+import TodayStepsList from "./TodayStepsList";
 
 const PEEK_HEIGHT = 58;
 
@@ -152,7 +153,7 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
           }
         }
       } else {
-        // 다른 항목이 재생 중이면 일단 종료 
+        // 다른 항목이 재생 중이면 일단 종료
         if (playingKey && playingKey !== it.id) {
           // 이전 아이템 찾아 stepId
           const allItems = groups.flatMap((g) => g.items);
@@ -169,7 +170,7 @@ export default function TodayStepsSheet({ goalId, onHeightChange }) {
           }
         }
 
-        // 새 항목 재생 시작 
+        // 새 항목 재생 시작
         setPlayingKey(it.id);
         setPauseOpen(false);
         setStartTimes((prev) => ({ ...prev, [it.id]: new Date() }));

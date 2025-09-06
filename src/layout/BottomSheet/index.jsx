@@ -1,6 +1,7 @@
-import React from "react";
 import { motion } from "framer-motion";
-import { Backdrop, Panel, GrabHandle, SheetViewport } from "./styles";
+import React from "react";
+
+import { Backdrop, GrabHandle, Panel, SheetViewport } from "./styles";
 
 /** Bottom-only Drawer (BottomSheet)
  * props:

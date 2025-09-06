@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import playIcon from "@/assets/images/play.svg";
+
 import pauseIcon from "@/assets/images/pause.svg";
+import playIcon from "@/assets/images/play.svg";
 
 /**
  * StepActionButton

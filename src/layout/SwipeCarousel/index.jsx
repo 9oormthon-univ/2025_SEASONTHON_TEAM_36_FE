@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Viewport, Track, Slide } from "./styles";
+
+import { Slide,Track, Viewport } from "./styles";
 
 /**
  * 스와이프 가능한 카드 캐러셀.

@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import PageModal from "../../../common/components/PageModal";
+
 import GreenButton from "../../../common/components/GreenButton";
+import PageModal from "../../../common/components/PageModal";
 import { ModalContainer } from "../styles/ModalContainer";
 
 /**
