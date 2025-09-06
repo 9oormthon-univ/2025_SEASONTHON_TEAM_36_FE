@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { Navigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Navigate, useSearchParams } from 'react-router-dom';
 
-import { setCookie } from "../../common/utils/cookie";
+// import requestKakaoTokens from '../../apis/requestKakaoTokens';
+import { setCookie } from '../../common/utils/cookie';
 
 const OAuthCallback = () => {
   const [searchParams] = useSearchParams();

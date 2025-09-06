@@ -1,17 +1,17 @@
 // 일기 작성 페이지
 import React from "react";
 import styled from "styled-components";
+
 import addPhotoIcon from "@/assets/images/add.svg";
-
-import timetable from "./dummyImages/시간표.png";
-import GreenButton from "../../common/components/GreenButton";
-import EmotionSelector from "./components/EmotionSelector";
-import CompletionSelector from "./components/CompletionSelector";
-import FocusSelector from "./components/FocusSelector";
 // import EmotionSelector from "./components/EmotionSelector";
-
 import img1 from "@/assets/images/emotions/joy.svg";
 import img2 from "@/assets/images/frog-face-3.svg";
+
+import GreenButton from "../../common/components/GreenButton";
+import CompletionSelector from "./components/CompletionSelector";
+import EmotionSelector from "./components/EmotionSelector";
+import FocusSelector from "./components/FocusSelector";
+import timetable from "./dummyImages/시간표.png";
 import img3 from "./dummyImages/완성도.svg"
 
 /** 날짜 문자열 포맷 (fallback) */
@@ -31,7 +31,6 @@ export default function Write({ date: dateProp }) {
   ];
 
   const photoUrl = null; // URL or null
-
 
   const [memo, setMemo] = React.useState("오늘 하루 뿌듯했다");
   const [emotion, setEmotion] = React.useState(null); // { id, label } 형태로 받을 예정
@@ -66,7 +65,6 @@ export default function Write({ date: dateProp }) {
           label="70%"
         />
       </Row>
-
 
       {/* 메모 */}
       <Section>
@@ -189,7 +187,6 @@ const CompletionRow = styled.div`
   align-items: stretch;     /* 내부 요소도 가로 꽉 차도록 */
   gap: 8px;
 `;
-
 
 const MemoFieldWrap = styled.div`
   position: relative;
