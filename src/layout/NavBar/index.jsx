@@ -13,7 +13,7 @@ import { Bar, IconImg, Inner, Item, Label } from "./styles";
 
 const DEFAULT_ITEMS = [
   {
-    to: "/",
+    to: "/home",
     label: "홈",
     iconSrc: home,
     iconActiveSrc: homeActive,

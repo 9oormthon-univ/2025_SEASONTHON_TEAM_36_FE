@@ -67,8 +67,6 @@ export default function HomePage() {
 
   return (
     <Page>
-      <TestTodoButtons />
-      <TestStepButtons />
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
         <DateView />
