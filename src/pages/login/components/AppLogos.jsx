@@ -1,7 +1,7 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-import AppLogoImg from '../../../assets/images/app-logo-frog.png';
-import AppTitleImg from '../../../assets/images/app-title.png';
+import AppLogoImg from "../../../assets/images/app-logo-frog.png";
+import AppTitleImg from "../../../assets/images/app-title.png";
 
 const AppLogosStyle = styled.div`
   display: flex;

@@ -1,6 +1,6 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-import SplashScreenAppTitle from '../../../assets/images/app-title.png';
+import SplashScreenAppTitle from "../../../assets/images/app-title.png";
 
 const AppTitleStyle = styled.div`
   margin-top: 108px;
