@@ -12,7 +12,7 @@ const Screen = styled.div`
   width: 100%;
   height: 100vh;
 
-  background-image: url('/src/assets/images/night-sky.png');
+  background-image: url('/night-sky.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
