@@ -31,7 +31,7 @@ function App() {
       <Routes>
         <Route element={<ProtectedRoute />}></Route>
         <Route path="/" element={<Login />} />
-        <Route path="/oauth/callback/kakao" element={<OAuthCallback />} />
+        <Route path="/login/oauth2/code/kakao" element={<OAuthCallback />} />
         <Route path="/signup/done" element={<SignUpDone />} />
         <Route element={<AppLayout />}>
           <Route path="/home" element={<HomePage />} />
