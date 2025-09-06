@@ -220,7 +220,7 @@ const Label = styled.h3`
 
 const Textarea = styled.textarea`
   width: 100%;
-  min-height: 120px;
+  min-height: 150px;
   resize: vertical;
   padding: 12px;
   border-radius: 4px;
@@ -241,7 +241,7 @@ const DeadlineInput = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 2%;
+  margin-top: auto;
   gap: 5%;
   input {
     width: 30%;
