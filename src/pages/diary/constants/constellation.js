@@ -224,12 +224,20 @@ export const SEPTEMBER = {
       x: 253,
       y: -8,
     },
+    text: {
+      x: 28,
+      y: 12.91,
+    },
     big: true,
   },
   2: {
     star: {
       x: 261,
       y: 31,
+    },
+    text: {
+      x: 14,
+      y: 1,
     },
     big: false,
   },
@@ -238,12 +246,20 @@ export const SEPTEMBER = {
       x: 257,
       y: 69,
     },
+    text: {
+      x: 14,
+      y: -2,
+    },
     big: false,
   },
   4: {
     star: {
       x: 244,
       y: 93,
+    },
+    text: {
+      x: 27,
+      y: 15,
     },
     big: true,
   },
@@ -252,12 +268,20 @@ export const SEPTEMBER = {
       x: 236,
       y: 135,
     },
+    text: {
+      x: 15,
+      y: 4,
+    },
     big: false,
   },
   6: {
     star: {
       x: 207,
       y: 156,
+    },
+    text: {
+      x: 27,
+      y: 14,
     },
     big: true,
   },
@@ -266,12 +290,20 @@ export const SEPTEMBER = {
       x: 189,
       y: 158,
     },
+    text: {
+      x: 4,
+      y: -13,
+    },
     big: false,
   },
   8: {
     star: {
       x: 150,
       y: 142,
+    },
+    text: {
+      x: 21,
+      y: -6,
     },
     big: true,
   },
@@ -280,12 +312,20 @@ export const SEPTEMBER = {
       x: 135,
       y: 126,
     },
+    text: {
+      x: 8,
+      y: -11,
+    },
     big: false,
   },
   10: {
     star: {
       x: 98,
       y: 85,
+    },
+    text: {
+      x: 23,
+      y: -7,
     },
     big: true,
   },
@@ -294,12 +334,20 @@ export const SEPTEMBER = {
       x: 147,
       y: 183,
     },
+    text: {
+      x: -13,
+      y: -4,
+    },
     big: false,
   },
   12: {
     star: {
       x: 131,
       y: 223,
+    },
+    text: {
+      x: -12,
+      y: -8,
     },
     big: false,
   },
@@ -308,12 +356,20 @@ export const SEPTEMBER = {
       x: 108,
       y: 247,
     },
+    text: {
+      x: -2,
+      y: -7,
+    },
     big: true,
   },
   14: {
     star: {
       x: 92,
       y: 274,
+    },
+    text: {
+      x: -5,
+      y: -10,
     },
     big: false,
   },
@@ -322,12 +378,20 @@ export const SEPTEMBER = {
       x: 61,
       y: 278.45,
     },
+    text: {
+      x: -3,
+      y: -3,
+    },
     big: true,
   },
   16: {
     star: {
       x: 53,
       y: 320,
+    },
+    text: {
+      x: -12,
+      y: -11,
     },
     big: false,
   },
@@ -336,12 +400,20 @@ export const SEPTEMBER = {
       x: 33,
       y: 352,
     },
+    text: {
+      x: -7,
+      y: -13,
+    },
     big: false,
   },
   18: {
     star: {
       x: 4,
       y: 373,
+    },
+    text: {
+      x: 0,
+      y: -5,
     },
     big: true,
   },
@@ -350,12 +422,20 @@ export const SEPTEMBER = {
       x: 216,
       y: 317,
     },
+    text: {
+      x: 26,
+      y: 18,
+    },
     big: true,
   },
   20: {
     star: {
       x: 208,
       y: 352,
+    },
+    text: {
+      x: 14,
+      y: 3,
     },
     big: false,
   },
@@ -364,12 +444,20 @@ export const SEPTEMBER = {
       x: 187,
       y: 375,
     },
+    text: {
+      x: 14,
+      y: 3,
+    },
     big: false,
   },
   22: {
     star: {
       x: 157,
       y: 389.09,
+    },
+    text: {
+      x: 30,
+      y: 19,
     },
     big: true,
   },
@@ -378,12 +466,20 @@ export const SEPTEMBER = {
       x: 151,
       y: 389,
     },
+    text: {
+      x: 10,
+      y: -13,
+    },
     big: false,
   },
   24: {
     star: {
       x: 126,
       y: 368,
+    },
+    text: {
+      x: 11,
+      y: -8,
     },
     big: true,
   },
@@ -392,12 +488,20 @@ export const SEPTEMBER = {
       x: 116,
       y: 405,
     },
+    text: {
+      x: -12,
+      y: -12,
+    },
     big: false,
   },
   26: {
     star: {
       x: 85,
       y: 419,
+    },
+    text: {
+      x: -8,
+      y: 14,
     },
     big: true,
   },
@@ -406,12 +510,20 @@ export const SEPTEMBER = {
       x: 216,
       y: 299,
     },
+    text: {
+      x: 14,
+      y: -2,
+    },
     big: false,
   },
   28: {
     star: {
       x: 205,
       y: 270,
+    },
+    text: {
+      x: 16,
+      y: 0,
     },
     big: false,
   },
@@ -420,12 +532,20 @@ export const SEPTEMBER = {
       x: 209,
       y: 239,
     },
+    text: {
+      x: 15,
+      y: -2,
+    },
     big: false,
   },
   30: {
     star: {
       x: 203,
       y: 194,
+    },
+    text: {
+      x: 30,
+      y: 11,
     },
     big: true,
   },

@@ -73,6 +73,19 @@ const Message = styled.h3`
   color: white;
 `;
 
+const ToggleButton = styled.button`
+  position: absolute;
+  border-radius: 100%;
+  background-color: ${props => (props.$toggle ? "white" : "var(--natural-400)")};
+  box-shadow: 0px 0px 5px 2px ${props => (props.$toggle ? "var(--natural-400)" : "var(--text-3)")};
+  color: ${props => (props.$toggle ? "black" : "var(--text-3)")};
+  width: 36px;
+  height: 36px;
+  font-size: var(--fs-xs);
+  bottom: -15px;
+  right: 0;
+`;
+
 const MONTH = {
   8: AUGUST,
   9: SEPTEMBER,
@@ -96,6 +109,7 @@ const EMOTION_IMG = {
 export default function Diary() {
   const navigate = useNavigate();
   const [date, setDate] = useState(new Date());
+  const [toggle, setToggle] = useState(false);
   useEffect(() => {
     // 다이어리 화면에 들어올 때 스크롤 차단
     document.body.style.overflow = "hidden";
@@ -145,6 +159,7 @@ export default function Diary() {
       <Constellation>
         {MONTH[date.getMonth() + 1] &&
           Object.keys(MONTH[date.getMonth() + 1]).map((day, index) => {
+            const constellation = MONTH[date.getMonth() + 1][day];
             const dateString = dateToFormatString(
               new Date(date.getFullYear(), date.getMonth(), day),
             );
@@ -153,8 +168,8 @@ export default function Diary() {
             return (
               <Star
                 key={index}
-                $x={MONTH[date.getMonth() + 1][day].star.x}
-                $y={MONTH[date.getMonth() + 1][day].star.y}
+                $x={constellation.star.x}
+                $y={constellation.star.y}
                 onClick={() => {
                   diaryInfo
                     ? navigate(`/diary/${diaryInfo.id}`, { state: diaryInfo })
@@ -164,13 +179,33 @@ export default function Diary() {
                 <img
                   src={image}
                   alt="별"
-                  width={MONTH[date.getMonth() + 1][day].big ? 34.2 : 16}
-                  height={MONTH[date.getMonth() + 1][day].big ? 34.2 : 16}
+                  width={constellation.big ? 34.2 : 16}
+                  height={constellation.big ? 34.2 : 16}
                 />
-                <span style={{ color: "white", fontSize: "var(--fs-xs)" }}>{day}</span>
+                <span
+                  style={{
+                    color: "white",
+                    fontSize: "var(--fs-xs)",
+                    display: toggle ? "block" : "none",
+                    position: "absolute",
+                    top: `${constellation.text?.y ?? 0}px`,
+                    left: `${constellation.text?.x ?? 0}px`,
+                  }}
+                >
+                  {day}
+                </span>
               </Star>
             );
           })}
+        <ToggleButton
+          $toggle={toggle}
+          onClick={() => {
+            setToggle(prev => !prev);
+          }}
+        >
+          {toggle ? "ON" : "OFF"}
+        </ToggleButton>
+        ;
       </Constellation>
       <Message>{"개구리가 우물 안에서 볼 밤하늘을 밝혀주세요"}</Message>
     </Screen>
