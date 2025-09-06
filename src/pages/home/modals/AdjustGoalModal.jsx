@@ -12,7 +12,6 @@ import PageModal from "../../../common/components/PageModal";
 import GoalDeadline from "../../calendar/components/GoalDeadline";
 import { ModalContainer } from "../styles/ModalContainer";
 
-
 /**
  * 목표 조정 모달
  * props:

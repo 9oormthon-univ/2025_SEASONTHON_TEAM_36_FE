@@ -1,13 +1,14 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
-import diaryWriteImg from "@/assets/images/diary-write.svg";
+import leftBtnDiaryImg from "@/assets/images/left-btn-diary.svg";
+import rightBtnDiaryImg from "@/assets/images/right-btn-diary.svg";
 
 const Screen = styled.div`
   /* Main 영역을 꽉 채우도록 flex 설정 */
   display: flex;
   flex-direction: column;
+  align-items: center;
   flex: 1 1 auto;
   width: 100%;
   height: 100vh;
@@ -19,15 +20,26 @@ const Screen = styled.div`
 `;
 
 const Header = styled.div`
+  width: 100%;
   display: flex;
   justify-content: space-between;
   margin-top: 76px;
   padding: 12px 24px;
 `;
 
-export default function Diary() {
-  const navigate = useNavigate();
+const NightSkyOfMonth = styled.div`
+  display: flex;
+  justify-content: space-around;
+  width: 70%;
+`;
 
+const ThisMonth = styled.h1`
+  color: white;
+  font-size: var(--fs-xl);
+`;
+
+export default function Diary() {
+  const [date, setDate] = useState(new Date());
   useEffect(() => {
     // 다이어리 화면에 들어올 때 스크롤 차단
     document.body.style.overflow = "hidden";
@@ -38,14 +50,41 @@ export default function Diary() {
     };
   }, []);
 
+  const handleMoveMonth = useCallback(
+    move => {
+      const prevDate = new Date(date);
+      const prevYear = prevDate.getFullYear();
+      const prevMonth = prevDate.getMonth();
+      const tmp = prevMonth + move;
+      const nextYear = tmp < 0 ? prevYear - 1 : tmp >= 12 ? prevYear + 1 : prevYear;
+      const nextMonth = tmp < 0 ? 11 : tmp >= 12 ? 0 : tmp;
+      setDate(new Date(nextYear, nextMonth, 1));
+    },
+    [date],
+  );
+
   return (
     <Screen>
       <Header>
         <h1 style={{ color: "white", fontSize: "var(--fs-2xl)" }}>일기</h1>
-        <button onClick={() => navigate("writing")}>
-          <img src={diaryWriteImg} alt="다이어리 작성" width="24" height="24" />
-        </button>
       </Header>
+      <NightSkyOfMonth>
+        <button
+          onClick={() => {
+            handleMoveMonth(-1);
+          }}
+        >
+          <img src={leftBtnDiaryImg} alt="왼쪽 버튼" width="" height="" />
+        </button>
+        <ThisMonth>{`${date.getFullYear()}년 ${date.getMonth() + 1}월 밤하늘`}</ThisMonth>
+        <button
+          onClick={() => {
+            handleMoveMonth(1);
+          }}
+        >
+          <img src={rightBtnDiaryImg} alt="왼쪽 버튼" width="" height="" />
+        </button>
+      </NightSkyOfMonth>
     </Screen>
   );
 }

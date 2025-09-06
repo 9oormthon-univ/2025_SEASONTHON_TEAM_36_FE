@@ -190,7 +190,12 @@ const CalendarScreen = () => {
           handleDeleteStep={handleDeleteStep}
         />
       </div>
-      <Modal open={open} handleAllToDo={handleAllToDo} handleModifyStep={handleModifyStep} handleShowModal={handleShowModal} />
+      <Modal
+        open={open}
+        handleAllToDo={handleAllToDo}
+        handleModifyStep={handleModifyStep}
+        handleShowModal={handleShowModal}
+      />
     </CalendarScreenStyle>
   );
 };
