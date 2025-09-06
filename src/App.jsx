@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from './layout/AppLayout';
 import DiaryLayout from './layout/DiaryLayout';
 import ProtectedRoute from './layout/ProtectedRoute';
+import Calendar from './pages/calendar';
 import Diary from './pages/diary';
 import Read from './pages/diary/Read';
 import Write from './pages/diary/Write';
@@ -21,28 +22,28 @@ const Screen = ({ title }) => (
 );
 
 function App() {
+  // 앱 시작 시 기본 테마 지정 (라이트/다크)
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'light');
   }, []);
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Login />} />
-          <Route path="/oauth/callback/kakao" element={<OAuthCallback />} />
-          <Route path="/signup/done" element={<SignUpDone />} />
-          <Route element={<AppLayout />}>
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/calendar" element={<Screen title="캘린더" />} />
-            <Route path="/diary" element={<Diary />} />
-            <Route path="/profile" element={<Screen title="프로필" />} />
-          </Route>
-          <Route element={<DiaryLayout />}>
-            <Route path="/diary/writing" element={<Write />} />
-            <Route path="/diary/:id" element={<Read />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
+        <Route element={<ProtectedRoute />}></Route>
+        <Route path="/" element={<Login />} />
+        <Route path="/oauth/callback/kakao" element={<OAuthCallback />} />
+        <Route path="/signup/done" element={<SignUpDone />} />
+        <Route element={<AppLayout />}>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/diary" element={<Diary />} />
+          <Route path="/profile" element={<Screen title="프로필" />} />
         </Route>
+        <Route element={<DiaryLayout />}>
+          <Route path="/diary/writing" element={<Write />} />
+          <Route path="/diary/:id" element={<Read />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
