@@ -4,6 +4,11 @@ import frog6 from "@/assets/images/frog-escape.svg";
 import frog2 from "@/assets/images/frog-glasses.svg";
 import frog5 from "@/assets/images/frog-running-start.svg";
 import frog4 from "@/assets/images/frog-swim.svg";
+import frog7 from "@/assets/images/frog-flower.svg";
+import frog8 from "@/assets/images/frog-sun.svg";
+import frog9 from "@/assets/images/frog-fight.svg";
+import frog10 from "@/assets/images/frog-escape.svg";
+import frog11 from "@/assets/images/frog-escape-new.svg";
 
 // 사용 가능한 개구리 이미지 목록
 const frogs = [frog1, frog2, frog3, frog4, frog5, frog6];

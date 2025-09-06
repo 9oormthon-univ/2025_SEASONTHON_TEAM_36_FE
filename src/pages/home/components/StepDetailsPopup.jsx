@@ -116,17 +116,25 @@ const Content = styled.div`
 `;
 
 const Row = styled.div`
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: max-content 1fr; /* Label은 내용폭, Value는 남는 영역 */
+  column-gap: 12px;
+  align-items: start;
 `;
 
 const Label = styled.span`
   font-size: var(--fs-sm, 14px);
   color: var(--text-2, #555);
+  white-space: nowrap;         /* Label은 줄바꿈 없이 고정 */
 `;
 
 const Value = styled.span`
   font-size: var(--fs-sm, 14px);
   font-weight: 500;
   color: var(--text-1, #000);
+  min-width: 0;                /* 그리드/플렉스에서 줄바꿈 위해 필요 */
+  white-space: normal;         /* 공백 기준 줄바꿈 */
+  word-break: keep-all;        /* 한국어 단어 보존 */
+  overflow-wrap: anywhere;     /* 긴 영어/URL은 예외적으로 끊기 */
+  line-height: 1.4;            /* 가독성 */
 `;
