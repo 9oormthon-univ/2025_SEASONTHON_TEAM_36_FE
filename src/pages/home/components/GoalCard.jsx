@@ -123,7 +123,7 @@ const Container = styled.div`
   width: ${(p) => 80 * p.$shrink}%;
   aspect-ratio: 327 / 368;
   max-height: calc(100% - 24px);
-  margin: clamp(8px, 2.5vh, 48px) auto 0;
+  margin: 0 auto 0;
   padding: clamp(12px, 4.3vw, 40px) clamp(12px, 3vw, 40px);
   border-radius: clamp(12px, 4vw, 16px);
   box-shadow:
