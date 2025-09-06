@@ -84,7 +84,7 @@ export default function HomePage() {
     <Page>
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
-        {!isSheetOpen && <DateView />}
+        <DateView hideYear={isSheetOpen} />
         {hasGoals ? (
           <CardsCarousel
             goals={goals}
@@ -131,7 +131,7 @@ const Body = styled.div`
 `;
 
 const TopSpacing = styled.div`
-  height: calc(45px + env(safe-area-inset-top, 0px));
+  height: calc(30px + env(safe-area-inset-top, 0px));
   @media (min-height: 700px) {
     height: calc(75px + env(safe-area-inset-top, 0px));
   }

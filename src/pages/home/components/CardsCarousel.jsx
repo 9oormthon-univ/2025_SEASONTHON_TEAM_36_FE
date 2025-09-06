@@ -79,11 +79,10 @@ function clamp(v, lo, hi) {
 const CarouselWrap = styled.section`
   width: 100%;
   max-width: 560px;
-  margin: 1.2% auto;
+  margin: 3vh auto 0;
 `;
 
 const IndicatorRow = styled.div`
-  margin-top: 8px;
   display: flex;
   justify-content: center;
 `;

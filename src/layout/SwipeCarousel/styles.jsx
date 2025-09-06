@@ -22,5 +22,5 @@ export const Track = styled.div`
 export const Slide = styled.div`
   flex: 0 0 100%;
   min-width: 100%;
-  padding: 8px;
+  padding: 4px;
 `;
