@@ -3,13 +3,16 @@ import React from "react";
 import styled from "styled-components";
 
 import addPhotoIcon from "@/assets/images/add.svg";
+import imgC from "@/assets/images/frog-face-1.svg";
+// import EmotionSelector from "./components/EmotionSelector";
+import imgA from "@/assets/images/frog-face-5.svg";
+import imgB from "@/assets/images/places/cafe.svg";
 
 import GreenButton from "../../common/components/GreenButton";
 import CompletionSelector from "./components/CompletionSelector";
 import EmotionSelector from "./components/EmotionSelector";
 import FocusSelector from "./components/FocusSelector";
 import timetable from "./dummyImages/시간표.png";
-// import EmotionSelector from "./components/EmotionSelector";
 
 /** 날짜 문자열 포맷 (fallback) */
 function formatKoreanDate(d = new Date()) {
@@ -22,9 +25,9 @@ export default function Write({ date: dateProp }) {
   const date = dateProp ?? formatKoreanDate(); // 외부 date 우선, 없으면 오늘 날짜
 
   const goals = [
-    { id: 1, name: "Goal 1", note: "마케팅 기획서 작성하기", color: "var(--green-200)" },
-    { id: 2, name: "Goal 2", note: "우물 밖 개구리 프로젝트 작업하기", color: "var(--green-300)" },
-    { id: 3, name: "Goal 3", note: "구름톤 유니브 해커톤 참가하기", color: "var(--green-400)" },
+    { id: 1, name: "LG 전자제품 IMC 기획서 작성", color: "var(--green-200)" },
+    { id: 2, name: "총균쇠 독후감 작성하기", color: "var(--green-300)" },
+    { id: 3, name: "브랜딩 광고 영상 ppt 만들기", color: "var(--green-400)" },
   ];
 
   const photoUrl = null; // URL or null
@@ -51,14 +54,35 @@ export default function Write({ date: dateProp }) {
               <ColorDot style={{ background: g.color }} />
               <span className="typo-h4">{g.name}</span>
             </LegendLeft>
-            <LegendRight className="typo-label-l">{g.note ?? "—"}</LegendRight>
+            {/* <LegendRight className="typo-label-l">{g.note ?? "—"}</LegendRight> */}
           </LegendItem>
         ))}
       </Legend>
 
+      <Section>
+        <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
+        <Row>
+          <InfoCard
+            title="감정"
+            imgSrc={imgA}
+            label="좋음"
+          />
+          <InfoCard
+            title="잔여 에너지"
+            imgSrc={imgC}
+            label="기운 없음"
+          />
+          <InfoCard
+            title="장소"
+            imgSrc={imgB}
+            label="카페"
+          />
+        </Row>
+      </Section>
+
       {/* 감정 */}
       <Section>
-        <Label className="typo-h4">오늘 하루 일을 끝낸 후 감정은?</Label>
+        <Label className="typo-h4">오늘 하루 여정을 끝낸 기분이 어때요?</Label>
         <EmotionSelector
           value={emotion?.id ?? null}
           onChange={(item) => setEmotion(item)}  // item = { id, label }
@@ -67,7 +91,7 @@ export default function Write({ date: dateProp }) {
 
       {/* 집중도 */}
       <Section>
-        <Label className="typo-h4">오늘 집중도는?</Label>
+        <Label className="typo-h4">오늘 집중도는 어땠나요?</Label>
         <FocusSelector
           value={focus?.id ?? null}
           onChange={(item) => setFocus(item)}   // { id, label }
@@ -76,7 +100,7 @@ export default function Write({ date: dateProp }) {
 
       {/* 완성도 */}
       <Section>
-        <Label className="typo-h4">결과물의 완성도는?</Label>
+        <Label className="typo-h4">결과물의 완성도를 기록해주세요</Label>
         <CompletionRow>
           <CompletionSelector className="typo-label-s"
             name="완성도"
@@ -178,7 +202,7 @@ const LegendItem = styled.div`
 const LegendLeft = styled.div`
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 20px;
   min-width: 0; /* ellipsis를 위해 필요 */
   > span {
     color: var(--text-1);
@@ -189,10 +213,11 @@ const LegendLeft = styled.div`
   }
 `;
 
-const LegendRight = styled.span`
-  color: var(--text-2);
-  white-space: nowrap;
-`;
+// const LegendRight = styled.span`
+//   color: var(--text-2);
+//   white-space: nowrap;
+// `;
+
 const ColorDot = styled.span`
   width: 12px;
   height: 12px;
@@ -285,4 +310,53 @@ const Placeholder = styled.div`
   align-items: center;
   justify-content: center;
   opacity: 0.6;
+`;
+
+/* ===== 재사용 가능한 카드 ===== */
+function InfoCard({ title, imgSrc, label }) {
+  return (
+    <Card>
+      <Title className="typo-body-s">{title}</Title>
+      <ImageWrapper>
+        <img src={imgSrc} alt={label} />
+      </ImageWrapper>
+      <Label className="typo-body-xs">{label}</Label>
+    </Card>
+  );
+}
+
+/* ===== styled-components ===== */
+const Row = styled.div`
+  display: flex;
+  justify-content: space-around; /* 균등 분배 */
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+`;
+
+const Card = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+`;
+
+const Title = styled.div`
+  color: var(--text-1);
+`;
+
+const ImageWrapper = styled.div`
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
 `;
