@@ -146,7 +146,7 @@ const DateBar = styled.h3`
   text-align: center;
   color: var(--text-1, #000);
 `;
-const DateText = styled.h2`
+const DateText = styled.div`
   margin: 0;
   color: var(--text-1);
 `;
