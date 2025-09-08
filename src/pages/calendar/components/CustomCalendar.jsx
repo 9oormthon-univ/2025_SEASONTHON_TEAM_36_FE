@@ -66,8 +66,13 @@ const CustomCalendar = ({
   const getTileContent = ({ activeStartDate, date, view }) => {
     // 월 보기일 때만 div 추가
     if (view === "month") {
-      const isSameDate = percentageOfDay ? percentageOfDay[date] !== null : false;
-      const percentage = percentageOfDay && (percentageOfDay[date] ?? 0);
+      console.log(dateToFormatString(date));
+      console.log(percentageOfDay[date]);
+      console.log(percentageOfDay[dateToFormatString(date)]);
+      const isSameDate = percentageOfDay
+        ? percentageOfDay[dateToFormatString(date)] !== null
+        : false;
+      const percentage = percentageOfDay && (percentageOfDay[dateToFormatString(date)] ?? 0);
       return (
         <div
           style={{
