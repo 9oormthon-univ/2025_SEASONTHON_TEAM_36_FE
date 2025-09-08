@@ -66,19 +66,14 @@ const CustomCalendar = ({
   const getTileContent = ({ activeStartDate, date, view }) => {
     // 월 보기일 때만 div 추가
     if (view === "month") {
-      const tmpPercentage = percentageOfDay && percentageOfDay[dateToFormatString(date)];
-      console.log(`${dateToFormatString(date)}의 step 진행율: ${percentageOfDay && tmpPercentage}`);
-      const isSameDate = percentageOfDay
-        ? tmpPercentage !== null && tmpPercentage !== undefined
-        : false;
-      const percentage = percentageOfDay && (tmpPercentage ?? 0);
+      const percentage = percentageOfDay && (percentageOfDay[dateToFormatString(date)] ?? 0);
       return (
         <div
           style={{
             width: "23px",
             height: "23px",
-            border: isSameDate && percentage ? "none" : "1px solid var(--natural-400)",
-            backgroundColor: isSameDate && percentage ? selectGreen(percentage) : "#ffffff",
+            border: percentage > 0 ? "none" : "1px solid var(--natural-400)",
+            backgroundColor: percentage > 0 ? selectGreen(percentage) : "#ffffff",
             borderRadius: "4px",
             marginBottom: "2px",
           }}
