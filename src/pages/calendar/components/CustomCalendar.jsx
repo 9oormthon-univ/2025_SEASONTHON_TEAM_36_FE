@@ -82,7 +82,7 @@ const CustomCalendar = ({
     }
     return null;
   };
-  console.log(tmpPercentageOfDay);
+
   return (
     <div style={{ position: "relative" }}>
       <Calendar

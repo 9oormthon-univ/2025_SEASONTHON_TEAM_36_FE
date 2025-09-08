@@ -68,6 +68,7 @@ const GoalDeadline = ({
 }) => {
   const [isModify, setIsModify] = useState(steps.map(_ => false));
   const [updateSteps, setUpdateSteps] = useState(steps.map(step => step));
+  console.log(updateSteps);
   // 수정 버튼 클릭 → 편집 모드 토글
   return (
     <GoalDeadlineStyle>

@@ -92,6 +92,7 @@ const CalendarScreen = () => {
         "0",
       )}-${String(date.getDate()).padStart(2, "0")}`;
       setCurToDo(tmpAllToDo[dateToString]);
+      console.log(tmpAllToDo);
     });
     const weekRange = getWeekRange(date);
     setStartDayOfWeek(weekRange.monday);
