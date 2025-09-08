@@ -23,6 +23,7 @@ const CustomCalendar = ({
       const getResponse = async () => {
         const response = await calendarApi(curDate.getFullYear(), curDate.getMonth() + 1);
         const tmpPercentageOfDay = {};
+        console.log(response);
         response?.calendar.forEach(value => {
           tmpPercentageOfDay[value.calendarDate] = value.percentage;
         });
