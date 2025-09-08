@@ -67,8 +67,8 @@ const CustomCalendar = ({
     // 월 보기일 때만 div 추가
     if (view === "month") {
       console.log(dateToFormatString(date));
-      console.log(percentageOfDay[date]);
-      console.log(percentageOfDay[dateToFormatString(date)]);
+      console.log(percentageOfDay && percentageOfDay[date]);
+      console.log(percentageOfDay && percentageOfDay[dateToFormatString(date)]);
       const isSameDate = percentageOfDay
         ? percentageOfDay[dateToFormatString(date)] !== null
         : false;
