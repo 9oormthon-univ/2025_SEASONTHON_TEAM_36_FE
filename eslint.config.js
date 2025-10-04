@@ -4,38 +4,64 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import prettier from 'eslint-config-prettier';
 
 export default [
   // 전역 무시 설정
   {
-    ignores: ['dist/**/*', 'build/**/*', 'node_modules/**/*'],
+    ignores: ['dist/**', 'build/**', 'node_modules/**'],
   },
 
   // ESLint 기본 권장 규칙
   js.configs.recommended,
 
-  // 메인 설정
+  // TypeScript 권장 규칙 + Parser 적용 (모든 파일 대상 기본값)
+  ...tseslint.configs.recommendedTypeChecked, // 타입정보 필요 규칙(프로젝트 인식)
   {
-    files: ['**/*.{js,jsx}'],
-
     languageOptions: {
-      ecmaVersion: 2020,
+      // TS Parser + 프로젝트 파일 지정
+      parser: tseslint.parser,
+      parserOptions: {
+        project: ['./tsconfig.app.json', './tsconfig.node.json'],
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: { jsx: true },
+      },
       globals: {
         ...globals.browser,
         ...globals.es2020,
       },
-      parserOptions: {
-        ecmaVersion: 'latest',
-        ecmaFeatures: { jsx: true },
-        sourceType: 'module',
-      },
     },
+  },
+
+  // 메인 룰셋 (JS/TS/JSX/TSX 공통)
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
 
     plugins: {
+      import: importPlugin,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       'simple-import-sort': simpleImportSort,
-      import: importPlugin,
+      // typescript-eslint 플러그인은 tseslint.configs에서 이미 로드됨
+    },
+
+    settings: {
+      // import 리졸버: TS(paths), Node, 별칭(@)
+      'import/resolver': {
+        typescript: {
+          // tsconfig의 paths/baseUrl을 읽어 경로 해석
+          project: ['./tsconfig.app.json', './tsconfig.node.json'],
+        },
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx', '.d.ts', '.json'],
+        },
+        alias: {
+          map: [['@', './src']],
+          extensions: ['.js', '.jsx', '.ts', '.tsx', '.d.ts', '.json'],
+        },
+      },
     },
 
     rules: {
@@ -57,6 +83,17 @@ export default [
       'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
 
       // 변수 및 코드 품질
+      'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
+      indent: ['error', 2, { SwitchCase: 1 }],
+      'no-trailing-spaces': 'error',
+    },
+  },
+
+  // JS 전용(비-TS) 파일에서의 규칙
+  {
+    files: ['**/*.{js,jsx}'],
+    rules: {
+      // JS에서는 원래 규칙 사용
       'no-unused-vars': [
         'error',
         {
@@ -66,11 +103,30 @@ export default [
         },
       ],
       'no-undef': 'error',
-
-      // 포맷팅 관련
-      'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
-      indent: ['error', 2, { SwitchCase: 1 }],
-      'no-trailing-spaces': 'error',
     },
   },
+
+  // TS 전용 파일에서의 규칙 조정
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      // TS가 대체하므로 끔
+      'no-unused-vars': 'off',
+      'no-undef': 'off',
+
+      // TS 버전의 unused-vars 활성화
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          varsIgnorePattern: '^[A-Z_]',
+          argsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
+
+      // 선택: any 최소화(필요 시 완화 가능)
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
+  prettier 
 ];
