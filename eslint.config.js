@@ -5,7 +5,10 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import prettier from 'eslint-config-prettier';
+import prettierPlugin from 'eslint-plugin-prettier';
+import prettier from 'prettier';
+
+const prettierConfig = await prettier.resolveConfig(process.cwd());
 
 export default [
   // 전역 무시 설정
@@ -45,6 +48,7 @@ export default [
       'react-refresh': reactRefresh,
       'simple-import-sort': simpleImportSort,
       // typescript-eslint 플러그인은 tseslint.configs에서 이미 로드됨
+      'prettier': prettierPlugin
     },
 
     settings: {
@@ -86,6 +90,9 @@ export default [
       'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
       indent: ['error', 2, { SwitchCase: 1 }],
       'no-trailing-spaces': 'error',
+
+      // .prettierrc 파일 기반 Prettier 반영
+      'prettier/prettier': ['error', prettierConfig || {}],
     },
   },
 
@@ -128,5 +135,4 @@ export default [
       '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
-  prettier 
 ];
