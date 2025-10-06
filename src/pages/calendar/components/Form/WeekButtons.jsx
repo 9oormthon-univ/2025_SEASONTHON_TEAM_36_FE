@@ -1,12 +1,14 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 const Day = styled.div`
   border-radius: 100%;
   padding: 5px 8.5px;
-  background-color: ${props => (props.$checked ? 'var(--green-500)' : 'var(--natural-200)')};
-  color: ${props => (props.$checked ? 'white' : 'black')};
+  background-color: ${props => (props.$checked ? "var(--green-500)" : "var(--natural-200)")};
+  color: ${props => (props.$checked ? "white" : "black")};
   font-size: var(--fs-sm);
-  transition: background-color 0.1s linear, color 0.1s linear;
+  transition:
+    background-color 0.1s linear,
+    color 0.1s linear;
 `;
 
 const Days = styled.div`
@@ -16,7 +18,7 @@ const Days = styled.div`
 `;
 
 const WeekButtons = ({ checkDays, handleDays }) => {
-  const days = ['월', '화', '수', '목', '금', '토', '일'];
+  const days = ["월", "화", "수", "목", "금", "토", "일"];
   return (
     <Days>
       {days.map((day, index) => (

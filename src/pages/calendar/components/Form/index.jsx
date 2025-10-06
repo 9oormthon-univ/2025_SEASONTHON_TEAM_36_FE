@@ -82,7 +82,9 @@ const CheckBox = styled.div`
   border: ${props => (props.$toggle ? "none" : "1px solid var(--natural-400)")};
   border-radius: 4px;
   background-color: ${props => (props.$toggle ? "var(--green-500)" : "#ffffff")};
-  transition: background-color 0.1s linear, border 0.1s linear;
+  transition:
+    background-color 0.1s linear,
+    border 0.1s linear;
 `;
 
 const EveryDay = styled.span`
