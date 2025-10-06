@@ -1,4 +1,6 @@
-export const dummy = {
+import type { DummyData } from "../types/Diary";
+
+export const dummy: DummyData = {
   "2025-09-01": {
     id: 1,
     prevEmotion: 2,
@@ -9,6 +11,7 @@ export const dummy = {
     perfection: 45,
     memo: "월요일이라 조금 피곤했음",
     url: "https://picsum.photos/200/300?random=1",
+    date: "2025-09-01",
   },
   "2025-09-02": {
     id: 2,
@@ -20,6 +23,7 @@ export const dummy = {
     perfection: 62,
     memo: "날씨가 좋아서 산책을 함",
     url: "https://picsum.photos/200/300?random=2",
+    date: "2025-09-02",
   },
   "2025-09-03": {
     id: 3,
@@ -31,6 +35,7 @@ export const dummy = {
     perfection: 77,
     memo: "프로젝트 집중 잘 됨",
     url: "https://picsum.photos/200/300?random=3",
+    date: "2025-09-03",
   },
   "2025-09-04": {
     id: 4,
@@ -42,6 +47,7 @@ export const dummy = {
     perfection: 25,
     memo: "피곤해서 일찍 잠듦",
     url: "https://picsum.photos/200/300?random=4",
+    date: "2025-09-04",
   },
   "2025-09-05": {
     id: 5,
@@ -53,6 +59,7 @@ export const dummy = {
     perfection: 90,
     memo: "좋은 만남이 있었음",
     url: "https://picsum.photos/200/300?random=5",
+    date: "2025-09-05",
   },
   "2025-09-06": {
     id: 6,
@@ -64,5 +71,6 @@ export const dummy = {
     perfection: 70,
     memo: "집에서 푹 쉼",
     url: "https://picsum.photos/200/300?random=6",
+    date: "2025-09-06",
   },
 };

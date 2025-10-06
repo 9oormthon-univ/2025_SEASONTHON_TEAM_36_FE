@@ -1,4 +1,6 @@
-export const AUGUST = {
+import type { MonthConstellation } from "../types/Constellation";
+
+export const AUGUST: MonthConstellation = {
   1: {
     star: {
       x: 310.21,
@@ -218,7 +220,7 @@ export const AUGUST = {
   },
 };
 
-export const SEPTEMBER = {
+export const SEPTEMBER: MonthConstellation = {
   1: {
     star: {
       x: 253,
@@ -551,7 +553,7 @@ export const SEPTEMBER = {
   },
 };
 
-export const OCTOBER = {
+export const OCTOBER: MonthConstellation = {
   1: {
     star: {
       x: 118,
@@ -771,7 +773,7 @@ export const OCTOBER = {
   },
 };
 
-export const NOVEMBER = {
+export const NOVEMBER: MonthConstellation = {
   1: {
     star: {
       x: 131,
