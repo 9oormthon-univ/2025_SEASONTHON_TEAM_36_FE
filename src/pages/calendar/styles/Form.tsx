@@ -112,7 +112,7 @@ export const Days = styled.div`
 /**
  * FormField.tsx 컴포넌트 스타일
  */
-export const FormFieldWrapper = styled.div`
+export const FormFieldStyle = styled.div`
   position: relative;
   > :first-child {
     margin-bottom: 16px;

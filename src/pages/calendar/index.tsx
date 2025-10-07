@@ -7,24 +7,25 @@ import { deleteTodo, fetchTodos } from "../../apis/todo";
 import CustomCalendar from "./components/CustomCalendar";
 import Modal from "./components/Modal";
 import ToDoList from "./components/ToDoList";
-import { Main, Page } from "./styles/Calendar";
+import { Main, Page } from "./styles";
+import type { Goal, Goals, HandleStep, Step } from "./types/ToDo";
 import { dateToFormatString } from "./utils/dateUtils";
 
 const CalendarScreen = () => {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
-  const [allToDo, setAllToDo] = useState(null);
-  const [curToDo, setCurToDo] = useState({});
+  const [allToDo, setAllToDo] = useState<Goals | null>(null);
+  const [curToDo, setCurToDo] = useState<Goal>({});
 
-  const handleModifyStep = useCallback(
+  const handleModifyStep: HandleStep = useCallback(
     (goalId, stepId, description) => {
       modifyStep(stepId, description)
         .then(_ => {
           const tmpAllToDo = { ...allToDo };
           const steps = tmpAllToDo[dateToFormatString(date)][goalId].steps;
 
-          steps.forEach(step => {
-            if (step.id === stepId) step.name = description;
+          steps.forEach((step: Step) => {
+            if (step.id === stepId && typeof description === "string") step.name = description;
           });
           tmpAllToDo[dateToFormatString(date)][goalId].steps = steps;
           setAllToDo(tmpAllToDo);
@@ -34,22 +35,23 @@ const CalendarScreen = () => {
     [allToDo, date],
   );
 
-  const handleDeleteStep = useCallback(
+  const handleDeleteStep: HandleStep = useCallback(
     (goalId, stepId) => {
+      const dateString = dateToFormatString(date);
       const tmpAllToDo = { ...allToDo };
-      const steps = tmpAllToDo[dateToFormatString(date)][goalId].steps;
+      const steps = tmpAllToDo[dateString][goalId].steps;
       deleteStep(stepId)
         .then(_ => {
-          tmpAllToDo[dateToFormatString(date)][goalId].steps = steps.filter(
-            step => step.id !== stepId,
-          );
+          tmpAllToDo[dateString][goalId].steps = steps.filter(step => step.id !== stepId);
           setAllToDo(tmpAllToDo);
-          if (tmpAllToDo[dateToFormatString(date)][goalId].steps.length === 0) {
-            deleteTodo(goalId).then(_ => {
-              const tmpAllToDo = { ...allToDo };
-              delete tmpAllToDo[dateToFormatString(date)][goalId];
-              setAllToDo(tmpAllToDo);
-            });
+          if (tmpAllToDo[dateString][goalId].steps.length === 0) {
+            deleteTodo(goalId)
+              .then(_ => {
+                const tmpAllToDo = { ...allToDo };
+                delete tmpAllToDo[dateString][goalId];
+                setAllToDo(tmpAllToDo);
+              })
+              .catch(() => setAllToDo({ ...allToDo }));
           }
         })
         .catch(() => setAllToDo({ ...allToDo }));
@@ -60,7 +62,7 @@ const CalendarScreen = () => {
   const handleAllToDo = useCallback(() => {
     fetchTodos()
       .then(resp => {
-        const tmpAllToDo = {};
+        const tmpAllToDo: Goals = {};
         resp.contents.forEach(content => {
           const goalId = content.id;
           const goalTitle = content.title;
@@ -108,19 +110,19 @@ const CalendarScreen = () => {
   }, []);
 
   const handleToDo = useCallback(
-    selectedDate => {
+    (selectedDate: string | Date) => {
       const date = new Date(selectedDate);
       setDate(date);
       const dateToString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
         "0",
       )}-${String(date.getDate()).padStart(2, "0")}`;
-      setCurToDo(allToDo[dateToString]);
+      setCurToDo(allToDo ? allToDo[dateToString] : {});
     },
     [allToDo],
   );
   const handleMoveMonth = useCallback(
-    move => {
+    (move: number) => {
       const prevDate = new Date(date);
       const prevYear = prevDate.getFullYear();
       const prevMonth = prevDate.getMonth();
@@ -143,12 +145,7 @@ const CalendarScreen = () => {
           handleDeleteStep={handleDeleteStep}
         />
       </Main>
-      <Modal
-        open={open}
-        handleAllToDo={handleAllToDo}
-        handleModifyStep={handleModifyStep}
-        handleShowModal={handleShowModal}
-      />
+      <Modal open={open} handleAllToDo={handleAllToDo} handleShowModal={handleShowModal} />
     </Page>
   );
 };

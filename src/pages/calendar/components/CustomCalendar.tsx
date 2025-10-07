@@ -4,9 +4,10 @@ import Calendar from "react-calendar";
 import { calendarApi } from "../../../apis/calendar";
 import LeftArrow from "../../../assets/images/left-arrow.png";
 import RightArrow from "../../../assets/images/right-arrow.png";
+import { CustomCalendarProps } from "../types/props";
 import { dateToFormatString } from "../utils/dateUtils";
 
-const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }) => {
+const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }: CustomCalendarProps) => {
   const [percentageOfDay, setPercentageOfDay] = useState(null);
 
   useEffect(() => {

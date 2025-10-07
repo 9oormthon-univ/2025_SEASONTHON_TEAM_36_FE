@@ -1,60 +1,32 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+
+import PageModal from "@/common/components/PageModal";
 
 import { destructToDoByAI } from "../../../apis/ai";
 import { addTodo } from "../../../apis/todo";
-import CloseImg from "../../../assets/images/close.png";
 import FrogEscapeImg from "../../../assets/images/frog-escape-new.svg";
 import FrogNoti from "../../../common/components/FrogNoti";
+import { FormModalProps } from "../types/props";
+import { NewStep } from "../types/ToDo";
 import Form from "./Form";
 import GoalDeadline from "./GoalDeadline";
 
-const ModalStyle = styled.div`
-  background-color: white;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: ${props => (props.$open ? 0 : 100)}%;
-  z-index: 1001;
-  transition: top 0.2s linear;
-  overflow: auto;
-
-  display: flex;
-  flex-direction: column;
-
-  padding-bottom: 55px;
-  align-items: center;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: flex-end;
-
-  width: 100%;
-  margin-top: 20px;
-  padding: 3px 24px;
-`;
-
 const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
-const Modal = ({ open, handleAllToDo, handleShowModal }) => {
+const FormModal = ({ open, handleAllToDo, handleShowModal }: FormModalProps) => {
   /**
    * 0: 폼 작성
    * 1: 폼 처리 중
    * 2: 폼 처리 완료
    */
-  const [status, setStatus] = useState(0);
-  const [formContents, setFormContents] = useState([
-    "",
-    "",
-    "",
-    "",
-    [false, false, false, false, false, false, false],
-  ]);
-  const [stepsOfNewGoal, setStepsOfNewGoal] = useState([]);
+  const [status, setStatus] = useState<number>(0);
+  const [formContents, setFormContents] = useState<
+    [string, string, string | null, string | null, boolean[]]
+  >(["", "", "", "", [false, false, false, false, false, false, false]]);
+  const [stepsOfNewGoal, setStepsOfNewGoal] = useState<NewStep[]>([]);
   const [toggle, setToggle] = useState(false);
   // AbortController ref to manage API request cancellation
-  const abortControllerRef = useRef(null);
+  const abortControllerRef = useRef<AbortController>(null);
 
   const handleSubmit = useCallback(() => {
     // Create new AbortController for this request
@@ -77,9 +49,9 @@ const Modal = ({ open, handleAllToDo, handleShowModal }) => {
             setStepsOfNewGoal(resp.steps);
             setStatus(prev => prev + 1);
           })
-          .catch(error => {
+          .catch((error: Error | DOMException) => {
             if (error.name === "AbortError") {
-              console.log("API 요청이 취소되었습니다.");
+              console.error("API 요청이 취소되었습니다.");
               // 요청이 취소된 경우 상태를 초기화
               setStatus(0);
             } else {
@@ -93,9 +65,9 @@ const Modal = ({ open, handleAllToDo, handleShowModal }) => {
             abortControllerRef.current = null;
           });
       })
-      .catch(error => {
+      .catch((error: Error | DOMException) => {
         if (error.name === "AbortError") {
-          console.log("API 요청이 취소되었습니다.");
+          console.error("API 요청이 취소되었습니다.");
           // 요청이 취소된 경우 상태를 초기화
           setStatus(0);
         } else {
@@ -124,7 +96,7 @@ const Modal = ({ open, handleAllToDo, handleShowModal }) => {
     setToggle(false);
 
     if (status === 2) {
-      handleAllToDo();
+      void handleAllToDo();
     }
   }, [handleAllToDo, handleShowModal, status]);
 
@@ -138,12 +110,7 @@ const Modal = ({ open, handleAllToDo, handleShowModal }) => {
   }, []);
 
   return (
-    <ModalStyle $open={open}>
-      <Header>
-        <button>
-          <img src={CloseImg} alt="취소" width="24" height="24" onClick={handleClose} />
-        </button>
-      </Header>
+    <PageModal open={open} onClose={handleClose}>
       {status === 0 ? (
         <Form
           toggle={toggle}
@@ -168,8 +135,8 @@ const Modal = ({ open, handleAllToDo, handleShowModal }) => {
           handleShowModal={handleShowModal}
         />
       )}
-    </ModalStyle>
+    </PageModal>
   );
 };
 
-export default Modal;
+export default FormModal;
