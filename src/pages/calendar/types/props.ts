@@ -13,6 +13,11 @@ export interface CustomCalendarProps {
   handleMoveMonth: (move: number) => void;
 }
 
+export interface CustomDatePickerProps {
+  index: number;
+  onChange: (index: number, newValue: string | boolean[]) => void;
+}
+
 export interface GoalProps {
   goalId: number;
   goal: string;
