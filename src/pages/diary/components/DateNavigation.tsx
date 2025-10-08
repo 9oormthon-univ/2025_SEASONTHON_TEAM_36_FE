@@ -1,20 +1,28 @@
 import leftBtnDiaryImg from "@/assets/images/left-btn-diary.svg";
 import rightBtnDiaryImg from "@/assets/images/right-btn-diary.svg";
 
-import { Month, Wrapper } from "../styles/NightSky";
+import { Month, Wrapper } from "../styles/DateNavigation";
+import { checkLuanchingDate, checkOverDate } from "../utils/dateUtils";
 
 const Button = ({
   handleMoveMonth,
   move,
+  hide,
 }: {
   handleMoveMonth: (move: number) => void;
   move: number;
+  hide?: boolean | null;
 }) => {
   const imgSrc = move > 0 ? rightBtnDiaryImg : leftBtnDiaryImg;
   const imgAlt = move > 0 ? "오른쪽 버튼" : "왼쪽 버튼";
   return (
     <button
+      style={{
+        opacity: hide ? 0 : 1,
+        cursor: hide ? "auto" : "pointer",
+      }}
       onClick={() => {
+        if (hide) return;
         handleMoveMonth(move);
       }}
     >
@@ -23,20 +31,23 @@ const Button = ({
   );
 };
 
-const NightSky = ({
+const DateNavigation = ({
   handleMoveMonth,
   date,
 }: {
   handleMoveMonth: (move: number) => void;
   date: Date;
 }) => {
+  const isOverDate = checkOverDate(date);
+  const isLuanchingDate = checkLuanchingDate(date);
+
   return (
     <Wrapper>
-      <Button handleMoveMonth={handleMoveMonth} move={-1} />
+      <Button handleMoveMonth={handleMoveMonth} move={-1} hide={isLuanchingDate} />
       <Month>{`${date.getFullYear()}년 ${date.getMonth() + 1}월 밤하늘`}</Month>
-      <Button handleMoveMonth={handleMoveMonth} move={1} />
+      <Button handleMoveMonth={handleMoveMonth} move={1} hide={isOverDate} />
     </Wrapper>
   );
 };
 
-export default NightSky;
+export default DateNavigation;
