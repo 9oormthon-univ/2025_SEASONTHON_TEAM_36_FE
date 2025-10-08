@@ -7,10 +7,22 @@ export const Wrapper = styled.div`
   height: 451px;
 `;
 
+export const Line = styled.div<{ left: number; top: number; distance: number; angle: number }>`
+  position: absolute;
+  height: 1.75px;
+  background-color: rgba(255, 255, 255, 0.5);
+  transform-origin: left center;
+  top: ${props => props.top}px;
+  left: ${props => props.left}px;
+  width: ${props => props.distance}px;
+  transform: rotateZ(${props => props.angle}deg);
+`;
+
 export const Star = styled.div<{ $x: number; $y: number }>`
   position: absolute;
   left: ${props => props.$x}px;
   top: ${props => props.$y}px;
+  z-index: 1;
 `;
 
 export const Day = styled.span<{ $toggle: boolean; $x: number; $y: number }>`
