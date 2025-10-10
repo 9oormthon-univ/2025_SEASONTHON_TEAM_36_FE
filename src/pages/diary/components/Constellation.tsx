@@ -8,7 +8,7 @@ import { dummy } from "../constants/dummy";
 import { EMOTION_IMG } from "../constants/emotion_img";
 import { LINES } from "../constants/line";
 import { MONTH_CONSTELLATION } from "../constants/month";
-import { Day, Line, Star, ToggleButton, Wrapper } from "../styles/Constellation";
+import { Day, Line, Star, StarImg, ToggleButton, Wrapper } from "../styles/Constellation";
 import { Coordinate } from "../types/Coordinate";
 import type { Diary } from "../types/Diary";
 
@@ -73,12 +73,7 @@ const Constellation = ({ date }: { date: Date }) => {
                 handleStarClick(diaryInfo, dateString);
               }}
             >
-              <img
-                src={image}
-                alt="별"
-                width={constellation.big ? 34.2 : 16}
-                height={constellation.big ? 34.2 : 16}
-              />
+              <StarImg src={image} alt="별" $big={constellation.big} />
               <Day $toggle={toggle} $x={constellation.text?.x ?? 0} $y={constellation.text?.y ?? 0}>
                 {day}
               </Day>
@@ -108,7 +103,6 @@ const Constellation = ({ date }: { date: Date }) => {
       >
         {toggle ? "ON" : "OFF"}
       </ToggleButton>
-      ;
     </Wrapper>
   );
 };

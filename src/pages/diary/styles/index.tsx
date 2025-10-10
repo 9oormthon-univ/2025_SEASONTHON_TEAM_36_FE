@@ -21,15 +21,32 @@ export const Header = styled.div`
   justify-content: space-between;
   margin-top: 76px;
   padding: 12px 24px;
+
+  @media (max-height: 800px) {
+    margin-top: 50px;
+  }
+
+  @media (max-height: 700px) {
+    margin-top: 40px;
+  }
+
+  @media (max-height: 600px) {
+    margin-top: 30px;
+  }
+
+  @media (max-height: 500px) {
+    margin-top: 20px;
+  }
 `;
 
 export const Title = styled.h1`
   color: white;
-  font-size: var(--fs-2xl);
+  font-size: clamp(var(--fs-xl), 6vw, var(--fs-2xl));
 `;
 
 export const Message = styled.h3`
-  font-size: var(--fs-md);
-  margin-top: 47px;
+  font-size: clamp(var(--fs-sm), 2vw, var(--fs-md));
+  font-weight: 500;
+  margin-top: clamp(24px, 4vh, 38px);
   color: white;
 `;

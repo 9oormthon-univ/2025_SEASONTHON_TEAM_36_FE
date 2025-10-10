@@ -1,7 +1,7 @@
 import leftBtnDiaryImg from "@/assets/images/left-btn-diary.svg";
 import rightBtnDiaryImg from "@/assets/images/right-btn-diary.svg";
 
-import { Month, Wrapper } from "../styles/DateNavigation";
+import { ButtonImg, Month, Wrapper } from "../styles/DateNavigation";
 import { checkLuanchingDate, checkOverDate } from "../utils/dateUtils";
 
 const Button = ({
@@ -18,6 +18,7 @@ const Button = ({
   return (
     <button
       style={{
+        display: "flex",
         opacity: hide ? 0 : 1,
         cursor: hide ? "auto" : "pointer",
       }}
@@ -26,7 +27,7 @@ const Button = ({
         handleMoveMonth(move);
       }}
     >
-      <img src={imgSrc} alt={imgAlt} />
+      <ButtonImg src={imgSrc} alt={imgAlt} />
     </button>
   );
 };
@@ -43,9 +44,9 @@ const DateNavigation = ({
 
   return (
     <Wrapper>
-      <Button handleMoveMonth={handleMoveMonth} move={-1} hide={isLuanchingDate} />
+      <Button handleMoveMonth={handleMoveMonth} move={-1} hide={false} />
       <Month>{`${date.getFullYear()}년 ${date.getMonth() + 1}월 밤하늘`}</Month>
-      <Button handleMoveMonth={handleMoveMonth} move={1} hide={isOverDate} />
+      <Button handleMoveMonth={handleMoveMonth} move={1} hide={false} />
     </Wrapper>
   );
 };

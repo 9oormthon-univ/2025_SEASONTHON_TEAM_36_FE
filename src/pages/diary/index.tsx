@@ -18,9 +18,11 @@ export default function Diary() {
 
   // searchParams가 변경될 때 date도 업데이트
   useEffect(() => {
-    const year = validateYearString(searchParams.get("year"));
-    const month = validateMonthString(searchParams.get("month"));
-    const nextDate = getCorrectDate(year, month);
+    const year = Number(searchParams.get("year"));
+    const month = Number(searchParams.get("month"));
+    // const year = validateYearString(searchParams.get("year"));
+    // const month = validateMonthString(searchParams.get("month"));
+    const nextDate = new Date(year, month - 1);
     setSearchParams({
       year: nextDate.getFullYear().toString(),
       month: (nextDate.getMonth() + 1).toString(),
