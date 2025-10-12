@@ -43,11 +43,6 @@ export const Input = styled.input<{ disabled: boolean; $fontSize: number | strin
   }
 `;
 
-export const TaskToDo = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 export const TextInput = styled.input`
   width: 100%;
   padding: 12px 8px;
