@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 
 import GreenButton from "../../../common/components/GreenButton";
@@ -7,7 +7,7 @@ import DotsSelector from "../components/DotsSelector";
 import { ModalContainer } from "../styles/ModalContainer";
 import DayStartSplash from "./DayStartSplash";
 
-export default function DailyCheckInModal({ open, onClose, title, step, isPlaying }) {
+export default function DailyCheckInModal({ open, onClose }) {
   const [feeling, setFeeling] = useState(3);
   const [energy, setEnergy] = useState(3);
   const [location, setLocation] = useState(null);
@@ -28,7 +28,7 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
   const onStart = () => {
     // if (!canStart) return;
     setSplashOpen(true);
-    onClose?.() // 현재 모달은 닫기
+    onClose?.(); // 현재 모달은 닫기
   };
 
   return (
@@ -69,7 +69,7 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
           <Section>
             <Question className="typo-h3">오늘의 여정은 어디서 진행되나요?</Question>
             <ButtonGrid>
-              {LOCATIONS.map((loc) => (
+              {LOCATIONS.map(loc => (
                 <ChoiceButton
                   className="typo-label-l"
                   key={loc.id}
@@ -84,15 +84,14 @@ export default function DailyCheckInModal({ open, onClose, title, step, isPlayin
             </ButtonGrid>
           </Section>
           <ButtonRow>
-            <GreenButton disabled={!canStart} onClick={onStart}>START</GreenButton>
+            <GreenButton disabled={!canStart} onClick={onStart}>
+              START
+            </GreenButton>
           </ButtonRow>
         </ModalContainer>
       </PageModal>
 
-      <DayStartSplash
-        open={splashOpen}
-        onClose={() => setSplashOpen(false)}
-      />
+      <DayStartSplash open={splashOpen} onClose={() => setSplashOpen(false)} />
     </>
   );
 }
@@ -144,8 +143,8 @@ const ChoiceButton = styled.button`
   padding: 5% 13px;
   border-radius: 20px;
   border: 1px solid var(--bg-2);
-  background: ${(p) => (p.$active ? "var(--primary-1)" : "var(--natural-200)")};
-  color: ${(p) => (p.$active ? "var(--text-w1)" : "var(--text-1)")};
+  background: ${p => (p.$active ? "var(--primary-1)" : "var(--natural-200)")};
+  color: ${p => (p.$active ? "var(--text-w1)" : "var(--text-1)")};
   cursor: pointer;
   transition: all 0.2s;
 

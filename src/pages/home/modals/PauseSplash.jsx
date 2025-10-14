@@ -1,5 +1,5 @@
 // FrogNotiModal.jsx
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 import frogSwim from "@/assets/images/frog-swim.svg";
 

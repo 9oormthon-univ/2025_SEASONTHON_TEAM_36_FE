@@ -2,19 +2,18 @@ import React from "react";
 import styled from "styled-components";
 
 import { startStep, stopStep } from "@/apis/step"; // 서버 기록 API
-import arrowDown from "@/assets/images/arrow-down.svg";
 import dragUp from "@/assets/images/drag-up.svg";
 
 import BottomSheet from "../../../layout/BottomSheet";
 import DailyCheckInModal from "../modals/DailyCheckInModal";
+import DayCompleteSplash from "../modals/DayCompleteSplash";
+import GoalCompleteSplash from "../modals/GoalCompleteSplash";
 import PauseSplash from "../modals/PauseSplash";
 import { applyPlayingState } from "../utils/steps";
 import { getTodayAndPastLists } from "../utils/stepsView";
 import { getDailyShown, markDailyShown } from "../utils/storage";
 import SheetListSection from "./SheetListSection";
 import TodayStepsList from "./TodayStepsList";
-import GoalCompleteSplash from "../modals/GoalCompleteSplash";
-import DayCompleteSplash from "../modals/DayCompleteSplash";
 
 const PEEK_HEIGHT = 58;
 
@@ -82,16 +81,21 @@ export default function TodayStepsSheet({ goalId, onHeightChange, onStepCompl })
         if (alive) setLoading(false);
       }
     })();
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, [goalId]);
 
   // 리스트 → UI 아이템 (기본 state=pause) + stepId 포함
-  const toPaused = React.useCallback((prefix) => (s, i) => ({
-    id: `${prefix}-${s.stepId ?? s.stepOrder ?? i}`, // 내부용 고유키
-    title: s.description ?? "",
-    state: "pause",
-    stepId: s.stepId ?? null, // 서버 호출용
-  }), []);
+  const toPaused = React.useCallback(
+    prefix => (s, i) => ({
+      id: `${prefix}-${s.stepId ?? s.stepOrder ?? i}`, // 내부용 고유키
+      title: s.description ?? "",
+      state: "pause",
+      stepId: s.stepId ?? null, // 서버 호출용
+    }),
+    [],
+  );
 
   const baseGroups = React.useMemo(() => {
     const todayItems = parted.today.map(toPaused("today"));
@@ -105,45 +109,40 @@ export default function TodayStepsSheet({ goalId, onHeightChange, onStepCompl })
   // 재생 상태 반영
   const groups = React.useMemo(
     () => applyPlayingState(baseGroups, playingKey),
-    [baseGroups, playingKey]
+    [baseGroups, playingKey],
   );
 
-// ==== 공통: stop 응답 처리(렌더링 기준을 stopStep으로) ====
-// isCompletedTodaySteps가 true면 GoalCompleteSplash는 절대 띄우지 않음
-const processStopResult = React.useCallback((res) => {
-  const rawDone = res?.isCompletedTodaySteps;
-  // 문자열 "true"/"false"까지 안전하게 처리
-  const doneToday =
-    rawDone === true ||
-    rawDone === "true" ||
-    rawDone === 1 ||
-    rawDone === "1";
+  // ==== 공통: stop 응답 처리(렌더링 기준을 stopStep으로) ====
+  // isCompletedTodaySteps가 true면 GoalCompleteSplash는 절대 띄우지 않음
+  const processStopResult = React.useCallback(res => {
+    const rawDone = res?.isCompletedTodaySteps;
+    // 문자열 "true"/"false"까지 안전하게 처리
+    const doneToday = rawDone === true || rawDone === "true" || rawDone === 1 || rawDone === "1";
 
-  const p = Number(res?.progress);
-  if (Number.isFinite(p)) setLastProgress(p);
+    const p = Number(res?.progress);
+    if (Number.isFinite(p)) setLastProgress(p);
 
-  // 1) 오늘 스텝 모두 완료 → DayComplete만 (GoalComplete는 절대 X)
-  if (doneToday) {
-    setModalOpen(false);
-    setPauseOpen(false);
-    setPlayingKey(null);
-    setDayCompleteOpen(true);
-    return true;
-  }
+    // 1) 오늘 스텝 모두 완료 → DayComplete만 (GoalComplete는 절대 X)
+    if (doneToday) {
+      setModalOpen(false);
+      setPauseOpen(false);
+      setPlayingKey(null);
+      setDayCompleteOpen(true);
+      return true;
+    }
 
-  // 2) 목표 100% 달성 → GoalComplete (단, doneToday가 아닐 때만)
-  if (!doneToday && Number.isFinite(p) && p >= 100) {
-    setModalOpen(false);
-    setPauseOpen(false);
-    setPlayingKey(null);
-    setGoalCompleteOpen(true);
-    return true;
-  }
+    // 2) 목표 100% 달성 → GoalComplete (단, doneToday가 아닐 때만)
+    if (!doneToday && Number.isFinite(p) && p >= 100) {
+      setModalOpen(false);
+      setPauseOpen(false);
+      setPlayingKey(null);
+      setGoalCompleteOpen(true);
+      return true;
+    }
 
-  // 3) 둘 다 아니면 PauseSplash 유지
-  return false;
-}, []);
-
+    // 3) 둘 다 아니면 PauseSplash 유지
+    return false;
+  }, []);
 
   // goalId 전환 시 재생 종료 기록(+ 서버 stop)
   const prevGoalRef = React.useRef(goalId);
@@ -151,8 +150,8 @@ const processStopResult = React.useCallback((res) => {
     if (prevGoalRef.current !== goalId) {
       const prevKey = playingKey;
       if (prevKey) {
-        const allItems = groups.flatMap((g) => g.items);
-        const prevItem = allItems.find((it) => it.id === prevKey);
+        const allItems = groups.flatMap(g => g.items);
+        const prevItem = allItems.find(it => it.id === prevKey);
         const prevStepId = prevItem?.stepId ?? null;
 
         (async () => {
@@ -166,7 +165,7 @@ const processStopResult = React.useCallback((res) => {
           }
         })();
 
-        setEndTimes((prev) => ({ ...prev, [prevKey]: new Date() }));
+        setEndTimes(prev => ({ ...prev, [prevKey]: new Date() }));
         setPlayingKey(null);
       }
       prevGoalRef.current = goalId;
@@ -174,7 +173,7 @@ const processStopResult = React.useCallback((res) => {
   }, [goalId, playingKey, groups, processStopResult]);
 
   // 액션 (재생/정지)
-  const handleAction = async (it) => {
+  const handleAction = async it => {
     if (actionBusyRef.current) return;
     actionBusyRef.current = true;
     try {
@@ -183,10 +182,10 @@ const processStopResult = React.useCallback((res) => {
 
       if (isPlaying) {
         // ===== 정지 처리 =====
-        setEndTimes((prev) => ({ ...prev, [it.id]: new Date() }));
-        setPauseOpen(true);          // 일단 PauseSplash를 띄우되,
+        setEndTimes(prev => ({ ...prev, [it.id]: new Date() }));
+        setPauseOpen(true); // 일단 PauseSplash를 띄우되,
         setModalOpen(false);
-        setPlayingKey(null);         // 재생 해제
+        setPlayingKey(null); // 재생 해제
 
         if (it.stepId != null) {
           try {
@@ -204,11 +203,11 @@ const processStopResult = React.useCallback((res) => {
       } else {
         // ===== 다른 항목 재생 중이면 먼저 정지 =====
         if (playingKey && playingKey !== it.id) {
-          const allItems = groups.flatMap((g) => g.items);
-          const prevItem = allItems.find((x) => x.id === playingKey);
+          const allItems = groups.flatMap(g => g.items);
+          const prevItem = allItems.find(x => x.id === playingKey);
           const prevStepId = prevItem?.stepId ?? null;
 
-          setEndTimes((prev) => ({ ...prev, [playingKey]: new Date() }));
+          setEndTimes(prev => ({ ...prev, [playingKey]: new Date() }));
           if (prevStepId != null) {
             try {
               const resPrev = await stopStep(prevStepId);
@@ -227,8 +226,8 @@ const processStopResult = React.useCallback((res) => {
         // ===== 새 항목 재생 시작 =====
         setPlayingKey(it.id);
         setPauseOpen(false);
-        setStartTimes((prev) => ({ ...prev, [it.id]: new Date() }));
-        setEndTimes((prev) => {
+        setStartTimes(prev => ({ ...prev, [it.id]: new Date() }));
+        setEndTimes(prev => {
           const { [it.id]: _, ...rest } = prev;
           return rest;
         });
@@ -271,16 +270,8 @@ const processStopResult = React.useCallback((res) => {
       >
         {open ? (
           <SheetBody>
-            <TopBar>
-              <TopRow>
-                <CloseDownBtn onClick={closeSheet} aria-label="내려서 닫기">
-                  <img src={arrowDown} alt="arrow-down" width={14} style={{ height: "auto" }} />
-                </CloseDownBtn>
-              </TopRow>
-            </TopBar>
-
             <ScrollArea role="list" aria-busy={loading}>
-              {groups.map((g) => (
+              {groups.map(g => (
                 <SheetListSection key={g.id} title={g.title} defaultOpen={g.defaultOpen}>
                   <TodayStepsList
                     items={g.items}
@@ -306,31 +297,16 @@ const processStopResult = React.useCallback((res) => {
         />
       )}
 
-      <DailyCheckInModal
-        open={modalOpen}
-        onClose={handleCloseDaily}
-        title={parted.meta?.title ?? "목표"}
-        step={selectedStep}
-        isPlaying={!!playingKey}
-      />
+      <DailyCheckInModal open={modalOpen} onClose={handleCloseDaily} />
 
       <PauseSplash
         open={pauseOpen}
         onClose={() => setPauseOpen(false)}
-        step={selectedStep}
         progress={lastProgress ?? 0}
       />
 
-      <GoalCompleteSplash
-        open={goalCompleteOpen}
-        onClose={() => setGoalCompleteOpen(false)}
-        title={parted.meta?.title ?? "목표 달성!"}
-      />
-      <DayCompleteSplash
-        open={dayCompleteOpen}
-        onClose={() => setDayCompleteOpen(false)}
-        title={"오늘의 할 일을 모두 끝냈어요!"}
-      />
+      <GoalCompleteSplash open={goalCompleteOpen} onClose={() => setGoalCompleteOpen(false)} />
+      <DayCompleteSplash open={dayCompleteOpen} onClose={() => setDayCompleteOpen(false)} />
     </>
   );
 }
@@ -344,36 +320,6 @@ const SheetBody = styled.div`
   margin: 0 2%;
 `;
 
-const TopBar = styled.div`
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: transparent;
-  border-bottom: 1px solid var(--bg-2);
-`;
-
-const TopRow = styled.div`
-  position: relative;
-  min-height: 20px;
-`;
-
-const CloseDownBtn = styled.button`
-  position: absolute;
-  right: 8px;
-  top: 0px;
-  appearance: none;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  color: var(--text-2);
-  font-size: 18px;
-  line-height: 1;
-  padding: 0 6px;
-  margin: 0 1% 0 0;
-  border-radius: 8px;
-  &:hover { background: var(--text-w2); }
-`;
-
 const ScrollArea = styled.div`
   overflow: auto;
   padding: 4px 8px 12px;
@@ -383,7 +329,9 @@ const FloatingArrow = styled.img`
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--peek, 58px) + var(--gap, 14px) + var(--navbar-height));
+  bottom: calc(
+    env(safe-area-inset-bottom, 0px) + var(--peek, 58px) + var(--gap, 14px) + var(--navbar-height)
+  );
   width: 14px;
   height: auto;
   pointer-events: none;
