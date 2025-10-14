@@ -40,7 +40,7 @@ const SectionHeader = styled.div`
   gap: 8px;
   background: transparent;
   color: var(--text-1);
-  padding: 4px 0;
+  margin: 8px 22px;
 `;
 
 const SectionTitle = styled.h3`
