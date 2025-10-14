@@ -1,7 +1,9 @@
+// src/pages/home/components/GoalCard.tsx
 import React from "react";
 import styled from "styled-components";
 
 import sirenIcon from "@/assets/images/siren.svg";
+import type { HomeGoal } from "@/pages/home/types/home";
 
 import AdjustGoalModal from "../modals/AdjustGoalModal";
 import GoalStepsModal from "../modals/GoalStepsModal";
@@ -9,24 +11,40 @@ import { pickRandomFrog } from "../store/frogs";
 import { DDayIcon } from "../styles/DDayIcon";
 import FrogBar from "./FrogBar";
 
-export default function GoalCard({ goal, shrink = 1, className, onDeleted, onGoalAdjusted}) {
+// 비동기/동기 핸들러 허용
+type Voidish = void | Promise<void>;
+
+export interface GoalCardProps {
+  goal: HomeGoal;
+  shrink?: number; // default 1
+  onDeleted?: () => Voidish;
+  onGoalAdjusted?: () => Voidish;
+}
+
+// styled-components transient props
+interface ContainerProps {
+  $shrink: number;
+}
+
+export default function GoalCard({ goal, shrink = 1, onDeleted, onGoalAdjusted }: GoalCardProps) {
   if (!goal) return null;
 
-  const { id: goalId, dDay, title, progress = 0, warmMessage } = goal;
+  const { id: goalId, dDay, title, progress, warmMessage } = goal;
 
-  const frogRef = React.useRef(null);
+  // 개구리 이미지 경로 저장
+  const frogRef = React.useRef<string | null>(null);
   if (frogRef.current == null) {
     frogRef.current = pickRandomFrog();
   }
 
   const { sign, num } = React.useMemo(() => {
     const m = /D\s*([+-])?\s*(\d+)/i.exec(String(dDay));
-    if (!m) return { sign: 0, num: null };
+    if (!m) return { sign: 0, num: null as number | null };
     const s = m[1] === "+" ? 1 : m[1] === "-" ? -1 : 0;
     const n = parseInt(m[2], 10);
     return { sign: s, num: Number.isNaN(n) ? null : n };
   }, [dDay]);
-  const isUrgent = sign <= 0 && (num <= 3);
+  const isUrgent = sign <= 0 && num != null && num <= 3;
 
   const [openSteps, setOpenSteps] = React.useState(false);
   const [openAdjust, setOpenAdjust] = React.useState(false);
@@ -39,9 +57,11 @@ export default function GoalCard({ goal, shrink = 1, className, onDeleted, onGoa
 
   React.useEffect(() => {
     if (!anyOpen) return;
-    const onKey = (e) =>
-      e.key === "Escape" &&
-      (openAdjust ? closeAdjustModal() : closeStepsModal());
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        openAdjust ? closeAdjustModal() : closeStepsModal();
+      }
+    };
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -51,11 +71,16 @@ export default function GoalCard({ goal, shrink = 1, className, onDeleted, onGoa
     };
   }, [anyOpen, openAdjust]);
 
-  const onCardKeyDown = (e) => {
+  const onCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       openStepsModal();
     }
+  };
+
+  const onSirenClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    openAdjustModal();
   };
 
   return (
@@ -63,7 +88,6 @@ export default function GoalCard({ goal, shrink = 1, className, onDeleted, onGoa
       <Container
         role="button"
         tabIndex={0}
-        className={className}
         aria-label="Task card"
         onClick={openStepsModal}
         onKeyDown={onCardKeyDown}
@@ -79,10 +103,7 @@ export default function GoalCard({ goal, shrink = 1, className, onDeleted, onGoa
                 type="button"
                 title="마감 임박: 목표 조정"
                 aria-label="마감 임박: 목표 조정"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openAdjustModal();
-                }}
+                onClick={onSirenClick}
               >
                 <SirenIcon src={sirenIcon} alt="" aria-hidden="true" />
               </SirenButton>
@@ -93,9 +114,10 @@ export default function GoalCard({ goal, shrink = 1, className, onDeleted, onGoa
         <CheerMsg className="typo-label-l">{warmMessage || "파이팅! 오늘도 한 걸음."}</CheerMsg>
 
         <ImgContainer>
-          <FrogBar progress={progress} />
+          <FrogBar progress={progress ?? 0} />
           <Illust aria-hidden="true">
-            <img src={frogRef.current} alt="" />
+            {/* frogRef.current는 null 아님이 보장된 상태 */}
+            {frogRef.current && <img src={frogRef.current} alt="" />}
           </Illust>
         </ImgContainer>
       </Container>
@@ -117,10 +139,10 @@ export default function GoalCard({ goal, shrink = 1, className, onDeleted, onGoa
   );
 }
 
-const Container = styled.div`
+const Container = styled.div<ContainerProps>`
   background: var(--bg-1);
   color: inherit;
-  width: ${(p) => 80 * p.$shrink}%;
+  width: ${p => 80 * p.$shrink}%;
   aspect-ratio: 327 / 368;
   max-height: calc(100% - 24px);
   margin: 0 auto 0;
@@ -128,7 +150,7 @@ const Container = styled.div`
   border-radius: clamp(12px, 4vw, 16px);
   box-shadow:
     -0.27px -0.27px 4.495px 0 var(--natural-400),
-     0.27px  0.27px 4.495px 0 var(--natural-400);
+    0.27px 0.27px 4.495px 0 var(--natural-400);
   display: flex;
   flex-direction: column;
   gap: clamp(8px, 2.8vw, 16px);
@@ -136,7 +158,7 @@ const Container = styled.div`
   cursor: pointer;
   transition: width 0.25s ease;
   &:focus-visible {
-    outline: 2px solid var(--brand-1, #18A904);
+    outline: 2px solid var(--brand-1, #18a904);
     outline-offset: 2px;
     border-radius: clamp(12px, 4vw, 16px);
   }
@@ -176,7 +198,7 @@ const SirenButton = styled.button`
   line-height: 0;
   cursor: pointer;
   &:focus-visible {
-    outline: 2px solid var(--brand-1, #18A904);
+    outline: 2px solid var(--brand-1, #18a904);
     outline-offset: 2px;
   }
   &:active {
@@ -193,17 +215,17 @@ const SirenIcon = styled.img`
 const CheerMsg = styled.p`
   font-size: clamp(10px, 3.5vw, 24px);
   font-weight: 500;
-  color: var(--text-2, #6F737B);
-  white-space: normal;        /* 기본 줄바꿈 허용 */
-  word-break: keep-all;       /* 공백 단위로 줄바꿈 (한국어 단어는 그대로 유지) */
-  overflow-wrap: anywhere;    /* 너무 긴 영어 단어나 URL만 예외적으로 잘라줌 */
+  color: var(--text-2, #6f737b);
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   line-height: 1.6;
 `;
 
 const ImgContainer = styled.div`
   position: relative;
-  flex: 1 0 70%;         
-  min-height: 0;            /* 줄어드는 상황에서도 넘침 방지 */
+  flex: 1 0 70%;
+  min-height: 0;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -217,14 +239,14 @@ const Illust = styled.figure`
   height: 100%;
   pointer-events: none;
   display: flex;
-  align-items: flex-end;     /* 아래 정렬 */
-  justify-content: flex-end; /* 오른쪽 정렬 */
-  padding-bottom: 3%;        /* 바닥에서 살짝 띄우기 (옵션) */
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding-bottom: 3%;
   img {
     display: block;
-    max-width: 85%;          /* 카드 대비 가로 최대치 */
-    max-height: 96%;         /* 컨테이너 높이를 넘지 않음 */
+    max-width: 85%;
+    max-height: 96%;
     height: auto;
-    object-fit: contain;     /* 비율 유지하며 내부에 맞춤 */
+    object-fit: contain;
   }
 `;

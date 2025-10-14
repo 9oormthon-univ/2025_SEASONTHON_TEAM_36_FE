@@ -1,10 +1,14 @@
-import React from "react";
 import styled from "styled-components";
 
 import frogIndicator from "@/assets/images/frog-indicator.svg";
 
+type FrogBarProps = {
+  progress?: number; // 0~100
+  className?: string;
+  style?: React.CSSProperties & { ["--p"]?: string | number };
+};
 /** 진행 막대 + 마커 + 물결오버레이 */
-export default function FrogBar({ progress = 0, className, style }) {
+export default function FrogBar({ progress = 0, className, style }: FrogBarProps) {
   const p = Math.max(0, Math.min(100, Number(progress) || 0));
 
   return (
@@ -41,13 +45,13 @@ const Bar = styled.div`
   justify-content: center;
   margin-left: 2%;
   --marker-size: 26px;
---marker-half: calc(var(--marker-size) / 2);
+  --marker-half: calc(var(--marker-size) / 2);
 
   /* 조정용 변수 */
   --p-clamped: clamp(9, var(--p, 0), 100);
-  --wave-h: 40px;        /* 파도 높이 */
-  --wave-size-x: 90px;  /* 파도 한 주기 가로 길이 */
-  --wave-offset: 16px;   /* 물결이 물 위로 얼마나 올라오게 할지(덮임 깊이) */
+  --wave-h: 40px; /* 파도 높이 */
+  --wave-size-x: 90px; /* 파도 한 주기 가로 길이 */
+  --wave-offset: 16px; /* 물결이 물 위로 얼마나 올라오게 할지(덮임 깊이) */
 
   .track {
     position: absolute;
@@ -57,10 +61,12 @@ const Bar = styled.div`
 
   .fill {
     position: absolute;
-    left: 0px; right: 0px; bottom: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
     background: var(--blue);
     height: clamp(0px, calc(var(--p-clamped) * 1% - 10px), 100%);
-    z-index: 2; 
+    z-index: 2;
   }
 
   .marker {
@@ -77,27 +83,27 @@ const Bar = styled.div`
     z-index: 1; /* 파도보다 아래 */
   }
 
-
   /* ===== 물결 오버레이 ===== */
   .wave {
-  /* intensity: 진행률 0~1 스케일 */
+    /* intensity: 진행률 0~1 스케일 */
     --int: clamp(0, calc((var(--p-clamped) - 8) / 92), 1);
-   /* 진행률↑ → 파도 높이(진폭)↑ */
-   --wave-h: calc(10px + 10px * var(--int));
-   /* 진행률↑ → 수평 이동 속도↑ */
-   --spd: calc(4s - 2.5s * var(--int));
-   /* 진행률↑ → 상하 흔들림 빠르게 */
-   --bob-time: calc(4s - 1.2s * var(--int));
-   /* 진행률↑ → 상하 흔들림 폭↑ */
-   --bob-amp: calc(1px + 6px * var(--int));
+    /* 진행률↑ → 파도 높이(진폭)↑ */
+    --wave-h: calc(10px + 10px * var(--int));
+    /* 진행률↑ → 수평 이동 속도↑ */
+    --spd: calc(4s - 2.5s * var(--int));
+    /* 진행률↑ → 상하 흔들림 빠르게 */
+    --bob-time: calc(4s - 1.2s * var(--int));
+    /* 진행률↑ → 상하 흔들림 폭↑ */
+    --bob-amp: calc(1px + 6px * var(--int));
 
     position: absolute;
-    left: 0px; right: 0px;
+    left: 0px;
+    right: 0px;
     height: var(--wave-h);
     /* 물 위 경계에 맞추되, 살짝 위로 끌어올려 개구리를 덮도록 */
     bottom: calc(var(--p-clamped) * 1% - var(--wave-offset));
     background: var(--blue);
-    z-index: 3;          /* 개구리 위에 덮이게 */
+    z-index: 3; /* 개구리 위에 덮이게 */
     pointer-events: none;
     opacity: 0.98;
 
@@ -136,6 +142,8 @@ const Bar = styled.div`
 
   /* (선택) 모션 줄이기 접근성 */
   @media (prefers-reduced-motion: reduce) {
-    .wave { animation-duration: 12s; }
+    .wave {
+      animation-duration: 12s;
+    }
   }
 `;
