@@ -1,4 +1,4 @@
-// src/pages/home/HomePage.jsx
+// src/pages/home/index.tsx
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -8,45 +8,50 @@ import CardsCarousel from "./components/CardsCarousel";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TodayStepsSheet from "./components/TodayStepsSheet";
+import type { ApiTodosResponse, BodyStyledProps, GoalId, HomeGoal } from "./types/home";
 
 export default function HomePage() {
-  const [goals, setGoals] = useState([]);        // 서버에서 불러온 ToDo 목록
-  const [loading, setLoading] = useState(true);  // 로딩 상태
-  const [error, setError] = useState(null);      // 에러 상태
+  const [goals, setGoals] = useState<HomeGoal[]>([]); // 서버에서 불러온 ToDo 목록
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태
+  const [error, setError] = useState<unknown>(null); // 에러 상태
 
-  const [activeId, setActiveId] = useState(null); // 현재 화면에 표시되는 goal id
-  const [sheetHeight, setSheetHeight] = useState(0);
+  const [activeId, setActiveId] = useState<GoalId | null>(null); // 현재 화면에 표시되는 goal id
+  const [sheetHeight, setSheetHeight] = useState<number>(0);
 
   // 시트가 열렸다고 판단할 임계값(픽셀)
-  const OPEN_THRESHOLD_PX = 100;
+  const OPEN_THRESHOLD_PX: number = 100;
   const isSheetOpen = sheetHeight > OPEN_THRESHOLD_PX;
-  const SHRINK_OPEN = 0.89;
-  const SHRINK_CLOSED = 1;
-  const shrink = isSheetOpen ? SHRINK_OPEN : SHRINK_CLOSED;
+  const SHRINK_OPEN = 0.89 as const;
+  const SHRINK_CLOSED = 1 as const;
+  const shrink: number = isSheetOpen ? SHRINK_OPEN : SHRINK_CLOSED;
 
   // 최초 로딩 - 실제 API 호출
   useEffect(() => {
     let alive = true;
     setLoading(true);
     fetchTodos()
-      .then((res) => {
+      .then(res => {
         if (!alive) return;
-        const contents = Array.isArray(res?.contents) ? res.contents : [];
-        setGoals(contents);
+        const { contents } = (res ?? {}) as ApiTodosResponse;
+        const list = Array.isArray(contents) ? contents : [];
+        setGoals(list);
       })
-      .catch((e) => {
+      .catch((e: unknown) => {
         if (!alive) return;
         setError(e);
       })
-      .finally(() => alive && setLoading(false));
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
     return () => {
       alive = false;
     };
   }, []);
+
   // goalcard에서 todo 삭제 후 재조회
-  const reloadTodos = async () => {
+  const reloadTodos = async (): Promise<void> => {
     try {
-      const res = await fetchTodos();
+      const res = (await fetchTodos()) as ApiTodosResponse;
       const contents = Array.isArray(res?.contents) ? res.contents : [];
       setGoals(contents);
     } catch (e) {
@@ -57,7 +62,7 @@ export default function HomePage() {
   // goals가 갱신될 때 activeId가 없으면 첫 goal을 기본 선택
   useEffect(() => {
     if (!goals.length) return;
-    if (activeId == null || !goals.some((t) => t.id === activeId)) {
+    if (activeId == null || !goals.some(t => t.id === activeId)) {
       setActiveId(goals[0].id);
     }
   }, [goals, activeId]);
@@ -104,7 +109,8 @@ export default function HomePage() {
         <TodayStepsSheet
           goalId={activeId}
           onHeightChange={setSheetHeight}
-          onStepCompl={reloadTodos} />
+          onStepCompl={reloadTodos}
+        />
       )}
     </Page>
   );
@@ -121,16 +127,14 @@ const Page = styled.section`
   width: 100%;
 `;
 
-const Body = styled.div`
+// transient props 타입 적용
+const Body = styled.div<BodyStyledProps>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
   min-height: 0;
-  height: calc(
-    (100dvh - ${(p) => p.$sheetHeight}px - var(--navbar-height, 0px))
-    * ${(p) => p.$shrink}
-  );
+  height: calc((100dvh - ${p => p.$sheetHeight}px - var(--navbar-height, 0px)) * ${p => p.$shrink});
 `;
 
 const TopSpacing = styled.div`

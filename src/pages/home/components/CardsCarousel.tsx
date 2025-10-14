@@ -1,11 +1,25 @@
-import React, { useEffect, useMemo, useState } from "react";
+// src/pages/home/components/CardsCarousel.tsx
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
+
+import type { GoalId, HomeGoal } from "@/pages/home/types/home";
 
 import SwipeCarousel from "../../../layout/SwipeCarousel";
 import DotIndicator from "./DotIndicator";
 import GoalCard from "./GoalCard";
 
-/** goals: [{ id, dDay, title, progress, warmMessage, ... }] */
+// props 타입
+type OnActiveIdChange = React.Dispatch<React.SetStateAction<GoalId | null>>;
+
+export interface CardsCarouselProps {
+  goals?: HomeGoal[];
+  activeId?: GoalId | null;
+  onActiveIdChange?: OnActiveIdChange; // ← 여기 변경
+  shrink?: number;
+  onGoalDeleted?: () => void | Promise<void>;
+  onGoalAdjusted?: () => void | Promise<void>;
+}
+
 export default function CardsCarousel({
   goals = [],
   activeId,
@@ -13,31 +27,35 @@ export default function CardsCarousel({
   shrink = 1,
   onGoalDeleted,
   onGoalAdjusted,
-}) {
-  const [innerIndex, setInnerIndex] = useState(0);
+}: CardsCarouselProps) {
+  const [innerIndex, setInnerIndex] = useState<number>(0);
 
-  const ids = useMemo(
-    () => goals.map((g, i) => g?.id ?? `${g?.title ?? "goal"}-${i}`),
-    [goals]
+  // ids를 항상 number로 보장 (id 없으면 음수 센티널 사용)
+  const ids = useMemo<GoalId[]>(
+    () =>
+      goals.map((g, i) => {
+        const id = g?.id;
+        return typeof id === "number" && Number.isFinite(id) ? id : -(i + 1);
+      }),
+    [goals],
   );
 
-  const controlledIndex = useMemo(() => {
+  const controlledIndex = useMemo<number | null>(() => {
     if (activeId == null) return null;
     const idx = ids.indexOf(activeId);
     return idx >= 0 ? idx : 0;
   }, [activeId, ids]);
 
-  const index = Number.isInteger(controlledIndex)
-    ? controlledIndex
+  const index = Number.isInteger(controlledIndex as number)
+    ? (controlledIndex as number)
     : clamp(innerIndex, 0, Math.max(0, goals.length - 1));
 
-  const setIndexBoth = (next) => {
-    const nextVal = clamp(
-      typeof next === "function" ? next(index) : next,
-      0,
-      Math.max(0, goals.length - 1)
-    );
+  const setIndexBoth = (next: number | ((prev: number) => number)) => {
+    const computed = typeof next === "function" ? (next as (p: number) => number)(index) : next;
+
+    const nextVal = clamp(computed, 0, Math.max(0, goals.length - 1));
     if (controlledIndex == null) setInnerIndex(nextVal);
+
     const nextId = ids[nextVal];
     if (nextId != null) onActiveIdChange?.(nextId);
   };
@@ -54,8 +72,8 @@ export default function CardsCarousel({
         <SwipeCarousel index={index} onIndexChange={setIndexBoth}>
           {goals.map((g, i) => (
             <GoalCard
-              key={ids[i]}
-              goal={g}        // 각각의 goal 객체 자체 전달
+              key={ids[i]?.toString()}
+              goal={g}
               shrink={shrink}
               onDeleted={onGoalDeleted}
               onGoalAdjusted={onGoalAdjusted}
@@ -70,7 +88,7 @@ export default function CardsCarousel({
   );
 }
 
-function clamp(v, lo, hi) {
+function clamp(v: number, lo: number, hi: number): number {
   const n = Number(v);
   if (!Number.isFinite(n)) return lo;
   return Math.max(lo, Math.min(hi, n));
