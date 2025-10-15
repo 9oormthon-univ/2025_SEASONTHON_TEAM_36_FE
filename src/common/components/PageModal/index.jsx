@@ -4,15 +4,7 @@ import { createPortal } from "react-dom";
 import backArrow from "@/assets/images/back-arrow.svg";
 import cancelIcon from "@/assets/images/cancel.svg";
 
-import {
-  Body,
-  HeaderBar,
-  IconBtn,
-  IconImg,
-  Screen,
-  Spacer,
-  Title,
-} from "./styles";
+import { Body, HeaderBar, IconBtn, IconImg, Screen, Spacer, Title } from "./styles";
 
 /** ===================== 내부 헤더 컴포넌트 ===================== */
 export function ModalHeader({
@@ -43,12 +35,7 @@ export function ModalHeader({
     <HeaderBar>
       <Spacer aria-hidden="true" />
       <Title id={titleId}>{title}</Title>
-      <IconBtn
-        type="button"
-        aria-label="닫기"
-        onClick={onClose ?? onBack}
-        data-variant="close"
-      >
+      <IconBtn type="button" aria-label="닫기" onClick={onClose ?? onBack} data-variant="close">
         <IconImg src={cancelIcon} alt="" aria-hidden="true" />
       </IconBtn>
     </HeaderBar>
@@ -56,7 +43,7 @@ export function ModalHeader({
 }
 
 /** ===================== 메인 모달 컴포넌트 ===================== */
-/** NavBar 위까지 꽉 차는 페이지형 모달 (Portal) */
+/** 페이지형 모달 (Portal) */
 export default function PageModal({
   open,
   onClose,
@@ -81,7 +68,7 @@ export default function PageModal({
   // ESC + body 스크롤 잠금
   React.useEffect(() => {
     if (!open) return;
-    const onKey = (e) => e.key === "Escape" && onClose?.();
+    const onKey = e => e.key === "Escape" && onClose?.();
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
@@ -109,6 +96,6 @@ export default function PageModal({
       />
       <Body>{children}</Body>
     </Screen>,
-    rootRef.current
+    rootRef.current,
   );
 }
