@@ -1,24 +1,28 @@
-import React from "react";
+// src/pages/home/components/StepActionBtn.tsx
 import styled from "styled-components";
 
 import pauseIcon from "@/assets/images/pause.svg";
 import playIcon from "@/assets/images/play.svg";
 
-/**
- * StepActionButton
- * - isPlaying: boolean
- * - onClick: () => void
- * - ariaLabel?: string ("시작"/"중지" 자동 기본값)
- * - size?: number (기본 29)
- * - disabled?: boolean
- */
+export interface StepActionBtnProps {
+  /** 현재 재생 여부 */
+  isPlaying?: boolean;
+  onClick: () => void;
+  /** 접근성 라벨(미지정 시 "시작"/"중지" 자동) */
+  ariaLabel?: string;
+  /** 아이콘 크기(px), 기본 29 */
+  size?: number;
+  /** 비활성화 여부 */
+  disabled?: boolean;
+}
+
 export default function StepActionBtn({
   isPlaying = false,
   onClick,
   ariaLabel,
   size = 29,
   disabled = false,
-}) {
+}: StepActionBtnProps) {
   const iconSrc = isPlaying ? pauseIcon : playIcon;
   const label = ariaLabel ?? (isPlaying ? "중지" : "시작");
 
@@ -45,8 +49,9 @@ const Btn = styled.button`
   }
 `;
 
-const IconImg = styled.img`
-  width: ${(p) => p.$size}px;
-  height: ${(p) => p.$size}px;
+// $size 커스텀 prop 타입 지정
+const IconImg = styled.img<{ $size: number }>`
+  width: ${p => p.$size}px;
+  height: ${p => p.$size}px;
   display: block;
 `;

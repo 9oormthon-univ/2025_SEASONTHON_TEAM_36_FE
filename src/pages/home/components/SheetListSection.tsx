@@ -10,7 +10,7 @@ export default function SheetListSection({
   className,
   children,
 }: {
-  title: string;
+  title: string | undefined;
   className?: string;
   children?: React.ReactNode;
 }) {

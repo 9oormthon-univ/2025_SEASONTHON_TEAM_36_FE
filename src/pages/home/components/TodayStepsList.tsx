@@ -1,24 +1,27 @@
-import React from "react";
+// src/pages/home/components/TodayStepsList.tsx
 import styled from "styled-components";
 
+import type { StepListItem } from "../types/steps"; // ← 공용 타입 재사용(경로는 프로젝트 구조에 맞게)
 import StepActionBtn from "./StepActionBtn";
 
-/**
- * TodayStepsList
- * - items: [{ id, title, state: "play" | "pause" | "idle" }]
- * - onAction?: (item) => void
- * - startTimes?: { [id:string]: Date | string }
- * - endTimes?:   { [id:string]: Date | string }
- */
+type TimeMap = Partial<Record<string | number, Date | string>>;
+
+interface TodayStepsListProps {
+  items: StepListItem[];
+  onAction?: (it: { id: string | number; stepId: number | null }) => void | Promise<void>;
+  startTimes?: TimeMap;
+  endTimes?: TimeMap;
+}
+
 export default function TodayStepsList({
   items = [],
   onAction,
   startTimes = {},
   endTimes = {},
-}) {
+}: TodayStepsListProps) {
   return (
     <List role="list">
-      {items.map((it) => {
+      {items.map(it => {
         const isPlaying = it.state === "play";
         const startedAt = startTimes?.[it.id] ?? null;
         const endedAt = endTimes?.[it.id] ?? null;
@@ -26,7 +29,8 @@ export default function TodayStepsList({
         return (
           <Item key={it.id} role="listitem">
             <Bullet aria-hidden="true" />
-            <ItemTitle>{it.title}</ItemTitle>
+            {/* StepViewItem은 title이 아니라 description을 사용합니다 */}
+            <ItemTitle>{it.description}</ItemTitle>
 
             <Right>
               {(startedAt || endedAt) && (
@@ -39,7 +43,9 @@ export default function TodayStepsList({
 
               <StepActionBtn
                 isPlaying={isPlaying}
-                onClick={() => onAction?.(it)}
+                onClick={() => {
+                  void onAction?.({ id: it.id, stepId: it.stepId });
+                }}
                 size={29}
               />
             </Right>
@@ -51,7 +57,7 @@ export default function TodayStepsList({
 }
 
 /* HH:MM 포맷터 */
-function formatHM(dateOrString) {
+function formatHM(dateOrString: Date | string): string {
   const d = dateOrString instanceof Date ? dateOrString : new Date(dateOrString);
   if (Number.isNaN(d.getTime())) return "--:--";
   const hh = String(d.getHours()).padStart(2, "0");
@@ -74,7 +80,7 @@ const Item = styled.li`
   gap: 8px;
   padding: 0 2.3% 3.5% 2.3%;
   background: transparent;
-  border-bottom: 1px solid var(--natural-400, #D6D9E0);
+  border-bottom: 1px solid var(--natural-400, #d6d9e0);
 `;
 
 const Bullet = styled.span`
@@ -112,8 +118,8 @@ const TimeBadge = styled.span`
   font-size: 10px;
   line-height: 1;
   color: var(--text-2);
-  background: var(--natural-200, #EEF3EE);
-  border: 1px solid var(--bg-2, #E6E8EC);
+  background: var(--natural-200, #eef3ee);
+  border: 1px solid var(--bg-2, #e6e8ec);
   padding: 2px 4px;
   border-radius: 4px;
 `;

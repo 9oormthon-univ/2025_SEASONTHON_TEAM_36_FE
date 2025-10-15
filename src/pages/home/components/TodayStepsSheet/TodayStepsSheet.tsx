@@ -1,6 +1,6 @@
 // src/pages/home/components/TodayStepsSheet.tsx
-import React from "react";
-import styled from "styled-components";
+import { useMemo, useState } from "react";
+import styled, { CSSProperties } from "styled-components";
 
 import dragUp from "@/assets/images/drag-up.svg";
 
@@ -28,7 +28,7 @@ export default function TodayStepsSheet({
   onHeightChange?: (h: number) => void;
   onStepCompl?: () => void;
 }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
 
@@ -58,10 +58,7 @@ export default function TodayStepsSheet({
     onOpenDailyIfNeeded: () => maybeOpen(),
   });
 
-  const groups = React.useMemo(
-    () => applyPlayingState(baseGroups, playingKey),
-    [baseGroups, playingKey],
-  );
+  const groups = useMemo(() => applyPlayingState(baseGroups, playingKey), [baseGroups, playingKey]);
 
   return (
     <>
@@ -99,7 +96,7 @@ export default function TodayStepsSheet({
           src={dragUp}
           alt=""
           aria-hidden="true"
-          style={{ "--peek": `${PEEK_HEIGHT}px`, "--gap": "2%" } as React.CSSProperties}
+          style={{ "--peek": `${PEEK_HEIGHT}px`, "--gap": "2%" } as CSSProperties}
         />
       )}
 

@@ -5,6 +5,7 @@ import type { ErrorResponse } from "react-router-dom";
 
 import { startStep, stopStep } from "@/apis/step";
 import type { RespStepRecord } from "@/common/types/response/step";
+import { PlayingKey } from "@/pages/home/types/steps";
 
 import { GoalId } from "../../../types/home";
 import { parseStopResult, StopStepResponse } from "../utils/stopResult";
@@ -37,10 +38,11 @@ export function useStepPlayback({
   onStepCompl?: () => void;
   onOpenDailyIfNeeded?: () => void;
 }) {
-  const [selectedStep, setSelectedStep] = useState<{ id: string; stepId: number | null } | null>(
-    null,
-  );
-  const [playingKey, setPlayingKey] = useState<string | null>(null);
+  const [selectedStep, setSelectedStep] = useState<{
+    id: number | string;
+    stepId: number | null;
+  } | null>(null);
+  const [playingKey, setPlayingKey] = useState<PlayingKey>(null);
   const [startTimes, setStartTimes] = useState<Record<string, Date>>({});
   const [endTimes, setEndTimes] = useState<Record<string, Date>>({});
   const [lastProgress, setLastProgress] = useState<number | null>(null);
@@ -106,7 +108,7 @@ export function useStepPlayback({
     }
   }, [goalId, playingKey, allItems, handleStopResult]);
 
-  const handleAction = async (it: { id: string; stepId: number | null }) => {
+  const handleAction = async (it: { id: number | string; stepId: number | null }) => {
     if (busyRef.current) return;
     busyRef.current = true;
     try {
