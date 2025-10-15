@@ -93,7 +93,7 @@ export default [
       "no-trailing-spaces": "error",
 
       // .prettierrc 파일 기반 Prettier 반영
-      "prettier/prettier": ["error", prettierConfig || {}],
+      "prettier/prettier": ["error", { ...(prettierConfig || {}), endOfLine: "auto" }],
     },
   },
 
