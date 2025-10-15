@@ -7,7 +7,7 @@ import { fetchTodos } from "@/apis/todo"; // 서버 API 호출
 import CardsCarousel from "./components/CardsCarousel";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
-import TodayStepsSheet from "./components/TodayStepsSheet";
+import TodayStepsSheet from "./components/TodayStepsSheet/TodayStepsSheet";
 import type { ApiTodosResponse, BodyStyledProps, GoalId, HomeGoal } from "./types/home";
 
 export default function HomePage() {

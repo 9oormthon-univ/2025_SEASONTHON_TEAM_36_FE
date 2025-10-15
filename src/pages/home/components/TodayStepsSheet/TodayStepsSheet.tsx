@@ -1,0 +1,147 @@
+// src/pages/home/components/TodayStepsSheet.tsx
+import React from "react";
+import styled from "styled-components";
+
+import dragUp from "@/assets/images/drag-up.svg";
+
+import BottomSheet from "../../../../layout/BottomSheet";
+import DailyCheckInModal from "../../modals/DailyCheckInModal";
+import DayCompleteSplash from "../../modals/DayCompleteSplash";
+import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
+import PauseSplash from "../../modals/PauseSplash";
+import { GoalId } from "../../types/home";
+import SheetListSection from "../SheetListSection";
+import TodayStepsList from "../TodayStepsList";
+import { useDailyCheckIn } from "./hooks/useDailyCheckIn";
+import { useStepPlayback } from "./hooks/useStepPlayback";
+import { useStepsData } from "./hooks/useStepsData";
+import { applyPlayingState } from "./utils/stepState";
+
+const PEEK_HEIGHT = 58;
+
+export default function TodayStepsSheet({
+  goalId,
+  onHeightChange,
+  onStepCompl,
+}: {
+  goalId?: GoalId | null;
+  onHeightChange?: (h: number) => void;
+  onStepCompl?: () => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const openSheet = () => setOpen(true);
+  const closeSheet = () => setOpen(false);
+
+  // 1) 데이터 로드
+  const { loading, baseGroups } = useStepsData(goalId);
+
+  // 2) 하루 1회 체크인
+  const { modalOpen, maybeOpen, closeAndMark } = useDailyCheckIn();
+
+  // 3) 재생/정지 상태 및 스플래시
+  const {
+    playingKey,
+    startTimes,
+    endTimes,
+    lastProgress,
+    pauseOpen,
+    goalCompleteOpen,
+    dayCompleteOpen,
+    handleAction,
+    closePause,
+    closeGoal,
+    closeDay,
+  } = useStepPlayback({
+    goalId,
+    groups: baseGroups,
+    onStepCompl,
+    onOpenDailyIfNeeded: () => maybeOpen(),
+  });
+
+  const groups = React.useMemo(
+    () => applyPlayingState(baseGroups, playingKey),
+    [baseGroups, playingKey],
+  );
+
+  return (
+    <>
+      <BottomSheet
+        open={open}
+        onOpen={openSheet}
+        onClose={closeSheet}
+        ariaLabel="할 일 목록"
+        peekHeight={PEEK_HEIGHT}
+        size="32vh"
+        onHeightChange={onHeightChange}
+      >
+        {open ? (
+          <SheetBody>
+            <ScrollArea role="list" aria-busy={loading}>
+              {groups.map(g => (
+                <SheetListSection key={g.key} title={g.title}>
+                  <TodayStepsList
+                    items={g.items}
+                    onAction={handleAction}
+                    startTimes={startTimes}
+                    endTimes={endTimes}
+                  />
+                </SheetListSection>
+              ))}
+            </ScrollArea>
+          </SheetBody>
+        ) : (
+          <Title className="typo-h3">우물 밖으로 나갈 준비</Title>
+        )}
+      </BottomSheet>
+
+      {!open && (
+        <FloatingArrow
+          src={dragUp}
+          alt=""
+          aria-hidden="true"
+          style={{ "--peek": `${PEEK_HEIGHT}px`, "--gap": "2%" } as React.CSSProperties}
+        />
+      )}
+
+      {/* 하루 1회 체크인 모달 */}
+      <DailyCheckInModal open={modalOpen} onClose={closeAndMark} />
+
+      {/* 스플래시들 */}
+      <PauseSplash open={pauseOpen} onClose={closePause} progress={lastProgress ?? 0} />
+      <GoalCompleteSplash open={goalCompleteOpen} onClose={closeGoal} />
+      <DayCompleteSplash open={dayCompleteOpen} onClose={closeDay} />
+    </>
+  );
+}
+
+const SheetBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  margin: 0 2%;
+`;
+
+const ScrollArea = styled.div`
+  overflow: auto;
+  padding: 4px 8px 12px;
+`;
+
+const FloatingArrow = styled.img`
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(
+    env(safe-area-inset-bottom, 0px) + var(--peek, 58px) + var(--gap, 14px) + var(--navbar-height)
+  );
+  width: 14px;
+  height: auto;
+  pointer-events: none;
+  z-index: 9999;
+`;
+
+const Title = styled.h3`
+  margin: 8px 30px;
+  color: var(--text-1);
+`;

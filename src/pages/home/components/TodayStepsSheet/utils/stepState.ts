@@ -6,7 +6,7 @@
  * - 각 item은 기본 state="pause" 로 매핑
  */
 
-import { PlayingKey, StepListGroup, StepListItem } from "../types/steps";
+import { PlayingKey, StepListGroup, StepListItem } from "../../../types/steps";
 
 /** 현재 재생 중인 playingKey를 반영해 state(play/pause) 치환 */
 export function applyPlayingState(
