@@ -1,5 +1,5 @@
 // src/pages/home/components/GoalCard.tsx
-import React from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
 import sirenIcon from "@/assets/images/siren.svg";
@@ -11,14 +11,11 @@ import { pickRandomFrog } from "../store/frogs";
 import { DDayIcon } from "../styles/DDayIcon";
 import FrogBar from "./FrogBar";
 
-// 비동기/동기 핸들러 허용
-type Voidish = void | Promise<void>;
-
 export interface GoalCardProps {
   goal: HomeGoal;
   shrink?: number; // default 1
-  onDeleted?: () => Voidish;
-  onGoalAdjusted?: () => Voidish;
+  onDeleted?: () => void | Promise<void>;
+  onGoalAdjusted?: () => void | Promise<void>;
 }
 
 // styled-components transient props
@@ -27,17 +24,24 @@ interface ContainerProps {
 }
 
 export default function GoalCard({ goal, shrink = 1, onDeleted, onGoalAdjusted }: GoalCardProps) {
-  if (!goal) return null;
+  // 훅은 항상 최상단에서 호출
+  const frogRef = useRef<string | null>(null);
+  const [openSteps, setOpenSteps] = useState(false);
+  const [openAdjust, setOpenAdjust] = useState(false);
 
-  const { id: goalId, dDay, title, progress, warmMessage } = goal;
+  // goal 파생값 (goal이 없을 수도 있으니 안전 파생)
+  const goalId = goal?.id;
+  const dDay = goal?.dDay ?? "";
+  const title = goal?.title ?? "";
+  const progress = goal?.progress ?? 0;
+  const warmMessage = goal?.warmMessage;
 
-  // 개구리 이미지 경로 저장
-  const frogRef = React.useRef<string | null>(null);
+  // 개구리 이미지 1회 선택
   if (frogRef.current == null) {
     frogRef.current = pickRandomFrog();
   }
 
-  const { sign, num } = React.useMemo(() => {
+  const { sign, num } = useMemo(() => {
     const m = /D\s*([+-])?\s*(\d+)/i.exec(String(dDay));
     if (!m) return { sign: 0, num: null as number | null };
     const s = m[1] === "+" ? 1 : m[1] === "-" ? -1 : 0;
@@ -46,8 +50,6 @@ export default function GoalCard({ goal, shrink = 1, onDeleted, onGoalAdjusted }
   }, [dDay]);
   const isUrgent = sign <= 0 && num != null && num <= 3;
 
-  const [openSteps, setOpenSteps] = React.useState(false);
-  const [openAdjust, setOpenAdjust] = React.useState(false);
   const anyOpen = openSteps || openAdjust;
 
   const openStepsModal = () => setOpenSteps(true);
@@ -55,11 +57,15 @@ export default function GoalCard({ goal, shrink = 1, onDeleted, onGoalAdjusted }
   const openAdjustModal = () => setOpenAdjust(true);
   const closeAdjustModal = () => setOpenAdjust(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!anyOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        openAdjust ? closeAdjustModal() : closeStepsModal();
+        if (openAdjust) {
+          closeAdjustModal();
+        } else {
+          closeStepsModal();
+        }
       }
     };
     document.addEventListener("keydown", onKey);
@@ -82,6 +88,9 @@ export default function GoalCard({ goal, shrink = 1, onDeleted, onGoalAdjusted }
     e.stopPropagation();
     openAdjustModal();
   };
+
+  // 훅 호출 이후에 조건부 렌더
+  if (!goal) return null;
 
   return (
     <>
@@ -114,9 +123,8 @@ export default function GoalCard({ goal, shrink = 1, onDeleted, onGoalAdjusted }
         <CheerMsg className="typo-label-l">{warmMessage || "파이팅! 오늘도 한 걸음."}</CheerMsg>
 
         <ImgContainer>
-          <FrogBar progress={progress ?? 0} />
+          <FrogBar progress={progress} />
           <Illust aria-hidden="true">
-            {/* frogRef.current는 null 아님이 보장된 상태 */}
             {frogRef.current && <img src={frogRef.current} alt="" />}
           </Illust>
         </ImgContainer>

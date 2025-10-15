@@ -6,7 +6,7 @@ export const DDayIcon = styled.div`
   height: 22.5px;
   padding: 0 8px;
   border-radius: 10px;
-  background: var(--green-200, #86EC78);
+  background: var(--green-200, #86ec78);
   color: var(--text-1);
   font-size: clamp(8px, 2.8vw, 15px);
   font-weight: 400;

@@ -96,8 +96,12 @@ export default function HomePage() {
             activeId={activeId}
             onActiveIdChange={setActiveId}
             shrink={shrink}
-            onGoalDeleted={reloadTodos}
-            onGoalAdjusted={reloadTodos}
+            onGoalDeleted={() => {
+              void reloadTodos();
+            }}
+            onGoalAdjusted={() => {
+              void reloadTodos();
+            }}
           />
         ) : (
           <EmptyState />
@@ -109,7 +113,9 @@ export default function HomePage() {
         <TodayStepsSheet
           goalId={activeId}
           onHeightChange={setSheetHeight}
-          onStepCompl={reloadTodos}
+          onStepCompl={() => {
+            void reloadTodos();
+          }}
         />
       )}
     </Page>
