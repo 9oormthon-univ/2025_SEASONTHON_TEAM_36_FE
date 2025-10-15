@@ -7,26 +7,35 @@ import DotsSelector from "../components/DotsSelector";
 import { ModalContainer } from "../styles/ModalContainer";
 import DayStartSplash from "./DayStartSplash";
 
-export default function DailyCheckInModal({ open, onClose }) {
-  const [feeling, setFeeling] = useState(3);
-  const [energy, setEnergy] = useState(3);
-  const [location, setLocation] = useState(null);
+/** ====== 타입 ====== */
+type DailyCheckInModalProps = {
+  open: boolean;
+  onClose?: () => void;
+};
+
+// 위치 후보를 literal type으로 고정
+const LOCATIONS = [
+  { id: "home", label: "집" },
+  { id: "office", label: "직장" },
+  { id: "cafe", label: "카페" },
+  { id: "library", label: "도서관" },
+  { id: "class", label: "강의실" },
+  { id: "etc", label: "기타" },
+] as const;
+
+type LocationId = (typeof LOCATIONS)[number]["id"];
+
+/** ====== 컴포넌트 ====== */
+export default function DailyCheckInModal({ open, onClose }: DailyCheckInModalProps) {
+  const [feeling, setFeeling] = useState<number>(3);
+  const [energy, setEnergy] = useState<number>(3);
+  const [location, setLocation] = useState<LocationId | null>(null);
 
   // START 클릭 시 띄울 모달 상태
-  const [splashOpen, setSplashOpen] = useState(false);
-
-  const LOCATIONS = [
-    { id: "home", label: "집" },
-    { id: "office", label: "직장" },
-    { id: "cafe", label: "카페" },
-    { id: "library", label: "도서관" },
-    { id: "class", label: "강의실" },
-    { id: "etc", label: "기타" },
-  ];
+  const [splashOpen, setSplashOpen] = useState<boolean>(false);
 
   const canStart = location != null;
   const onStart = () => {
-    // if (!canStart) return;
     setSplashOpen(true);
     onClose?.(); // 현재 모달은 닫기
   };
@@ -83,6 +92,7 @@ export default function DailyCheckInModal({ open, onClose }) {
               ))}
             </ButtonGrid>
           </Section>
+
           <ButtonRow>
             <GreenButton disabled={!canStart} onClick={onStart}>
               START
@@ -138,13 +148,13 @@ const ButtonGrid = styled.div`
   gap: 14px;
 `;
 
-const ChoiceButton = styled.button`
+const ChoiceButton = styled.button<{ $active: boolean }>`
   flex: 1 0 calc(33% - 10px);
   padding: 5% 13px;
   border-radius: 20px;
   border: 1px solid var(--bg-2);
-  background: ${p => (p.$active ? "var(--primary-1)" : "var(--natural-200)")};
-  color: ${p => (p.$active ? "var(--text-w1)" : "var(--text-1)")};
+  background: ${({ $active }) => ($active ? "var(--primary-1)" : "var(--natural-200)")};
+  color: ${({ $active }) => ($active ? "var(--text-w1)" : "var(--text-1)")};
   cursor: pointer;
   transition: all 0.2s;
 
