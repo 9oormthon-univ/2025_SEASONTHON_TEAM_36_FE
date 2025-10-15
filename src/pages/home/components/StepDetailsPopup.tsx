@@ -1,16 +1,24 @@
-// src/pages/home/components/StepDetailsPopup.jsx
+// src/pages/home/components/StepDetailsPopup.tsx
+// src/pages/home/components/StepDetailsPopup.tsx
 import React from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
 
 import cancelIcon from "@/assets/images/cancel.svg";
 
-export default function StepDetailsPopup({ open, onClose, step }) {
-  const rootRef = React.useRef(null);
+import type { StepViewItem } from "../types/steps"; // ← 공용 뷰 모델에 isCompleted, count 포함
 
-  // 팝업 루트 보장
+interface StepDetailsPopupProps {
+  open: boolean;
+  onClose?: () => void;
+  step: StepViewItem | null;
+}
+
+export default function StepDetailsPopup({ open, onClose, step }: StepDetailsPopupProps) {
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+
   React.useEffect(() => {
-    let root = document.getElementById("popup-root");
+    let root = document.getElementById("popup-root") as HTMLDivElement | null;
     if (!root) {
       root = document.createElement("div");
       root.id = "popup-root";
@@ -19,10 +27,11 @@ export default function StepDetailsPopup({ open, onClose, step }) {
     rootRef.current = root;
   }, []);
 
-  // ESC 닫기
   React.useEffect(() => {
     if (!open) return;
-    const onKey = (e) => e.key === "Escape" && onClose?.();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose?.();
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
@@ -35,19 +44,29 @@ export default function StepDetailsPopup({ open, onClose, step }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="step-popup-title"
-        onClick={(e) => e.stopPropagation()} // 내부 클릭 버블링 방지
+        onClick={e => e.stopPropagation()}
       >
         <Header>
           <Title id="step-popup-title">상세보기</Title>
-          <CloseBtn onClick={onClose} aria-label="닫기">
+          <CloseBtn type="button" onClick={onClose} aria-label="닫기">
             <img src={cancelIcon} alt="" />
           </CloseBtn>
         </Header>
+
         {step ? (
           <Content>
-            <Row><Label>날짜</Label><Value>{step.stepDate}</Value></Row>
-            <Row><Label>내용</Label><Value>{step.description}</Value></Row>
-            <Row><Label>진행 횟수</Label><Value>{step.count}</Value></Row>
+            <Row>
+              <Label>날짜</Label>
+              <Value>{step.stepDate}</Value>
+            </Row>
+            <Row>
+              <Label>내용</Label>
+              <Value>{step.description}</Value>
+            </Row>
+            <Row>
+              <Label>진행 횟수</Label>
+              <Value>{step.count}</Value>
+            </Row>
             <Row>
               <Label>완료 여부</Label>
               <Value>{step.isCompleted ? "완료" : "미완료"}</Value>
@@ -58,10 +77,9 @@ export default function StepDetailsPopup({ open, onClose, step }) {
         )}
       </Dialog>
     </Overlay>,
-    rootRef.current
+    rootRef.current,
   );
 }
-
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
@@ -79,7 +97,7 @@ const Dialog = styled.div`
   max-width: 400px;
   width: 90%;
   padding: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -117,7 +135,7 @@ const Content = styled.div`
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: max-content 1fr; /* Label은 내용폭, Value는 남는 영역 */
+  grid-template-columns: max-content 1fr;
   column-gap: 12px;
   align-items: start;
 `;
@@ -125,16 +143,16 @@ const Row = styled.div`
 const Label = styled.span`
   font-size: var(--fs-sm, 14px);
   color: var(--text-2, #555);
-  white-space: nowrap;         /* Label은 줄바꿈 없이 고정 */
+  white-space: nowrap;
 `;
 
 const Value = styled.span`
   font-size: var(--fs-sm, 14px);
   font-weight: 500;
   color: var(--text-1, #000);
-  min-width: 0;                /* 그리드/플렉스에서 줄바꿈 위해 필요 */
-  white-space: normal;         /* 공백 기준 줄바꿈 */
-  word-break: keep-all;        /* 한국어 단어 보존 */
-  overflow-wrap: anywhere;     /* 긴 영어/URL은 예외적으로 끊기 */
-  line-height: 1.4;            /* 가독성 */
+  min-width: 0;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
 `;

@@ -1,6 +1,7 @@
 // src/pages/home/utils/useGoalStepsView.ts
 import { useCallback, useEffect, useState } from "react";
 
+import { StepViewItem } from "../types/steps";
 import { getGoalStepsView } from "../utils/stepsView";
 
 export interface GoalStepsVM {
@@ -9,11 +10,7 @@ export interface GoalStepsVM {
   endDate: string;
   progressText: string;
   progress: number;
-  steps: Array<{
-    stepId: number | null;
-    stepDate: string;
-    description: string;
-  }>;
+  steps: StepViewItem[];
 }
 
 const EMPTY_VM: GoalStepsVM = {

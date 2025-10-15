@@ -10,8 +10,9 @@ import FrogBar from "../components/FrogBar";
 import StepDetailsPopup from "../components/StepDetailsPopup";
 import { useAutoCenterList } from "../hooks/useAutoCenterList";
 import { useConfirmGoalDelete } from "../hooks/useConfirmGoalDelete";
-import { type GoalStepsVM, useGoalStepsView } from "../hooks/useGoalStepsView";
+import { useGoalStepsView } from "../hooks/useGoalStepsView";
 import { DDayIcon } from "../styles/DDayIcon";
+import { StepViewItem } from "../types/steps";
 
 interface GoalStepsModalProps {
   open: boolean;
@@ -41,8 +42,8 @@ export default function GoalStepsModal({
 
   // 4) 상세 팝업
   const [detailOpen, setDetailOpen] = useState(false);
-  const [selectedStep, setSelectedStep] = useState<GoalStepsVM["steps"][number] | null>(null);
-  const openDetails = (step: GoalStepsVM["steps"][number]) => {
+  const [selectedStep, setSelectedStep] = useState<StepViewItem | null>(null);
+  const openDetails = (step: StepViewItem) => {
     setSelectedStep(step);
     setDetailOpen(true);
   };
