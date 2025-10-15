@@ -7,13 +7,26 @@ import cancelIcon from "@/assets/images/cancel.svg";
 import { Body, HeaderBar, IconBtn, IconImg, Screen, Spacer, Title } from "./styles";
 
 /** ===================== 내부 헤더 컴포넌트 ===================== */
+export interface ModalHeaderProps {
+  /** 'back-left' | 'close-right' */
+  variant?: "back-left" | "close-right";
+  /** 모달 제목 */
+  title?: string;
+  /** 뒤로가기 버튼 클릭 시 */
+  onBack?: () => void;
+  /** 닫기 버튼 클릭 시 */
+  onClose?: () => void;
+  /** 접근성용 제목 ID */
+  titleId?: string;
+}
+
 export function ModalHeader({
-  variant = "close-right", // 'back-left' | 'close-right'
+  variant = "close-right",
   title = "",
   onBack,
   onClose,
   titleId = "page-modal-title",
-}) {
+}: ModalHeaderProps) {
   if (variant === "back-left") {
     return (
       <HeaderBar>
@@ -30,7 +43,7 @@ export function ModalHeader({
       </HeaderBar>
     );
   }
-  // 'close-right'
+
   return (
     <HeaderBar>
       <Spacer aria-hidden="true" />
@@ -42,8 +55,22 @@ export function ModalHeader({
   );
 }
 
-/** ===================== 메인 모달 컴포넌트 ===================== */
-/** 페이지형 모달 (Portal) */
+/** 메인 모달 컴포넌트 */
+export interface PageModalProps {
+  /** 모달 표시 여부 */
+  open: boolean;
+  /** 닫기 핸들러 */
+  onClose?: () => void;
+  /** 제목 */
+  title?: string;
+  /** 내용 */
+  children?: React.ReactNode;
+  /** 헤더 형태 */
+  headerVariant?: "back-left" | "close-right";
+  /** 하단 네비게이션 뷰일 때 */
+  viewNavBar?: boolean;
+}
+
 export default function PageModal({
   open,
   onClose,
@@ -51,10 +78,9 @@ export default function PageModal({
   children,
   headerVariant = "close-right",
   viewNavBar = false,
-}) {
-  const rootRef = React.useRef(null);
+}: PageModalProps) {
+  const rootRef = React.useRef<HTMLElement | null>(null);
 
-  // 모달 루트 보장
   React.useEffect(() => {
     let root = document.getElementById("modal-root");
     if (!root) {
@@ -68,7 +94,7 @@ export default function PageModal({
   // ESC + body 스크롤 잠금
   React.useEffect(() => {
     if (!open) return;
-    const onKey = e => e.key === "Escape" && onClose?.();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose?.();
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);

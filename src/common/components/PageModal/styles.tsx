@@ -1,7 +1,7 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 /* ===== styles: NavBar 제외 전체 덮기 ===== */
-export const Screen = styled.div`
+export const Screen = styled.div<{ $viewNavBar?: boolean }>`
   position: fixed;
   left: 0;
   right: 0;
@@ -10,8 +10,8 @@ export const Screen = styled.div`
   /* viewNavBar가 true면 NavBar 높이만큼 비워서 NavBar 클릭 가능 */
   bottom: ${({ $viewNavBar }) =>
     $viewNavBar
-      ? 'calc(var(--navbar-height, calc(54px + 34px + env(safe-area-inset-bottom, 0px))) + 1px)'
-      : '0'};
+      ? "calc(var(--navbar-height, calc(54px + 34px + env(safe-area-inset-bottom, 0px))) + 1px)"
+      : "0"};
 
   z-index: 2147483647; /* 앱 모든 요소 위 */
   background: var(--bg-1);
