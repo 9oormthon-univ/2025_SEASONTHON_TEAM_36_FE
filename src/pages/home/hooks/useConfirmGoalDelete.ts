@@ -7,7 +7,7 @@ interface UseConfirmDeleteParams {
   goalId: number | string | null;
   onDelete?: (goalId: number | string) => void;
   onDeleted?: () => void;
-  onClose?: () => void; // 모달 닫기
+  onClose?: () => void;
 }
 
 export function useConfirmGoalDelete({

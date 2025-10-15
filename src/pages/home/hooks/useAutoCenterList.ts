@@ -5,8 +5,8 @@ import { RefObject, useLayoutEffect, useState } from "react";
  * 스크롤 컨테이너에 overflow가 없으면 중앙정렬(true), 있으면 상단정렬(false)
  * - recalcKey: 레이아웃 재측정을 유발해야 하는 외부 상태(숫자/문자열/불리언 등)
  */
-export function useAutoCenterList(
-  ref: RefObject<HTMLElement>,
+export function useAutoCenterList<T extends HTMLElement>(
+  ref: RefObject<T | null>,
   enabled = true,
   recalcKey?: unknown,
 ) {
@@ -28,7 +28,6 @@ export function useAutoCenterList(
         setCenter(!hasOverflow);
       });
     };
-
     // 초기 두 프레임 측정 (폰트/이미지 로딩 보정)
     measure();
     rafId = requestAnimationFrame(measure);
@@ -54,7 +53,6 @@ export function useAutoCenterList(
       if (resizeObserver) resizeObserver.disconnect();
       if (mutationObserver) mutationObserver.disconnect();
     };
-  }, [ref, enabled, recalcKey]); // 스프레드 제거, 정적 검증 OK
-
+  }, [ref, enabled, recalcKey]);
   return center;
 }

@@ -1,5 +1,4 @@
 // src/pages/home/utils/useGoalStepsView.ts
-
 import { useCallback, useEffect, useState } from "react";
 
 import { getGoalStepsView } from "../utils/stepsView";
@@ -54,6 +53,7 @@ export function useGoalStepsView(open: boolean, goalId: number | string | null) 
   useEffect(() => {
     if (!open || goalId == null) return;
     let canceled = false;
+
     void (async () => {
       setLoading(true);
       setError(null);
@@ -72,6 +72,5 @@ export function useGoalStepsView(open: boolean, goalId: number | string | null) 
   }, [open, goalId]);
 
   const vm = view ?? EMPTY_VM;
-
   return { vm, view, loading, error, reload: load };
 }
