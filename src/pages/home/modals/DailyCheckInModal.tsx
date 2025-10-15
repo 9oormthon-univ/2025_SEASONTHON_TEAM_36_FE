@@ -7,12 +7,6 @@ import DotsSelector from "../components/DotsSelector";
 import { ModalContainer } from "../styles/ModalContainer";
 import DayStartSplash from "./DayStartSplash";
 
-/** ====== 타입 ====== */
-type DailyCheckInModalProps = {
-  open: boolean;
-  onClose?: () => void;
-};
-
 // 위치 후보를 literal type으로 고정
 const LOCATIONS = [
   { id: "home", label: "집" },
@@ -26,7 +20,13 @@ const LOCATIONS = [
 type LocationId = (typeof LOCATIONS)[number]["id"];
 
 /** ====== 컴포넌트 ====== */
-export default function DailyCheckInModal({ open, onClose }: DailyCheckInModalProps) {
+export default function DailyCheckInModal({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose?: () => void;
+}) {
   const [feeling, setFeeling] = useState<number>(3);
   const [energy, setEnergy] = useState<number>(3);
   const [location, setLocation] = useState<LocationId | null>(null);

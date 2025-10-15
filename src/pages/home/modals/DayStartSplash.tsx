@@ -1,5 +1,5 @@
 // FrogNotiModal.jsx
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 import frogStart from "@/assets/images/frog-running-start.svg";
 
@@ -9,7 +9,7 @@ import PageModal from "../../../common/components/PageModal";
 /**
  * PageModal + FrogNoti 조합 컴포넌트
  */
-export default function DayStartSplash({ open, onClose }) {
+export default function DayStartSplash({ open, onClose }: { open: boolean; onClose?: () => void }) {
   // open 상태가 true가 되면 3초 뒤 자동 닫기
   useEffect(() => {
     if (!open) return;

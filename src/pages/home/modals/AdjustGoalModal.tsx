@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-import { destructToDoByAI } from "@/apis/ai";    // 단계 자동 생성
-import { updateTodo } from "@/apis/todo";        // PUT /api/v1/todos/{todoId}
+import { destructToDoByAI } from "@/apis/ai"; // 단계 자동 생성
+import { updateTodo } from "@/apis/todo"; // PUT /api/v1/todos/{todoId}
 
 import FrogEscapeImg from "../../../assets/images/frog-escape-new.svg";
 // import FrogRunImg from "../../../assets/images/frog-run.svg";
@@ -11,21 +11,26 @@ import GreenButton from "../../../common/components/GreenButton";
 import PageModal from "../../../common/components/PageModal";
 import GoalDeadline from "../../calendar/components/GoalDeadline";
 import { ModalContainer } from "../styles/ModalContainer";
+import { HomeGoal } from "../types/home";
 
-/**
- * 목표 조정 모달
- * props:
- *  - open: boolean
- *  - onClose: () => void
- *  - goal: { id, title, stepResponses: [...] }
- *  - onUpdated?: () => void -> 지금은 적용안함
- */
-export default function AdjustGoalModal({ open, onClose, goal, onUpdated}) {
+/* ========= type aliases ========= */
+type Status = 0 | 1 | 2; // 0: 입력 폼, 1: 처리 중, 2: 결과(GoalDeadline)
+type Voidish = void | Promise<void>;
+type StepLite = { stepDate: string; description: string };
+type GoalId = HomeGoal["id"];
+
+export type AdjustGoalModalProps = {
+  open: boolean;
+  onClose?: () => void;
+  goal: HomeGoal | null | undefined;
+  onUpdated?: () => Voidish;
+};
+
+export default function AdjustGoalModal({ open, onClose, goal, onUpdated }: AdjustGoalModalProps) {
   if (!goal) return null;
 
   const { id: goalId, title, stepResponses = [] } = goal;
 
-  // 0: 입력 폼, 1: 처리 중, 2: 결과(GoalDeadline)
   const [status, setStatus] = useState(0);
 
   const [content, setContent] = useState("");
@@ -76,7 +81,7 @@ export default function AdjustGoalModal({ open, onClose, goal, onUpdated}) {
       setStatus(1);
 
       // 부모 goal에서 steps 바로 사용
-      const todoSteps = stepResponses.map((s) => ({
+      const todoSteps = stepResponses.map(s => ({
         stepDate: s.stepDate,
         description: s.description,
       }));
@@ -139,7 +144,7 @@ export default function AdjustGoalModal({ open, onClose, goal, onUpdated}) {
               }
               maxLength={charMax}
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={e => setContent(e.target.value)}
             />
             <CharCount>
               {charCount}/{charMax}
@@ -154,7 +159,7 @@ export default function AdjustGoalModal({ open, onClose, goal, onUpdated}) {
                 min="1"
                 placeholder="0"
                 value={addDays}
-                onChange={(e) => setAddDays(e.target.value)}
+                onChange={e => setAddDays(e.target.value)}
                 inputMode="numeric"
               />
               <span>일 추가</span>
@@ -208,7 +213,7 @@ const Heading = styled.h2`
 `;
 
 const Desc = styled.p`
-  color: var(--text-2, #6F737B);
+  color: var(--text-2, #6f737b);
   font-size: var(--fs-lg, 16px);
   font-weight: 500;
   line-height: var(--lh-m, 24px);
@@ -228,7 +233,7 @@ const Textarea = styled.textarea`
   border: 0.5px solid var(--natural-400);
   background: var(--bg-1);
   &::placeholder {
-    color: var(--natural-800, #6F737B);
+    color: var(--natural-800, #6f737b);
   }
 `;
 
