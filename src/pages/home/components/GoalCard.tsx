@@ -14,7 +14,7 @@ import FrogBar from "./FrogBar";
 export interface GoalCardProps {
   goal: HomeGoal;
   shrink?: number; // default 1
-  onDeleted?: () => void | Promise<void>;
+  onDeleted?: () => void;
   onGoalAdjusted?: () => void | Promise<void>;
 }
 

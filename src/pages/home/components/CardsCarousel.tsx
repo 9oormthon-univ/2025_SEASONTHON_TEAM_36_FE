@@ -16,7 +16,7 @@ export interface CardsCarouselProps {
   activeId?: GoalId | null;
   onActiveIdChange?: OnActiveIdChange; // ← 여기 변경
   shrink?: number;
-  onGoalDeleted?: () => void | Promise<void>;
+  onGoalDeleted?: () => void;
   onGoalAdjusted?: () => void | Promise<void>;
 }
 
