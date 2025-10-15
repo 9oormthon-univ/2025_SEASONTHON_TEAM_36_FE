@@ -16,5 +16,7 @@ export function markDailyShown() {
   try {
     const key = STORAGE_KEY_PREFIX + todayKey();
     localStorage.setItem(key, "1");
-  } catch {}
+  } catch {
+    return false;
+  }
 }
