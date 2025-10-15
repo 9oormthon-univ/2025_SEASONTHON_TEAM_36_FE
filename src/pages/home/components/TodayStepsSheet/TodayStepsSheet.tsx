@@ -10,11 +10,11 @@ import DayCompleteSplash from "../../modals/DayCompleteSplash";
 import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
 import PauseSplash from "../../modals/PauseSplash";
 import { GoalId } from "../../types/home";
-import SheetListSection from "../SheetListSection";
-import TodayStepsList from "../TodayStepsList";
 import { useDailyCheckIn } from "./hooks/useDailyCheckIn";
 import { useStepPlayback } from "./hooks/useStepPlayback";
 import { useStepsData } from "./hooks/useStepsData";
+import SheetListSection from "./SheetListSection";
+import TodayStepsList from "./TodayStepsList";
 import { applyPlayingState } from "./utils/stepState";
 
 const PEEK_HEIGHT = 58;

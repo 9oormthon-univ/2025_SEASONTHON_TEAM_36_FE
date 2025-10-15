@@ -1,7 +1,7 @@
 // src/pages/home/components/TodayStepsList.tsx
 import styled from "styled-components";
 
-import type { StepListItem } from "../types/steps"; // ← 공용 타입 재사용(경로는 프로젝트 구조에 맞게)
+import type { StepListItem } from "../../types/steps"; // ← 공용 타입 재사용(경로는 프로젝트 구조에 맞게)
 import StepActionBtn from "./StepActionBtn";
 
 type TimeMap = Partial<Record<string | number, Date | string>>;
