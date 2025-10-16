@@ -56,7 +56,7 @@ const GoalDeadline = ({
                 onClick={() => {
                   if (isModify[index]) {
                     modifyStep(updateSteps[index].stepId, updateSteps[index].description)
-                      .then((resp: any) => {
+                      .then(resp => {
                         // 응답 처리 필요 시 여기에 로직 추가
                         return resp;
                       })
