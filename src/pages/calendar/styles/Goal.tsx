@@ -1,6 +1,13 @@
 import styled from "styled-components";
 
 /**
+ * ToDoList.tsx 스타일
+ */
+export const ToDoListStyle = styled.div`
+  padding: 0 26px 90px 26px;
+`;
+
+/**
  * Goal.tsx 스타일
  */
 export const GoalStyle = styled.div`

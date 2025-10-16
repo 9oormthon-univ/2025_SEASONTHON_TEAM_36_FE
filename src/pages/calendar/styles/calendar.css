@@ -4,10 +4,13 @@
 .react-calendar {
   display: flex;
   flex-direction: column;
-  margin-top: 72px;
   padding-left: 24px !important;
   padding-right: 24px !important;
+  margin-top: clamp(36px, calc(36px + (72px - 36px) * ((100vh - 667px) / (927px - 667px))), 72px);
+  margin-bottom: 12px;
   box-sizing: border-box;
+  /* 전체 캘린더 컨테이너 높이도 화면 높이에 맞춰 조정 */
+  height: clamp(90%, 70vh, 100%);
 }
 
 /* 2. Calendar를 구성하는 모든 컴포넌트의 테두리 제거 및 폰트 스타일 적용*/
@@ -19,24 +22,25 @@
 /* 3. 네비게이션 바 레이아웃 변경 */
 .react-calendar__navigation {
   display: flex !important;
-  justify-content: flex-start !important;
+  justify-content: center !important;
   align-items: center !important;
-  padding: 11.5px 0;
+  /* 
+   * 선형 변화를 위한 계산식:
+   * - 667px 이하의 화면 높이에서는 6px
+   * - 927px 이상의 화면 높이에서는 11.5px
+   * - 667px~927px 사이에서는 선형적으로 증가
+   */
+  padding: clamp(6px, calc(6px + (11.5px - 6px) * ((100vh - 667px) / (927px - 667px))), 11.5px) 0;
 }
 
-/* 3.1. 네비게이션 바의 날짜 레이블 왼쪽에 배치 */
 .react-calendar__navigation__label {
-  background: none;
-  order: 1 !important;
-  margin: 0 !important;
-  flex-grow: 1 !important;
-  padding: 0;
+  flex-grow: 0 !important;
+  width: 60%;
 }
 
 /* 3.2. 네비게이션 바의 날짜 레이블 텍스트 스타일 변경 */
 .react-calendar__navigation__label__labelText {
-  display: flex;
-  font-size: 24px;
+  font-size: clamp(14px, calc(8px + 2vw + 0.8vh), 24px);
   font-weight: 700;
 }
 
@@ -46,23 +50,19 @@
 .react-calendar__navigation__prev2-button,
 .react-calendar__navigation__next2-button {
   display: flex;
-  order: 3 !important;
   padding: 0;
   background: none;
   cursor: pointer;
 }
 
-.react-calendar__navigation__prev-button {
-  margin-right: 10px !important;
-}
-
-.react-calendar__navigation__next-button {
-  margin-right: 47px !important;
-}
-
-/* */
 .react-calendar__viewContainer {
-  margin-top: 33px;
+  margin-top: 12px;
+}
+
+.react-calendar__navigation__prev2-button,
+.react-calendar__navigation__next2-button,
+.react-calendar__month-view__days__day:disabled {
+  display: none;
 }
 
 /* 그리드 레이아웃 고정 - 핵심 해결책 */
@@ -70,8 +70,12 @@
 .react-calendar__month-view__weekdays {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
-  grid-gap: 0 15px !important;
-  width: 100% !important;
+  /* 가로 간격은 유지하면서 세로 간격은 화면 높이에 따라 반응형으로 조절 */
+  grid-gap: clamp(6px, calc(6px + (12px - 6px) * ((100vh - 667px) / (927px - 667px))), 12px) 15px !important;
+}
+
+.react-calendar__month-view__weekdays {
+  margin-bottom: 10px;
 }
 
 /* 방법 2: 모든 타일에 적용 (더 구체적) */
@@ -81,6 +85,24 @@
   flex-direction: column-reverse;
   justify-content: center;
   align-items: center;
+  /* 화면 높이에 따라 타일 높이 조절 */
+  /* height: clamp(36px, 6vh, 60px); */
+  padding: 0;
+}
+
+.react-calendar__tile > div {
+  width: clamp(
+    20px,
+    calc(20px + (23px - 20px) * ((100vh - 667px) / (927px - 667px))),
+    23px
+  ) !important;
+  height: clamp(
+    20px,
+    calc(20px + (23px - 20px) * ((100vh - 667px) / (927px - 667px))),
+    23px
+  ) !important;
+  border-radius: 4px;
+  margin-bottom: 2px;
 }
 
 /* 요일 헤더 스타일 정렬 */
@@ -99,8 +121,25 @@
 .react-calendar__month-view__days__day {
   transition: 0.2s background-color linear;
   border-radius: 10px;
-  padding: 9px 0;
   position: relative;
+}
+
+/* 날짜 숫자의 폰트 크기도 반응형으로 설정 */
+.react-calendar__tile abbr {
+  font-size: clamp(10px, calc(10px + (12px - 10px) * ((100vh - 667px) / (927px - 667px))), 12px);
+  font-weight: 400;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: clamp(20px, calc(20px + (23px - 20px) * ((100vh - 667px) / (927px - 667px))), 23px);
+  height: clamp(20px, calc(20px + (23px - 20px) * ((100vh - 667px) / (927px - 667px))), 23px);
+  border-radius: 50%;
+  background-color: transparent;
+}
+
+/* 선택된 날짜에 대한 스타일 */
+.selected-date abbr {
+  background-color: var(--natural-400);
 }
 
 .react-calendar__month-view__days__day:hover {
@@ -111,14 +150,3 @@
   visibility: hidden;
   pointer-events: none;
 }
-
-.react-calendar__navigation__prev2-button,
-.react-calendar__navigation__next2-button,
-.react-calendar__month-view__days__day:disabled {
-  display: none;
-}
-
-/* .selected-week {
-  background: #bbdefb !important;
-  border-radius: 8px;
-} */
