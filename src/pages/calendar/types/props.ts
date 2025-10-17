@@ -1,10 +1,26 @@
-import { Goal, HandleStep, NewStep, Step } from "./ToDo";
+import { Goal, HandleStep, NewStep, StepType } from "./ToDo";
 
-export interface ListProps {
-  toDo: Goal;
-  handleShowModal?: () => void;
+export interface ModifyDeleteProps {
   handleModifyStep: HandleStep;
   handleDeleteStep: HandleStep;
+}
+
+export interface StepManagerProps {
+  isModify: boolean;
+  setIsModify: () => void;
+  handleModifyStep: () => void;
+  handleDeleteStep: () => void;
+}
+
+export interface StepProps {
+  goalId: number;
+  step: StepType;
+}
+
+export interface GoalProps {
+  goalId: number;
+  goal: string;
+  steps: StepType[];
 }
 
 export interface CustomCalendarProps {
@@ -16,21 +32,6 @@ export interface CustomCalendarProps {
 export interface CustomDatePickerProps {
   index: number;
   onChange: (index: number, newValue: string | boolean[]) => void;
-}
-
-export interface GoalProps {
-  goalId: number;
-  goal: string;
-  steps: Step[];
-  handleModifyStep: HandleStep;
-  handleDeleteStep: HandleStep;
-}
-
-export interface StepManagerProps {
-  isModify: boolean;
-  setIsModify: () => void;
-  handleModifyStep: () => void;
-  handleDeleteStep: () => void;
 }
 
 export interface FormProps {

@@ -1,8 +1,9 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
-import DeleteImg from "../../../assets/images/delete.png";
-import ModifyImg from "../../../assets/images/modify.png";
-import MoreImg from "../../../assets/images/more.png";
+import DeleteImg from "@/assets/images/delete.png";
+import ModifyImg from "@/assets/images/modify.png";
+import MoreImg from "@/assets/images/more.png";
+
 import {
   Divider,
   MoreButton,
@@ -10,7 +11,7 @@ import {
   StepManagerOptions,
   StepManagerStyle,
 } from "../styles/Step";
-import { StepManagerProps } from "../types/props";
+import type { StepManagerProps } from "../types/props";
 
 const StepManager = ({
   isModify,
@@ -18,7 +19,6 @@ const StepManager = ({
   handleModifyStep,
   handleDeleteStep,
 }: StepManagerProps) => {
-  const managerRef = useRef(null);
   const [isShowing, setIsShowing] = useState(false);
   const handleShowManager = useCallback(() => {
     setIsShowing(prev => !prev);
@@ -28,21 +28,17 @@ const StepManager = ({
     <StepManagerStyle>
       <MoreButton
         onClick={() => {
+          handleShowManager();
           if (isModify) {
             handleModifyStep();
             setIsModify();
-          } else handleShowManager();
+          }
         }}
       >
         <img src={MoreImg} alt="더보기" width="24" height="24" />
       </MoreButton>
-      <StepManagerOptions ref={managerRef} $isShowing={isShowing}>
-        <StepManagerOption
-          onClick={() => {
-            setIsModify();
-            handleShowManager();
-          }}
-        >
+      <StepManagerOptions $isShowing={isShowing}>
+        <StepManagerOption onClick={setIsModify}>
           <span>수정하기</span>
           <img src={ModifyImg} alt="수정" width="18" height="18" />
         </StepManagerOption>

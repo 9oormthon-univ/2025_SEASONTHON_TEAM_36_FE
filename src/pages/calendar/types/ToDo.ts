@@ -5,7 +5,7 @@ export interface HandleStep {
   (goalId: number, stepId: number, description?: string): void;
 }
 
-export interface Step {
+export interface StepType {
   name: string;
   id: number;
   done: boolean;
@@ -21,7 +21,7 @@ export interface NewStep {
 
 export interface GoalInfo {
   name: string;
-  steps: Step[];
+  steps: StepType[];
 }
 
 export type Goal = Record<GoalId, GoalInfo>;

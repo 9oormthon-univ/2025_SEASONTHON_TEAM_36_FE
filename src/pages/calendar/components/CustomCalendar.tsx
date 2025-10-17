@@ -5,11 +5,14 @@ import { calendarApi } from "@/apis/calendar";
 import LeftArrow from "@/assets/images/left-arrow.png";
 import RightArrow from "@/assets/images/right-arrow.png";
 
-import { CustomCalendarProps } from "../types/props";
+import { useCalendar } from "../stores/useCalendar";
 import { dateToFormatString } from "../utils/dateUtils";
 
-const CustomCalendar = ({ curDate, handleToDo, handleMoveMonth }: CustomCalendarProps) => {
+const CustomCalendar = () => {
   const [percentageOfDay, setPercentageOfDay] = useState<Record<string, number> | null>(null);
+  const curDate = useCalendar(state => state.curDate);
+  const handleMoveMonth = useCalendar(state => state.handleMoveMonth);
+  const handleToDo = useCalendar(state => state.handleToDo);
 
   useEffect(() => {
     calendarApi(curDate.getFullYear(), curDate.getMonth() + 1)
