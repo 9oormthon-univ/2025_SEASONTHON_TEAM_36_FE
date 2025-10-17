@@ -3,7 +3,7 @@ import styled from "styled-components";
 /**
  * ToDoList.tsx 스타일
  */
-export const ToDoListStyle = styled.div`
+export const ToDo = styled.div`
   padding: 0 26px 90px 26px;
 `;
 
@@ -18,7 +18,7 @@ export const GoalContainer = styled.div`
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
-  background-color: var(--natural-200);
+  background-color: var(--green-200);
   border-radius: 10px;
   padding: 4px 10px;
   width:;
@@ -91,7 +91,3 @@ export const GoalListStyle = styled.div`
   padding: 2px 10px;
   padding-bottom: 76px;
 `;
-
-/**
- * Goal
- */
