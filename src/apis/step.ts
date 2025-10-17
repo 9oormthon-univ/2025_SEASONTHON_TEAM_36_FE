@@ -40,8 +40,9 @@ export async function stopStep(stepId: number) {
 }
 
 /** [PUT] Step 수정 */
-export async function modifyStep(stepId: number, description: string) {
-  if (stepId == null) throw new Error("Step 수정을 위해 stepId가 필요합니다.");
+export async function modifyStep(stepId: number, description: string | undefined) {
+  if (stepId === null) throw new Error("Step 수정을 위해 stepId가 필요합니다.");
+  if (description === undefined) throw new Error("description이 필요합니다.");
   return handleApiRequest<Array<RespStepInfo>>(() =>
     mainApi.put(
       `${BASE}/${stepId}`,
