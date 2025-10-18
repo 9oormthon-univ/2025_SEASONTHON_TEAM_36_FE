@@ -29,7 +29,7 @@ import {
   Placeholder,
   Row,
   Section,
-} from "../styles/Read";
+} from "../styles/ReadPage";
 import { Diary } from "../types/Diary";
 import { formatKoreanDate } from "../utils/dateUtils";
 import { InfoCard } from "./InfoCard";

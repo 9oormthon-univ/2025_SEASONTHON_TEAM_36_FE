@@ -30,7 +30,7 @@ import {
   Placeholder,
   Row,
   Section,
-} from "../styles/Write";
+} from "../styles/WritePage";
 import { formatKoreanDate } from "../utils/dateUtils";
 import CompletionSelector from "./CompletionSelector";
 import { InfoCard } from "./InfoCard";
