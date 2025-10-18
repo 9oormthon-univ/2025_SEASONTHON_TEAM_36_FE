@@ -11,20 +11,9 @@ import GreenButton from "../../../common/components/GreenButton";
 import type { SelectorItem } from "../constants/writeConstants";
 import { EMOTIONS, FOCUSES } from "../constants/writeConstants";
 import timetable from "../dummyImages/시간표.png";
-import {
-  ChartBox,
-  ColorDot,
-  CompletionRow,
-  DateBar,
-  DateText,
-  Label,
-  Legend,
-  LegendItem,
-  LegendLeft,
-  Page,
-  Section,
-} from "../styles/WritePage";
+import { CompletionRow, DateBar, DateText, Label, Page, Section } from "../styles/WritePage";
 import { formatKoreanDate } from "../utils/dateUtils";
+import ChartWithLegend from "./ChartWithLegend";
 import CompletionSelector from "./CompletionSelector";
 import BeforeJourney from "./JourneyRow";
 import MemoBox from "./MemoBox";
@@ -60,20 +49,7 @@ export default function Write() {
         <DateText className="typo-h3">{formatKoreanDate(new Date(state || new Date()))}</DateText>
       </DateBar>
       {/* 차트 + 범례 */}
-      <ChartBox>
-        <CircleChart />
-      </ChartBox>
-      <Legend>
-        {goals.map(g => (
-          <LegendItem key={g.id}>
-            <LegendLeft>
-              <ColorDot style={{ background: g.color }} />
-              <span className="typo-h4">{g.name}</span>
-            </LegendLeft>
-            {/* <LegendRight className="typo-label-l">{g.note ?? "—"}</LegendRight> */}
-          </LegendItem>
-        ))}
-      </Legend>
+      <ChartWithLegend chartSrc={timetable} goals={goals} chartWidthPct={75} />
 
       <Section>
         <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>

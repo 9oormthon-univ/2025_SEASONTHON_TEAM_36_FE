@@ -1,33 +1,18 @@
 // 일기 작성 페이지
 import { useLocation } from "react-router-dom";
-import styled from "styled-components";
 
 import picture from "@/assets/images/default.png";
 
 import { CONCENTRATION, ENERGY, PERFECTION, PLACE, PREV_EMOTION } from "../constants/readConstants";
 import timetable from "../dummyImages/시간표.png";
 import { Label } from "../styles/InfoCard";
-import {
-  ChartBox,
-  ColorDot,
-  DateBar,
-  DateText,
-  Legend,
-  LegendItem,
-  LegendLeft,
-  Page,
-  Section,
-} from "../styles/ReadPage";
+import { DateBar, DateText, Page, Section } from "../styles/ReadPage";
 import { Diary } from "../types/Diary";
 import { formatKoreanDate } from "../utils/dateUtils";
+import ChartWithLegend from "./ChartWithLegend";
 import JourneyRow from "./JourneyRow";
 import MemoBox from "./MemoBox";
 import PhotoPicker from "./PhotoPicker";
-
-export const CircleChart = styled.img.attrs({ src: timetable, alt: "시간표" })`
-  object-fit: cover;
-  width: 75%;
-`;
 
 // TODO: 실제 데이터 props 또는 API 연결 필요
 export default function Read() {
@@ -48,20 +33,7 @@ export default function Read() {
         <DateText>{formatKoreanDate(new Date(state.date || new Date()))}</DateText>
       </DateBar>
       {/* 차트 + 범례 */}
-      <ChartBox>
-        <CircleChart />
-      </ChartBox>
-      <Legend>
-        {goals.map(g => (
-          <LegendItem key={g.id}>
-            <LegendLeft>
-              <ColorDot style={{ background: g.color }} />
-              <span>{g.name}</span>
-            </LegendLeft>
-            {/* <LegendRight className="typo-label-l">{g.note ?? "—"}</LegendRight> */}
-          </LegendItem>
-        ))}
-      </Legend>
+      <ChartWithLegend chartSrc={timetable} goals={goals} chartWidthPct={75} />
       <Section>
         <Label>오늘의 여정을 시작하기 전</Label>
         <JourneyRow
