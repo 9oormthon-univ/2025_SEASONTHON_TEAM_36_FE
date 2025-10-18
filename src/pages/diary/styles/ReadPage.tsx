@@ -39,31 +39,6 @@ export const Section = styled.section`
   gap: 8px;
 `;
 
-export const PhotoBox = styled.div`
-  width: 100%;
-  height: 150px;
-  background: var(--natural-400);
-  border: 1px solid var(--natural-400);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  margin-bottom: 50px;
-
-  img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
-  }
-`;
-
-export const Placeholder = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.6;
-`;
-
 export const Legend = styled.div`
   display: flex;
   flex-direction: column;

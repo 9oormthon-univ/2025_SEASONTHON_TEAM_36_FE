@@ -16,14 +16,13 @@ import {
   LegendItem,
   LegendLeft,
   Page,
-  PhotoBox,
-  Placeholder,
   Section,
 } from "../styles/ReadPage";
 import { Diary } from "../types/Diary";
 import { formatKoreanDate } from "../utils/dateUtils";
 import JourneyRow from "./JourneyRow";
 import MemoBox from "./MemoBox";
+import PhotoPicker from "./PhotoPicker";
 
 export const CircleChart = styled.img.attrs({ src: timetable, alt: "시간표" })`
   object-fit: cover;
@@ -124,15 +123,12 @@ export default function Read() {
       {/* 사진 */}
       <Section>
         <Label>사진</Label>
-        <PhotoBox>
-          {photoUrl ? (
-            <img src={photoUrl} alt="기록 사진" />
-          ) : (
-            <Placeholder>
-              <img src={picture} alt="추가" />
-            </Placeholder>
-          )}
-        </PhotoBox>
+        <PhotoPicker
+          photoUrl={photoUrl ?? picture} // 데이터 없을 때 기본이미지 보여줄 수도 있음
+          onImageClick={() => {
+            // TODO: 클릭 시 확대 보기 등 UI 추가 가능
+          }}
+        />
       </Section>
     </Page>
   );

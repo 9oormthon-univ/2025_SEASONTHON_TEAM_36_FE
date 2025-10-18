@@ -3,7 +3,6 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 
-import addPhotoIcon from "@/assets/images/add.svg";
 import focus_01 from "@/assets/images/frog-face-1.svg";
 import focus_05 from "@/assets/images/frog-face-5.svg";
 import cafe from "@/assets/images/places/cafe.svg";
@@ -23,14 +22,13 @@ import {
   LegendItem,
   LegendLeft,
   Page,
-  PhotoBox,
-  Placeholder,
   Section,
 } from "../styles/WritePage";
 import { formatKoreanDate } from "../utils/dateUtils";
 import CompletionSelector from "./CompletionSelector";
 import BeforeJourney from "./JourneyRow";
 import MemoBox from "./MemoBox";
+import PhotoPicker from "./PhotoPicker";
 import Selector from "./Selector";
 
 const CircleChart = styled.img.attrs({ src: timetable, alt: "시간표" })`
@@ -145,16 +143,15 @@ export default function Write() {
       {/* 사진 */}
       <Section>
         <Label className="typo-h4">사진</Label>
-        <PhotoBox>
-          {photoUrl ? (
-            <img src={photoUrl} alt="기록 사진" />
-          ) : (
-            <Placeholder>
-              <img src={addPhotoIcon} alt="추가" />
-            </Placeholder>
-          )}
-        </PhotoBox>
-
+        <PhotoPicker
+          photoUrl={photoUrl}
+          onAddClick={() => {
+            // TODO: 업로드 모달 열기 / 파일 선택 트리거 등 (UI만 분리, 로직은 나중에)
+          }}
+          onImageClick={() => {
+            // TODO: 확대 보기 / 변경 메뉴 띄우기 등
+          }}
+        />
         <GreenButton onClick={() => {}} style={{ margin: " 0 30%" }}>
           작성 완료
         </GreenButton>
