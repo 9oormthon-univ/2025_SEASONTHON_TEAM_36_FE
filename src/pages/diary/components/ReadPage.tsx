@@ -35,7 +35,7 @@ export default function Read() {
       {/* 차트 + 범례 */}
       <ChartWithLegend chartSrc={timetable} goals={goals} chartWidthPct={75} />
       <Section>
-        <Label>오늘의 여정을 시작하기 전</Label>
+        <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
         <JourneyRow
           items={[
             {
@@ -58,7 +58,7 @@ export default function Read() {
       </Section>
 
       <Section>
-        <Label>오늘의 여정을 끝낸 후</Label>
+        <Label className="typo-h4">오늘의 여정을 끝낸 후</Label>
         <JourneyRow
           items={[
             {
@@ -82,7 +82,7 @@ export default function Read() {
 
       {/* 메모 */}
       <Section>
-        <Label>MEMO</Label>
+        <Label className="typo-h4">MEMO</Label>
         <MemoBox
           value={`${state.memo ?? ""}`}
           placeholder="메모"
@@ -94,7 +94,7 @@ export default function Read() {
 
       {/* 사진 */}
       <Section>
-        <Label>사진</Label>
+        <Label className="typo-h4">사진</Label>
         <PhotoPicker
           photoUrl={photoUrl ?? picture} // 데이터 없을 때 기본이미지 보여줄 수도 있음
           onImageClick={() => {

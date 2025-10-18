@@ -1,7 +1,6 @@
 // 일기 작성 페이지
 import React from "react";
 import { useLocation } from "react-router-dom";
-import styled from "styled-components";
 
 import focus_01 from "@/assets/images/frog-face-1.svg";
 import focus_05 from "@/assets/images/frog-face-5.svg";
@@ -19,11 +18,6 @@ import BeforeJourney from "./JourneyRow";
 import MemoBox from "./MemoBox";
 import PhotoPicker from "./PhotoPicker";
 import Selector from "./Selector";
-
-const CircleChart = styled.img.attrs({ src: timetable, alt: "시간표" })`
-  object-fit: cover;
-  width: 75%;
-`;
 
 // TODO: 실제 데이터 props 또는 API 연결 필요
 export default function Write() {
