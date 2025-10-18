@@ -15,8 +15,6 @@ import {
   Legend,
   LegendItem,
   LegendLeft,
-  MemoFieldWrap,
-  MemoInput,
   Page,
   PhotoBox,
   Placeholder,
@@ -25,6 +23,7 @@ import {
 import { Diary } from "../types/Diary";
 import { formatKoreanDate } from "../utils/dateUtils";
 import JourneyRow from "./JourneyRow";
+import MemoBox from "./MemoBox";
 
 export const CircleChart = styled.img.attrs({ src: timetable, alt: "시간표" })`
   object-fit: cover;
@@ -113,9 +112,13 @@ export default function Read() {
       {/* 메모 */}
       <Section>
         <Label>MEMO</Label>
-        <MemoFieldWrap>
-          <MemoInput value={`${state.memo}`} placeholder="메모" readOnly rows={3} />
-        </MemoFieldWrap>
+        <MemoBox
+          value={`${state.memo ?? ""}`}
+          placeholder="메모"
+          readOnly
+          showCounter={false}
+          rows={3}
+        />
       </Section>
 
       {/* 사진 */}

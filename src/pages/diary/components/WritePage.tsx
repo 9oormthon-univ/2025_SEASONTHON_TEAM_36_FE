@@ -18,13 +18,10 @@ import {
   CompletionRow,
   DateBar,
   DateText,
-  InlineCounter,
   Label,
   Legend,
   LegendItem,
   LegendLeft,
-  MemoFieldWrap,
-  MemoInput,
   Page,
   PhotoBox,
   Placeholder,
@@ -33,6 +30,7 @@ import {
 import { formatKoreanDate } from "../utils/dateUtils";
 import CompletionSelector from "./CompletionSelector";
 import BeforeJourney from "./JourneyRow";
+import MemoBox from "./MemoBox";
 import Selector from "./Selector";
 
 const CircleChart = styled.img.attrs({ src: timetable, alt: "시간표" })`
@@ -133,15 +131,15 @@ export default function Write() {
       {/* 메모 */}
       <Section>
         <Label className="typo-h4">MEMO</Label>
-        <MemoFieldWrap>
-          <MemoInput
-            maxLength={1000}
-            placeholder="메모"
-            onChange={e => setMemo(e.target.value)}
-            rows={3}
-          />
-          <InlineCounter className="typo-body-xs">{memo.length}/1000</InlineCounter>
-        </MemoFieldWrap>
+        <MemoBox
+          value={memo}
+          onChange={setMemo}
+          maxLength={1000}
+          rows={3}
+          placeholder="메모"
+          readOnly={false}
+          showCounter
+        />
       </Section>
 
       {/* 사진 */}

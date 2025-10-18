@@ -39,36 +39,6 @@ export const Section = styled.section`
   gap: 8px;
 `;
 
-export const MemoFieldWrap = styled.div`
-  position: relative;
-  padding: 6px 0 10px; /* 아래 여백으로 밑줄과 간격 */
-  border-bottom: 1px solid var(--natural-400);
-  transition: border-color 150ms ease;
-  &:focus-within {
-    border-bottom-color: var(--primary-1); /* 포커스 시 강조 */
-  }
-`;
-
-export const MemoInput = styled.textarea`
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: var(--text-1);
-  font-family: var(--ff-sans);
-  font-size: var(--fs-sm);
-  line-height: 1.4;
-  resize: none; /* 필요시 vertical로 변경 */
-  box-sizing: border-box;
-  padding-right: 56px; /* 우측 카운터 자리 */
-  /* iOS 확대 방지 */
-  -webkit-text-size-adjust: 100%;
-
-  ::placeholder {
-    color: var(--text-3);
-  }
-`;
-
 export const PhotoBox = styled.div`
   width: 100%;
   height: 150px;
