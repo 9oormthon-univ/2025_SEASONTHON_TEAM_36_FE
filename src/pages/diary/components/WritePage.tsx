@@ -28,12 +28,11 @@ import {
   Page,
   PhotoBox,
   Placeholder,
-  Row,
   Section,
 } from "../styles/WritePage";
 import { formatKoreanDate } from "../utils/dateUtils";
 import CompletionSelector from "./CompletionSelector";
-import { InfoCard } from "./InfoCard";
+import BeforeJourney from "./JourneyRow";
 import Selector from "./Selector";
 
 const CircleChart = styled.img.attrs({ src: timetable, alt: "시간표" })`
@@ -82,11 +81,13 @@ export default function Write() {
 
       <Section>
         <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
-        <Row>
-          <InfoCard title="감정" imgSrc={focus_05} label="좋음" />
-          <InfoCard title="잔여 에너지" imgSrc={focus_01} label="기운 없음" />
-          <InfoCard title="장소" imgSrc={cafe} label="카페" />
-        </Row>
+        <BeforeJourney
+          items={[
+            { title: "감정", imgSrc: focus_05, label: "좋음" },
+            { title: "잔여 에너지", imgSrc: focus_01, label: "기운 없음" },
+            { title: "장소", imgSrc: cafe, label: "카페" },
+          ]}
+        />
       </Section>
 
       {/* 감정 */}

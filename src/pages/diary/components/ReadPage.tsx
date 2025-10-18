@@ -4,14 +4,7 @@ import styled from "styled-components";
 
 import picture from "@/assets/images/default.png";
 
-import {
-  CONCENTRATION,
-  EMOTION,
-  ENERGY,
-  PERFECTION,
-  PLACE,
-  PREV_EMOTION,
-} from "../constants/readConstants";
+import { CONCENTRATION, ENERGY, PERFECTION, PLACE, PREV_EMOTION } from "../constants/readConstants";
 import timetable from "../dummyImages/시간표.png";
 import { Label } from "../styles/InfoCard";
 import {
@@ -27,12 +20,11 @@ import {
   Page,
   PhotoBox,
   Placeholder,
-  Row,
   Section,
 } from "../styles/ReadPage";
 import { Diary } from "../types/Diary";
 import { formatKoreanDate } from "../utils/dateUtils";
-import { InfoCard } from "./InfoCard";
+import JourneyRow from "./JourneyRow";
 
 export const CircleChart = styled.img.attrs({ src: timetable, alt: "시간표" })`
   object-fit: cover;
@@ -74,40 +66,48 @@ export default function Read() {
       </Legend>
       <Section>
         <Label>오늘의 여정을 시작하기 전</Label>
-        <Row>
-          <InfoCard
-            title="감정"
-            imgSrc={PREV_EMOTION[state.prevEmotion].img}
-            label={PREV_EMOTION[state.prevEmotion].text}
-          />
-          <InfoCard
-            title="잔여 에너지"
-            imgSrc={ENERGY[state.energy].img}
-            label={ENERGY[state.energy].text}
-          />
-          <InfoCard title="장소" imgSrc={PLACE[state.place].img} label={PLACE[state.place].text} />
-        </Row>
+        <JourneyRow
+          items={[
+            {
+              title: "감정",
+              imgSrc: PREV_EMOTION[state.prevEmotion].img,
+              label: PREV_EMOTION[state.prevEmotion].text,
+            },
+            {
+              title: "잔여 에너지",
+              imgSrc: ENERGY[state.energy].img,
+              label: ENERGY[state.energy].text,
+            },
+            {
+              title: "장소",
+              imgSrc: PLACE[state.place].img,
+              label: PLACE[state.place].text,
+            },
+          ]}
+        />
       </Section>
 
       <Section>
         <Label>오늘의 여정을 끝낸 후</Label>
-        <Row>
-          <InfoCard
-            title="감정"
-            imgSrc={EMOTION[state.emotion - 1].img}
-            label={EMOTION[state.emotion - 1].text}
-          />
-          <InfoCard
-            title="집중도"
-            imgSrc={CONCENTRATION[state.concentration].img}
-            label={CONCENTRATION[state.concentration].text}
-          />
-          <InfoCard
-            title="완성도"
-            imgSrc={PERFECTION[Math.floor(state.perfection === 100 ? 4 : state.perfection / 20)]}
-            label={`${state.perfection}%`}
-          />
-        </Row>
+        <JourneyRow
+          items={[
+            {
+              title: "감정",
+              imgSrc: PREV_EMOTION[state.prevEmotion].img,
+              label: PREV_EMOTION[state.prevEmotion].text,
+            },
+            {
+              title: "집중도",
+              imgSrc: CONCENTRATION[state.concentration].img,
+              label: CONCENTRATION[state.concentration].text,
+            },
+            {
+              title: "완성도",
+              imgSrc: PERFECTION[Math.floor(state.perfection === 100 ? 4 : state.perfection / 20)],
+              label: `${state.perfection}%`,
+            },
+          ]}
+        />
       </Section>
 
       {/* 메모 */}

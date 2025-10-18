@@ -94,14 +94,6 @@ export const Placeholder = styled.div`
   opacity: 0.6;
 `;
 
-export const Row = styled.div`
-  display: flex;
-  justify-content: space-around; /* 균등 분배 */
-  align-items: flex-start;
-  gap: 16px;
-  width: 100%;
-`;
-
 export const Legend = styled.div`
   display: flex;
   flex-direction: column;

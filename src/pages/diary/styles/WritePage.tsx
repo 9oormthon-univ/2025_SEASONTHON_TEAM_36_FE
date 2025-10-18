@@ -160,12 +160,3 @@ export const Placeholder = styled.div`
   justify-content: center;
   opacity: 0.6;
 `;
-
-/* ===== styled-components ===== */
-export const Row = styled.div`
-  display: flex;
-  justify-content: space-around; /* 균등 분배 */
-  align-items: flex-start;
-  gap: 16px;
-  width: 100%;
-`;
