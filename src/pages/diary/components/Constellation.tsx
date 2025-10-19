@@ -23,8 +23,8 @@ const calcLineLocation = (
 
   const dx = star1.x - star2.x;
   const dy = star1.y - star2.y;
-  const distance = Math.sqrt(dx * dx + dy * dy) + (isStar1Big !== isStar2Big ? 2 : 0);
-  const angle =
+  const $distance = Math.sqrt(dx * dx + dy * dy) + (isStar1Big !== isStar2Big ? 2 : 0);
+  const $angle =
     Math.atan2(dy, dx) * (180 / Math.PI) +
     (isStar1Big && isStar2Big ? 0 : isStar1Big && !isStar2Big && star1.y < star2.y ? 5 : -5);
 
@@ -33,10 +33,10 @@ const calcLineLocation = (
   const startY = star2.y + star2Radius;
 
   return {
-    left: startX,
-    top: startY,
-    distance,
-    angle,
+    $left: startX,
+    $top: startY,
+    $distance,
+    $angle,
   };
 };
 
