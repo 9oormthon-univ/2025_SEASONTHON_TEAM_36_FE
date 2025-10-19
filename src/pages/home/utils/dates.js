@@ -25,8 +25,10 @@ export function startOfTodayLocal() {
 
 export function isSameDayLocal(a, b) {
   if (!(a instanceof Date) || !(b instanceof Date)) return false;
-  const da = new Date(a); da.setHours(0, 0, 0, 0);
-  const db = new Date(b); db.setHours(0, 0, 0, 0);
+  const da = new Date(a);
+  da.setHours(0, 0, 0, 0);
+  const db = new Date(b);
+  db.setHours(0, 0, 0, 0);
   return da.getTime() === db.getTime();
 }
 
