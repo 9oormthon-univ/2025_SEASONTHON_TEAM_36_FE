@@ -11,17 +11,17 @@ export default function Diary() {
 
   // 초기 날짜 계산 및 date 상태 관리 (searchParams 기반)
   const [date, setDate] = useState(() => {
-    const year = validateYearString(searchParams.get("year"));
-    const month = validateMonthString(searchParams.get("month"));
+    const year = validateYearString(searchParams.get("year") ?? String(new Date().getFullYear()));
+    const month = validateMonthString(
+      searchParams.get("month") ?? String(new Date().getMonth() + 1),
+    );
     return getCorrectDate(year, month);
   });
 
   // searchParams가 변경될 때 date도 업데이트
   useEffect(() => {
-    const year = Number(searchParams.get("year"));
-    const month = Number(searchParams.get("month"));
-    // const year = validateYearString(searchParams.get("year"));
-    // const month = validateMonthString(searchParams.get("month"));
+    const year = Number(searchParams.get("year") ?? String(new Date().getFullYear()));
+    const month = Number(searchParams.get("month") ?? String(new Date().getMonth() + 1));
     const nextDate = new Date(year, month - 1);
     setSearchParams({
       year: nextDate.getFullYear().toString(),
