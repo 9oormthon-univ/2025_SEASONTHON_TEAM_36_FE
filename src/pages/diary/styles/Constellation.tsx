@@ -2,31 +2,32 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
   position: relative;
-  margin-top: 35px;
-  width: clamp(280px, min(90vw, 90vh * 352px / 451px), 352px);
-  height: clamp(360px, min(115vw * 451px / 352px, 90vh), 451px);
-  max-width: 100%;
-
-  @media (max-width: 480px) {
-    margin-top: 20px;
-  }
+  margin-top: clamp(0px, calc((100vh - 700px) * 35 / 112), 35px);
+  width: auto;
+  height: clamp(360px, 60vh, 451px);
+  aspect-ratio: 352 / 451;
+  max-width: min(352px, 90vw);
+  max-height: 100%;
+  --constellation-scale-w: clamp(0.6, calc(min(90vw, 352px) / 352px), 1);
+  --constellation-scale-h: clamp(0.6, calc(clamp(360px, 60vh, 451px) / 451px), 1);
+  --constellation-scale: min(var(--constellation-scale-w), var(--constellation-scale-h));
 `;
 
-export const Line = styled.div<{ left: number; top: number; distance: number; angle: number }>`
+export const Line = styled.div<{ $left: number; $top: number; $distance: number; $angle: number }>`
   position: absolute;
   height: clamp(1px, 0.4vw, 1.5px);
   background-color: rgba(255, 255, 255, 0.5);
   transform-origin: left center;
-  top: calc(${props => props.top}px * clamp(0.6, min(90vw / 352px, 90vh / 451px), 1));
-  left: calc(${props => props.left}px * clamp(0.6, min(90vw / 352px, 90vh / 451px), 1));
-  width: calc(${props => props.distance}px * clamp(0.6, min(90vw / 352px, 90vh / 451px), 1));
-  transform: rotateZ(${props => props.angle}deg);
+  top: calc(${props => props.$top}px * var(--constellation-scale));
+  left: calc(${props => props.$left}px * var(--constellation-scale));
+  width: calc(${props => props.$distance}px * var(--constellation-scale));
+  transform: rotateZ(${props => props.$angle}deg);
 `;
 
 export const Star = styled.div<{ $x: number; $y: number }>`
   position: absolute;
-  left: calc(${props => props.$x}px * clamp(0.6, min(90vw / 352px, 90vh / 451px), 1));
-  top: calc(${props => props.$y}px * clamp(0.6, min(90vw / 352px, 90vh / 451px), 1));
+  left: calc(${props => props.$x}px * var(--constellation-scale));
+  top: calc(${props => props.$y}px * var(--constellation-scale));
   z-index: 1;
 `;
 
@@ -40,8 +41,8 @@ export const Day = styled.span<{ $toggle: boolean; $x: number; $y: number }>`
   font-size: clamp(10px, 2.5vw, 14px);
   display: ${props => (props.$toggle ? "block" : "none")};
   position: absolute;
-  top: calc(${props => props.$y}px * clamp(0.6, min(90vw / 352px, 90vh / 451px), 1));
-  left: calc(${props => props.$x}px * clamp(0.6, min(90vw / 352px, 90vh / 451px), 1));
+  top: calc(${props => props.$y}px * var(--constellation-scale));
+  left: calc(${props => props.$x}px * var(--constellation-scale));
   white-space: nowrap;
 `;
 

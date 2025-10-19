@@ -19,24 +19,8 @@ export const Header = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  margin-top: 76px;
+  margin-top: clamp(20px, calc((100vh - 700px) * 56 / 112), 76px);
   padding: 12px 24px;
-
-  @media (max-height: 800px) {
-    margin-top: 50px;
-  }
-
-  @media (max-height: 700px) {
-    margin-top: 40px;
-  }
-
-  @media (max-height: 600px) {
-    margin-top: 30px;
-  }
-
-  @media (max-height: 500px) {
-    margin-top: 20px;
-  }
 `;
 
 export const Title = styled.h1`
@@ -47,6 +31,6 @@ export const Title = styled.h1`
 export const Message = styled.h3`
   font-size: clamp(var(--fs-sm), 2vw, var(--fs-md));
   font-weight: 500;
-  margin-top: clamp(24px, 4vh, 38px);
+  margin-top: clamp(12px, calc((100vh - 700px) * 26 / 112), 38px);
   color: white;
 `;
