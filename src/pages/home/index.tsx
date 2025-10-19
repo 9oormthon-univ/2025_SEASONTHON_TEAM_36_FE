@@ -1,19 +1,16 @@
 // src/pages/home/index.tsx
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-
-import { fetchTodos } from "@/apis/todo";
 
 import CardsCarousel from "./components/CardsCarousel";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TodayStepsSheet from "./components/TodayStepsSheet/TodayStepsSheet";
-import type { ApiTodosResponse, BodyStyledProps, GoalId, HomeGoal } from "./types/home";
+import { useFetchTodos } from "./hooks/useFetchTodos";
+import type { BodyStyledProps, GoalId } from "./types/home";
 
 export default function HomePage() {
-  const [goals, setGoals] = useState<HomeGoal[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<unknown>(null);
+  const { goals, loading, error, reloadTodos } = useFetchTodos();
 
   const [activeId, setActiveId] = useState<GoalId | null>(null);
   const [sheetHeight, setSheetHeight] = useState<number>(0);
@@ -24,48 +21,9 @@ export default function HomePage() {
   const SHRINK_CLOSED = 1 as const;
   const shrink: number = isSheetOpen ? SHRINK_OPEN : SHRINK_CLOSED;
 
-  // 공용 재조회 함수: Promise 처리/에러 처리 모두 포함
-  const reloadTodos = useCallback(async (): Promise<void> => {
-    try {
-      setLoading(true);
-      const res = (await fetchTodos()) as ApiTodosResponse | null;
-      const contents = Array.isArray(res?.contents) ? res.contents : [];
-      setGoals(contents);
-      setError(null);
-    } catch (e) {
-      console.error("할 일 목록 재로드 실패:", e);
-      setError(e);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // 최초 로딩도 공용 함수 재사용
-  useEffect(() => {
-    let alive = true;
-    void (async () => {
-      try {
-        setLoading(true);
-        const res = (await fetchTodos()) as ApiTodosResponse | null;
-        if (!alive) return;
-        const list = Array.isArray(res?.contents) ? res.contents : [];
-        setGoals(list);
-      } catch (e) {
-        if (!alive) return;
-        setError(e);
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  // goals 변경 시 activeId 유효성 보장 (goals만 의존)
+  // goals 변경 시 activeId 유효성 보장
   useEffect(() => {
     if (!goals.length) return;
-    // 현재 activeId가 비어 있거나, 새 goals에 존재하지 않으면 첫 번째로 교체
     setActiveId(prev => (prev == null || !goals.some(t => t.id === prev) ? goals[0].id : prev));
   }, [goals]);
 
