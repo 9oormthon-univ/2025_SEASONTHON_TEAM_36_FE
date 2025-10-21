@@ -1,33 +1,30 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import SwipeCarousel from "../../../layout/SwipeCarousel";
 import { useActiveGoalStore } from "../store/useActiveGoalStore";
-import { useGoalsStore } from "../store/useGoalsStore";
 import DotIndicator from "./DotIndicator";
-import GoalCard from "./GoalCard";
 
 export interface CardsCarouselProps {
-  shrink?: number;
+  /** Carousel에 표시되는 아이템의 식별자들 (스와이프/activeId 동기화 기준) */
+  ids: number[];
+  /** 렌더링할 카드들 (ids.length와 동일한 개수여야 안전) */
+  children: React.ReactNode;
+  /** Dot 최대 표시 개수 (기본 5) */
+  maxDots?: number;
 }
 
-export default function CardsCarousel({ shrink = 1 }: CardsCarouselProps) {
+export default function CardsCarousel({ ids, children, maxDots = 5 }: CardsCarouselProps) {
   const [innerIndex, setInnerIndex] = useState<number>(0);
 
-  // 전역 Zustand store 활용
-  const goals = useGoalsStore(s => s.goals);
+  // 전역 activeId만 관리
   const { activeId, setActiveId } = useActiveGoalStore();
 
-  // ids를 항상 number로 보장 (id 없으면 음수 센티널 사용)
-  const ids = useMemo<number[]>(
-    () =>
-      goals.map((g, i) => {
-        const id = g?.id;
-        return typeof id === "number" && Number.isFinite(id) ? id : -(i + 1);
-      }),
-    [goals],
-  );
+  // children을 배열로 정규화
+  const items = useMemo(() => React.Children.toArray(children), [children]);
+  const total = ids.length;
 
+  // controlled index 계산
   const controlledIndex = useMemo<number | null>(() => {
     if (activeId == null) return null;
     const idx = ids.indexOf(activeId);
@@ -36,22 +33,25 @@ export default function CardsCarousel({ shrink = 1 }: CardsCarouselProps) {
 
   const index = Number.isInteger(controlledIndex as number)
     ? (controlledIndex as number)
-    : clamp(innerIndex, 0, Math.max(0, goals.length - 1));
+    : clamp(innerIndex, 0, Math.max(0, total - 1));
 
   const setIndexBoth = (next: number | ((prev: number) => number)) => {
     const computed = typeof next === "function" ? (next as (p: number) => number)(index) : next;
-    const nextVal = clamp(computed, 0, Math.max(0, goals.length - 1));
+    const nextVal = clamp(computed, 0, Math.max(0, total - 1));
 
+    // 언컨트롤 상황 대비 내부 인덱스 유지
     if (controlledIndex == null) setInnerIndex(nextVal);
 
+    // 전역 activeId 동기화
     const nextId = ids[nextVal];
     if (typeof nextId === "number") setActiveId(nextId);
   };
 
-  // goals 변화 시 전역 activeId 유효성 보장
+  // ids/activeId 변화 시 인덱스 정합성 보장
   useEffect(() => {
-    if (goals.length === 0) return;
+    if (total === 0) return;
 
+    // activeId가 없거나 리스트에 없으면 첫 아이템으로 맞춤
     if (activeId == null || !ids.includes(activeId)) {
       const first = ids[0];
       if (typeof first === "number") setActiveId(first);
@@ -59,22 +59,23 @@ export default function CardsCarousel({ shrink = 1 }: CardsCarouselProps) {
       return;
     }
 
+    // activeId는 유효하나 내부 인덱스 어긋난 경우 보정
     const idx = ids.indexOf(activeId);
     if (idx !== index) setInnerIndex(idx);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [goals.length, ids.join(","), activeId]);
+  }, [total, ids.join(","), activeId]);
 
   return (
     <>
       <CarouselWrap>
         <SwipeCarousel index={index} onIndexChange={setIndexBoth}>
-          {goals.map((g, i) => (
-            <GoalCard key={ids[i]?.toString()} goal={g} shrink={shrink} />
+          {items.map((node, i) => (
+            <div key={ids[i]?.toString()}>{node}</div>
           ))}
         </SwipeCarousel>
       </CarouselWrap>
       <IndicatorRow>
-        <DotIndicator index={index} total={goals.length} maxDots={5} />
+        <DotIndicator index={index} total={total} maxDots={maxDots} />
       </IndicatorRow>
     </>
   );

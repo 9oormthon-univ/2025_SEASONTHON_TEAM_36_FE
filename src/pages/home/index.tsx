@@ -1,10 +1,11 @@
 // src/pages/home/index.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import CardsCarousel from "./components/CardsCarousel";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
+import GoalCard from "./components/GoalCard";
 import TodayStepsSheet from "./components/TodayStepsSheet/TodayStepsSheet";
 import { useActiveGoalStore } from "./store/useActiveGoalStore";
 import { useBindGoalsStore, useGoalsStore } from "./store/useGoalsStore";
@@ -16,23 +17,37 @@ export interface BodyStyledProps {
 }
 
 export default function HomePage() {
+  // API ↔ Zustand 동기화 + 개발용 더미 fallback
   useBindGoalsStore();
 
+  // 전역 상태
   const { goals, loading, error, reloadTodos } = useGoalsStore();
   const { activeId: _activeId, setActiveId } = useActiveGoalStore();
 
+  // 바텀시트 높이
   const [sheetHeight, setSheetHeight] = useState<number>(0);
 
+  // 시트 열림 여부에 따른 카드 축소율
   const OPEN_THRESHOLD_PX = 100;
   const isSheetOpen = sheetHeight > OPEN_THRESHOLD_PX;
   const SHRINK_OPEN = 0.89 as const;
   const SHRINK_CLOSED = 1 as const;
   const shrink: number = isSheetOpen ? SHRINK_OPEN : SHRINK_CLOSED;
 
+  // Carousel에 넘길 ids (id 없으면 음수 센티널)
+  const ids = useMemo<number[]>(
+    () =>
+      goals.map((g, i) => {
+        const id = g?.id;
+        return typeof id === "number" && Number.isFinite(id) ? id : -(i + 1);
+      }),
+    [goals],
+  );
+
   // goals 변경 시 activeId 유효성 보장
   useEffect(() => {
     if (!goals.length) return;
-    const currentId = useActiveGoalStore.getState().activeId; // Zustand에서 현재 값 가져오기
+    const currentId = useActiveGoalStore.getState().activeId; // Zustand 현재값
     if (currentId == null || !goals.some(t => t.id === currentId)) {
       setActiveId(goals[0].id);
     }
@@ -61,7 +76,17 @@ export default function HomePage() {
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
         <DateView hideYear={isSheetOpen} />
-        {hasGoals ? <CardsCarousel shrink={shrink} /> : <EmptyState />}
+
+        {hasGoals ? (
+          <CardsCarousel ids={ids} maxDots={5}>
+            {goals.map((g, i) => (
+              <GoalCard key={ids[i]?.toString()} goal={g} shrink={shrink} />
+            ))}
+          </CardsCarousel>
+        ) : (
+          <EmptyState />
+        )}
+
         <BottomSpacing />
       </Body>
 
