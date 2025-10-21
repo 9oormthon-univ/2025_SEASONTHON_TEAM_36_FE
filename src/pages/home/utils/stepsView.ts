@@ -1,5 +1,4 @@
 // src/pages/home/utils/stepView.ts
-// ✅ fetchSteps 제거, 순수 변환 유틸만 유지
 
 import { RespTodoSteps } from "@/common/types/response/step";
 

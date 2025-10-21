@@ -1,7 +1,7 @@
 // src/pages/home/components/TodayStepsSheet/hooks/useSheetStepsView.ts
 import { useEffect, useMemo } from "react";
 
-// ⬇️ 스토어 직접 사용
+//  스토어 직접 사용
 import { useStepsStore } from "@/pages/home/store/useStepsStore";
 import { StepListGroup, TodayPastLists } from "@/pages/home/types/steps";
 import { toTodayAndPastLists } from "@/pages/home/utils/stepsView";
