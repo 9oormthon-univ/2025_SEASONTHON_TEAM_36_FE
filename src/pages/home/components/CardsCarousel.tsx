@@ -1,30 +1,21 @@
-// src/pages/home/components/CardsCarousel.tsx
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import { RespTodo } from "@/common/types/response/todo";
-
 import SwipeCarousel from "../../../layout/SwipeCarousel";
 import { useActiveGoalStore } from "../store/useActiveGoalStore";
+import { useGoalsStore } from "../store/useGoalsStore";
 import DotIndicator from "./DotIndicator";
 import GoalCard from "./GoalCard";
 
 export interface CardsCarouselProps {
-  goals?: RespTodo[];
   shrink?: number;
-  onGoalDeleted?: () => void;
-  onGoalAdjusted?: () => void | Promise<void>;
 }
 
-export default function CardsCarousel({
-  goals = [],
-  shrink = 1,
-  onGoalDeleted,
-  onGoalAdjusted,
-}: CardsCarouselProps) {
+export default function CardsCarousel({ shrink = 1 }: CardsCarouselProps) {
   const [innerIndex, setInnerIndex] = useState<number>(0);
 
-  // 전역 activeId 사용
+  // 전역 Zustand store 활용
+  const goals = useGoalsStore(s => s.goals);
   const { activeId, setActiveId } = useActiveGoalStore();
 
   // ids를 항상 number로 보장 (id 없으면 음수 센티널 사용)
@@ -51,10 +42,8 @@ export default function CardsCarousel({
     const computed = typeof next === "function" ? (next as (p: number) => number)(index) : next;
     const nextVal = clamp(computed, 0, Math.max(0, goals.length - 1));
 
-    // 내부 인덱스 업데이트 (언컨트롤 상황 대비)
     if (controlledIndex == null) setInnerIndex(nextVal);
 
-    // 전역 activeId 갱신
     const nextId = ids[nextVal];
     if (typeof nextId === "number") setActiveId(nextId);
   };
@@ -63,7 +52,6 @@ export default function CardsCarousel({
   useEffect(() => {
     if (goals.length === 0) return;
 
-    // 현재 activeId가 없거나, 목록에 없으면 첫 카드로 맞춤
     if (activeId == null || !ids.includes(activeId)) {
       const first = ids[0];
       if (typeof first === "number") setActiveId(first);
@@ -71,7 +59,6 @@ export default function CardsCarousel({
       return;
     }
 
-    // activeId는 유효하나, 내부 인덱스가 어긋난 경우 동기화
     const idx = ids.indexOf(activeId);
     if (idx !== index) setInnerIndex(idx);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,13 +69,7 @@ export default function CardsCarousel({
       <CarouselWrap>
         <SwipeCarousel index={index} onIndexChange={setIndexBoth}>
           {goals.map((g, i) => (
-            <GoalCard
-              key={ids[i]?.toString()}
-              goal={g}
-              shrink={shrink}
-              onDeleted={onGoalDeleted}
-              onGoalAdjusted={onGoalAdjusted}
-            />
+            <GoalCard key={ids[i]?.toString()} goal={g} shrink={shrink} />
           ))}
         </SwipeCarousel>
       </CarouselWrap>

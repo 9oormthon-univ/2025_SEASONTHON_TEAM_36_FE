@@ -6,8 +6,8 @@ import CardsCarousel from "./components/CardsCarousel";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TodayStepsSheet from "./components/TodayStepsSheet/TodayStepsSheet";
-import { useFetchTodos } from "./hooks/useFetchTodos";
 import { useActiveGoalStore } from "./store/useActiveGoalStore";
+import { useBindGoalsStore, useGoalsStore } from "./store/useGoalsStore";
 
 // styled-components transient props
 export interface BodyStyledProps {
@@ -16,7 +16,9 @@ export interface BodyStyledProps {
 }
 
 export default function HomePage() {
-  const { goals, loading, error, reloadTodos } = useFetchTodos();
+  useBindGoalsStore();
+
+  const { goals, loading, error, reloadTodos } = useGoalsStore();
   const { activeId: _activeId, setActiveId } = useActiveGoalStore();
 
   const [sheetHeight, setSheetHeight] = useState<number>(0);
@@ -59,20 +61,7 @@ export default function HomePage() {
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
         <DateView hideYear={isSheetOpen} />
-        {hasGoals ? (
-          <CardsCarousel
-            goals={goals}
-            shrink={shrink}
-            onGoalDeleted={() => {
-              void reloadTodos();
-            }}
-            onGoalAdjusted={() => {
-              void reloadTodos();
-            }}
-          />
-        ) : (
-          <EmptyState />
-        )}
+        {hasGoals ? <CardsCarousel shrink={shrink} /> : <EmptyState />}
         <BottomSpacing />
       </Body>
 

@@ -1,21 +1,20 @@
-// src/pages/home/components/GoalCard.tsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
 import sirenIcon from "@/assets/images/siren.svg";
-import type { HomeGoal } from "@/pages/home/types/home";
+import { RespTodo } from "@/common/types/response/todo";
 
 import AdjustGoalModal from "../modals/AdjustGoalModal";
 import GoalStepsModal from "../modals/GoalStepsModal";
 import { pickRandomFrog } from "../store/frogs";
+import { useGoalsStore } from "../store/useGoalsStore"; // reloadTodos 불러오기
 import { DDayIcon } from "../styles/DDayIcon";
 import FrogBar from "./FrogBar";
 
+// ✅ 콜백 prop 제거
 export interface GoalCardProps {
-  goal: HomeGoal;
+  goal: RespTodo;
   shrink?: number; // default 1
-  onDeleted?: () => void;
-  onGoalAdjusted?: () => void | Promise<void>;
 }
 
 // styled-components transient props
@@ -23,13 +22,15 @@ interface ContainerProps {
   $shrink: number;
 }
 
-export default function GoalCard({ goal, shrink = 1, onDeleted, onGoalAdjusted }: GoalCardProps) {
-  // 훅은 항상 최상단에서 호출
+export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
   const frogRef = useRef<string | null>(null);
   const [openSteps, setOpenSteps] = useState(false);
   const [openAdjust, setOpenAdjust] = useState(false);
 
-  // goal 파생값 (goal이 없을 수도 있으니 안전 파생)
+  // ✅ Zustand에서 reloadTodos 가져오기
+  const reloadTodos = useGoalsStore(s => s.reloadTodos);
+
+  // goal 파생값
   const goalId = goal?.id;
   const dDay = goal?.dDay ?? "";
   const title = goal?.title ?? "";
@@ -57,6 +58,7 @@ export default function GoalCard({ goal, shrink = 1, onDeleted, onGoalAdjusted }
   const openAdjustModal = () => setOpenAdjust(true);
   const closeAdjustModal = () => setOpenAdjust(false);
 
+  // ESC키로 모달 닫기
   useEffect(() => {
     if (!anyOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -89,7 +91,17 @@ export default function GoalCard({ goal, shrink = 1, onDeleted, onGoalAdjusted }
     openAdjustModal();
   };
 
-  // 훅 호출 이후에 조건부 렌더
+  // ✅ 삭제 또는 수정 후 store에서 직접 reloadTodos 호출
+  const handleGoalDeleted = async () => {
+    closeStepsModal();
+    await reloadTodos();
+  };
+
+  const handleGoalAdjusted = async () => {
+    closeAdjustModal();
+    await reloadTodos();
+  };
+
   if (!goal) return null;
 
   return (
@@ -134,19 +146,20 @@ export default function GoalCard({ goal, shrink = 1, onDeleted, onGoalAdjusted }
         open={openSteps}
         onClose={closeStepsModal}
         goalId={goalId}
-        onDeleted={onDeleted}
+        onDeleted={() => void handleGoalDeleted()}
       />
 
       <AdjustGoalModal
         open={openAdjust}
         onClose={closeAdjustModal}
         goal={goal}
-        onUpdated={onGoalAdjusted}
+        onUpdated={handleGoalAdjusted}
       />
     </>
   );
 }
 
+/* ===== styled-components ===== */
 const Container = styled.div<ContainerProps>`
   background: var(--bg-1);
   color: inherit;
