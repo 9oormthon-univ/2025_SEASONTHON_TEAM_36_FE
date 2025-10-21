@@ -119,8 +119,8 @@ const SheetBody = styled.div`
 `;
 
 const ScrollArea = styled.div`
-  overflow: auto;
-  padding: 4px 8px 12px;
+  overflow-y: auto; /* 세로 스크롤 허용 */
+  overflow-x: hidden; /* 가로 스크롤 차단 */
 `;
 
 const FloatingArrow = styled.img`

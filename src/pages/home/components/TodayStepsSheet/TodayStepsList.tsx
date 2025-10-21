@@ -71,6 +71,7 @@ const List = styled.ul`
   gap: 20px;
   margin-top: 4%;
   padding: 0;
+  margin: 10px;
 `;
 
 const Item = styled.li`

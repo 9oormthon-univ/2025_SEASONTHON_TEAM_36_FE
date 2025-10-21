@@ -31,6 +31,7 @@ const SectionWrap = styled.section`
   background: var(--bg-1);
   border-radius: 12px;
   margin: 8px 0 12px;
+  padding: 0 0 0 4px;
 `;
 
 const SectionHeader = styled.div`
