@@ -2,25 +2,24 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { fetchTodos } from "@/apis/todo";
-
-import type { ApiTodosResponse, HomeGoal } from "../types/home";
+import { RespAllTodo, RespTodo } from "@/common/types/response/todo";
 
 export interface UseFetchTodosResult {
-  goals: HomeGoal[];
+  goals: RespTodo[];
   loading: boolean;
   error: unknown;
   reloadTodos: () => Promise<void>;
 }
 
 export function useFetchTodos(): UseFetchTodosResult {
-  const [goals, setGoals] = useState<HomeGoal[]>([]);
+  const [goals, setGoals] = useState<RespTodo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<unknown>(null);
 
   const fetchAndSet = useCallback(async () => {
     setLoading(true);
     try {
-      const res = (await fetchTodos()) as ApiTodosResponse | null;
+      const res = (await fetchTodos()) as RespAllTodo | null;
       const contents = Array.isArray(res?.contents) ? res.contents : [];
       setGoals(contents);
       setError(null);
@@ -37,7 +36,7 @@ export function useFetchTodos(): UseFetchTodosResult {
     void (async () => {
       try {
         setLoading(true);
-        const res = (await fetchTodos()) as ApiTodosResponse | null;
+        const res = (await fetchTodos()) as RespAllTodo | null;
         if (!alive) return;
         const list = Array.isArray(res?.contents) ? res.contents : [];
         setGoals(list);

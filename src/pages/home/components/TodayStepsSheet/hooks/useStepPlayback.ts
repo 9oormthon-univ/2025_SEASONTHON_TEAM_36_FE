@@ -7,7 +7,6 @@ import { startStep, stopStep } from "@/apis/step";
 import type { RespStepRecord } from "@/common/types/response/step";
 import { PlayingKey } from "@/pages/home/types/steps";
 
-import { GoalId } from "../../../types/home";
 import { parseStopResult, StopStepResponse } from "../utils/stopResult";
 
 // ---------- helpers (파일 내부에만 사용) ----------
@@ -33,7 +32,7 @@ export function useStepPlayback({
   onStepCompl,
   onOpenDailyIfNeeded,
 }: {
-  goalId?: GoalId | null;
+  goalId?: number | null;
   groups: Group[];
   onStepCompl?: () => void;
   onOpenDailyIfNeeded?: () => void;

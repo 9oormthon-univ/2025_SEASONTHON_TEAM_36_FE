@@ -2,18 +2,18 @@
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import type { GoalId, HomeGoal } from "@/pages/home/types/home";
+import { RespTodo } from "@/common/types/response/todo";
 
 import SwipeCarousel from "../../../layout/SwipeCarousel";
 import DotIndicator from "./DotIndicator";
 import GoalCard from "./GoalCard";
 
 // props 타입
-type OnActiveIdChange = React.Dispatch<React.SetStateAction<GoalId | null>>;
+type OnActiveIdChange = React.Dispatch<React.SetStateAction<number | null>>;
 
 export interface CardsCarouselProps {
-  goals?: HomeGoal[];
-  activeId?: GoalId | null;
+  goals?: RespTodo[];
+  activeId?: number | null;
   onActiveIdChange?: OnActiveIdChange; // ← 여기 변경
   shrink?: number;
   onGoalDeleted?: () => void;
@@ -31,7 +31,7 @@ export default function CardsCarousel({
   const [innerIndex, setInnerIndex] = useState<number>(0);
 
   // ids를 항상 number로 보장 (id 없으면 음수 센티널 사용)
-  const ids = useMemo<GoalId[]>(
+  const ids = useMemo<number[]>(
     () =>
       goals.map((g, i) => {
         const id = g?.id;

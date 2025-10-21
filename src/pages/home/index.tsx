@@ -7,12 +7,17 @@ import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TodayStepsSheet from "./components/TodayStepsSheet/TodayStepsSheet";
 import { useFetchTodos } from "./hooks/useFetchTodos";
-import type { BodyStyledProps, GoalId } from "./types/home";
+
+// styled-components transient props
+export interface BodyStyledProps {
+  $sheetHeight: number; // px
+  $shrink: number; // 0~1
+}
 
 export default function HomePage() {
   const { goals, loading, error, reloadTodos } = useFetchTodos();
 
-  const [activeId, setActiveId] = useState<GoalId | null>(null);
+  const [activeId, setActiveId] = useState<number | null>(null);
   const [sheetHeight, setSheetHeight] = useState<number>(0);
 
   const OPEN_THRESHOLD_PX = 100;

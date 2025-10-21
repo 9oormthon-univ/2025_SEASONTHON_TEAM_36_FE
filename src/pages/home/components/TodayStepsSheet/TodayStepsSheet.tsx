@@ -9,7 +9,6 @@ import DailyCheckInModal from "../../modals/DailyCheckInModal";
 import DayCompleteSplash from "../../modals/DayCompleteSplash";
 import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
 import PauseSplash from "../../modals/PauseSplash";
-import { GoalId } from "../../types/home";
 import { useDailyCheckIn } from "./hooks/useDailyCheckIn";
 import { useStepPlayback } from "./hooks/useStepPlayback";
 import { useStepsData } from "./hooks/useStepsData";
@@ -24,7 +23,7 @@ export default function TodayStepsSheet({
   onHeightChange,
   onStepCompl,
 }: {
-  goalId?: GoalId | null;
+  goalId?: number | null;
   onHeightChange?: (h: number) => void;
   onStepCompl?: () => void;
 }) {

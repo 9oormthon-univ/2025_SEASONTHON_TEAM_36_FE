@@ -1,13 +1,12 @@
 // src/pages/home/components/TodayStepsSheet/hooks/useStepsData.ts
 import { useEffect, useMemo, useState } from "react";
 
-import { GoalId } from "@/pages/home/types/home";
 import { StepListGroup, TodayPastLists } from "@/pages/home/types/steps";
 import { getTodayAndPastLists } from "@/pages/home/utils/stepsView";
 
 import { toPaused } from "../utils/stepMappers";
 
-export function useStepsData(goalId?: GoalId | null) {
+export function useStepsData(goalId?: number | null) {
   const [loading, setLoading] = useState(false);
   const [parted, setParted] = useState<TodayPastLists>({
     meta: { dDay: "", title: "", endDate: "", progressText: "", progress: 0 },
