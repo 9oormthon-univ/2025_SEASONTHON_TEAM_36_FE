@@ -191,9 +191,6 @@ export function useStepPlayback({
             } else if (typeof res === "string") {
               alert(res || "시작 로그 저장에 실패했습니다.");
             }
-
-            // ✅ 시작 성공 후에도 목록을 새로고침해 버튼/진행률 등 싱크
-            void reloadTodos();
           } catch (e: unknown) {
             console.error("[useStepPlayback] startStep error:", e);
             alert(errMsg(e) || "시작 로그 저장에 실패했습니다.");
