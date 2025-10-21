@@ -1,6 +1,4 @@
-// 서버 원본 타입 재사용
-export type RespTodoSteps = import("@/common/types/response/step").RespTodoSteps;
-export type RespStepInfo = import("@/common/types/response/step").RespStepInfo;
+import { RespStepInfo } from "@/common/types/response/step";
 
 /** UI에서 사용하는 Step 상태 */
 export type StepState = "play" | "pause" | "done";

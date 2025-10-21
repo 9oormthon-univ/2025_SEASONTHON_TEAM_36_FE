@@ -1,15 +1,10 @@
 // src/pages/home/utils/stepView.ts
-import { fetchSteps } from "@/apis/step";
+// ✅ fetchSteps 제거, 순수 변환 유틸만 유지
 
-import type { GoalStepsView, RespTodoSteps, StepRaw, TodayPastLists } from "../types/steps";
+import { RespTodoSteps } from "@/common/types/response/step";
+
+import type { GoalStepsView, StepRaw, TodayPastLists } from "../types/steps";
 import { isFutureISO, isTodayISO } from "./dates";
-
-/** 서버에서 goal의 steps 원본을 그대로 받아온다. */
-export async function getStepsRaw(goalId: number): Promise<RespTodoSteps> {
-  if (goalId == null) throw new Error("goalId가 없어 step을 불러올 수 없음.");
-  const data = (await fetchSteps(goalId)) as RespTodoSteps;
-  return data; // { dDay, title, endDate, progressText, progress, steps: [...] }
-}
 
 /** 서버 원본 → 공통 뷰 모델로 변환 */
 export function toGoalStepsView(raw: Partial<RespTodoSteps> | null | undefined): GoalStepsView {
@@ -88,20 +83,6 @@ export function toTodayAndPastLists(
   };
 }
 
-/** 원본 + 전체 뷰 */
-export async function getGoalStepsView(goalId: number): Promise<GoalStepsView> {
-  const raw = await getStepsRaw(goalId);
-  return toGoalStepsView(raw);
-}
-
-/** 편의: Today 전용 뷰 */
-export async function getTodayStepsView(goalId: number): Promise<GoalStepsView> {
-  const raw = await getStepsRaw(goalId);
-  return toTodayStepsView(raw);
-}
-
-/** 편의: 오늘/과거 리스트를 한 번에 가져오기 */
-export async function getTodayAndPastLists(goalId: number): Promise<TodayPastLists> {
-  const raw = await getStepsRaw(goalId);
-  return toTodayAndPastLists(raw);
-}
+/* ⛔️ API 부르는 함수는 훅으로 이동했습니다.
+   - getStepsRaw / getGoalStepsView / getTodayStepsView / getTodayAndPastLists 제거
+   - 컴포넌트/훅에서는 useFetchSteps(goalId) 사용 */

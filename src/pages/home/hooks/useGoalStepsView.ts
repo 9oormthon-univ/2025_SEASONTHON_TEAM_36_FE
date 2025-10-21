@@ -1,19 +1,10 @@
 // src/pages/home/utils/useGoalStepsView.ts
-import { useCallback, useEffect, useState } from "react";
+import { useMemo } from "react";
 
-import { StepViewItem } from "../types/steps";
-import { getGoalStepsView } from "../utils/stepsView";
+import { useFetchSteps } from "@/pages/home/hooks/useFetchSteps";
+import type { GoalStepsView } from "@/pages/home/types/steps";
 
-export interface GoalStepsVM {
-  dDay: string;
-  title: string;
-  endDate: string;
-  progressText: string;
-  progress: number;
-  steps: StepViewItem[];
-}
-
-const EMPTY_VM: GoalStepsVM = {
+const EMPTY_VM: GoalStepsView = {
   dDay: "D-0",
   title: "",
   endDate: "-",
@@ -23,51 +14,20 @@ const EMPTY_VM: GoalStepsVM = {
 };
 
 export function useGoalStepsView(open: boolean, goalId: number | string | null) {
-  const [view, setView] = useState<GoalStepsVM | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<unknown>(null);
+  const numId =
+    typeof goalId === "string"
+      ? Number.isFinite(Number(goalId))
+        ? Number(goalId)
+        : undefined
+      : (goalId ?? undefined);
 
-  const load = useCallback(async () => {
-    if (!open || goalId == null) return;
-    let alive = true;
-    setLoading(true);
-    setError(null);
-    try {
-      const vm = await getGoalStepsView(goalId as number);
-      if (!alive) return;
-      setView(vm);
-    } catch (e) {
-      if (!alive) return;
-      setError(e);
-    } finally {
-      if (alive) setLoading(false);
-    }
-    return () => {
-      alive = false;
-    };
-  }, [open, goalId]);
+  // open이 false면 fetch 방지
+  const effectiveId = open ? numId : undefined;
 
-  useEffect(() => {
-    if (!open || goalId == null) return;
-    let canceled = false;
+  const { view, loading, error, reload } = useFetchSteps(effectiveId);
 
-    void (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const vm = await getGoalStepsView(goalId as number);
-        if (!canceled) setView(vm);
-      } catch (e) {
-        if (!canceled) setError(e);
-      } finally {
-        if (!canceled) setLoading(false);
-      }
-    })();
-    return () => {
-      canceled = true;
-    };
-  }, [open, goalId]);
+  // view는 이미 GoalStepsView이므로 그대로 기본값 가드만
+  const vm: GoalStepsView = useMemo(() => view ?? EMPTY_VM, [view]);
 
-  const vm = view ?? EMPTY_VM;
-  return { vm, view, loading, error, reload: load };
+  return { vm, view, loading, error, reload };
 }

@@ -11,8 +11,8 @@ import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
 import PauseSplash from "../../modals/PauseSplash";
 import { useActiveGoalStore } from "../../store/useActiveGoalStore";
 import { useDailyCheckIn } from "./hooks/useDailyCheckIn";
+import { useSheetStepsView } from "./hooks/useSheetStepsView";
 import { useStepPlayback } from "./hooks/useStepPlayback";
-import { useStepsData } from "./hooks/useStepsData";
 import SheetListSection from "./SheetListSection";
 import TodayStepsList from "./TodayStepsList";
 import { applyPlayingState } from "./utils/stepState";
@@ -34,7 +34,7 @@ export default function TodayStepsSheet({
   const { activeId } = useActiveGoalStore();
 
   // 1) 데이터 로드
-  const { loading, baseGroups } = useStepsData(activeId); // ✅ store 값으로 호출
+  const { loading, baseGroups } = useSheetStepsView(activeId); // ✅ store 값으로 호출
 
   // 2) 하루 1회 체크인
   const { modalOpen, maybeOpen, closeAndMark } = useDailyCheckIn();
