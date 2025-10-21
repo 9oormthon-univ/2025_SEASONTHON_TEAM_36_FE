@@ -11,26 +11,23 @@ import StepDetailsPopup from "../components/StepDetailsPopup";
 import { useAutoCenterList } from "../hooks/useAutoCenterList";
 import { useConfirmGoalDelete } from "../hooks/useConfirmGoalDelete";
 import { useGoalStepsView } from "../hooks/useGoalStepsView";
+import { useActiveGoalStore } from "../store/useActiveGoalStore";
 import { DDayIcon } from "../styles/DDayIcon";
 import { StepViewItem } from "../types/steps";
 
 interface GoalStepsModalProps {
   open: boolean;
   onClose?: () => void;
-  goalId: number | string | null;
   onDelete?: (goalId: number | string) => void;
   onDeleted?: () => void;
 }
 
-export default function GoalStepsModal({
-  open,
-  onClose,
-  goalId,
-  onDelete,
-  onDeleted,
-}: GoalStepsModalProps) {
-  // 1) 데이터 로딩
-  const { vm, loading, error } = useGoalStepsView(open, goalId);
+export default function GoalStepsModal({ open, onClose, onDelete, onDeleted }: GoalStepsModalProps) {
+  // 0) 활성 goalId (Zustand)
+  const activeId = useActiveGoalStore(s => s.activeId);
+
+  // 1) 데이터 로딩 (store의 activeId 사용)
+  const { vm, loading, error } = useGoalStepsView(open, activeId);
 
   // 2) 스크롤 중앙정렬 측정
   const stepsRef = useRef<HTMLUListElement | null>(null);
@@ -38,7 +35,7 @@ export default function GoalStepsModal({
 
   // 3) 삭제
   const { confirmOpen, deleting, openConfirm, closeConfirm, handleConfirmDelete } =
-    useConfirmGoalDelete({ goalId, onDelete, onDeleted, onClose });
+    useConfirmGoalDelete({ goalId: activeId, onDelete, onDeleted, onClose });
 
   // 4) 상세 팝업
   const [detailOpen, setDetailOpen] = useState(false);
@@ -64,7 +61,7 @@ export default function GoalStepsModal({
                 onClick={openConfirm}
                 aria-haspopup="dialog"
                 aria-busy={deleting}
-                disabled={!!(loading || error || deleting)}
+                disabled={!!(loading || error || deleting) || activeId == null}
               >
                 <img src={trashIcon} alt="삭제" />
               </DeleteButton>
