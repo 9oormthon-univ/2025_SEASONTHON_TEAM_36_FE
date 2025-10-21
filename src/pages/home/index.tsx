@@ -7,6 +7,7 @@ import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import TodayStepsSheet from "./components/TodayStepsSheet/TodayStepsSheet";
 import { useFetchTodos } from "./hooks/useFetchTodos";
+import { useActiveGoalStore } from "./store/useActiveGoalStore";
 
 // styled-components transient props
 export interface BodyStyledProps {
@@ -16,8 +17,8 @@ export interface BodyStyledProps {
 
 export default function HomePage() {
   const { goals, loading, error, reloadTodos } = useFetchTodos();
+  const { activeId: _activeId, setActiveId } = useActiveGoalStore();
 
-  const [activeId, setActiveId] = useState<number | null>(null);
   const [sheetHeight, setSheetHeight] = useState<number>(0);
 
   const OPEN_THRESHOLD_PX = 100;
@@ -29,8 +30,11 @@ export default function HomePage() {
   // goals 변경 시 activeId 유효성 보장
   useEffect(() => {
     if (!goals.length) return;
-    setActiveId(prev => (prev == null || !goals.some(t => t.id === prev) ? goals[0].id : prev));
-  }, [goals]);
+    const currentId = useActiveGoalStore.getState().activeId; // Zustand에서 현재 값 가져오기
+    if (currentId == null || !goals.some(t => t.id === currentId)) {
+      setActiveId(goals[0].id);
+    }
+  }, [goals, setActiveId]);
 
   const hasGoals = goals.length > 0;
 
@@ -58,8 +62,6 @@ export default function HomePage() {
         {hasGoals ? (
           <CardsCarousel
             goals={goals}
-            activeId={activeId}
-            onActiveIdChange={setActiveId}
             shrink={shrink}
             onGoalDeleted={() => {
               void reloadTodos();
@@ -76,7 +78,6 @@ export default function HomePage() {
 
       {hasGoals && (
         <TodayStepsSheet
-          goalId={activeId}
           onHeightChange={setSheetHeight}
           onStepCompl={() => {
             void reloadTodos();

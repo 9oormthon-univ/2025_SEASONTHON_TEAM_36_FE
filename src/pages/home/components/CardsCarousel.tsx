@@ -5,16 +5,12 @@ import styled from "styled-components";
 import { RespTodo } from "@/common/types/response/todo";
 
 import SwipeCarousel from "../../../layout/SwipeCarousel";
+import { useActiveGoalStore } from "../store/useActiveGoalStore";
 import DotIndicator from "./DotIndicator";
 import GoalCard from "./GoalCard";
 
-// props 타입
-type OnActiveIdChange = React.Dispatch<React.SetStateAction<number | null>>;
-
 export interface CardsCarouselProps {
   goals?: RespTodo[];
-  activeId?: number | null;
-  onActiveIdChange?: OnActiveIdChange; // ← 여기 변경
   shrink?: number;
   onGoalDeleted?: () => void;
   onGoalAdjusted?: () => void | Promise<void>;
@@ -22,13 +18,14 @@ export interface CardsCarouselProps {
 
 export default function CardsCarousel({
   goals = [],
-  activeId,
-  onActiveIdChange,
   shrink = 1,
   onGoalDeleted,
   onGoalAdjusted,
 }: CardsCarouselProps) {
   const [innerIndex, setInnerIndex] = useState<number>(0);
+
+  // 전역 activeId 사용
+  const { activeId, setActiveId } = useActiveGoalStore();
 
   // ids를 항상 number로 보장 (id 없으면 음수 센티널 사용)
   const ids = useMemo<number[]>(
@@ -52,19 +49,33 @@ export default function CardsCarousel({
 
   const setIndexBoth = (next: number | ((prev: number) => number)) => {
     const computed = typeof next === "function" ? (next as (p: number) => number)(index) : next;
-
     const nextVal = clamp(computed, 0, Math.max(0, goals.length - 1));
+
+    // 내부 인덱스 업데이트 (언컨트롤 상황 대비)
     if (controlledIndex == null) setInnerIndex(nextVal);
 
+    // 전역 activeId 갱신
     const nextId = ids[nextVal];
-    if (nextId != null) onActiveIdChange?.(nextId);
+    if (typeof nextId === "number") setActiveId(nextId);
   };
 
+  // goals 변화 시 전역 activeId 유효성 보장
   useEffect(() => {
     if (goals.length === 0) return;
-    setIndexBoth(index);
+
+    // 현재 activeId가 없거나, 목록에 없으면 첫 카드로 맞춤
+    if (activeId == null || !ids.includes(activeId)) {
+      const first = ids[0];
+      if (typeof first === "number") setActiveId(first);
+      setInnerIndex(0);
+      return;
+    }
+
+    // activeId는 유효하나, 내부 인덱스가 어긋난 경우 동기화
+    const idx = ids.indexOf(activeId);
+    if (idx !== index) setInnerIndex(idx);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [goals.length]);
+  }, [goals.length, ids.join(","), activeId]);
 
   return (
     <>

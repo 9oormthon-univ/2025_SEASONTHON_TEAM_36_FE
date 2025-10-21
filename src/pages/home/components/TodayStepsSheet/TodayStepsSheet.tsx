@@ -9,6 +9,7 @@ import DailyCheckInModal from "../../modals/DailyCheckInModal";
 import DayCompleteSplash from "../../modals/DayCompleteSplash";
 import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
 import PauseSplash from "../../modals/PauseSplash";
+import { useActiveGoalStore } from "../../store/useActiveGoalStore";
 import { useDailyCheckIn } from "./hooks/useDailyCheckIn";
 import { useStepPlayback } from "./hooks/useStepPlayback";
 import { useStepsData } from "./hooks/useStepsData";
@@ -19,11 +20,9 @@ import { applyPlayingState } from "./utils/stepState";
 const PEEK_HEIGHT = 58;
 
 export default function TodayStepsSheet({
-  goalId,
   onHeightChange,
   onStepCompl,
 }: {
-  goalId?: number | null;
   onHeightChange?: (h: number) => void;
   onStepCompl?: () => void;
 }) {
@@ -31,8 +30,11 @@ export default function TodayStepsSheet({
   const openSheet = () => setOpen(true);
   const closeSheet = () => setOpen(false);
 
+  // 전역 activeId 사용
+  const { activeId } = useActiveGoalStore();
+
   // 1) 데이터 로드
-  const { loading, baseGroups } = useStepsData(goalId);
+  const { loading, baseGroups } = useStepsData(activeId); // ✅ store 값으로 호출
 
   // 2) 하루 1회 체크인
   const { modalOpen, maybeOpen, closeAndMark } = useDailyCheckIn();
@@ -51,7 +53,7 @@ export default function TodayStepsSheet({
     closeGoal,
     closeDay,
   } = useStepPlayback({
-    goalId,
+    goalId: activeId, // store 값으로 전달
     groups: baseGroups,
     onStepCompl,
     onOpenDailyIfNeeded: () => maybeOpen(),
