@@ -7,6 +7,7 @@ import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import GoalCard from "./components/GoalCard";
 import TodayStepsSheet from "./components/TodayStepsSheet/TodayStepsSheet";
+import { useFetchSteps } from "./hooks/useFetchSteps";
 import { useActiveGoalStore } from "./store/useActiveGoalStore";
 import { useBindGoalsStore, useGoalsStore } from "./store/useGoalsStore";
 
@@ -17,12 +18,13 @@ export interface BodyStyledProps {
 }
 
 export default function HomePage() {
-  // API ↔ Zustand 동기화 + 개발용 더미 fallback
-  useBindGoalsStore();
-
   // 전역 상태
   const { goals, loading, error } = useGoalsStore();
-  const { activeId: _activeId, setActiveId } = useActiveGoalStore();
+  const { activeId, setActiveId } = useActiveGoalStore();
+
+  // API ↔ Zustand 동기화 + 개발용 더미 fallback
+  useBindGoalsStore();
+  useFetchSteps(activeId);
 
   // 바텀시트 높이
   const [sheetHeight, setSheetHeight] = useState<number>(0);
