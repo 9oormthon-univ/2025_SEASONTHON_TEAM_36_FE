@@ -21,10 +21,8 @@ const PEEK_HEIGHT = 58;
 
 export default function TodayStepsSheet({
   onHeightChange,
-  onStepCompl,
 }: {
   onHeightChange?: (h: number) => void;
-  onStepCompl?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const openSheet = () => setOpen(true);
@@ -55,7 +53,6 @@ export default function TodayStepsSheet({
   } = useStepPlayback({
     goalId: activeId, // store 값으로 전달
     groups: baseGroups,
-    onStepCompl,
     onOpenDailyIfNeeded: () => maybeOpen(),
   });
 

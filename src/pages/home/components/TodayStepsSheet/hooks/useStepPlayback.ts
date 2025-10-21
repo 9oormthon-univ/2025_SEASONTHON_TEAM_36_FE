@@ -1,10 +1,10 @@
 // src/pages/home/components/TodayStepsSheet/hooks/useStepPlayback.ts
-
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ErrorResponse } from "react-router-dom";
 
 import { startStep, stopStep } from "@/apis/step";
 import type { RespStepRecord } from "@/common/types/response/step";
+import { useGoalsStore } from "@/pages/home/store/useGoalsStore"; // ✅ 추가
 import { PlayingKey } from "@/pages/home/types/steps";
 
 import { parseStopResult, StopStepResponse } from "../utils/stopResult";
@@ -26,17 +26,19 @@ function isErrorResponse(v: unknown): v is ErrorResponse {
 }
 
 type Group = { items: Array<{ id: string | number; stepId: number | null }> };
+
 export function useStepPlayback({
   goalId,
   groups,
-  onStepCompl,
   onOpenDailyIfNeeded,
 }: {
   goalId?: number | null;
   groups: Group[];
-  onStepCompl?: () => void;
   onOpenDailyIfNeeded?: () => void;
 }) {
+  // ✅ store에서 직접 reloadTodos 사용
+  const reloadTodos = useGoalsStore(s => s.reloadTodos);
+
   const [selectedStep, setSelectedStep] = useState<{
     id: number | string;
     stepId: number | null;
@@ -58,27 +60,34 @@ export function useStepPlayback({
   const closeGoal = () => setGoalCompleteOpen(false);
   const closeDay = () => setDayCompleteOpen(false);
 
-  const handleStopResult = useCallback((res: unknown) => {
-    const { doneToday, progress, reachedGoal100 } = parseStopResult(res as StopStepResponse);
-    if (progress != null) setLastProgress(progress);
+  const handleStopResult = useCallback(
+    (res: unknown) => {
+      const { doneToday, progress, reachedGoal100 } = parseStopResult(res as StopStepResponse);
+      if (progress != null) setLastProgress(progress);
 
-    // 1) 오늘 스텝 모두 완료 → DayComplete만
-    if (doneToday) {
-      setPauseOpen(false);
-      setPlayingKey(null);
-      setDayCompleteOpen(true);
-      return true;
-    }
-    // 2) 목표 100% → GoalComplete (단, doneToday가 아닐 때만)
-    if (reachedGoal100) {
-      setPauseOpen(false);
-      setPlayingKey(null);
-      setGoalCompleteOpen(true);
-      return true;
-    }
-    // 3) 그 외 → Pause 유지
-    return false;
-  }, []);
+      // 정지 후에는 항상 목록을 최신화 시도
+      // (완료 스플래시든 아니든 데이터는 바뀌었을 가능성이 높음)
+      void reloadTodos(); // ✅ 추가
+
+      // 1) 오늘 스텝 모두 완료 → DayComplete만
+      if (doneToday) {
+        setPauseOpen(false);
+        setPlayingKey(null);
+        setDayCompleteOpen(true);
+        return true;
+      }
+      // 2) 목표 100% → GoalComplete (단, doneToday가 아닐 때만)
+      if (reachedGoal100) {
+        setPauseOpen(false);
+        setPlayingKey(null);
+        setGoalCompleteOpen(true);
+        return true;
+      }
+      // 3) 그 외 → Pause 유지
+      return false;
+    },
+    [reloadTodos],
+  );
 
   // goalId 전환 시 자동 정지
   const prevGoalRef = useRef(goalId);
@@ -97,6 +106,9 @@ export function useStepPlayback({
             }
           } catch (e: unknown) {
             console.error("[useStepPlayback] stop on goal change failed:", e);
+          } finally {
+            // 목표 변경 시에도 목록 최신화 시도
+            void reloadTodos(); // ✅ 추가(보강)
           }
         })();
 
@@ -105,7 +117,7 @@ export function useStepPlayback({
       }
       prevGoalRef.current = goalId;
     }
-  }, [goalId, playingKey, allItems, handleStopResult]);
+  }, [goalId, playingKey, allItems, handleStopResult, reloadTodos]);
 
   const handleAction = async (it: { id: number | string; stepId: number | null }) => {
     if (busyRef.current) return;
@@ -130,6 +142,9 @@ export function useStepPlayback({
           } catch (e: unknown) {
             console.error("[useStepPlayback] stopStep error:", e);
             alert(errMsg(e) || "정지 로그 저장에 실패했습니다.");
+          } finally {
+            // 정지 후에도 최신화 시도
+            void reloadTodos(); // ✅ 추가
           }
         }
       } else {
@@ -149,6 +164,8 @@ export function useStepPlayback({
               }
             } catch (e: unknown) {
               console.error("[useStepPlayback] stopStep(prev) error:", e);
+            } finally {
+              void reloadTodos(); // ✅ 보강
             }
           }
         }
@@ -175,7 +192,8 @@ export function useStepPlayback({
               alert(res || "시작 로그 저장에 실패했습니다.");
             }
 
-            onStepCompl?.();
+            // ✅ 시작 성공 후에도 목록을 새로고침해 버튼/진행률 등 싱크
+            void reloadTodos();
           } catch (e: unknown) {
             console.error("[useStepPlayback] startStep error:", e);
             alert(errMsg(e) || "시작 로그 저장에 실패했습니다.");

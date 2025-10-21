@@ -21,7 +21,7 @@ export default function HomePage() {
   useBindGoalsStore();
 
   // 전역 상태
-  const { goals, loading, error, reloadTodos } = useGoalsStore();
+  const { goals, loading, error } = useGoalsStore();
   const { activeId: _activeId, setActiveId } = useActiveGoalStore();
 
   // 바텀시트 높이
@@ -90,14 +90,7 @@ export default function HomePage() {
         <BottomSpacing />
       </Body>
 
-      {hasGoals && (
-        <TodayStepsSheet
-          onHeightChange={setSheetHeight}
-          onStepCompl={() => {
-            void reloadTodos();
-          }}
-        />
-      )}
+      {hasGoals && <TodayStepsSheet onHeightChange={setSheetHeight} />}
     </Page>
   );
 }
