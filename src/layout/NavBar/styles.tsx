@@ -52,8 +52,6 @@ export const IconImg = styled.img`
 `;
 
 export const Label = styled.span`
-  font-size: var(--fs-xs, 12px);
-  line-height: 1;
   user-select: none;
 `;
 

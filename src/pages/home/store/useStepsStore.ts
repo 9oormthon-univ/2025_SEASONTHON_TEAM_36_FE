@@ -8,7 +8,7 @@ const DUMMY_STEPS: Record<number, RespTodoSteps> = {
     dDay: "D-5",
     title: "React 공부하기",
     endDate: "2025-10-27",
-    progressText: "45%",
+    progressText: "개구리가 햇빛을 보기 시작했어요!",
     progress: 45,
     steps: [
       {
@@ -41,7 +41,7 @@ const DUMMY_STEPS: Record<number, RespTodoSteps> = {
     dDay: "D-2",
     title: "운동 루틴 만들기",
     endDate: "2025-10-24",
-    progressText: "70%",
+    progressText: "개구리가 햇빛을 보기 시작했어요!",
     progress: 70,
     steps: [
       {

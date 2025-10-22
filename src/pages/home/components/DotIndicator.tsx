@@ -130,7 +130,7 @@ const Dot = styled.span<DotProps>`
   ${p =>
     p.$active &&
     `
-      &::after { background: var(--icon); }
+      &::after { background: var(--icon-2); }
     `}
 
   @media (prefers-reduced-motion: reduce) {

@@ -1,13 +1,13 @@
 import { NavLink, useLocation } from "react-router-dom";
 
 import calendar from "@/assets/images/calendar.svg";
-import calendarActive from "@/assets/images/calendar-active.svg";
+import calendarfill from "@/assets/images/calendar-fill.svg";
 import diary from "@/assets/images/diary.svg";
-import diaryActive from "@/assets/images/diary-active.svg";
+import diaryfill from "@/assets/images/diary-fill.svg";
 import home from "@/assets/images/home.svg";
-import homeActive from "@/assets/images/home-active.svg";
+import homefill from "@/assets/images/home-fill.svg";
 import profile from "@/assets/images/profile.svg";
-import profileActive from "@/assets/images/profile-active.svg";
+import profilefill from "@/assets/images/profile-fill.svg";
 
 import { Bar, type BarPosition, IconImg, Inner, Item, Label } from "./styles";
 
@@ -20,9 +20,9 @@ export interface NavItem {
   /** 기본 아이콘 */
   iconSrc?: string;
   /** 활성 상태 아이콘 */
-  iconActiveSrc?: string;
+  iconfillSrc?: string;
   /** 활성 여부 판별 함수 (선택적) */
-  isActive?: (path: string) => boolean;
+  isfill?: (path: string) => boolean;
 }
 
 /** NavBar Props 타입 */
@@ -41,29 +41,29 @@ const DEFAULT_ITEMS: NavItem[] = [
     to: "/home",
     label: "홈",
     iconSrc: home,
-    iconActiveSrc: homeActive,
-    isActive: p => p === "/home",
+    iconfillSrc: homefill,
+    isfill: p => p === "/home",
   },
   {
     to: "/calendar",
     label: "캘린더",
     iconSrc: calendar,
-    iconActiveSrc: calendarActive,
-    isActive: p => p.startsWith("/calendar"),
+    iconfillSrc: calendarfill,
+    isfill: p => p.startsWith("/calendar"),
   },
   {
     to: "/diary",
     label: "다이어리",
     iconSrc: diary,
-    iconActiveSrc: diaryActive,
-    isActive: p => p.startsWith("/diary"),
+    iconfillSrc: diaryfill,
+    isfill: p => p.startsWith("/diary"),
   },
   {
     to: "/profile",
     label: "프로필",
     iconSrc: profile,
-    iconActiveSrc: profileActive,
-    isActive: p => p.startsWith("/profile"),
+    iconfillSrc: profilefill,
+    isfill: p => p.startsWith("/profile"),
   },
 ];
 
@@ -78,22 +78,22 @@ export default function NavBar({
   return (
     <Bar $position={position} className={className} aria-label="Bottom navigation">
       <Inner>
-        {items.map(({ to, label, iconSrc, iconActiveSrc, isActive }, i) => {
-          const active = isActive ? isActive(pathname) : pathname === to;
-          const src = active && iconActiveSrc ? iconActiveSrc : iconSrc;
+        {items.map(({ to, label, iconSrc, iconfillSrc, isfill }, i) => {
+          const fill = isfill ? isfill(pathname) : pathname === to;
+          const src = fill && iconfillSrc ? iconfillSrc : iconSrc;
 
           return (
             <Item
               key={`${to}-${i}`}
               as={NavLink}
               to={to}
-              data-active={active}
-              aria-current={active ? "page" : undefined}
+              data-fill={fill}
+              aria-current={fill ? "page" : undefined}
             >
               {src ? (
                 <IconImg src={src} alt="" aria-hidden draggable={false} loading="eager" />
               ) : null}
-              <Label>{label}</Label>
+              <Label className="typo-label-s">{label}</Label>
             </Item>
           );
         })}

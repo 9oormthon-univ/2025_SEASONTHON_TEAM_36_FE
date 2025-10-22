@@ -22,7 +22,12 @@ interface GoalStepsModalProps {
   onDeleted?: () => void;
 }
 
-export default function GoalStepsModal({ open, onClose, onDelete, onDeleted }: GoalStepsModalProps) {
+export default function GoalStepsModal({
+  open,
+  onClose,
+  onDelete,
+  onDeleted,
+}: GoalStepsModalProps) {
   // 0) 활성 goalId (Zustand)
   const activeId = useActiveGoalStore(s => s.activeId);
 
