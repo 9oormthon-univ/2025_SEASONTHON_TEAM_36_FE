@@ -1,5 +1,5 @@
 // src/pages/home/components/TodayStepsSheet.tsx
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import styled, { CSSProperties } from "styled-components";
 
 import dragUp from "@/assets/images/drag-up.svg";
@@ -10,6 +10,7 @@ import DayCompleteSplash from "../../modals/DayCompleteSplash";
 import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
 import PauseSplash from "../../modals/PauseSplash";
 import { useActiveGoalStore } from "../../store/useActiveGoalStore";
+import { useBottomSheetStore } from "../../store/useBottomSheetStore";
 import { useDailyCheckIn } from "./hooks/useDailyCheckIn";
 import { useSheetStepsView } from "./hooks/useSheetStepsView";
 import { useStepPlayback } from "./hooks/useStepPlayback";
@@ -17,22 +18,16 @@ import SheetListSection from "./SheetListSection";
 import TodayStepsList from "./TodayStepsList";
 import { applyPlayingState } from "./utils/stepState";
 
-const PEEK_HEIGHT = 58;
-
-export default function TodayStepsSheet({
-  onHeightChange,
-}: {
-  onHeightChange?: (h: number) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const openSheet = () => setOpen(true);
-  const closeSheet = () => setOpen(false);
+export default function TodayStepsSheet() {
+  // store에서 필요한 것만 가져옴
+  const open = useBottomSheetStore(s => s.open);
+  const peekHeight = useBottomSheetStore(s => s.peekHeightPx);
 
   // 전역 activeId 사용
   const { activeId } = useActiveGoalStore();
 
   // 1) 데이터 로드
-  const { loading, baseGroups } = useSheetStepsView(activeId); // ✅ store 값으로 호출
+  const { loading, baseGroups } = useSheetStepsView(activeId);
 
   // 2) 하루 1회 체크인
   const { modalOpen, maybeOpen, closeAndMark } = useDailyCheckIn();
@@ -51,7 +46,7 @@ export default function TodayStepsSheet({
     closeGoal,
     closeDay,
   } = useStepPlayback({
-    goalId: activeId, // store 값으로 전달
+    goalId: activeId,
     groups: baseGroups,
     onOpenDailyIfNeeded: () => maybeOpen(),
   });
@@ -60,15 +55,7 @@ export default function TodayStepsSheet({
 
   return (
     <>
-      <BottomSheet
-        open={open}
-        onOpen={openSheet}
-        onClose={closeSheet}
-        ariaLabel="할 일 목록"
-        peekHeight={PEEK_HEIGHT}
-        size="32vh"
-        onHeightChange={onHeightChange}
-      >
+      <BottomSheet>
         {open ? (
           <SheetBody>
             <ScrollArea role="list" aria-busy={loading}>
@@ -94,7 +81,7 @@ export default function TodayStepsSheet({
           src={dragUp}
           alt=""
           aria-hidden="true"
-          style={{ "--peek": `${PEEK_HEIGHT}px`, "--gap": "2%" } as CSSProperties}
+          style={{ "--peek": `${peekHeight}px`, "--gap": "2%" } as CSSProperties}
         />
       )}
 

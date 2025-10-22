@@ -1,5 +1,5 @@
 // src/pages/home/index.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import styled from "styled-components";
 
 import CardsCarousel from "./components/CardsCarousel";
@@ -9,6 +9,7 @@ import GoalCard from "./components/GoalCard";
 import TodayStepsSheet from "./components/TodayStepsSheet/TodayStepsSheet";
 import { useFetchSteps } from "./hooks/useFetchSteps";
 import { useActiveGoalStore } from "./store/useActiveGoalStore";
+import { useBottomSheetStore } from "./store/useBottomSheetStore";
 import { useBindGoalsStore, useGoalsStore } from "./store/useGoalsStore";
 
 // styled-components transient props
@@ -26,12 +27,10 @@ export default function HomePage() {
   useBindGoalsStore();
   useFetchSteps(activeId);
 
-  // 바텀시트 높이
-  const [sheetHeight, setSheetHeight] = useState<number>(0);
+  const sheetHeight = useBottomSheetStore(s => s.heightPx);
+  const isSheetOpen = useBottomSheetStore(s => s.open);
 
   // 시트 열림 여부에 따른 카드 축소율
-  const OPEN_THRESHOLD_PX = 100;
-  const isSheetOpen = sheetHeight > OPEN_THRESHOLD_PX;
   const SHRINK_OPEN = 0.89 as const;
   const SHRINK_CLOSED = 1 as const;
   const shrink: number = isSheetOpen ? SHRINK_OPEN : SHRINK_CLOSED;
@@ -92,7 +91,7 @@ export default function HomePage() {
         <BottomSpacing />
       </Body>
 
-      {hasGoals && <TodayStepsSheet onHeightChange={setSheetHeight} />}
+      {hasGoals && <TodayStepsSheet />}
     </Page>
   );
 }
