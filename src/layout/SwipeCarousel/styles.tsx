@@ -10,8 +10,12 @@ export const Viewport = styled.div`
   border: none;
   border-radius: 0;
   outline: none;
-  &:focus { outline: none; }
-  &:focus-visible { outline: none; }
+  &:focus {
+    outline: none;
+  }
+  &:focus-visible {
+    outline: none;
+  }
 `;
 
 export const Track = styled.div`

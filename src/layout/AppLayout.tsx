@@ -3,6 +3,26 @@ import styled from "styled-components";
 
 import NavBar from "./NavBar";
 
+/** ====== Props 타입 정의 ====== */
+export interface AppLayoutProps {
+  /** NavBar 위치 ("fixed" | "static" 등) */
+  navbarPosition?: "fixed";
+  /** 커스텀 클래스명 */
+  className?: string;
+}
+
+/** ====== 레이아웃 컴포넌트 ====== */
+export default function AppLayout({ navbarPosition = "fixed", className }: AppLayoutProps) {
+  return (
+    <Shell className={className}>
+      <Main id="content" role="main">
+        <Outlet />
+      </Main>
+      <NavBar position={navbarPosition} />
+    </Shell>
+  );
+}
+
 /** 전체 레이아웃 컨테이너 */
 const Shell = styled.div`
   /* GlobalStyle의 토큰 사용 */
@@ -18,7 +38,7 @@ const Shell = styled.div`
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  
+
   /* 상단 상태바 여백 */
   padding-top: var(--safe-top);
 `;
@@ -30,14 +50,3 @@ const Main = styled.main`
   width: 100%;
   padding-bottom: var(--navbar-height);
 `;
-
-export default function AppLayout({ navbarPosition = "fixed", className }) {
-  return (
-    <Shell className={className}>
-      <Main id="content" role="main">
-        <Outlet />
-      </Main>
-      <NavBar position={navbarPosition} />
-    </Shell>
-  );
-}

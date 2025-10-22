@@ -1,25 +1,33 @@
-import { motion } from "framer-motion";
+import { motion, type PanInfo, type Variants } from "framer-motion";
 import React from "react";
 
 import { Backdrop, GrabHandle, Panel, SheetViewport } from "./styles";
 
-/** Bottom-only Drawer (BottomSheet)
- * props:
- *  - open: boolean
- *  - onOpen?: () => void // 드래그 업으로만 열기 (탭 불가)
- *  - onClose: () => void
- *  - size: number | string (default: "56vh")
- *  - peekHeight: number (default: 28)
- *  - onHeightChange?: (px: number) => void   // 현재 차지하는 높이 전달
- *  - ariaLabel?: string
- *  - children: ReactNode
- * 특징:
- *  - ESC/Backdrop 닫기
- *  - body 스크롤 잠금(열렸을 때)
- *  - 드래그 업으로 열기 / 드래그 다운으로 닫기(임계치 분리)
- *  - 닫힘(peek) 상태에서는 내용 상호작용 차단(그랩핸들만 허용)
- *  - 닫힘 상태에서 탭으로 열리지 않음(드래그만 허용)
- */
+/** CSS 길이 유틸 타입 (필요 시 확장 가능) */
+type CSSLength = `${number}px` | `${number}vh` | `${number}vw` | `${number}%`;
+
+export interface BottomSheetProps {
+  /** 열림 상태 */
+  open: boolean;
+  /** 드래그 업으로만 열기 (탭 불가) */
+  onOpen?: () => void;
+  /** 닫기 콜백 */
+  onClose: () => void;
+  /** 패널 높이 (예: "56vh" | 420) */
+  size?: number | CSSLength;
+  /** 피크(닫힘) 높이 px */
+  peekHeight?: number;
+  /** 현재 차지하는 높이(px) 변경 알림 */
+  onHeightChange?: (px: number) => void;
+  /** 접근성 레이블 */
+  ariaLabel?: string;
+  /** 내용 */
+  children?: React.ReactNode;
+}
+
+/** CSS 변수 타입 (style에 --peek 추가 용) */
+type CSSVarProps = React.CSSProperties & { ["--peek"]?: string };
+
 export default function BottomSheet({
   open,
   onOpen,
@@ -29,13 +37,15 @@ export default function BottomSheet({
   onHeightChange,
   ariaLabel = "bottom drawer",
   children,
-}) {
-  const panelRef = React.useRef(null);
+}: BottomSheetProps) {
+  const panelRef = React.useRef<HTMLDivElement>(null);
 
   // ESC로 닫기
   React.useEffect(() => {
     if (!open) return;
-    const onKey = (e) => e.key === "Escape" && onClose?.();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose?.();
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
@@ -53,8 +63,8 @@ export default function BottomSheet({
   // 초기 포커스
   React.useEffect(() => {
     if (!open || !panelRef.current) return;
-    const t = setTimeout(() => panelRef.current?.focus(), 50);
-    return () => clearTimeout(t);
+    const t = window.setTimeout(() => panelRef.current?.focus(), 50);
+    return () => window.clearTimeout(t);
   }, [open]);
 
   // 부모로 현재 높이 전달
@@ -62,10 +72,9 @@ export default function BottomSheet({
     if (!onHeightChange) return;
 
     const vh = window.innerHeight;
-    let px;
+    let px: number;
 
     if (open) {
-      // size가 "56vh" 같은 비율 문자열일 수도 있음
       if (typeof size === "string" && size.endsWith("vh")) {
         const ratio = parseFloat(size) / 100;
         px = vh * ratio;
@@ -80,7 +89,7 @@ export default function BottomSheet({
   }, [open, size, peekHeight, onHeightChange]);
 
   // 열림/피크 애니메이션
-  const variants = {
+  const variants: Variants = {
     open: { y: 0, transition: { type: "spring", stiffness: 420, damping: 42 } },
     peek: {
       y: `calc(100% - ${peekHeight}px)`,
@@ -89,13 +98,13 @@ export default function BottomSheet({
   };
 
   // 임계치: 열기/닫기 분리
-  const THRESHOLD_OPEN = 6;      // 위로 6px만 당겨도 열림
-  const THRESHOLD_CLOSE = 80;    // 아래로 80px 당기면 닫힘
-  const FAST_VELOCITY = 800;     // px/s (빠른 플릭)
+  const THRESHOLD_OPEN = 6; // 위로 6px만 당겨도 열림
+  const THRESHOLD_CLOSE = 80; // 아래로 80px 당기면 닫힘
+  const FAST_VELOCITY = 800; // px/s (빠른 플릭)
 
-  const onDragEnd = (_e, info) => {
-    const offsetY = info.offset.y;   // 위로 당기면 음수
-    const vy = info.velocity.y;      // 위로 플릭하면 음수
+  const onDragEnd = (_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const offsetY = info.offset.y; // 위로 당기면 음수
+    const vy = info.velocity.y; // 위로 플릭하면 음수
 
     if (open) {
       const dragDown = offsetY > THRESHOLD_CLOSE || vy > FAST_VELOCITY;
@@ -106,6 +115,9 @@ export default function BottomSheet({
     const dragUp = offsetY < -THRESHOLD_OPEN || vy < -FAST_VELOCITY;
     if (dragUp) onOpen?.();
   };
+
+  // Panel 스타일 컴포넌트가 `$size: string`을 기대한다면 숫자는 px 문자열로 변환
+  const panelSize: string = typeof size === "number" ? `${size}px` : size;
 
   return (
     <>
@@ -128,7 +140,7 @@ export default function BottomSheet({
         aria-modal={open ? "true" : undefined}
         aria-label={ariaLabel}
         tabIndex={open ? -1 : undefined}
-        $size={size}
+        $size={panelSize}
         $open={open}
         variants={variants}
         initial="peek"
@@ -138,13 +150,13 @@ export default function BottomSheet({
         dragElastic={0.06}
         dragMomentum={false}
         onDragEnd={onDragEnd}
-        style={{ "--peek": `${peekHeight}px` }}
+        style={{ "--peek": `${peekHeight}px` } as CSSVarProps}
       >
         <GrabHandle
           role="button"
           tabIndex={0}
           aria-label={open ? "바텀시트 끌어서 닫기" : "바텀시트 끌어서 열기"}
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => {
             if (open) {
               onClose?.();
             } else {
@@ -152,7 +164,7 @@ export default function BottomSheet({
               e.stopPropagation();
             }
           }}
-          onKeyDown={(e) => {
+          onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
             if (e.key === "Enter" || e.key === " ") {
               if (open) {
                 e.preventDefault();
