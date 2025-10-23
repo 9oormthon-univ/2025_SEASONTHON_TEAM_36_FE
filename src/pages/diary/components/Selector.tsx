@@ -1,3 +1,4 @@
+// 오늘 하루 여정을 끝낸 기분 / 오늘 집중도 선택 컴포넌트
 import { EmotionBtn, Grid } from "../styles/Selector";
 
 export default function Selector({
