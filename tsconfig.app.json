@@ -19,8 +19,8 @@
     "types": ["vite/client"],
     "noEmit": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "isolatedModules": true,
+    "isolatedModules": true
   },
-  "include": ["src", "types"],
+  "include": ["src", "src/common/types"],
   "exclude": ["dist", "node_modules"]
 }

@@ -1,220 +1,347 @@
 import type { MonthConstellation } from "../types/Constellation";
 
+/**
+ * 모든 별자리들을 414 x 896 디바이스 크기 기준에 맞춤
+ */
 export const AUGUST: MonthConstellation = {
   1: {
     star: {
-      x: 310.21,
+      x: 301.21,
       y: 23.31,
+    },
+    text: {
+      x: 20,
+      y: -6,
     },
     big: true,
   },
   2: {
     star: {
-      x: 302,
+      x: 293,
       y: 28,
+    },
+    text: {
+      x: 8,
+      y: -11,
     },
     big: false,
   },
   3: {
     star: {
-      x: 288,
+      x: 279,
       y: 20,
+    },
+    text: {
+      x: 7,
+      y: -9,
     },
     big: false,
   },
   4: {
     star: {
-      x: 257.69,
+      x: 248.69,
       y: 3.67,
+    },
+    text: {
+      x: 13,
+      y: -7,
     },
     big: true,
   },
   5: {
     star: {
-      x: 251,
+      x: 242,
       y: 34,
+    },
+    text: {
+      x: -2,
+      y: -8,
     },
     big: false,
   },
   6: {
     star: {
-      x: 235,
+      x: 226,
       y: 56,
+    },
+    text: {
+      x: -2,
+      y: -8,
     },
     big: false,
   },
   7: {
     star: {
-      x: 219,
+      x: 210,
       y: 78,
+    },
+    text: {
+      x: -1,
+      y: -9,
     },
     big: false,
   },
   8: {
     star: {
-      x: 203,
+      x: 194,
       y: 101,
+    },
+    text: {
+      x: -3,
+      y: -8,
     },
     big: false,
   },
   9: {
     star: {
-      x: 175.87,
+      x: 166.87,
       y: 117.36,
+    },
+    text: {
+      x: -2,
+      y: 12.5,
     },
     big: true,
   },
   10: {
     star: {
-      x: 191,
+      x: 182,
       y: 147,
+    },
+    text: {
+      x: -12,
+      y: 2,
     },
     big: false,
   },
   11: {
     star: {
-      x: 183.19,
-      y: 158.93,
+      x: 180.19,
+      y: 161.93,
+    },
+    text: {
+      x: -7,
+      y: 11,
     },
     big: true,
   },
   12: {
     star: {
-      x: 163,
+      x: 150,
       y: 198,
+    },
+    text: {
+      x: -3,
+      y: -11,
     },
     big: false,
   },
   13: {
     star: {
-      x: 125,
+      x: 110,
       y: 227,
+    },
+    text: {
+      x: -3,
+      y: -11,
     },
     big: false,
   },
   14: {
     star: {
-      x: 84,
+      x: 72,
       y: 254,
+    },
+    text: {
+      x: -5,
+      y: -11,
     },
     big: false,
   },
   15: {
     star: {
-      x: 49,
+      x: 40,
       y: 263,
+    },
+    text: {
+      x: -8,
+      y: 8,
     },
     big: true,
   },
   16: {
     star: {
-      x: 48,
+      x: 37,
       y: 307,
+    },
+    text: {
+      x: -11,
+      y: -3,
     },
     big: false,
   },
   17: {
     star: {
-      x: 37,
+      x: 25,
       y: 343,
+    },
+    text: {
+      x: -10,
+      y: -2,
     },
     big: false,
   },
   18: {
     star: {
-      x: 25,
+      x: 14,
       y: 379,
+    },
+    text: {
+      x: -10.6,
+      y: -6,
     },
     big: false,
   },
   19: {
     star: {
-      x: 4,
+      x: -5, // 0보다 작아지는 경우도 계산대로 처리
       y: 406,
+    },
+    text: {
+      x: -7,
+      y: 12,
     },
     big: true,
   },
   20: {
     star: {
-      x: 41,
-      y: 395,
+      x: 35,
+      y: 386,
+    },
+    text: {
+      x: 6,
+      y: 14,
     },
     big: false,
   },
   21: {
     star: {
-      x: 70,
-      y: 368,
+      x: 61,
+      y: 362,
+    },
+    text: {
+      x: 6,
+      y: 15,
     },
     big: false,
   },
   22: {
     star: {
-      x: 92,
+      x: 83,
       y: 328,
+    },
+    text: {
+      x: 12,
+      y: 29,
     },
     big: true,
   },
   23: {
     star: {
-      x: 141,
-      y: 325.08,
+      x: 134,
+      y: 321,
+    },
+    text: {
+      x: 3.5,
+      y: 15.5,
     },
     big: false,
   },
   24: {
     star: {
-      x: 185,
-      y: 308.12,
+      x: 178,
+      y: 305,
+    },
+    text: {
+      x: 4,
+      y: 15,
     },
     big: false,
   },
   25: {
     star: {
-      x: 234,
-      y: 292,
+      x: 225,
+      y: 287,
+    },
+    text: {
+      x: 3.5,
+      y: 15,
     },
     big: false,
   },
   26: {
     star: {
-      x: 280,
-      y: 276,
+      x: 268,
+      y: 271,
+    },
+    text: {
+      x: 3.5,
+      y: 15,
     },
     big: false,
   },
   27: {
     star: {
-      x: 310.21,
+      x: 301.21,
       y: 246.95,
+    },
+    text: {
+      x: 10.1,
+      y: 28,
     },
     big: true,
   },
   28: {
     star: {
-      x: 306,
-      y: 236,
+      x: 292,
+      y: 232,
+    },
+    text: {
+      x: 13,
+      y: -7,
     },
     big: false,
   },
   29: {
     star: {
-      x: 288,
+      x: 275,
       y: 211,
+    },
+    text: {
+      x: 14,
+      y: -2,
     },
     big: false,
   },
   30: {
     star: {
-      x: 257.06,
+      x: 246.06,
       y: 176.04,
+    },
+    text: {
+      x: 21,
+      y: -4,
     },
     big: true,
   },
   31: {
     star: {
-      x: 234,
+      x: 225,
       y: 179,
+    },
+    text: {
+      x: 2,
+      y: -12,
     },
     big: false,
   },
@@ -223,56 +350,56 @@ export const AUGUST: MonthConstellation = {
 export const SEPTEMBER: MonthConstellation = {
   1: {
     star: {
-      x: 253,
-      y: -8,
+      x: 244,
+      y: -7.91,
     },
     text: {
-      x: 28,
-      y: 12.91,
+      x: 30,
+      y: 13,
     },
     big: true,
   },
   2: {
     star: {
-      x: 261,
+      x: 252,
       y: 31,
     },
     text: {
-      x: 14,
-      y: 1,
+      x: 15,
+      y: 3,
     },
     big: false,
   },
   3: {
     star: {
-      x: 257,
+      x: 248,
       y: 69,
     },
     text: {
-      x: 14,
-      y: -2,
+      x: 14.5,
+      y: 1,
     },
     big: false,
   },
   4: {
     star: {
-      x: 244,
+      x: 235,
       y: 93,
     },
     text: {
-      x: 27,
-      y: 15,
+      x: 28,
+      y: 16,
     },
     big: true,
   },
   5: {
     star: {
-      x: 236,
+      x: 227,
       y: 135,
     },
     text: {
-      x: 15,
-      y: 4,
+      x: 13.5,
+      y: 7,
     },
     big: false,
   },
@@ -282,8 +409,8 @@ export const SEPTEMBER: MonthConstellation = {
       y: 156,
     },
     text: {
-      x: 27,
-      y: 14,
+      x: 28.5,
+      y: 15,
     },
     big: true,
   },
@@ -293,8 +420,8 @@ export const SEPTEMBER: MonthConstellation = {
       y: 158,
     },
     text: {
-      x: 4,
-      y: -13,
+      x: 10,
+      y: -10,
     },
     big: false,
   },
@@ -305,7 +432,7 @@ export const SEPTEMBER: MonthConstellation = {
     },
     text: {
       x: 21,
-      y: -6,
+      y: -5.5,
     },
     big: true,
   },
@@ -315,8 +442,8 @@ export const SEPTEMBER: MonthConstellation = {
       y: 126,
     },
     text: {
-      x: 8,
-      y: -11,
+      x: 10,
+      y: -10,
     },
     big: false,
   },
@@ -326,8 +453,8 @@ export const SEPTEMBER: MonthConstellation = {
       y: 85,
     },
     text: {
-      x: 23,
-      y: -7,
+      x: 22,
+      y: -4.6,
     },
     big: true,
   },
@@ -337,7 +464,7 @@ export const SEPTEMBER: MonthConstellation = {
       y: 183,
     },
     text: {
-      x: -13,
+      x: -10.6,
       y: -4,
     },
     big: false,
@@ -348,7 +475,7 @@ export const SEPTEMBER: MonthConstellation = {
       y: 223,
     },
     text: {
-      x: -12,
+      x: -11,
       y: -8,
     },
     big: false,
@@ -360,7 +487,7 @@ export const SEPTEMBER: MonthConstellation = {
     },
     text: {
       x: -2,
-      y: -7,
+      y: -6,
     },
     big: true,
   },
@@ -447,8 +574,8 @@ export const SEPTEMBER: MonthConstellation = {
       y: 375,
     },
     text: {
-      x: 14,
-      y: 3,
+      x: 14.5,
+      y: 4,
     },
     big: false,
   },
@@ -458,8 +585,8 @@ export const SEPTEMBER: MonthConstellation = {
       y: 389.09,
     },
     text: {
-      x: 30,
-      y: 19,
+      x: 28,
+      y: 18,
     },
     big: true,
   },
@@ -469,8 +596,8 @@ export const SEPTEMBER: MonthConstellation = {
       y: 389,
     },
     text: {
-      x: 10,
-      y: -13,
+      x: 9,
+      y: -10,
     },
     big: false,
   },
@@ -491,8 +618,8 @@ export const SEPTEMBER: MonthConstellation = {
       y: 405,
     },
     text: {
-      x: -12,
-      y: -12,
+      x: -9,
+      y: -9,
     },
     big: false,
   },
@@ -556,431 +683,675 @@ export const SEPTEMBER: MonthConstellation = {
 export const OCTOBER: MonthConstellation = {
   1: {
     star: {
-      x: 118,
+      x: 109,
       y: 56,
+    },
+    text: {
+      x: 12,
+      y: -10.5,
     },
     big: true,
   },
   2: {
     star: {
-      x: 102,
+      x: 93,
       y: 88,
+    },
+    text: {
+      x: 3,
+      y: -12,
     },
     big: false,
   },
   3: {
     star: {
-      x: 69,
+      x: 60,
       y: 117,
+    },
+    text: {
+      x: 3,
+      y: -12,
     },
     big: false,
   },
   4: {
     star: {
-      x: 36,
+      x: 27,
       y: 145,
+    },
+    text: {
+      x: 4.1,
+      y: -12,
     },
     big: false,
   },
   5: {
     star: {
-      x: -5,
+      x: -14,
       y: 164,
+    },
+    text: {
+      x: -3,
+      y: 14,
     },
     big: true,
   },
   6: {
     star: {
-      x: 20,
+      x: 11,
       y: 207,
+    },
+    text: {
+      x: -7,
+      y: 0.8,
     },
     big: false,
   },
   7: {
     star: {
-      x: 36,
+      x: 27,
       y: 239,
+    },
+    text: {
+      x: -6.5,
+      y: 2,
     },
     big: false,
   },
   8: {
     star: {
-      x: 54,
+      x: 45,
       y: 272,
+    },
+    text: {
+      x: -6.5,
+      y: 2,
     },
     big: false,
   },
   9: {
     star: {
-      x: 59,
+      x: 50,
       y: 295,
+    },
+    text: {
+      x: -3,
+      y: 12,
     },
     big: true,
   },
   10: {
     star: {
-      x: 62,
+      x: 53,
       y: 338,
+    },
+    text: {
+      x: -12,
+      y: -3,
     },
     big: false,
   },
   11: {
     star: {
-      x: 40,
+      x: 31,
       y: 360,
+    },
+    text: {
+      x: -6,
+      y: 14,
     },
     big: true,
   },
   12: {
     star: {
-      x: 42,
+      x: 33,
       y: 164,
+    },
+    text: {
+      x: 10.5,
+      y: 27,
     },
     big: true,
   },
   13: {
     star: {
-      x: 88,
-      y: 172,
+      x: 79,
+      y: 172.04,
+    },
+    text: {
+      x: 1.5,
+      y: 14,
     },
     big: false,
   },
   14: {
     star: {
-      x: 136,
+      x: 127,
       y: 172,
+    },
+    text: {
+      x: 1.5,
+      y: 14,
     },
     big: false,
   },
   15: {
     star: {
-      x: 187,
+      x: 178,
       y: 171.12,
     },
-    big: true,
+    text: {
+      x: 1.5,
+      y: 14,
+    },
+    big: false,
   },
   16: {
     star: {
-      x: 236,
+      x: 227,
       y: 171,
+    },
+    text: {
+      x: 1.5,
+      y: 14,
     },
     big: false,
   },
   17: {
     star: {
-      x: 285,
+      x: 276,
       y: 171,
+    },
+    text: {
+      x: 1.5,
+      y: 14,
     },
     big: false,
   },
   18: {
     star: {
-      x: 322,
+      x: 313,
       y: 161,
+    },
+    text: {
+      x: 28,
+      y: 18,
     },
     big: true,
   },
   19: {
     star: {
-      x: 330,
-      y: 214,
+      x: 318,
+      y: 208,
+    },
+    text: {
+      x: 16,
+      y: 2,
     },
     big: false,
   },
   20: {
     star: {
-      x: 325,
-      y: 247,
+      x: 313.5,
+      y: 240,
+    },
+    text: {
+      x: 15,
+      y: 2,
     },
     big: false,
   },
   21: {
     star: {
-      x: 320,
-      y: 279,
+      x: 310,
+      y: 270,
+    },
+    text: {
+      x: 15.5,
+      y: 1,
     },
     big: false,
   },
   22: {
     star: {
-      x: 319,
-      y: 306,
+      x: 307,
+      y: 298,
+    },
+    text: {
+      x: 15,
+      y: 1,
     },
     big: false,
   },
   23: {
     star: {
-      x: 315,
-      y: 330,
+      x: 304,
+      y: 324,
+    },
+    text: {
+      x: 15,
+      y: 1,
     },
     big: false,
   },
   24: {
     star: {
-      x: 301,
+      x: 292,
       y: 344,
+    },
+    text: {
+      x: 30,
+      y: 10,
     },
     big: true,
   },
   25: {
     star: {
-      x: 326,
+      x: 317,
       y: 369,
+    },
+    text: {
+      x: 30,
+      y: 10,
     },
     big: true,
   },
   26: {
     star: {
-      x: 314,
-      y: 157,
+      x: 295,
+      y: 155,
+    },
+    text: {
+      x: 12,
+      y: -10,
     },
     big: false,
   },
   27: {
     star: {
-      x: 277,
-      y: 137,
+      x: 266,
+      y: 140,
+    },
+    text: {
+      x: 12,
+      y: -10,
     },
     big: false,
   },
   28: {
     star: {
-      x: 247,
+      x: 238,
       y: 125,
+    },
+    text: {
+      x: 12,
+      y: -10,
     },
     big: false,
   },
   29: {
     star: {
-      x: 217,
+      x: 208,
       y: 111,
+    },
+    text: {
+      x: 12,
+      y: -10,
     },
     big: false,
   },
   30: {
     star: {
-      x: 186,
-      y: 92,
+      x: 178,
+      y: 95,
+    },
+    text: {
+      x: 12,
+      y: -10,
     },
     big: false,
   },
   31: {
     star: {
-      x: 155,
-      y: 77,
+      x: 148,
+      y: 80,
     },
-    big: true,
+    text: {
+      x: 12,
+      y: -10,
+    },
+    big: false,
   },
 };
 
 export const NOVEMBER: MonthConstellation = {
   1: {
     star: {
-      x: 131,
+      x: 130,
       y: 51,
+    },
+    text: {
+      x: 22,
+      y: -5,
     },
     big: true,
   },
   2: {
     star: {
-      x: 103,
+      x: 100,
       y: 24,
+    },
+    text: {
+      x: 25,
+      y: -3,
     },
     big: true,
   },
   3: {
     star: {
-      x: 75,
+      x: 70,
       y: 14,
+    },
+    text: {
+      x: 20,
+      y: -7,
     },
     big: true,
   },
   4: {
     star: {
-      x: 62,
-      y: 41,
+      x: 52,
+      y: 38,
+    },
+    text: {
+      x: 0,
+      y: -12,
     },
     big: false,
   },
   5: {
     star: {
-      x: 24,
+      x: 16,
       y: 49,
+    },
+    text: {
+      x: 5,
+      y: -5.5,
     },
     big: true,
   },
   6: {
     star: {
-      x: 31,
+      x: 22,
       y: 80,
+    },
+    text: {
+      x: -7,
+      y: -2,
     },
     big: false,
   },
   7: {
     star: {
-      x: 28,
+      x: 19,
       y: 103,
+    },
+    text: {
+      x: -6,
+      y: -2,
     },
     big: false,
   },
   8: {
     star: {
-      x: 24,
+      x: 15,
       y: 126,
+    },
+    text: {
+      x: -7,
+      y: -2,
     },
     big: false,
   },
   9: {
     star: {
-      x: 12,
+      x: 3,
       y: 146,
+    },
+    text: {
+      x: -2,
+      y: 14,
     },
     big: true,
   },
   10: {
     star: {
-      x: 49,
+      x: 40,
       y: 173,
+    },
+    text: {
+      x: -1,
+      y: 13,
     },
     big: false,
   },
   11: {
     star: {
-      x: 66,
+      x: 57,
       y: 173,
+    },
+    text: {
+      x: 11,
+      y: 28,
     },
     big: true,
   },
   12: {
     star: {
-      x: 99,
+      x: 90,
       y: 192,
+    },
+    text: {
+      x: 1,
+      y: 14,
     },
     big: false,
   },
   13: {
     star: {
-      x: 119,
-      y: 196,
+      x: 110,
+      y: 197,
+    },
+    text: {
+      x: 1,
+      y: 14,
     },
     big: false,
   },
   14: {
     star: {
-      x: 128,
-      y: 191,
+      x: 121,
+      y: 195,
+    },
+    text: {
+      x: 9,
+      y: 28,
     },
     big: true,
   },
   15: {
     star: {
-      x: 157,
+      x: 146,
       y: 220,
+    },
+    text: {
+      x: 1,
+      y: 14,
     },
     big: false,
   },
   16: {
     star: {
-      x: 179,
+      x: 170,
       y: 243,
+    },
+    text: {
+      x: -4,
+      y: 12.5,
     },
     big: false,
   },
   17: {
     star: {
-      x: 203,
+      x: 194,
       y: 269,
+    },
+    text: {
+      x: -6,
+      y: 12.5,
     },
     big: false,
   },
   18: {
     star: {
-      x: 211,
+      x: 202,
       y: 277,
+    },
+    text: {
+      x: -6,
+      y: 22,
     },
     big: true,
   },
   19: {
     star: {
-      x: 229,
+      x: 220,
       y: 314,
+    },
+    text: {
+      x: -12,
+      y: 5,
     },
     big: false,
   },
   20: {
     star: {
-      x: 223,
+      x: 214,
       y: 325,
+    },
+    text: {
+      x: -9,
+      y: 15,
     },
     big: true,
   },
   21: {
     star: {
-      x: 240,
+      x: 231,
       y: 361,
+    },
+    text: {
+      x: -13,
+      y: 5,
     },
     big: false,
   },
   22: {
     star: {
-      x: 244,
+      x: 235,
       y: 383,
+    },
+    text: {
+      x: -14,
+      y: 2,
     },
     big: false,
   },
   23: {
     star: {
-      x: 241,
+      x: 232,
       y: 398,
+    },
+    text: {
+      x: 10,
+      y: 29,
     },
     big: true,
   },
   24: {
     star: {
-      x: 218,
+      x: 209,
       y: 402,
+    },
+    text: {
+      x: 1,
+      y: 13,
     },
     big: false,
   },
   25: {
     star: {
-      x: 176,
+      x: 167,
       y: 383,
+    },
+    text: {
+      x: 10,
+      y: 27,
     },
     big: true,
   },
   26: {
     star: {
-      x: 165,
+      x: 156,
       y: 380,
+    },
+    text: {
+      x: 1,
+      y: 13,
     },
     big: false,
   },
   27: {
     star: {
-      x: 135,
+      x: 126,
       y: 361,
+    },
+    text: {
+      x: 10,
+      y: 27,
     },
     big: true,
   },
   28: {
     star: {
-      x: 274,
+      x: 265,
       y: 394,
+    },
+    text: {
+      x: 7,
+      y: 13,
     },
     big: false,
   },
   29: {
     star: {
-      x: 296,
+      x: 287,
       y: 377,
+    },
+    text: {
+      x: 7,
+      y: 15,
     },
     big: false,
   },
   30: {
     star: {
-      x: 304,
+      x: 295,
       y: 352,
+    },
+    text: {
+      x: 20,
+      y: 28,
     },
     big: true,
   },
