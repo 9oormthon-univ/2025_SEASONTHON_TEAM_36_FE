@@ -1,4 +1,4 @@
-import { MonthConstellation } from "../types/Constellation";
+import type { MonthConstellation } from "../types/constellation";
 import { AUGUST, NOVEMBER, OCTOBER, SEPTEMBER } from "./constellation";
 
 type MONTH = number;
