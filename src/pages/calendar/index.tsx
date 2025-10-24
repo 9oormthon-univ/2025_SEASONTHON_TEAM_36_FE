@@ -2,10 +2,13 @@ import "./styles/calendar.css";
 
 import CustomCalendar from "./components/CustomCalendar";
 import GoalList from "./components/GoalList";
+import { useInitAllTodo } from "./hooks/useInitAllTodo";
 import { Main, Page, Title } from "./styles";
 import { ToDo } from "./styles/Goal";
 
 const CalendarScreen = () => {
+  useInitAllTodo();
+
   return (
     <Page>
       <Main>

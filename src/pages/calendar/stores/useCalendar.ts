@@ -6,7 +6,7 @@ import { deleteTodo } from "@/apis/todo";
 import { dateToFormatString } from "@/common/utils/dateUtils";
 
 import type { CalendarState } from "../types/state";
-import type { Goal, Goals, StepType } from "../types/ToDo";
+import type { CustomStepType, Goal, Goals } from "../types/ToDo";
 
 // 스토어 생성
 export const useCalendar = create<CalendarState>(
@@ -19,13 +19,39 @@ export const useCalendar = create<CalendarState>(
     },
     // 액션 구현
     set => ({
+      initAllTodo: (todoIds, todoTitle, todos) => {
+        const updatedAllToDo = {} as Goals;
+        todos.forEach((todo, index) => {
+          todo.forEach(step => {
+            if (!(step.stepDate in updatedAllToDo)) {
+              updatedAllToDo[step.stepDate] = {};
+            }
+            if (!(todoIds[index] in updatedAllToDo[step.stepDate])) {
+              updatedAllToDo[step.stepDate][todoIds[index]] = {
+                title: todoTitle[index],
+                steps: [],
+              };
+            }
+            updatedAllToDo[step.stepDate][todoIds[index]].steps.push({
+              id: step.stepId,
+              name: step.description,
+              done: step.isCompleted,
+            });
+          });
+        });
+        set(state => ({
+          ...state,
+          allToDo: updatedAllToDo,
+          curToDo: updatedAllToDo[dateToFormatString(state.curDate)],
+        }));
+      },
       handleModifyStep: (goalId, stepId, description) => {
         modifyStep(stepId, description)
           .then(_ => {
             set(state => {
               const tmpAllToDo: Goals = { ...state.allToDo };
               const steps = tmpAllToDo[dateToFormatString(state.curDate)][goalId].steps;
-              steps.forEach((step: StepType) => {
+              steps.forEach((step: CustomStepType) => {
                 if (step.id === stepId && typeof description === "string") step.name = description;
               });
               tmpAllToDo[dateToFormatString(state.curDate)][goalId].steps = steps;
@@ -49,7 +75,9 @@ export const useCalendar = create<CalendarState>(
                 return state;
               }
               const currentSteps = updatedAllToDo[dateString][goalId].steps;
-              const filteredSteps = currentSteps.filter((step: StepType) => step.id !== stepId);
+              const filteredSteps = currentSteps.filter(
+                (step: CustomStepType) => step.id !== stepId,
+              );
               updatedAllToDo[dateString][goalId].steps = filteredSteps;
               if (filteredSteps.length === 0) {
                 // ToDo 삭제 API 호출
