@@ -57,7 +57,9 @@ export default function GoalStepsModal({
         <HeaderWrapper>
           <Header>
             <HeaderGroup>
-              <DDayIcon className="typo-body-xs">{loading ? "…" : vm.dDay}</DDayIcon>
+              <DDayIcon $dDay={loading ? undefined : vm.dDay} className="typo-body-xs">
+                {loading ? "…" : vm.dDay}
+              </DDayIcon>
               <DueDate>마감일: {loading ? "…" : vm.endDate}</DueDate>
 
               <DeleteButton
