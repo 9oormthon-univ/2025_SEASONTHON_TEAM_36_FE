@@ -19,6 +19,17 @@ export const GlobalStyle = createGlobalStyle`
     --natural-200:  #F1F4F8;
     --natural-0:    #FFFFFF;
 
+    /* 감정표현 */
+    --basic: #FFFFFF;
+    --yellow1: #FFE578;
+    --yellow2: #FFFF4A;
+    --pink: #FFC8F2;
+    --oragne: #FFB378;
+    --deep-blue: #75A0CE;
+    --olive-green: #9BAEAA;
+    --red: #EA7678;
+    --deep-brown: #74626B;
+
     /* 이외 사용되는 색상 */
     --blue: #8FE5FF;
 
@@ -57,7 +68,7 @@ export const GlobalStyle = createGlobalStyle`
   /* ===== 2) Semantic tokens: Light ===== */
   :root[data-theme="light"] {
     /* Brand */
-    --primary-1: #007410; 
+    --primary-1: #007410;
     --primary-2: #000000;
 
     /* Text color */
