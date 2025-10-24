@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import { destructToDoByAI } from "@/apis/ai"; // 단계 자동 생성
 import { updateTodo } from "@/apis/todo"; // PUT /api/v1/todos/{todoId}
+import { RespTodo } from "@/common/types/response/todo";
 
 import FrogEscapeImg from "../../../assets/images/frog-escape-new.svg";
 import FrogNoti from "../../../common/components/FrogNoti";
@@ -10,12 +11,11 @@ import GreenButton from "../../../common/components/GreenButton";
 import PageModal from "../../../common/components/PageModal";
 import GoalDeadline from "../../calendar/components/GoalDeadline";
 import { ModalContainer } from "../styles/ModalContainer";
-import { HomeGoal } from "../types/home";
 
 export type AdjustGoalModalProps = {
   open: boolean;
   onClose?: () => void;
-  goal: HomeGoal | null | undefined;
+  goal: RespTodo | null | undefined;
   onUpdated?: () => void | Promise<void>;
 };
 

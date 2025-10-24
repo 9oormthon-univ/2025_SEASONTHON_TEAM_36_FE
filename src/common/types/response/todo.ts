@@ -12,8 +12,6 @@
  * src/apis/todo.ts의 addTodo
  */
 
-import { RespStepInfo } from "./step";
-
 export interface RespTodo {
   currentDate: string;
   id: number;
@@ -23,7 +21,7 @@ export interface RespTodo {
   warmMessage: string;
   progress: number;
   isCompleted: boolean;
-  stepResponses: Array<RespStepInfo>;
+  // stepResponses: Array<RespStepInfo>; 25.10.23 수정사항 반영
 }
 
 /**

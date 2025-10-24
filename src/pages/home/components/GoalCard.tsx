@@ -145,7 +145,6 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
       <GoalStepsModal
         open={openSteps}
         onClose={closeStepsModal}
-        goalId={goalId}
         onDeleted={() => void handleGoalDeleted()}
       />
 
