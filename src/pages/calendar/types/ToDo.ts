@@ -5,23 +5,22 @@ export interface HandleStep {
   (goalId: number, stepId: number, description?: string): void;
 }
 
-export interface StepType {
+export interface CustomStepType {
   name: string;
   id: number;
   done: boolean;
 }
 
-// 실제 사용되는 Step의 구조를 정의
-export interface NewStep {
+export interface StepType {
   stepId: number;
   stepDate: string;
   description: string;
-  todoId?: number;
+  isCompleted: number;
 }
 
 export interface GoalInfo {
-  name: string;
-  steps: StepType[];
+  title: string;
+  steps: CustomStepType[];
 }
 
 export type Goal = Record<GoalId, GoalInfo>;
