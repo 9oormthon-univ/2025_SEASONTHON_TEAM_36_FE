@@ -63,7 +63,7 @@ const CustomCalendar = () => {
       return (
         <div
           style={{
-            border: percentage > 0 ? "none" : "1px solid var(--natural-400)",
+            border: percentage > 0 ? "none" : "2px solid var(--natural-400)",
             backgroundColor: percentage > 0 ? selectGreen(percentage) : "#ffffff",
           }}
         ></div>
