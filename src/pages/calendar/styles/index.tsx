@@ -3,7 +3,6 @@ import styled from "styled-components";
 export const Page = styled.div`
   height: 100vh;
   position: relative;
-  overflow: hidden;
 `;
 
 export const Main = styled.div`
@@ -17,6 +16,9 @@ export const Title = styled.h2<{ $fontSize: number | string }>`
   font-size: ${({ $fontSize }) => $fontSize};
   font-weight: var(--fw-b);
   font-family: var(--ff-sans);
+  @media (max-height: 667px) {
+    font-size: 15px;
+  }
 `;
 
 export const Button = styled.button`
@@ -40,6 +42,9 @@ export const Input = styled.input<{ disabled: boolean; $fontSize: number | strin
   font-weight: 500;
   &:focus {
     outline: none;
+  }
+  @media (max-height: 667px) {
+    font-size: var(--fs-sm);
   }
 `;
 

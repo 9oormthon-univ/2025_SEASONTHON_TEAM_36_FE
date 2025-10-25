@@ -4,13 +4,19 @@ import styled from "styled-components";
  * Goal.tsx 컴포넌트 스타일
  */
 
-export const StepList = styled.div``;
+export const StepList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  @media (max-height: 667px) {
+    gap: 4px;
+  }
+`;
 
 export const Row = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 15px;
   padding: 4px 4.5px;
 `;
 
@@ -23,10 +29,14 @@ export const StepContent = styled.div`
 export const StepCheckBox = styled.div<{ $did: boolean }>`
   width: 23px;
   height: 23px;
-  margin-right: 13px;
+  margin-right: 16px;
   border: ${props => (props.$did ? "none" : "2px solid var(--natural-400)")};
   background-color: ${props => (props.$did ? "var(--green-100)" : "transparent")};
   border-radius: 4px;
+  @media (max-height: 667px) {
+    width: 18px;
+    height: 18px;
+  }
 `;
 
 /**
