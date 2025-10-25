@@ -26,7 +26,7 @@ export const GoalContainer = styled.div`
 
 export const GoalName = styled.span`
   font-size: var(--fs-xs);
-  @media (max-height: 667px) {
+  @media (max-height: 667px), (max-width: 375px) {
     font-size: 11px;
   }
 `;

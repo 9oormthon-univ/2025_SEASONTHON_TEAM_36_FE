@@ -16,8 +16,8 @@ export const Title = styled.h2<{ $fontSize: number | string }>`
   font-size: ${({ $fontSize }) => $fontSize};
   font-weight: var(--fw-b);
   font-family: var(--ff-sans);
-  @media (max-height: 667px) {
-    font-size: 15px;
+  @media (max-height: 667px), (max-width: 375px) {
+    font-size: var(--fs-sm);
   }
 `;
 
@@ -43,7 +43,8 @@ export const Input = styled.input<{ disabled: boolean; $fontSize: number | strin
   &:focus {
     outline: none;
   }
-  @media (max-height: 667px) {
+
+  @media (max-height: 667px), (max-width: 375px) {
     font-size: var(--fs-sm);
   }
 `;
@@ -64,5 +65,13 @@ export const TextInput = styled.input`
     padding: 0 8px;
     color: var(--text-2);
     font-size: var(--fs-md);
+  }
+
+  @media (max-width: 375px) {
+    font-size: var(--fs-md);
+
+    &::placeholder {
+      font-size: var(--fs-sm);
+    }
   }
 `;

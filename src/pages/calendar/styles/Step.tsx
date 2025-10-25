@@ -33,9 +33,10 @@ export const StepCheckBox = styled.div<{ $did: boolean }>`
   border: ${props => (props.$did ? "none" : "2px solid var(--natural-400)")};
   background-color: ${props => (props.$did ? "var(--green-100)" : "transparent")};
   border-radius: 4px;
-  @media (max-height: 667px) {
+  @media (max-height: 667px), (max-width: 375px) {
     width: 18px;
     height: 18px;
+    margin-right: 8px;
   }
 `;
 
