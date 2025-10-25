@@ -63,7 +63,7 @@ const CustomCalendar = () => {
       return (
         <div
           style={{
-            border: percentage > 0 ? "none" : "1px solid var(--natural-400)",
+            border: percentage > 0 ? "none" : "2px solid var(--natural-400)",
             backgroundColor: percentage > 0 ? selectGreen(percentage) : "#ffffff",
           }}
         ></div>
@@ -82,7 +82,7 @@ const CustomCalendar = () => {
         tileClassName={tileClassName}
         prevLabel={
           <img
-            src={LeftArrow}
+            src={LeftArrow as string}
             alt="left-arrow"
             width="24"
             onClick={_ => {
@@ -92,7 +92,7 @@ const CustomCalendar = () => {
         }
         nextLabel={
           <img
-            src={RightArrow}
+            src={RightArrow as string}
             alt="right-arrow"
             width="24"
             onClick={_ => {

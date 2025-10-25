@@ -20,12 +20,15 @@ export const GoalContainer = styled.div`
   white-space: nowrap;
   background-color: var(--green-200);
   border-radius: 10px;
+  margin-bottom: 15px;
   padding: 4px 10px;
-  width:;
 `;
 
 export const GoalName = styled.span`
   font-size: var(--fs-xs);
+  @media (max-height: 667px), (max-width: 375px) {
+    font-size: 11px;
+  }
 `;
 
 /**

@@ -1,4 +1,6 @@
-import type { Goal, Goals, StepType } from "../types/ToDo";
+import { RespStepInfo } from "@/common/types/response/step";
+
+import type { Goal, Goals } from "../types/ToDo";
 
 // 상태 타입 정의
 interface CalendarStore {
@@ -11,6 +13,11 @@ interface CalendarStore {
 // 액션 타입 정의
 interface CalendarActions {
   // 액션 메서드
+  initAllTodo: (
+    todoIds: Array<number>,
+    todoTitle: Array<string>,
+    todos: Array<Array<RespStepInfo>>,
+  ) => void;
   handleModifyStep: (goalId: number, stepId: number, description: string) => void;
   handleDeleteStep: (goalId: number, stepId: number) => void;
   handleToDo: (selectedDate: string | Date) => void;

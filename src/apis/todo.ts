@@ -1,5 +1,4 @@
 // src/apis/todo.js
-import { ErrorResponse } from "@/common/types/error";
 import { ReqAddTodo, ReqUpdateTodo } from "@/common/types/request/todo";
 import { RespAllTodo, RespTodo } from "@/common/types/response/todo";
 

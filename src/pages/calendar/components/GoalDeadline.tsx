@@ -14,7 +14,7 @@ import {
   StepStyle,
 } from "../styles/Goal";
 import { GoalDeadlineProps } from "../types/props";
-import { NewStep } from "../types/ToDo";
+import { StepType } from "../types/ToDo";
 
 const GoalDeadline = ({
   steps,
@@ -25,7 +25,7 @@ const GoalDeadline = ({
   handleShowModal,
 }: GoalDeadlineProps) => {
   const [isModify, setIsModify] = useState<boolean[]>(steps.map(_ => false));
-  const [updateSteps, setUpdateSteps] = useState<NewStep[]>(steps);
+  const [updateSteps, setUpdateSteps] = useState<StepType[]>(steps);
   // 수정 버튼 클릭 → 편집 모드 토글
   return (
     <GoalDeadlineStyle>
@@ -67,7 +67,7 @@ const GoalDeadline = ({
                   setIsModify(tmpIsModify);
                 }}
               >
-                <img src={ModifyImg} alt="수정하기" width="16" height="16" />
+                <img src={ModifyImg as string} alt="수정하기" width="16" height="16" />
               </button>
             </StepContent>
           </StepStyle>

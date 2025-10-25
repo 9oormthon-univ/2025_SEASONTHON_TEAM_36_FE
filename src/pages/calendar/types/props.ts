@@ -1,4 +1,6 @@
-import { Goal, HandleStep, NewStep, StepType } from "./ToDo";
+import { Dispatch, SetStateAction } from "react";
+
+import { CustomStepType, HandleStep, StepType } from "./ToDo";
 
 export interface ModifyDeleteProps {
   handleModifyStep: HandleStep;
@@ -7,20 +9,25 @@ export interface ModifyDeleteProps {
 
 export interface StepManagerProps {
   isModify: boolean;
-  setIsModify: () => void;
+  setIsModify: Dispatch<SetStateAction<boolean>>;
   handleModifyStep: () => void;
   handleDeleteStep: () => void;
+  detail: boolean;
+  handleShowingStepDetail: () => void;
+  cancelModify: () => void;
 }
 
 export interface StepProps {
   goalId: number;
-  step: StepType;
+  step: CustomStepType;
+  detail: boolean;
+  handleShowingStepDetail: () => void;
 }
 
 export interface GoalProps {
   goalId: number;
   goal: string;
-  steps: StepType[];
+  steps: CustomStepType[];
 }
 
 export interface CustomCalendarProps {
@@ -34,40 +41,40 @@ export interface CustomDatePickerProps {
   onChange: (index: number, newValue: string | boolean[]) => void;
 }
 
-export interface FormProps {
-  toggle: boolean;
-  setToggle: React.Dispatch<React.SetStateAction<boolean>>;
-  formContents: [string, string, string | null, string | null, boolean[]];
-  setFormContents: React.Dispatch<
-    React.SetStateAction<[string, string, string | null, string | null, boolean[]]>
-  >;
-  handleSubmit: () => void;
-}
+// export interface FormProps {
+//   toggle: boolean;
+//   setToggle: React.Dispatch<React.SetStateAction<boolean>>;
+//   formContents: [string, string, string | null, string | null, boolean[]];
+//   setFormContents: React.Dispatch<
+//     React.SetStateAction<[string, string, string | null, string | null, boolean[]]>
+//   >;
+//   handleSubmit: () => void;
+// }
 
-export interface FormModalProps {
-  open: boolean;
-  handleAllToDo: () => void;
-  handleShowModal: () => void;
-}
+// export interface FormModalProps {
+//   open: boolean;
+//   handleAllToDo: () => void;
+//   handleShowModal: () => void;
+// }
 
-export interface FormFieldProps {
-  title?: string;
-  fontSize?: string;
-  children: React.ReactNode;
-}
+// export interface FormFieldProps {
+//   title?: string;
+//   fontSize?: string;
+//   children: React.ReactNode;
+// }
 
 export interface GoalDeadlineProps {
-  steps: NewStep[];
+  steps: StepType[];
   setStatus: React.Dispatch<React.SetStateAction<number>>;
   setFormContents: React.Dispatch<
     React.SetStateAction<[string, string, string | null, string | null, boolean[]]>
   >;
-  setStepsOfNewGoal: React.Dispatch<React.SetStateAction<NewStep[]>>;
+  setStepsOfNewGoal: React.Dispatch<React.SetStateAction<StepType[]>>;
   handleAllToDo: () => void;
   handleShowModal: () => void;
 }
 
-export interface WeekButtonsProps {
-  checkDays: boolean[];
-  handleDays: (index: number) => void;
-}
+// export interface WeekButtonsProps {
+//   checkDays: boolean[];
+//   handleDays: (index: number) => void;
+// }

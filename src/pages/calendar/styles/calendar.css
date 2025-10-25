@@ -6,8 +6,8 @@
   flex-direction: column;
   padding-left: 24px !important;
   padding-right: 24px !important;
-  margin-top: clamp(36px, calc(36px + (72px - 36px) * ((100vh - 667px) / (927px - 667px))), 72px);
-  margin-bottom: 12px;
+  margin-top: clamp(36px, calc(36px + (72px - 36px) * ((100vh - 667px) / (892px - 667px))), 72px);
+  margin-bottom: 18px;
   box-sizing: border-box;
   /* 전체 캘린더 컨테이너 높이도 화면 높이에 맞춰 조정 */
   height: clamp(90%, 70vh, 100%);
@@ -24,23 +24,24 @@
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
-  /* 
-   * 선형 변화를 위한 계산식:
-   * - 667px 이하의 화면 높이에서는 6px
-   * - 927px 이상의 화면 높이에서는 11.5px
-   * - 667px~927px 사이에서는 선형적으로 증가
-   */
-  padding: clamp(6px, calc(6px + (11.5px - 6px) * ((100vh - 667px) / (927px - 667px))), 11.5px) 0;
+  padding: clamp(6px, calc(6px + (11.5px - 6px) * ((100vh - 667px) / (892px - 667px))), 11.5px) 0;
 }
 
 .react-calendar__navigation__label {
   flex-grow: 0 !important;
-  width: 60%;
+  width: 50%;
 }
 
 /* 3.2. 네비게이션 바의 날짜 레이블 텍스트 스타일 변경 */
 .react-calendar__navigation__label__labelText {
-  font-size: clamp(14px, calc(8px + 2vw + 0.8vh), 24px);
+  font-size: clamp(
+    20px,
+    min(
+      calc(20px + 4px * ((100vh - 667px) / (892px - 667px))),
+      calc(20px + 4px * (100vw - 375px) / (414px - 375px))
+    ),
+    24px
+  );
   font-weight: 700;
 }
 
@@ -55,14 +56,14 @@
   cursor: pointer;
 }
 
-.react-calendar__viewContainer {
-  margin-top: 12px;
-}
-
 .react-calendar__navigation__prev2-button,
 .react-calendar__navigation__next2-button,
 .react-calendar__month-view__days__day:disabled {
   display: none;
+}
+
+.react-calendar__viewContainer {
+  margin-top: 12px;
 }
 
 /* 그리드 레이아웃 고정 - 핵심 해결책 */
@@ -71,7 +72,8 @@
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
   /* 가로 간격은 유지하면서 세로 간격은 화면 높이에 따라 반응형으로 조절 */
-  grid-gap: clamp(6px, calc(6px + (12px - 6px) * ((100vh - 667px) / (927px - 667px))), 12px) 15px !important;
+  grid-gap: clamp(4px, calc(4px + 8px * ((100vh - 667px) / 260px)), 12px)
+    clamp(0px, calc(0px + 15px * ((100vw - 375px) / 39px)), 15px) !important;
 }
 
 .react-calendar__month-view__weekdays {
@@ -90,19 +92,23 @@
   padding: 0;
 }
 
+.react-calendar .react-calendar__tile:focus {
+  background: transparent;
+}
+
 .react-calendar__tile > div {
   width: clamp(
-    20px,
-    calc(20px + (23px - 20px) * ((100vh - 667px) / (927px - 667px))),
+    18px,
+    calc(18px + (23px - 18px) * ((100vh - 667px) / (892px - 667px))),
     23px
   ) !important;
   height: clamp(
-    20px,
-    calc(20px + (23px - 20px) * ((100vh - 667px) / (927px - 667px))),
+    18px,
+    calc(18px + (23px - 18px) * ((100vh - 667px) / (892px - 667px))),
     23px
   ) !important;
   border-radius: 4px;
-  margin-bottom: 2px;
+  margin-bottom: clamp(0px, calc(0px + (2px - 0px) * ((100vh - 667px) / (892px - 667px))), 2px);
 }
 
 /* 요일 헤더 스타일 정렬 */
@@ -126,13 +132,13 @@
 
 /* 날짜 숫자의 폰트 크기도 반응형으로 설정 */
 .react-calendar__tile abbr {
-  font-size: clamp(10px, calc(10px + (12px - 10px) * ((100vh - 667px) / (927px - 667px))), 12px);
+  font-size: clamp(9px, calc(9px + (12px - 9px) * ((100vh - 667px) / (892px - 667px))), 12px);
   font-weight: 400;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: clamp(20px, calc(20px + (23px - 20px) * ((100vh - 667px) / (927px - 667px))), 23px);
-  height: clamp(20px, calc(20px + (23px - 20px) * ((100vh - 667px) / (927px - 667px))), 23px);
+  width: clamp(18px, calc(18px + (23px - 18px) * ((100vh - 667px) / (892px - 667px))), 23px);
+  height: clamp(18px, calc(18px + (23px - 18px) * ((100vh - 667px) / (892px - 667px))), 23px);
   border-radius: 50%;
   background-color: transparent;
 }
