@@ -1,5 +1,7 @@
 import "./styles/calendar.css";
 
+import { useEffect } from "react";
+
 import CustomCalendar from "./components/CustomCalendar";
 import GoalList from "./components/GoalList";
 import { useInitAllTodo } from "./hooks/useInitAllTodo";
@@ -8,6 +10,18 @@ import { ToDo } from "./styles/Goal";
 
 const CalendarScreen = () => {
   useInitAllTodo();
+
+  useEffect(() => {
+    const rootElement = document.querySelector("#root") as HTMLElement;
+    if (rootElement) {
+      const originalOverflow = rootElement.style.overflow;
+      rootElement.style.overflow = "hidden";
+
+      return () => {
+        rootElement.style.overflow = originalOverflow || "auto";
+      };
+    }
+  }, []);
 
   return (
     <Page>
