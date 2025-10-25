@@ -35,7 +35,7 @@ export const Input = styled.input<{ disabled: boolean; $fontSize: number | strin
   width: 100%;
   border: none;
   border-bottom: ${props => (props.disabled ? "none" : "1px solid black")};
-  padding: 4px 0;
+  padding: 4px 10.5px 4px 13px;
   background: none;
   color: black;
   font-size: ${props => props.$fontSize};
@@ -43,9 +43,10 @@ export const Input = styled.input<{ disabled: boolean; $fontSize: number | strin
   &:focus {
     outline: none;
   }
-
   @media (max-height: 667px), (max-width: 375px) {
     font-size: var(--fs-sm);
+    padding-left: 8px;
+    padding-right: 8px;
   }
 `;
 
@@ -73,5 +74,26 @@ export const TextInput = styled.input`
     &::placeholder {
       font-size: var(--fs-sm);
     }
+  }
+`;
+
+export const Textarea = styled.textarea<{
+  $fontSize: number | string;
+}>`
+  width: 100%;
+  border: none;
+  padding: 8px;
+  background: none;
+  color: black;
+  font-size: ${props => props.$fontSize};
+  font-family: var(--ff-sans);
+  resize: none;
+  &:focus {
+    outline: none;
+  }
+  @media (max-height: 667px), (max-width: 375px) {
+    font-size: var(--fs-sm);
+    padding-left: 8px;
+    padding-right: 8px;
   }
 `;

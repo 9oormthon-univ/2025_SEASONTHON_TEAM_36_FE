@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 import { CustomStepType, HandleStep, StepType } from "./ToDo";
 
 export interface ModifyDeleteProps {
@@ -7,14 +9,19 @@ export interface ModifyDeleteProps {
 
 export interface StepManagerProps {
   isModify: boolean;
-  setIsModify: () => void;
+  setIsModify: Dispatch<SetStateAction<boolean>>;
   handleModifyStep: () => void;
   handleDeleteStep: () => void;
+  detail: boolean;
+  handleShowingStepDetail: () => void;
+  cancelModify: () => void;
 }
 
 export interface StepProps {
   goalId: number;
   step: CustomStepType;
+  detail: boolean;
+  handleShowingStepDetail: () => void;
 }
 
 export interface GoalProps {
