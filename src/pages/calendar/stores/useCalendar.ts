@@ -6,7 +6,7 @@ import { deleteTodo } from "@/apis/todo";
 import { dateToFormatString } from "@/common/utils/dateUtils";
 
 import type { CalendarState } from "../types/state";
-import type { CustomStepType, Goal, Goals } from "../types/ToDo";
+import type { Goal, Goals } from "../types/ToDo";
 
 // 스토어 생성
 export const useCalendar = create<CalendarState>(
@@ -20,19 +20,19 @@ export const useCalendar = create<CalendarState>(
     // 액션 구현
     set => ({
       initAllTodo: (todoIds, todoTitle, todos) => {
-        const updatedAllToDo = {} as Goals;
+        const newAllToDo = {} as Goals;
         todos.forEach((todo, index) => {
           todo.forEach(step => {
-            if (!(step.stepDate in updatedAllToDo)) {
-              updatedAllToDo[step.stepDate] = {};
+            if (!(step.stepDate in newAllToDo)) {
+              newAllToDo[step.stepDate] = {};
             }
-            if (!(todoIds[index] in updatedAllToDo[step.stepDate])) {
-              updatedAllToDo[step.stepDate][todoIds[index]] = {
+            if (!(todoIds[index] in newAllToDo[step.stepDate])) {
+              newAllToDo[step.stepDate][todoIds[index]] = {
                 title: todoTitle[index],
                 steps: [],
               };
             }
-            updatedAllToDo[step.stepDate][todoIds[index]].steps.push({
+            newAllToDo[step.stepDate][todoIds[index]].steps.push({
               id: step.stepId,
               name: step.description,
               done: step.isCompleted,
@@ -41,21 +41,44 @@ export const useCalendar = create<CalendarState>(
         });
         set(state => ({
           ...state,
-          allToDo: updatedAllToDo,
-          curToDo: updatedAllToDo[dateToFormatString(state.curDate)],
+          allToDo: newAllToDo,
+          curToDo: newAllToDo[dateToFormatString(state.curDate)],
         }));
       },
       handleModifyStep: (goalId, stepId, description) => {
         modifyStep(stepId, description)
-          .then(_ => {
+          .then(() => {
             set(state => {
-              const tmpAllToDo: Goals = { ...state.allToDo };
-              const steps = tmpAllToDo[dateToFormatString(state.curDate)][goalId].steps;
-              steps.forEach((step: CustomStepType) => {
-                if (step.id === stepId && typeof description === "string") step.name = description;
-              });
-              tmpAllToDo[dateToFormatString(state.curDate)][goalId].steps = steps;
-              return { ...state, allToDo: tmpAllToDo };
+              const dateString = dateToFormatString(state.curDate);
+
+              // 1. `map`을 사용해 새로운 steps 배열 생성
+              const newSteps = state.allToDo[dateString][goalId].steps.map(step =>
+                step.id === stepId && typeof description === "string"
+                  ? { ...step, name: description } // 조건이 맞으면 새로운 객체 반환
+                  : step,
+              );
+
+              // 2. 새로운 allToDo 객체 생성 (계층적으로 복사)
+              const newAllToDo = {
+                ...state.allToDo,
+                [dateString]: {
+                  ...state.allToDo[dateString],
+                  [goalId]: {
+                    ...state.allToDo[dateString][goalId],
+                    steps: newSteps, // 새로 만든 steps 배열로 교체
+                  },
+                },
+              };
+
+              // 3. 새로운 curToDo 생성
+              const newCurToDo = newAllToDo[dateString];
+
+              // 4. 새로운 상태 반환
+              return {
+                ...state,
+                allToDo: newAllToDo,
+                curToDo: newCurToDo,
+              };
             });
           })
           .catch(() =>
@@ -65,43 +88,51 @@ export const useCalendar = create<CalendarState>(
           );
       },
       handleDeleteStep: (goalId, stepId) => {
-        // Step 삭제 API 호출
         deleteStep(stepId)
           .then(() => {
             set(state => {
               const dateString = dateToFormatString(state.curDate);
-              const updatedAllToDo = { ...state.allToDo };
-              if (!updatedAllToDo[dateString] || !updatedAllToDo[dateString][goalId]) {
+              const currentGoal = state.allToDo[dateString]?.[goalId];
+
+              if (!currentGoal) {
                 return state;
               }
-              const currentSteps = updatedAllToDo[dateString][goalId].steps;
-              const filteredSteps = currentSteps.filter(
-                (step: CustomStepType) => step.id !== stepId,
-              );
-              updatedAllToDo[dateString][goalId].steps = filteredSteps;
-              if (filteredSteps.length === 0) {
-                // ToDo 삭제 API 호출
-                deleteTodo(goalId)
-                  .then(() => {
-                    const newGoal = { ...updatedAllToDo[dateString] };
-                    delete newGoal[goalId];
-                    updatedAllToDo[dateString] = newGoal;
-                    return {
-                      ...state,
-                      allToDo: updatedAllToDo,
-                    };
-                  })
-                  .catch((error: unknown) => {
-                    console.error("Failed to delete todo:", error);
-                  });
+
+              const newSteps = currentGoal.steps.filter(step => step.id !== stepId);
+
+              let newAllToDo;
+              if (newSteps.length === 0) {
+                // Optimistic UI: UI를 먼저 업데이트하고 API 호출
+                deleteTodo(goalId).catch(error => {
+                  console.error("Failed to delete todo:", error);
+                  // 필요시 롤백 로직 추가
+                });
+
+                const newGoalsForDate = { ...state.allToDo[dateString] };
+                delete newGoalsForDate[goalId];
+
+                newAllToDo = {
+                  ...state.allToDo,
+                  [dateString]: newGoalsForDate,
+                };
+              } else {
+                newAllToDo = {
+                  ...state.allToDo,
+                  [dateString]: {
+                    ...state.allToDo[dateString],
+                    [goalId]: {
+                      ...currentGoal,
+                      steps: newSteps,
+                    },
+                  },
+                };
               }
-              return {
-                ...state,
-                allToDo: updatedAllToDo,
-              };
+
+              const newCurToDo = newAllToDo[dateString] || {};
+              return { ...state, allToDo: newAllToDo, curToDo: newCurToDo };
             });
           })
-          .catch((error: unknown) => {
+          .catch(error => {
             console.error("Failed to delete step:", error);
           });
       },
