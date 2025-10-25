@@ -9,8 +9,6 @@
  */
 
 export interface RespStepInfo {
-  todoId: number;
-  todoTitle: string;
   stepId: number;
   stepDate: string;
   description: string;

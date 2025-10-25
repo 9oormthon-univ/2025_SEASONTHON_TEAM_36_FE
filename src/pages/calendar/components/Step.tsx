@@ -4,11 +4,11 @@ import { useCalendar } from "../stores/useCalendar";
 import { Input } from "../styles";
 import { Row, StepCheckBox, StepContent } from "../styles/Step";
 import type { StepProps } from "../types/props";
-import type { StepType } from "../types/ToDo";
+import type { CustomStepType } from "../types/ToDo";
 import StepManager from "./StepManager";
 
 const Step = ({ goalId, step }: StepProps) => {
-  const [updatedStep, setUpdatedStep] = useState<StepType>(step);
+  const [updatedStep, setUpdatedStep] = useState<CustomStepType>(step);
   const [isModify, setIsModify] = useState<boolean>(false);
   const handleModifyStep = useCalendar(state => state.handleModifyStep);
   const handleDeleteStep = useCalendar(state => state.handleDeleteStep);

@@ -23,7 +23,6 @@ export interface RespTodo {
   warmMessage: string;
   progress: number;
   isCompleted: boolean;
-  stepResponses: Array<RespStepInfo>;
 }
 
 /**

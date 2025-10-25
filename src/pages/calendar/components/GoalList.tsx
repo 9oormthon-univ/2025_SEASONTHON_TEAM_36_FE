@@ -13,7 +13,7 @@ const GoalList = () => {
           const objToArray = oneGoal.steps.map(step => {
             return { name: step.name, id: step.id, done: step.done };
           });
-          return <Goal key={index} goalId={Number(goal)} goal={oneGoal.name} steps={objToArray} />;
+          return <Goal key={index} goalId={Number(goal)} goal={oneGoal.title} steps={objToArray} />;
         })}
     </GoalListStyle>
   );
