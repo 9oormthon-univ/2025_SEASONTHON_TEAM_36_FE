@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 
-import { Title } from "../styles";
 import { Subjects, Wrapper } from "../styles/AchievedGoals";
 import GoalInfo, { GoalInfoType } from "./GoalInfo";
 import NoContent from "./NoContent";
