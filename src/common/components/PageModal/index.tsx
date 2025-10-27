@@ -69,6 +69,8 @@ export interface PageModalProps {
   headerVariant?: "back-left" | "close-right";
   /** 하단 네비게이션 뷰일 때 */
   viewNavBar?: boolean;
+  /** 헤더 숨기기 */
+  hideHeader?: boolean;
 }
 
 export default function PageModal({
@@ -78,6 +80,7 @@ export default function PageModal({
   children,
   headerVariant = "close-right",
   viewNavBar = false,
+  hideHeader = false,
 }: PageModalProps) {
   const rootRef = React.useRef<HTMLElement | null>(null);
 
@@ -113,13 +116,15 @@ export default function PageModal({
       aria-labelledby="page-modal-title"
       $viewNavBar={viewNavBar}
     >
-      <ModalHeader
-        variant={headerVariant}
-        title={title ?? ""}
-        onBack={onClose}
-        onClose={onClose}
-        titleId="page-modal-title"
-      />
+      {!hideHeader && (
+        <ModalHeader
+          variant={headerVariant}
+          title={title ?? ""}
+          onBack={onClose}
+          onClose={onClose}
+          titleId="page-modal-title"
+        />
+      )}
       <Body>{children}</Body>
     </Screen>,
     rootRef.current,
