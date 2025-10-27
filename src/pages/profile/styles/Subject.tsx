@@ -30,4 +30,8 @@ export const Icon = styled.div`
   .clicked > path {
     stroke: var(--green-500);
   }
+
+  .clicked > circle {
+    stroke: var(--green-500);
+  }
 `;
