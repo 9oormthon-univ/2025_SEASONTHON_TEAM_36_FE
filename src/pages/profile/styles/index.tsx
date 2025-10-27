@@ -4,7 +4,7 @@ export const Page = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 30px;
   overflow-x: hidden;
   margin-top: clamp(36px, calc(36px + ((100vh - 667px) * 40 / 225)), 76px);
   margin-bottom: clamp(20px, calc(20px + ((100vh - 667px) * 16 / 225)), 36px);
@@ -27,8 +27,10 @@ export const HeaderWrapper = styled.div`
   justify-content: center;
 `;
 
-export const Title = styled.h2`
-  text-align: center;
+export const Title = styled.h2<{ $fontSize?: string | number; $fontWeight?: number }>`
+  font-size: ${props => props.$fontSize || "var(--fs-xl)"};
+  font-weight: ${props => props.$fontWeight || 700};
+  white-space: pre-line;
 `;
 
 export const SizedBox = styled.div`

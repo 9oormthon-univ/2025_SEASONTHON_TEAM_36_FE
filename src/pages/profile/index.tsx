@@ -1,6 +1,7 @@
 // react imports not needed
 import "./styles/charts.css";
 
+import AchievedGoals from "./components/AchievedGoals";
 import Button from "./components/Button";
 import Chart1 from "./components/Chart1";
 import Chart2 from "./components/Chart2";
@@ -21,7 +22,9 @@ export default function Profile() {
           </Header>
         </HeaderWrapper>
         <SizedBox />
-        <Section title="이번 달 달성 과제"></Section>
+        <Section title="이번 달 달성 과제">
+          <AchievedGoals />
+        </Section>
         <Section title="달성률 변화 추이">
           <Chart1 />
         </Section>
