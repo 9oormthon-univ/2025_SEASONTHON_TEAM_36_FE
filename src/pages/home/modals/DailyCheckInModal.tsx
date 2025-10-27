@@ -1,25 +1,37 @@
 import { useState } from "react";
 import styled from "styled-components";
 
+import cloudy from "@/assets/images/weathers/cloudy.svg";
+import foggy from "@/assets/images/weathers/foggy.svg";
+import rainy from "@/assets/images/weathers/rainy.svg";
+import snowy from "@/assets/images/weathers/snowy.svg";
+import sunny from "@/assets/images/weathers/sunny.svg";
+
 import GreenButton from "../../../common/components/GreenButton";
 import PageModal from "../../../common/components/PageModal";
 import DotsSelector from "../components/DotsSelector";
 import { ModalContainer } from "../styles/ModalContainer";
 import DayStartSplash from "./DayStartSplash";
 
-// 위치 후보를 literal type으로 고정
-const LOCATIONS = [
-  { id: "home", label: "집" },
-  { id: "office", label: "직장" },
-  { id: "cafe", label: "카페" },
-  { id: "library", label: "도서관" },
-  { id: "class", label: "강의실" },
-  { id: "etc", label: "기타" },
+const WEATHERS = [
+  { id: "sunny", label: "맑음" },
+  { id: "cloudy", label: "구름" },
+  { id: "rainy", label: "비" },
+  { id: "foggy", label: "안개" },
+  { id: "snowy", label: "눈" },
 ] as const;
 
-type LocationId = (typeof LOCATIONS)[number]["id"];
+type WeatherId = (typeof WEATHERS)[number]["id"];
 
-/** ====== 컴포넌트 ====== */
+// id → 이미지 매핑
+const WEATHER_ICONS: Record<WeatherId, string> = {
+  sunny,
+  cloudy,
+  rainy,
+  foggy,
+  snowy,
+};
+
 export default function DailyCheckInModal({
   open,
   onClose,
@@ -27,17 +39,16 @@ export default function DailyCheckInModal({
   open: boolean;
   onClose?: () => void;
 }) {
+  const [weather, setWeather] = useState<WeatherId | null>(null);
   const [feeling, setFeeling] = useState<number>(3);
   const [energy, setEnergy] = useState<number>(3);
-  const [location, setLocation] = useState<LocationId | null>(null);
 
-  // START 클릭 시 띄울 모달 상태
   const [splashOpen, setSplashOpen] = useState<boolean>(false);
 
-  const canStart = location != null;
+  const canStart = weather != null;
   const onStart = () => {
     setSplashOpen(true);
-    onClose?.(); // 현재 모달은 닫기
+    onClose?.();
   };
 
   return (
@@ -50,7 +61,31 @@ export default function DailyCheckInModal({
           </Header>
 
           <Section>
-            <Question className="typo-h3">지금 느끼는 감정이 어떤가요?</Question>
+            <Question className="typo-h3">오늘의 날씨는 어때요?</Question>
+            <ButtonGrid>
+              {WEATHERS.map(w => (
+                <ChoiceButton
+                  key={w.id}
+                  type="button"
+                  onClick={() => setWeather(w.id)}
+                  aria-pressed={weather === w.id}
+                >
+                  <WeatherIcon $active={weather === w.id}>
+                    <IconImg
+                      $active={weather === w.id}
+                      src={WEATHER_ICONS[w.id]}
+                      alt={w.label}
+                      draggable={false}
+                    />
+                  </WeatherIcon>
+                  <Label>{w.label}</Label>
+                </ChoiceButton>
+              ))}
+            </ButtonGrid>
+          </Section>
+
+          <Section>
+            <Question className="typo-h3">지금 감정이 어떤가요?</Question>
             <DotsSelector
               name="feeling"
               value={feeling}
@@ -75,24 +110,6 @@ export default function DailyCheckInModal({
             />
           </Section>
 
-          <Section>
-            <Question className="typo-h3">오늘의 여정은 어디서 진행되나요?</Question>
-            <ButtonGrid>
-              {LOCATIONS.map(loc => (
-                <ChoiceButton
-                  className="typo-label-l"
-                  key={loc.id}
-                  type="button"
-                  $active={location === loc.id}
-                  onClick={() => setLocation(loc.id)}
-                  aria-pressed={location === loc.id}
-                >
-                  {loc.label}
-                </ChoiceButton>
-              ))}
-            </ButtonGrid>
-          </Section>
-
           <ButtonRow>
             <GreenButton disabled={!canStart} onClick={onStart}>
               START
@@ -106,6 +123,7 @@ export default function DailyCheckInModal({
   );
 }
 
+/* ===== Styles ===== */
 const Header = styled.header`
   display: flex;
   flex-direction: column;
@@ -144,24 +162,59 @@ const Question = styled.h3`
 
 const ButtonGrid = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: nowrap;
+  margin-top: 8px;
 `;
 
-const ChoiceButton = styled.button<{ $active: boolean }>`
-  flex: 1 0 calc(33% - 10px);
-  padding: 5% 13px;
-  border-radius: 20px;
-  border: 1px solid var(--bg-2);
-  background: ${({ $active }) => ($active ? "var(--primary-1)" : "var(--natural-200)")};
-  color: ${({ $active }) => ($active ? "var(--text-w1)" : "var(--text-1)")};
+const ChoiceButton = styled.button`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border: none;
+  background: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.15s ease;
+
+  &:active {
+    transform: translateY(1px);
+  }
 
   &:focus-visible {
     outline: 2px solid var(--primary-1);
-    outline-offset: 2px;
+    outline-offset: 3px;
+    border-radius: 16px;
   }
+`;
+
+/* active 스타일은 여기서만 처리 */
+const WeatherIcon = styled.div<{ $active: boolean }>`
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: ${({ $active }) => ($active ? "var(--primary-1)" : "var(--natural-200)")};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    -0.3px -0.3px 5px 0 var(--natural-400, #d6d9e0),
+    0.3px 0.3px 5px 0 var(--natural-400, #d6d9e0);
+  transition: all 0.25s ease;
+`;
+
+const IconImg = styled.img<{ $active: boolean }>`
+  user-select: none;
+  pointer-events: none;
+`;
+
+const Label = styled.span`
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: var(--text-1);
 `;
 
 const ButtonRow = styled.div`
