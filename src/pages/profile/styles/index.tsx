@@ -15,9 +15,9 @@ export const Wrapper = styled.div`
 `;
 
 export const Header = styled.header`
-  width: 70%;
+  width: min(300px, 80%);
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
 `;
 
@@ -25,6 +25,12 @@ export const HeaderWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+`;
+
+export const HeaderTitle = styled.h2`
+  font-size: clamp(var(--fs-xs), 5vw, var(--fs-xl));
+  font-weight: 700;
+  text-align: center;
 `;
 
 export const Title = styled.h2<{ $fontSize?: string | number; $fontWeight?: number }>`

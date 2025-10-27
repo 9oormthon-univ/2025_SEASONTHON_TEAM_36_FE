@@ -7,7 +7,7 @@ import Chart1 from "./components/Chart1";
 import Chart2 from "./components/Chart2";
 import Section from "./components/Section";
 import { useMoveDate } from "./hooks/useMoveDate";
-import { Header, HeaderWrapper, Page, SizedBox, Title, Wrapper } from "./styles";
+import { Header, HeaderTitle, HeaderWrapper, Page, SizedBox, Title, Wrapper } from "./styles";
 
 export default function Profile() {
   const [year, month, handleMoveMonth]: [number, number, (offset: number) => void] = useMoveDate();
@@ -17,7 +17,7 @@ export default function Profile() {
         <HeaderWrapper>
           <Header>
             <Button move={"left"} handleMoveMonth={handleMoveMonth} />
-            <Title className="typo-h3">{`${year}년 ${month}월 리포트`}</Title>
+            <HeaderTitle>{`${year}년 ${month}월 리포트`}</HeaderTitle>
             <Button move={"right"} handleMoveMonth={handleMoveMonth} />
           </Header>
         </HeaderWrapper>
