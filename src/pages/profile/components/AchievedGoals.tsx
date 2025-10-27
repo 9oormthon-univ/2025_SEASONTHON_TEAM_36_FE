@@ -8,7 +8,7 @@ import performanceAssessment from "@/assets/images/performance-assessment.svg";
 import previewReview from "@/assets/images/preview-review.svg";
 
 import { Title } from "../styles";
-import { Icon, Subject, Subjects, Wrapper } from "../styles/AchevedGoals";
+import { Icon, Subject, Subjects, Wrapper } from "../styles/AchievedGoals";
 import GoalInfo, { GoalInfoType } from "./GoalInfo";
 import NoContent from "./NoContent";
 
