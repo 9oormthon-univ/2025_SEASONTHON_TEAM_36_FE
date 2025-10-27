@@ -7,7 +7,6 @@ import trashIcon from "@/assets/images/trash.svg";
 import ConfirmModal from "../../../common/components/ConfirmModal";
 import PageModal from "../../../common/components/PageModal";
 import FrogBar from "../components/FrogBar";
-import StepDetailsPopup from "../components/StepDetailsPopup";
 import { useAutoCenterList } from "../hooks/useAutoCenterList";
 import { useConfirmGoalDelete } from "../hooks/useConfirmGoalDelete";
 import { useGoalStepsView } from "../hooks/useGoalStepsView";
@@ -42,14 +41,14 @@ export default function GoalStepsModal({
   const { confirmOpen, deleting, openConfirm, closeConfirm, handleConfirmDelete } =
     useConfirmGoalDelete({ goalId: activeId, onDelete, onDeleted, onClose });
 
-  // 4) 상세 팝업
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [selectedStep, setSelectedStep] = useState<StepViewItem | null>(null);
-  const openDetails = (step: StepViewItem) => {
-    setSelectedStep(step);
-    setDetailOpen(true);
+  // 4) 아코디언 확장 상태 (여러개 동시 확장 가능)
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  const getKey = (s: StepViewItem) => String(s.stepId ?? `${s.stepDate}-${s.description}`);
+  const toggleExpand = (s: StepViewItem) => {
+    const k = getKey(s);
+    setExpanded(prev => ({ ...prev, [k]: !prev[k] }));
   };
-  const closeDetails = () => setDetailOpen(false);
 
   return (
     <PageModal title="" open={open} onClose={onClose} headerVariant="back-left" viewNavBar>
@@ -85,17 +84,55 @@ export default function GoalStepsModal({
           </FrogWrap>
 
           <Steps ref={stepsRef} role="list" aria-label="진행 단계 목록" $center={centerList}>
-            {(loading ? [] : vm.steps).map(s => (
-              <StepItem key={s.stepId ?? `${s.stepDate}-${s.description}`} role="listitem">
-                <StepDate className="typo-body-s">{s.stepDate}</StepDate>
-                <StepTitleRow>
-                  <StepTitle>{s.description}</StepTitle>
-                  <DetailsBtn type="button" aria-label="자세히 보기" onClick={() => openDetails(s)}>
-                    <img src={detailsTri} alt="" aria-hidden="true" />
-                  </DetailsBtn>
-                </StepTitleRow>
-              </StepItem>
-            ))}
+            {(loading ? [] : vm.steps).map(s => {
+              const key = getKey(s);
+              const isOpen = !!expanded[key];
+              const panelId = `step-panel-${key}`;
+              return (
+                <StepItem key={key} role="listitem" aria-expanded={isOpen}>
+                  <StepDate className="typo-body-s">{s.stepDate}</StepDate>
+
+                  <StepTitleRow $expanded={isOpen}>
+                    <StepTitle $expanded={isOpen}>{s.description}</StepTitle>
+                    <DetailsBtn
+                      type="button"
+                      aria-label={isOpen ? "자세히 닫기" : "자세히 보기"}
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      onClick={() => toggleExpand(s)}
+                      $expanded={isOpen}
+                      title={isOpen ? "접기" : "펼치기"}
+                    >
+                      <img src={detailsTri} alt="" aria-hidden="true" />
+                    </DetailsBtn>
+                  </StepTitleRow>
+
+                  {/* 아코디언 패널 영역 */}
+                  <StepPanel id={panelId} $open={isOpen} role="region" aria-label="단계 상세">
+                    <PanelGrid>
+                      <PanelRow>
+                        <PanelLabel>진행 횟수</PanelLabel>
+                        <PanelValue>{"count" in s && s.count != null ? s.count : "-"}</PanelValue>
+                      </PanelRow>
+
+                      <PanelRow>
+                        <PanelLabel>완료 여부</PanelLabel>
+                        <PanelValue>
+                          {"isCompleted" in s && typeof s.isCompleted === "boolean" ? (
+                            <StatusPill data-completed={s.isCompleted}>
+                              {s.isCompleted ? "완료" : "미완료"}
+                            </StatusPill>
+                          ) : (
+                            "-"
+                          )}
+                        </PanelValue>
+                      </PanelRow>
+                    </PanelGrid>
+                  </StepPanel>
+                </StepItem>
+              );
+            })}
+
             {!loading && vm.steps.length === 0 && (
               <div style={{ padding: 12, color: "#6F737B" }}>등록된 스텝이 없습니다.</div>
             )}
@@ -111,7 +148,8 @@ export default function GoalStepsModal({
         confirmText={deleting ? "삭제 중" : "삭제"}
         cancelText="취소"
       />
-      <StepDetailsPopup open={detailOpen} onClose={closeDetails} step={selectedStep} />
+
+      {/* <StepDetailsPopup open={detailOpen} onClose={closeDetails} step={selectedStep} /> */}
     </PageModal>
   );
 }
@@ -228,7 +266,7 @@ const StepItem = styled.li`
   align-items: flex-start;
   gap: 8px;
   border-radius: 16px;
-  background: var(--surface-1, var(--natural-0, #fff));
+  background: var(--natural-0, #fff);
   box-shadow:
     -0.3px -0.3px 5px 0 var(--natural-400, #d6d9e0),
     0.3px 0.3px 5px 0 var(--natural-400, #d6d9e0);
@@ -239,27 +277,44 @@ const StepDate = styled.span`
   white-space: nowrap;
 `;
 
-const StepTitleRow = styled.div`
+// 확장 상태에 맞춰 수직 정렬 조금 바꿔주면 제목이 여러 줄일 때 보기 좋아짐
+const StepTitleRow = styled.div<{ $expanded?: boolean }>`
   display: flex;
-  align-items: center;
+  align-items: ${({ $expanded }) => ($expanded ? "flex-start" : "center")};
   width: 100%;
   gap: 8px;
 `;
 
-const StepTitle = styled.span`
+// 핵심: 확장 여부에 따라 말줄임/전체 표시를 토글
+const StepTitle = styled.span<{ $expanded?: boolean }>`
   flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   color: var(--text-1, #000);
   font-size: var(--fs-xs, 12px);
   font-weight: 500;
   line-height: var(--lh-S, 16px);
   letter-spacing: var(--ls-1, 0.6px);
+
+  /* 기본(접힘): 한 줄 + ellipsis */
+  ${({ $expanded }) =>
+    !$expanded
+      ? `
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  `
+      : `
+    /* 확장: 전체 표시 (여러 줄 래핑) */
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    line-height: var(--lh-M, 18px);
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  `}
 `;
 
-const DetailsBtn = styled.button`
+const DetailsBtn = styled.button<{ $expanded: boolean }>`
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
@@ -268,10 +323,69 @@ const DetailsBtn = styled.button`
   border: none;
   background: transparent;
   cursor: pointer;
+
   img {
     width: 16px;
     height: 16px;
     display: block;
     filter: var(--icon, none);
+    transform: rotate(${({ $expanded }) => ($expanded ? 90 : 0)}deg);
+    transition: transform 160ms ease;
+  }
+`;
+
+/** 아코디언 패널: 높이 애니메이션(max-height) + opacity */
+const StepPanel = styled.div<{ $open: boolean }>`
+  width: 100%;
+  overflow: hidden;
+  max-height: ${({ $open }) => ($open ? "400px" : "0px")};
+  opacity: ${({ $open }) => ($open ? 1 : 0)};
+  transition:
+    max-height 220ms ease,
+    opacity 200ms ease;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: ${({ $open }) => ($open ? "10px" : "0")};
+  margin-top: ${({ $open }) => ($open ? "2px" : "0")};
+`;
+
+const PanelGrid = styled.div`
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  row-gap: 6px;
+  column-gap: 10px;
+  width: 100%;
+`;
+
+const PanelRow = styled.div`
+  display: contents;
+`;
+
+const PanelLabel = styled.span`
+  color: var(--text-2, #6f737b);
+  font-size: 12px;
+  line-height: 18px;
+`;
+
+const PanelValue = styled.span`
+  color: var(--text-1, #111);
+  font-size: 13px;
+  line-height: 18px;
+`;
+
+const StatusPill = styled.span`
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.06);
+  &[data-completed="true"] {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  &[data-completed="false"] {
+    background: #fff3e0;
+    color: #e65100;
   }
 `;
