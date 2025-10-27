@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 
 import { DDayIcon } from "../styles/DDayIcon";
@@ -6,11 +6,22 @@ import { DDayIcon } from "../styles/DDayIcon";
 export interface GoalHeaderProps {
   dDay: string;
   title: string;
-  urgent?: boolean;
   onSirenClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-export default function GoalHeader({ dDay, title, urgent = false, onSirenClick }: GoalHeaderProps) {
+export default function GoalHeader({ dDay, title, onSirenClick }: GoalHeaderProps) {
+  // ===== D-Day 파싱 & 긴급 판단 =====
+  const { num, isDay } = useMemo(() => {
+    const m = /D\s*([+-])?\s*(\d+|day)/i.exec(String(dDay));
+    if (!m) return { num: null as number | null, isDay: false };
+    const val = m[2]?.toLowerCase();
+    if (val === "day") return { num: 0, isDay: true };
+    const n = parseInt(val, 10);
+    return { num: Number.isNaN(n) ? null : n, isDay: false };
+  }, [dDay]);
+
+  // 부호와 무관: D-day 또는 숫자 ≤ 3 이면 긴급
+  const isUrgent = isDay || (num != null && num <= 3);
   return (
     <HeaderRow>
       <DDayIcon $dDay={dDay}>{dDay}</DDayIcon>
@@ -18,13 +29,11 @@ export default function GoalHeader({ dDay, title, urgent = false, onSirenClick }
         <TaskTitle>{title}</TaskTitle>
         <SirenButton
           type="button"
-          title={urgent ? "마감 임박: 목표 조정" : "마감 알림"}
-          aria-label={urgent ? "마감 임박: 목표 조정" : "마감 알림"}
           onClick={onSirenClick}
           // 접근성: 긴급이 아니면 탭 포커스 제외
-          tabIndex={urgent ? 0 : -1}
+          tabIndex={isUrgent ? 0 : -1}
         >
-          {urgent ? siren : graySiren}
+          {isUrgent ? siren : graySiren}
         </SirenButton>
       </TitleWrap>
     </HeaderRow>

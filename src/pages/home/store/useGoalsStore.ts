@@ -16,24 +16,6 @@ const DUMMY_GOALS: RespTodo[] = [
     warmMessage: "꾸준히 하면 분명 성장할 거예요!",
     progress: 45,
     isCompleted: false,
-    stepResponses: [
-      {
-        todoId: 101,
-        todoTitle: "React 공부하기",
-        stepId: 1,
-        stepDate: "2025-10-22",
-        description: "Hooks 복습하기",
-        isCompleted: true,
-      },
-      {
-        todoId: 101,
-        todoTitle: "React 공부하기",
-        stepId: 2,
-        stepDate: "2025-10-23",
-        description: "Zustand 상태 관리 연습하기",
-        isCompleted: false,
-      },
-    ],
   },
   {
     id: 102,
@@ -44,24 +26,6 @@ const DUMMY_GOALS: RespTodo[] = [
     warmMessage: "오늘도 한 발짝 나아가요 💪",
     progress: 60,
     isCompleted: false,
-    stepResponses: [
-      {
-        todoId: 102,
-        todoTitle: "운동 루틴 만들기",
-        stepId: 1,
-        stepDate: "2025-10-22",
-        description: "스트레칭 루틴 구성",
-        isCompleted: true,
-      },
-      {
-        todoId: 102,
-        todoTitle: "운동 루틴 만들기",
-        stepId: 2,
-        stepDate: "2025-10-23",
-        description: "하체 운동 계획 세우기",
-        isCompleted: false,
-      },
-    ],
   },
 ];
 

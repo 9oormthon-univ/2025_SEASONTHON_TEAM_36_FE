@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import { RespTodo } from "@/common/types/response/todo";
@@ -38,19 +38,6 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
   if (frogRef.current == null) {
     frogRef.current = pickRandomFrog();
   }
-
-  // ===== D-Day 파싱 & 긴급 판단 =====
-  const { num, isDay } = useMemo(() => {
-    const m = /D\s*([+-])?\s*(\d+|day)/i.exec(String(dDay));
-    if (!m) return { num: null as number | null, isDay: false };
-    const val = m[2]?.toLowerCase();
-    if (val === "day") return { num: 0, isDay: true };
-    const n = parseInt(val, 10);
-    return { num: Number.isNaN(n) ? null : n, isDay: false };
-  }, [dDay]);
-
-  // 부호와 무관: D-day 또는 숫자 ≤ 3 이면 긴급
-  const isUrgent = isDay || (num != null && num <= 3);
 
   const anyOpen = openSteps || openAdjust;
 
@@ -116,7 +103,7 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
         data-goal-id={goalId}
         $shrink={shrink}
       >
-        <GoalHeader dDay={dDay} title={title} urgent={isUrgent} onSirenClick={onSirenClick} />
+        <GoalHeader dDay={dDay} title={title} onSirenClick={onSirenClick} />
 
         <CheerMsg className="typo-label-l">{warmMessage || "파이팅! 오늘도 한 걸음."}</CheerMsg>
 
