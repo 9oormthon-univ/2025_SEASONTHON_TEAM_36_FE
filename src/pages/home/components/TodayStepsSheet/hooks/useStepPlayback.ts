@@ -1,13 +1,14 @@
 // src/pages/home/components/TodayStepsSheet/hooks/useStepPlayback.ts
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { startStep, stopStep } from "@/apis/step";
+import { pauseStep, startStep, stopStep } from "@/apis/step";
 import { RespStepRecord } from "@/common/types/response/step";
 import { useGoalsStore } from "@/pages/home/store/useGoalsStore";
 import { PlayingKey } from "@/pages/home/types/steps";
 
-// ---------- helpers (파일 내부에서만 사용) ----------
+import toKstIsoString from "../utils/toKstIsoString";
 
+// ---------- helper (파일 내부에서만 사용) ----------
 type Group = { items: Array<{ id: string | number; stepId: number | null }> };
 
 export function useStepPlayback({
@@ -32,8 +33,8 @@ export function useStepPlayback({
   const [playingKey, setPlayingKey] = useState<PlayingKey>(null);
 
   // 재생 시작 / 종료 시간
-  const [startTimes, setStartTimes] = useState<Record<string, Date>>({});
-  const [endTimes, setEndTimes] = useState<Record<string, Date>>({});
+  const [startTimes, setStartTimes] = useState<Record<string | number, Date>>({});
+  const [endTimes, setEndTimes] = useState<Record<string | number, Date>>({});
 
   // 서버가 돌려 준 최신 진행률(%) 캐시
   const [lastProgress, setLastProgress] = useState<number | null>(null);
@@ -100,8 +101,12 @@ export function useStepPlayback({
         void (async () => {
           try {
             if (prevStepId != null) {
-              const endTime = new Date().toISOString();
-              const duration = 0; // TODO: 계산 로직 연결
+              const startedAt = startTimes[prevKey];
+              const now = new Date();
+              const endTime = toKstIsoString(now);
+              const duration = startedAt
+                ? Math.max(0, Math.floor((now.getTime() - startedAt.getTime()) / 1000))
+                : 0;
               const res = await stopStep(prevStepId, { endTime, duration });
               handleStopResult(res as RespStepRecord);
             }
@@ -117,7 +122,7 @@ export function useStepPlayback({
       }
       prevGoalRef.current = goalId;
     }
-  }, [goalId, playingKey, allItems, handleStopResult, reloadTodos]);
+  }, [goalId, playingKey, allItems, handleStopResult, reloadTodos, startTimes]);
 
   // 🐸 Step 시작: 항상 StepPlayingModal 열기
   const handleAction = async (it: { id: number | string; stepId: number | null }) => {
@@ -135,7 +140,7 @@ export function useStepPlayback({
 
         if (it.stepId != null) {
           try {
-            const startTime = new Date().toISOString();
+            const startTime = toKstIsoString(new Date());
             const res = (await startStep(it.stepId, { startTime })) as RespStepRecord;
             setLastProgress(res.progress);
           } catch (e) {
@@ -154,9 +159,12 @@ export function useStepPlayback({
     const it = selectedStep;
     if (!it || !it.stepId) return;
     try {
-      const endTime = new Date().toISOString();
-      const startTime = startTimes[it.id];
-      const duration = startTime ? Math.floor((Date.now() - startTime.getTime()) / 1000) : 0;
+      const now = new Date();
+      const endTime = toKstIsoString(now);
+      const startedAt = startTimes[it.id];
+      const duration = startedAt
+        ? Math.max(0, Math.floor((now.getTime() - startedAt.getTime()) / 1000))
+        : 0;
       const res = (await stopStep(it.stepId, { endTime, duration })) as RespStepRecord;
       handleStopResult(res);
     } catch (e) {
@@ -165,6 +173,35 @@ export function useStepPlayback({
     } finally {
       setPlayingModalOpen(false);
       setPlayingKey(null);
+      void reloadTodos();
+    }
+  };
+
+  const handlePauseFromModal = async () => {
+    const it = selectedStep;
+    if (!it || !it.stepId) return;
+    if (busyRef.current) return;
+    busyRef.current = true;
+
+    try {
+      const now = new Date();
+      const endTime = toKstIsoString(now);
+      const startedAt = startTimes[it.id];
+      const duration = startedAt
+        ? Math.max(0, Math.floor((now.getTime() - startedAt.getTime()) / 1000))
+        : 0;
+      const res = (await pauseStep(it.stepId, { endTime, duration })) as RespStepRecord;
+      if (typeof res.progress === "number") setLastProgress(res.progress); // progress 캐시 갱신 (선택 사항)
+
+      // UI 상태 업데이트
+      setEndTimes(prev => ({ ...prev, [it.id]: now }));
+      setPauseOpen(true);
+      setPlayingKey(null); // 이후 재개 시 새 타이머 구간 시작 위해 재생 상태 해제
+    } catch (e) {
+      console.error("[useStepPlayback] pauseStep(from modal) error:", e);
+      alert(e || "일시정지 중 오류가 발생했습니다.");
+    } finally {
+      busyRef.current = false;
       void reloadTodos();
     }
   };
@@ -182,6 +219,7 @@ export function useStepPlayback({
     setPlayingModalOpen, // 🐸
     handleAction,
     handleStopFromModal, // 🐸 모달 내 “완료” 버튼
+    handlePauseFromModal, // 🐸 모달 내 “일시정지” 버튼
     closePause,
     closeGoal,
     closeDay,

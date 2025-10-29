@@ -47,6 +47,7 @@ export default function TodayStepsSheet() {
     setPlayingModalOpen, // 🐸 새 상태 제어
     handleAction, // step 시작 → 모달 오픈
     handleStopFromModal, // 🐸 모달 내부 완료 버튼
+    handlePauseFromModal, // 🐸 모달 내부 일시정지 버튼
     closePause,
     closeGoal,
     closeDay,
@@ -98,6 +99,7 @@ export default function TodayStepsSheet() {
         open={playingModalOpen}
         onClose={() => setPlayingModalOpen(false)}
         onConfirm={handleStopFromModal} // 🐸 완료 버튼 → stopStep
+        onPause={handlePauseFromModal}
       />
 
       {/* 스플래시들 */}

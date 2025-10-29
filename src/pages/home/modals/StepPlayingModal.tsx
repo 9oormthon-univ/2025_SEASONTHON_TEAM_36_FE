@@ -7,9 +7,15 @@ interface StepPlayingModalProps {
   open: boolean;
   onClose?: () => void;
   onConfirm?: () => void | Promise<void>; // 🐸 추가
+  onPause?: () => void | Promise<void>; // 🐸 추가
 }
 
-export default function StepPlayingModal({ open, onClose, onConfirm }: StepPlayingModalProps) {
+export default function StepPlayingModal({
+  open,
+  onClose,
+  onConfirm,
+  onPause,
+}: StepPlayingModalProps) {
   // ---- 데모용 더미 텍스트 (기능 구현 전) ----
   const dDay = "D-1";
   const goalTitle = "총균쇠 독후감 작성";
@@ -43,7 +49,9 @@ export default function StepPlayingModal({ open, onClose, onConfirm }: StepPlayi
           </GaugeArea>
 
           <BottomActions>
-            <CircleButton aria-label="일시정지">{pauseIcon}</CircleButton>
+            <CircleButton aria-label="일시정지" onClick={() => void onPause?.()}>
+              {pauseIcon}
+            </CircleButton>
             <ConfirmButton aria-label="완료" onClick={() => void onConfirm?.()}>
               {confirmIcon}
             </ConfirmButton>
