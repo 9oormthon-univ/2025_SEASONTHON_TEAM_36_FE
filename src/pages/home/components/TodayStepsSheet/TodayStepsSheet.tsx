@@ -9,8 +9,8 @@ import BottomSheet from "../../../../layout/BottomSheet";
 import DailyCheckInModal from "../../modals/DailyCheckInModal";
 import DayCompleteSplash from "../../modals/DayCompleteSplash";
 import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
-import PauseSplash from "../../modals/PauseSplash";
 import StepPlayingModal from "../../modals/StepPlayingModal";
+import StepStopSplash from "../../modals/StepStopSplash";
 import { useActiveGoalStore } from "../../store/useActiveGoalStore";
 import { useBottomSheetStore } from "../../store/useBottomSheetStore";
 import { useDailyCheckIn } from "./hooks/useDailyCheckIn";
@@ -40,7 +40,7 @@ export default function TodayStepsSheet() {
     startTimes,
     endTimes,
     lastProgress,
-    pauseOpen,
+    stepStopOpen,
     goalCompleteOpen,
     dayCompleteOpen,
     playingModalOpen, // 🐸 새 상태
@@ -48,7 +48,7 @@ export default function TodayStepsSheet() {
     handleAction, // step 시작 → 모달 오픈
     handleStopFromModal, // 🐸 모달 내부 완료 버튼
     handlePauseFromModal, // 🐸 모달 내부 일시정지 버튼
-    closePause,
+    closeStepStop,
     closeGoal,
     closeDay,
   } = useStepPlayback({
@@ -103,7 +103,7 @@ export default function TodayStepsSheet() {
       />
 
       {/* 스플래시들 */}
-      <PauseSplash open={pauseOpen} onClose={closePause} progress={lastProgress ?? 0} />
+      <StepStopSplash open={stepStopOpen} onClose={closeStepStop} progress={lastProgress ?? 0} />
       <GoalCompleteSplash open={goalCompleteOpen} onClose={closeGoal} />
       <DayCompleteSplash open={dayCompleteOpen} onClose={closeDay} />
     </>
