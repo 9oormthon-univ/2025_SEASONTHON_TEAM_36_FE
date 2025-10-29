@@ -23,9 +23,10 @@ export async function fetchSteps(todoId: number) {
   );
 }
 /** [GET] 오늘의 한 걸음 / 놓친 한 걸음 조회 */
-export async function fetchTodaySteps() {
+export async function fetchTodaySteps(todoId: number) {
+  if (todoId == null) throw new Error("오늘/놓친 한 걸음 조회를 위해 todoId가 필요합니다.");
   return handleApiRequest<RespTodayStep>(() =>
-    mainApi.get(`${BASE}/one-step`, {
+    mainApi.get(`${BASE}/one-step/${todoId}`, {
       headers: { Accept: "application/json" },
     }),
   );
@@ -111,6 +112,7 @@ export async function pauseStep(stepId: number, body: ReqPauseStopStep) {
 
 export default {
   fetchSteps,
+  fetchTodaySteps,
   startStep,
   stopStep,
   modifyStep,

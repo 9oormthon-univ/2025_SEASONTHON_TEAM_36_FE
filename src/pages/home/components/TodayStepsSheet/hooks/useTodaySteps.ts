@@ -5,10 +5,10 @@ import { fetchTodaySteps } from "@/apis/step";
 import type { RespTodayStep } from "@/common/types/response/step";
 
 /**
- * /api/v1/steps/one-step
- * 오늘/놓친 한 걸음 리스트를 그대로 반환하는 훅 (서버 데이터 그대로 사용)
+ * /api/v1/steps/one-step/{todoId}
+ * 오늘/놓친 한 걸음 리스트를 그대로 반환하는 훅
  */
-export function useTodaySteps(goalId?: number | null) {
+export function useTodaySteps(todoId?: number | null) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [data, setData] = useState<RespTodayStep>({
@@ -17,22 +17,26 @@ export function useTodaySteps(goalId?: number | null) {
   });
 
   const refetch = useCallback(async () => {
+    if (todoId == null) {
+      // 필수 파라미터 부재 시 초기화만 수행
+      setData({ todayStepResponses: [], missedStepResponses: [] });
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const result = (await fetchTodaySteps()) as RespTodayStep;
+      const result = (await fetchTodaySteps(todoId)) as RespTodayStep;
       setData(result);
     } catch (e) {
       setError(e);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [todoId]);
 
   useEffect(() => {
-    // goalId가 바뀌면 다시 로드 (현재 API는 goalId 미사용) TODO, 추후 goalId 반영
     void refetch();
-  }, [goalId, refetch]);
+  }, [refetch]);
 
   return { loading, error, data, refetch };
 }
