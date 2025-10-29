@@ -2,8 +2,7 @@
 
 import { RespTodoSteps } from "@/common/types/response/step";
 
-import type { GoalStepsView, StepRaw, TodayPastLists } from "../types/steps";
-import { isFutureISO, isTodayISO } from "./dates";
+import type { GoalStepsView, StepRaw } from "../types/steps";
 
 /** 서버 원본 → 공통 뷰 모델로 변환 */
 export function toGoalStepsView(raw: Partial<RespTodoSteps> | null | undefined): GoalStepsView {
@@ -48,41 +47,3 @@ export function toGoalStepsView(raw: Partial<RespTodoSteps> | null | undefined):
     steps,
   };
 }
-
-// 오늘의 한 걸음 / 놓친 한 걸음 관련 유틸은 새로 정의된 api 호출로 대체 예정
-/** 완료 제외 + (오늘만) */
-export function toTodayStepsView(raw: Partial<RespTodoSteps> | null | undefined): GoalStepsView {
-  const view = toGoalStepsView(raw);
-  return {
-    ...view,
-    steps: view.steps.filter(it => !it.isCompleted && isTodayISO(it.stepDate)),
-  };
-}
-
-/** 완료 제외 후 '오늘'과 '과거' 리스트 분리 */
-export function toTodayAndPastLists(
-  raw: Partial<RespTodoSteps> | null | undefined,
-): TodayPastLists {
-  const view = toGoalStepsView(raw);
-  const base = view.steps.filter(it => !it.isCompleted);
-
-  const today = base.filter(it => isTodayISO(it.stepDate));
-  // 과거: 오늘도 아니고, 미래도 아닌 것
-  const past = base.filter(it => !isTodayISO(it.stepDate) && !isFutureISO(it.stepDate));
-
-  return {
-    // meta: {
-    //   dDay: view.dDay,
-    //   title: view.title,
-    //   endDate: view.endDate,
-    //   progressText: view.progressText,
-    //   progress: view.progress,
-    // },
-    today,
-    past,
-  };
-}
-
-/* ⛔️ API 부르는 함수는 훅으로 이동했습니다.
-  - getStepsRaw / getGoalStepsView / getTodayStepsView / getTodayAndPastLists 제거
-  - 컴포넌트/훅에서는 useFetchSteps(goalId) 사용 */

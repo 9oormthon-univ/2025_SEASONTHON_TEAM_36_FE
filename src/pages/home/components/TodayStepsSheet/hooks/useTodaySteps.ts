@@ -2,31 +2,75 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { fetchTodaySteps } from "@/apis/step";
-import type { RespTodayStep } from "@/common/types/response/step";
+import type { RespStepItem, RespTodayStep } from "@/common/types/response/step";
+import type { StepListGroup, StepListItem } from "@/pages/home/types/steps";
+
+/** RespStepItem -> StepListItem 변환기 (중간 ViewModel 없이 바로 매핑) */
+function mapRespToListItem(_prefix: "today" | "past") {
+  return (s: RespStepItem, idx: number): StepListItem => {
+    return {
+      // StepViewItem 필수
+      stepId: s.stepId ?? null, // (서버는 number지만 nullable 타입 호환)
+      stepOrder: idx + 1, // 서버에 순서 없음 → idx+1
+      stepDate: s.stepDate ?? "", // 없으면 빈 문자열
+      description: s.description ?? "",
+      isCompleted: !!s.isCompleted,
+
+      // StepListItem 확장
+      state: s.isCompleted ? "done" : "pause",
+      id: s.stepId, // playingKey 비교용 id
+    };
+  };
+}
+
+/** 날짜 최신순 정렬 (stepDate desc → 같은 날짜면 stepOrder asc) */
+function sortDescByDate(items: StepListItem[]): StepListItem[] {
+  return [...items].sort((a, b) => {
+    const ad = a.stepDate || "";
+    const bd = b.stepDate || "";
+    if (ad === bd) return a.stepOrder - b.stepOrder;
+    return bd.localeCompare(ad); // ISO yyyy-mm-dd 기준 문자열 비교로 desc
+  });
+}
 
 /**
  * /api/v1/steps/one-step/{todoId}
- * 오늘/놓친 한 걸음 리스트를 그대로 반환하는 훅
+ * 오늘/놓친 한 걸음 리스트를 "그룹 형태"로 반환하는 훅
  */
 export function useTodaySteps(todoId?: number | null) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<unknown>(null);
-  const [data, setData] = useState<RespTodayStep>({
-    todayStepResponses: [],
-    missedStepResponses: [],
-  });
+
+  const [groups, setGroups] = useState<StepListGroup[]>([
+    { key: "today", title: "오늘의 한 걸음", items: [] },
+    { key: "past", title: "놓친 한 걸음", items: [] },
+  ]);
 
   const refetch = useCallback(async () => {
     if (todoId == null) {
-      // 필수 파라미터 부재 시 초기화만 수행
-      setData({ todayStepResponses: [], missedStepResponses: [] });
+      setGroups([
+        { key: "today", title: "오늘의 한 걸음", items: [] },
+        { key: "past", title: "놓친 한 걸음", items: [] },
+      ]);
       return;
     }
+
     setLoading(true);
     setError(null);
     try {
       const result = (await fetchTodaySteps(todoId)) as RespTodayStep;
-      setData(result);
+
+      const todayItems = sortDescByDate(
+        (result.todayStepResponses ?? []).map(mapRespToListItem("today")),
+      );
+      const pastItems = sortDescByDate(
+        (result.missedStepResponses ?? []).map(mapRespToListItem("past")),
+      );
+
+      setGroups([
+        { key: "today", title: "오늘의 한 걸음", items: todayItems },
+        { key: "past", title: "놓친 한 걸음", items: pastItems },
+      ]);
     } catch (e) {
       setError(e);
     } finally {
@@ -38,5 +82,5 @@ export function useTodaySteps(todoId?: number | null) {
     void refetch();
   }, [refetch]);
 
-  return { loading, error, data, refetch };
+  return { loading, error, groups, refetch };
 }

@@ -1,11 +1,10 @@
 // src/pages/home/components/TodayStepsSheet.tsx
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import styled, { CSSProperties } from "styled-components";
 
 import dragUp from "@/assets/images/drag-up.svg";
 
 import BottomSheet from "../../../../layout/BottomSheet";
-// 스플래시 및 모달 열림 상태 여기서 관리
 import DailyCheckInModal from "../../modals/DailyCheckInModal";
 import DayCompleteSplash from "../../modals/DayCompleteSplash";
 import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
@@ -15,27 +14,28 @@ import StepStopSplash from "../../modals/StepStopSplash";
 import { useActiveGoalStore } from "../../store/useActiveGoalStore";
 import { useBottomSheetStore } from "../../store/useBottomSheetStore";
 import { useDailyCheckIn } from "./hooks/useDailyCheckIn";
-import { useSheetStepsView } from "./hooks/useSheetStepsView";
 import { useStepPlayback } from "./hooks/useStepPlayback";
+import { useTodaySteps } from "./hooks/useTodaySteps";
 import SheetListSection from "./SheetListSection";
 import TodayStepsList from "./TodayStepsList";
 import { applyPlayingState } from "./utils/stepState";
 
 export default function TodayStepsSheet() {
-  // store에서 필요한 것만 가져옴
   const open = useBottomSheetStore(s => s.open);
   const peekHeight = useBottomSheetStore(s => s.peekHeightPx);
-
-  // 전역 activeId 사용
   const { activeId } = useActiveGoalStore();
 
-  // 1) 데이터 로드
-  const { loading, baseGroups } = useSheetStepsView(activeId);
+  // 🍋‍🟩 이제 groups가 바로 내려옴
+  const { loading, error, groups: baseGroups } = useTodaySteps(activeId);
 
-  // 2) 하루 1회 체크인
+  useEffect(() => {
+    if (!error) return;
+    const msg = error instanceof Error ? error.message : JSON.stringify(error);
+    alert(msg || "할 일(step) 목록을 불러오지 못했습니다.");
+  }, [error]);
+
   const { modalOpen, maybeOpen, closeAndMark } = useDailyCheckIn();
 
-  // 3) 재생/정지 상태 및 스플래시
   const {
     playingKey,
     startTimes,
@@ -44,12 +44,12 @@ export default function TodayStepsSheet() {
     stepStopOpen,
     goalCompleteOpen,
     dayCompleteOpen,
-    playingModalOpen, // 🐸 새 상태
+    playingModalOpen,
     stepPauseOpen,
-    setPlayingModalOpen, // 🐸 새 상태 제어
-    handleAction, // step 시작 → 모달 오픈
-    handleStopFromModal, // 🐸 모달 내부 완료 버튼
-    handlePauseFromModal, // 🐸 모달 내부 일시정지 버튼
+    setPlayingModalOpen,
+    handleAction,
+    handleStopFromModal,
+    handlePauseFromModal,
     closeStepStop,
     closeGoal,
     closeDay,
@@ -72,7 +72,7 @@ export default function TodayStepsSheet() {
                 <SheetListSection key={g.key} title={g.title}>
                   <TodayStepsList
                     items={g.items}
-                    onAction={handleAction} // 🐸 handleAction 동작 수정됨
+                    onAction={handleAction}
                     startTimes={startTimes}
                     endTimes={endTimes}
                   />
@@ -94,18 +94,15 @@ export default function TodayStepsSheet() {
         />
       )}
 
-      {/* 하루 1회 체크인 모달 */}
       <DailyCheckInModal open={modalOpen} onClose={closeAndMark} />
 
-      {/* 🐸 Step 진행 중 모달 (항상 Step 시작 시 오픈) */}
       <StepPlayingModal
         open={playingModalOpen}
         onClose={() => setPlayingModalOpen(false)}
-        onConfirm={handleStopFromModal} // 🐸 완료 버튼 → stopStep
+        onConfirm={handleStopFromModal}
         onPause={handlePauseFromModal}
       />
 
-      {/* 스플래시들 */}
       <StepStopSplash open={stepStopOpen} onClose={closeStepStop} progress={lastProgress ?? 0} />
       <GoalCompleteSplash open={goalCompleteOpen} onClose={closeGoal} />
       <DayCompleteSplash open={dayCompleteOpen} onClose={closeDay} />
@@ -124,8 +121,8 @@ const SheetBody = styled.div`
 `;
 
 const ScrollArea = styled.div`
-  overflow-y: auto; /* 세로 스크롤 허용 */
-  overflow-x: hidden; /* 가로 스크롤 차단 */
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const FloatingArrow = styled.img`

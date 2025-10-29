@@ -111,11 +111,6 @@ export default function GoalStepsModal({
                   <StepPanel id={panelId} $open={isOpen} role="region" aria-label="단계 상세">
                     <PanelGrid>
                       <PanelRow>
-                        <PanelLabel>진행 횟수</PanelLabel>
-                        <PanelValue>{"count" in s && s.count != null ? s.count : "-"}</PanelValue>
-                      </PanelRow>
-
-                      <PanelRow>
                         <PanelLabel>완료 여부</PanelLabel>
                         <PanelValue>
                           {"isCompleted" in s && typeof s.isCompleted === "boolean" ? (
