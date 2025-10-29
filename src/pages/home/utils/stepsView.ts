@@ -49,6 +49,7 @@ export function toGoalStepsView(raw: Partial<RespTodoSteps> | null | undefined):
   };
 }
 
+// 오늘의 한 걸음 / 놓친 한 걸음 관련 유틸은 새로 정의된 api 호출로 대체 예정
 /** 완료 제외 + (오늘만) */
 export function toTodayStepsView(raw: Partial<RespTodoSteps> | null | undefined): GoalStepsView {
   const view = toGoalStepsView(raw);
@@ -70,18 +71,18 @@ export function toTodayAndPastLists(
   const past = base.filter(it => !isTodayISO(it.stepDate) && !isFutureISO(it.stepDate));
 
   return {
-    meta: {
-      dDay: view.dDay,
-      title: view.title,
-      endDate: view.endDate,
-      progressText: view.progressText,
-      progress: view.progress,
-    },
+    // meta: {
+    //   dDay: view.dDay,
+    //   title: view.title,
+    //   endDate: view.endDate,
+    //   progressText: view.progressText,
+    //   progress: view.progress,
+    // },
     today,
     past,
   };
 }
 
 /* ⛔️ API 부르는 함수는 훅으로 이동했습니다.
-   - getStepsRaw / getGoalStepsView / getTodayStepsView / getTodayAndPastLists 제거
-   - 컴포넌트/훅에서는 useFetchSteps(goalId) 사용 */
+  - getStepsRaw / getGoalStepsView / getTodayStepsView / getTodayAndPastLists 제거
+  - 컴포넌트/훅에서는 useFetchSteps(goalId) 사용 */

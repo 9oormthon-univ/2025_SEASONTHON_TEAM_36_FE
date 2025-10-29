@@ -36,6 +36,18 @@ export interface RespTodoSteps {
   steps: Array<RespStepInfo>;
 }
 
+/** [GET] 오늘의 한 걸음 / 놓친 한 걸음 조회 */
+export interface RespStepItem {
+  stepId: number;
+  stepDate: string; // e.g. "2025-09-02"
+  description: string;
+  isCompleted: boolean;
+}
+export interface RespTodayStep {
+  todayStepResponses: RespStepItem[];
+  missedStepResponses: RespStepItem[];
+}
+
 /**
  * End-Point: /api/v1/steps/{stepId}/start
  * Step 기록 시작

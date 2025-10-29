@@ -1,6 +1,11 @@
 // src/apis/step.js
 import type { ReqPauseStopStep, ReqStartStep, reqUpdateSteps } from "@/common/types/request/step";
-import type { RespStepInfo, RespStepRecord, RespTodoSteps } from "@/common/types/response/step";
+import type {
+  RespStepInfo,
+  RespStepRecord,
+  RespTodayStep,
+  RespTodoSteps,
+} from "@/common/types/response/step";
 
 import { handleApiRequest } from "./apiUtils";
 import mainApi from "./index";
@@ -13,6 +18,14 @@ export async function fetchSteps(todoId: number) {
   if (todoId == null) throw new Error("Step 목록 조회를 위해 todoId가 필요합니다.");
   return handleApiRequest<RespTodoSteps>(() =>
     mainApi.get(`${BASE}/todos/${todoId}`, {
+      headers: { Accept: "application/json" },
+    }),
+  );
+}
+/** [GET] 오늘의 한 걸음 / 놓친 한 걸음 조회 */
+export async function fetchTodaySteps() {
+  return handleApiRequest<RespTodayStep>(() =>
+    mainApi.get(`${BASE}/one-step`, {
       headers: { Accept: "application/json" },
     }),
   );

@@ -34,13 +34,6 @@ export interface GoalStepsView {
 
 /** 오늘/과거 리스트 결과 (toTodayAndPastLists 반환) */
 export interface TodayPastLists {
-  meta: {
-    dDay: string;
-    title: string;
-    endDate: string;
-    progressText: string;
-    progress: number;
-  };
   today: StepViewItem[]; // 완료 제외 + 오늘만
   past: StepViewItem[]; // 완료 제외 + 과거만(미래 제외)
 }

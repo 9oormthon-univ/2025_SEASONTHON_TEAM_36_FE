@@ -33,7 +33,7 @@ export function useSheetStepsView(goalId?: number | null) {
 
   // parted(원형 데이터) 그대로 노출 (기본값 가드)
   const parted: TodayPastLists = lists ?? {
-    meta: { dDay: "", title: "", endDate: "", progressText: "", progress: 0 },
+    // meta: { dDay: "", title: "", endDate: "", progressText: "", progress: 0 },
     today: [],
     past: [],
   };
