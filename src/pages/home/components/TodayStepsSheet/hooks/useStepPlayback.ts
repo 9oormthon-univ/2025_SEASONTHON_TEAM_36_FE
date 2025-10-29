@@ -59,38 +59,36 @@ export function useStepPlayback({
   const closeStepPause = () => setStepPauseOpen(false);
 
   // RespStepRecord 기반으로 직접 판정 (외부 유틸 의존성 제거)
-  const handleStopResult = useCallback(
-    (res: RespStepRecord) => {
-      setLastRecord(res); // 🐸 추가
-      const doneToday = Boolean(res.isCompletedTodaySteps);
-      const p = Number(res.progress);
-      const progress = Number.isFinite(p) ? p : null;
-      const reachedGoal100 = !doneToday && progress != null && progress >= 100;
+  const handleStopResult = useCallback((res: RespStepRecord) => {
+    setLastRecord(res); // 🐸 추가
+    const doneToday = Boolean(res.isCompletedTodaySteps);
+    const p = Number(res.progress);
+    const progress = Number.isFinite(p) ? p : null;
+    const reachedGoal100 = !doneToday && progress != null && progress >= 100;
 
-      if (progress != null) setLastProgress(progress);
+    if (progress != null) setLastProgress(progress);
 
-      void reloadTodos();
+    // void reloadTodos();
 
-      // 1) 오늘 스텝 모두 완료 → DayComplete만
-      if (doneToday) {
-        setStepStopOpen(false);
-        setPlayingKey(null);
-        setDayCompleteOpen(true);
-        return true;
-      }
-      // 2) 목표 100% → GoalComplete (단, doneToday가 아닐 때만)
-      if (reachedGoal100) {
-        setStepStopOpen(false);
-        setPlayingKey(null);
-        setGoalCompleteOpen(true);
-        return true;
-      }
-      // 3) 그 외 → Pause 유지
-      setStepStopOpen(true);
-      return false;
-    },
-    [reloadTodos],
-  );
+    // 1) 오늘 스텝 모두 완료 → DayComplete만
+    if (doneToday) {
+      setStepStopOpen(false);
+      setPlayingKey(null);
+      setDayCompleteOpen(true);
+      return true;
+    }
+    // 2) 목표 100% → GoalComplete (단, doneToday가 아닐 때만)
+    if (reachedGoal100) {
+      setStepStopOpen(false);
+      setPlayingKey(null);
+      setGoalCompleteOpen(true);
+      return true;
+    }
+    // 3) 그 외 → Pause 유지
+    // setStepStopOpen(true); // handleStopFromModal에서 처리
+    // setPlayingKey(null);
+    return false;
+  }, []);
 
   // goalId 전환 시 자동 정지
   const prevGoalRef = useRef(goalId);
@@ -178,9 +176,10 @@ export function useStepPlayback({
       console.error("[useStepPlayback] stopStep(from modal) error:", e);
       alert(e || "정지 로그 저장에 실패했습니다.");
     } finally {
+      setStepStopOpen(true);
       setPlayingModalOpen(false);
       setPlayingKey(null);
-      void reloadTodos();
+      // void reloadTodos();
     }
   };
 

@@ -131,6 +131,7 @@ const HeaderWrapper = styled.div`
 const Title = styled.h2`
   color: var(--text-1, #000);
   text-align: center;
+  word-break: keep-all;
 `;
 
 const Content = styled.div`
