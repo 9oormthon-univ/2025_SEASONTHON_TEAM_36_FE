@@ -7,7 +7,6 @@ import { useGoalsStore } from "@/pages/home/store/useGoalsStore";
 import { PlayingKey } from "@/pages/home/types/steps";
 
 // ---------- helpers (파일 내부에서만 사용) ----------
-const errMsg = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
 type Group = { items: Array<{ id: string | number; stepId: number | null }> };
 
@@ -43,6 +42,9 @@ export function useStepPlayback({
   const [pauseOpen, setPauseOpen] = useState(false);
   const [goalCompleteOpen, setGoalCompleteOpen] = useState(false);
   const [dayCompleteOpen, setDayCompleteOpen] = useState(false);
+
+  // 🐸 새로 추가: StepPlayingModal 열림 상태
+  const [playingModalOpen, setPlayingModalOpen] = useState(false);
 
   // 동시 입력 (더블 탭 등)으로 인한 중복 실행 방지 플래그
   const busyRef = useRef(false);
@@ -117,7 +119,7 @@ export function useStepPlayback({
     }
   }, [goalId, playingKey, allItems, handleStopResult, reloadTodos]);
 
-  // !!! 핵심 인터랙션 담당하는 함수
+  // 🐸 Step 시작: 항상 StepPlayingModal 열기
   const handleAction = async (it: { id: number | string; stepId: number | null }) => {
     if (busyRef.current) return;
     busyRef.current = true;
@@ -125,66 +127,11 @@ export function useStepPlayback({
       const isPlaying = playingKey === it.id;
       setSelectedStep(it);
 
-      // 1) 현재 항목이 재생 중인 경우(토글→정지)
-      if (isPlaying) {
-        setEndTimes(prev => ({ ...prev, [it.id]: new Date() }));
-        setPauseOpen(true);
-        setPlayingKey(null);
-
-        if (it.stepId != null) {
-          try {
-            const endTime = new Date().toISOString();
-            const startTime = startTimes[it.id];
-            const duration = startTime ? Math.floor((Date.now() - startTime.getTime()) / 1000) : 0; // 초 단위 누적
-            const res = (await stopStep(it.stepId, { endTime, duration })) as RespStepRecord;
-            const intercepted = handleStopResult(res);
-            if (!intercepted) {
-              // 특별 스플래시가 없으면 Pause 유지
-            }
-          } catch (e: unknown) {
-            console.error("[useStepPlayback] stopStep error:", e);
-            alert(errMsg(e) || "정지 로그 저장에 실패했습니다.");
-          } finally {
-            // 정지 후에도 최신화 시도
-            void reloadTodos();
-          }
-        }
-      } else {
-        // 2-1) 다른 항목이 재생 중이던 경우(이전 것부터 정지)
-        if (playingKey && playingKey !== it.id) {
-          const prevItem = allItems.find(x => x.id === playingKey);
-          const prevStepId = prevItem?.stepId ?? null;
-
-          setEndTimes(prev => ({ ...prev, [playingKey]: new Date() }));
-          if (prevStepId != null) {
-            try {
-              const endTime = new Date().toISOString();
-              const startTime = startTimes[playingKey];
-              const duration = startTime
-                ? Math.floor((Date.now() - startTime.getTime()) / 1000)
-                : 0;
-              const resPrev = (await stopStep(prevStepId, { endTime, duration })) as RespStepRecord;
-              const interceptedPrev = handleStopResult(resPrev);
-              if (interceptedPrev) {
-                // 완료 스플래시면 새로운 재생 시작 안 함
-                return;
-              }
-            } catch (e: unknown) {
-              console.error("[useStepPlayback] stopStep(prev) error:", e);
-            } finally {
-              void reloadTodos();
-            }
-          }
-        }
-
-        // 2-2) 새 항목 재생 시작
+      if (!isPlaying) {
+        // 새 항목 재생
         setPlayingKey(it.id);
-        setPauseOpen(false);
         setStartTimes(prev => ({ ...prev, [it.id]: new Date() }));
-        setEndTimes(prev => {
-          const { [it.id]: _, ...rest } = prev;
-          return rest;
-        });
+        setPlayingModalOpen(true); // 🐸 항상 모달 열기
 
         if (it.stepId != null) {
           try {
@@ -193,14 +140,32 @@ export function useStepPlayback({
             setLastProgress(res.progress);
           } catch (e) {
             console.error("[useStepPlayback] startStep error:", e);
-            alert(errMsg(e) || "시작 중 오류가 발생했습니다.");
+            alert(e || "시작 중 오류가 발생했습니다.");
           }
         }
-
         onOpenDailyIfNeeded?.();
       }
     } finally {
       busyRef.current = false;
+    }
+  };
+  // 🐸 모달 안의 “완료” 버튼이 실제 stopStep 수행
+  const handleStopFromModal = async () => {
+    const it = selectedStep;
+    if (!it || !it.stepId) return;
+    try {
+      const endTime = new Date().toISOString();
+      const startTime = startTimes[it.id];
+      const duration = startTime ? Math.floor((Date.now() - startTime.getTime()) / 1000) : 0;
+      const res = (await stopStep(it.stepId, { endTime, duration })) as RespStepRecord;
+      handleStopResult(res);
+    } catch (e) {
+      console.error("[useStepPlayback] stopStep(from modal) error:", e);
+      alert(e || "정지 로그 저장에 실패했습니다.");
+    } finally {
+      setPlayingModalOpen(false);
+      setPlayingKey(null);
+      void reloadTodos();
     }
   };
 
@@ -213,7 +178,10 @@ export function useStepPlayback({
     pauseOpen,
     goalCompleteOpen,
     dayCompleteOpen,
+    playingModalOpen, // 🐸 stepPlayingModal 열림 상태
+    setPlayingModalOpen, // 🐸
     handleAction,
+    handleStopFromModal, // 🐸 모달 내 “완료” 버튼
     closePause,
     closeGoal,
     closeDay,

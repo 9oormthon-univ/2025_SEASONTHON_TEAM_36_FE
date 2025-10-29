@@ -5,10 +5,12 @@ import styled, { CSSProperties } from "styled-components";
 import dragUp from "@/assets/images/drag-up.svg";
 
 import BottomSheet from "../../../../layout/BottomSheet";
+// 스플래시 및 모달 열림 상태 여기서 관리
 import DailyCheckInModal from "../../modals/DailyCheckInModal";
 import DayCompleteSplash from "../../modals/DayCompleteSplash";
 import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
 import PauseSplash from "../../modals/PauseSplash";
+import StepPlayingModal from "../../modals/StepPlayingModal";
 import { useActiveGoalStore } from "../../store/useActiveGoalStore";
 import { useBottomSheetStore } from "../../store/useBottomSheetStore";
 import { useDailyCheckIn } from "./hooks/useDailyCheckIn";
@@ -41,7 +43,10 @@ export default function TodayStepsSheet() {
     pauseOpen,
     goalCompleteOpen,
     dayCompleteOpen,
-    handleAction,
+    playingModalOpen, // 🐸 새 상태
+    setPlayingModalOpen, // 🐸 새 상태 제어
+    handleAction, // step 시작 → 모달 오픈
+    handleStopFromModal, // 🐸 모달 내부 완료 버튼
     closePause,
     closeGoal,
     closeDay,
@@ -63,7 +68,7 @@ export default function TodayStepsSheet() {
                 <SheetListSection key={g.key} title={g.title}>
                   <TodayStepsList
                     items={g.items}
-                    onAction={handleAction}
+                    onAction={handleAction} // 🐸 handleAction 동작 수정됨
                     startTimes={startTimes}
                     endTimes={endTimes}
                   />
@@ -87,6 +92,13 @@ export default function TodayStepsSheet() {
 
       {/* 하루 1회 체크인 모달 */}
       <DailyCheckInModal open={modalOpen} onClose={closeAndMark} />
+
+      {/* 🐸 Step 진행 중 모달 (항상 Step 시작 시 오픈) */}
+      <StepPlayingModal
+        open={playingModalOpen}
+        onClose={() => setPlayingModalOpen(false)}
+        onConfirm={handleStopFromModal} // 🐸 완료 버튼 → stopStep
+      />
 
       {/* 스플래시들 */}
       <PauseSplash open={pauseOpen} onClose={closePause} progress={lastProgress ?? 0} />
