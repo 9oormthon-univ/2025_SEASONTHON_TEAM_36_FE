@@ -44,6 +44,10 @@ export interface RespTodoSteps {
  * End-Point: /api/v1/steps/{stepId}/stop
  * Step 기록 종료
  * src/apis/ai.ts의 stopStep
+ *
+ * End-Point: /api/v1/step-records/{stepId}/pause
+ * Step 기록 일시정지
+ * src/apis/step.ts의 pauseStep
  */
 export interface RespStepRecord {
   stepId: number;
@@ -51,7 +55,9 @@ export interface RespStepRecord {
   startTime: string;
   endTime: string;
   duration: number;
+  breakCount: number;
   progress: number;
+  isCompleted: boolean;
   isCompletedTodaySteps: boolean;
 }
 
