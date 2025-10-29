@@ -6,8 +6,6 @@ import { RespStepRecord } from "@/common/types/response/step";
 import { useGoalsStore } from "@/pages/home/store/useGoalsStore";
 import { PlayingKey } from "@/pages/home/types/steps";
 
-import toKstIsoString from "../utils/toKstIsoString";
-
 // ---------- helper (파일 내부에서만 사용) ----------
 type Group = { items: Array<{ id: string | number; stepId: number | null }> };
 
@@ -106,7 +104,8 @@ export function useStepPlayback({
             if (prevStepId != null) {
               const startedAt = startTimes[prevKey];
               const now = new Date();
-              const endTime = toKstIsoString(now);
+              // const endTime = toKstIsoString(now);
+              const endTime = new Date().toISOString();
               const duration = startedAt
                 ? Math.max(0, Math.floor((now.getTime() - startedAt.getTime()) / 1000))
                 : 0;
@@ -143,7 +142,8 @@ export function useStepPlayback({
 
         if (it.stepId != null) {
           try {
-            const startTime = toKstIsoString(new Date());
+            // const startTime = toKstIsoString(new Date());
+            const startTime = new Date().toISOString();
             const res = (await startStep(it.stepId, { startTime })) as RespStepRecord;
             console.info("[useStepPlayback] startStep result:", res);
             // setLastProgress(res.progress);
@@ -164,7 +164,7 @@ export function useStepPlayback({
     if (!it || !it.stepId) return;
     try {
       const now = new Date();
-      const endTime = toKstIsoString(now);
+      const endTime = new Date().toISOString();
       const startedAt = startTimes[it.id];
       const duration = startedAt
         ? Math.max(0, Math.floor((now.getTime() - startedAt.getTime()) / 1000))
@@ -189,7 +189,7 @@ export function useStepPlayback({
 
     try {
       const now = new Date();
-      const endTime = toKstIsoString(now);
+      const endTime = new Date().toISOString();
       const startedAt = startTimes[it.id];
       const duration = startedAt
         ? Math.max(0, Math.floor((now.getTime() - startedAt.getTime()) / 1000))
