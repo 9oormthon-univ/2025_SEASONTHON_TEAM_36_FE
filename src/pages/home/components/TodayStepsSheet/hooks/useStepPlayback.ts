@@ -45,6 +45,7 @@ export function useStepPlayback({
 
   // 🐸 새로 추가: StepPlayingModal 열림 상태
   const [playingModalOpen, setPlayingModalOpen] = useState(false);
+  const [lastRecord, setLastRecord] = useState<RespStepRecord | null>(null); // 🐸 추가
 
   // 동시 입력 (더블 탭 등)으로 인한 중복 실행 방지 플래그
   const busyRef = useRef(false);
@@ -60,6 +61,7 @@ export function useStepPlayback({
   // RespStepRecord 기반으로 직접 판정 (외부 유틸 의존성 제거)
   const handleStopResult = useCallback(
     (res: RespStepRecord) => {
+      setLastRecord(res); // 🐸 추가
       const doneToday = Boolean(res.isCompletedTodaySteps);
       const p = Number(res.progress);
       const progress = Number.isFinite(p) ? p : null;
@@ -145,6 +147,7 @@ export function useStepPlayback({
             // const startTime = toKstIsoString(new Date());
             const startTime = new Date().toISOString();
             const res = (await startStep(it.stepId, { startTime })) as RespStepRecord;
+            setLastRecord(res); // 🐸 추가
             console.info("[useStepPlayback] startStep result:", res);
             // setLastProgress(res.progress);
           } catch (e) {
@@ -195,6 +198,7 @@ export function useStepPlayback({
         ? Math.max(0, Math.floor((now.getTime() - startedAt.getTime()) / 1000))
         : 0;
       const res = (await pauseStep(it.stepId, { endTime, duration })) as RespStepRecord;
+      setLastRecord(res); // 🐸 추가
       console.info("[useStepPlayback] pauseStep result:", res);
 
       // UI 상태 업데이트
@@ -217,6 +221,7 @@ export function useStepPlayback({
     startTimes,
     endTimes,
     lastProgress,
+    lastRecord, // 🐸 추가
     stepStopOpen,
     goalCompleteOpen,
     dayCompleteOpen,

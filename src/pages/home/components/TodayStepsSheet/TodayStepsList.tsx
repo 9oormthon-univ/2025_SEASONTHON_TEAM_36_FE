@@ -1,16 +1,28 @@
 // src/pages/home/components/TodayStepsList.tsx
 import styled from "styled-components";
 
+import { RespStepRecord } from "@/common/types/response/step";
+
+import StepPlayingModal from "../../modals/StepPlayingModal";
 import type { StepListItem } from "../../types/steps"; // ← 공용 타입 재사용(경로는 프로젝트 구조에 맞게)
 import StepActionBtn from "./StepActionBtn";
 
 type TimeMap = Partial<Record<string | number, Date | string>>;
+
+type PlayingModalProps = {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void | Promise<void>;
+  onPause: () => void | Promise<void>;
+  record?: RespStepRecord | null;
+};
 
 interface TodayStepsListProps {
   items: StepListItem[];
   onAction?: (it: { id: string | number; stepId: number | null }) => void | Promise<void>;
   startTimes?: TimeMap;
   endTimes?: TimeMap;
+  playingModal?: PlayingModalProps;
 }
 
 export default function TodayStepsList({
@@ -18,41 +30,56 @@ export default function TodayStepsList({
   onAction,
   startTimes = {},
   endTimes = {},
+  playingModal,
 }: TodayStepsListProps) {
+  const playingItem = items.find(it => it.state === "play");
+  const playingDescription = playingItem ? playingItem.description : "";
   return (
-    <List role="list">
-      {items.map(it => {
-        const isPlaying = it.state === "play";
-        const startedAt = startTimes?.[it.id] ?? null;
-        const endedAt = endTimes?.[it.id] ?? null;
+    <>
+      <List role="list">
+        {items.map(it => {
+          const isPlaying = it.state === "play";
+          const startedAt = startTimes?.[it.id] ?? null;
+          const endedAt = endTimes?.[it.id] ?? null;
 
-        return (
-          <Item key={it.id} role="listitem">
-            <Bullet aria-hidden="true" />
-            {/* StepViewItem은 title이 아니라 description을 사용합니다 */}
-            <ItemTitle>{it.description}</ItemTitle>
+          return (
+            <Item key={it.id} role="listitem">
+              <Bullet aria-hidden="true" />
+              {/* StepViewItem은 title이 아니라 description을 사용합니다 */}
+              <ItemTitle>{it.description}</ItemTitle>
 
-            <Right>
-              {(startedAt || endedAt) && (
-                <Times aria-label="시작/종료 시간">
-                  {startedAt && <TimeBadge>시작: {formatHM(startedAt)}</TimeBadge>}
-                  {startedAt && endedAt && <Separator aria-hidden="true">·</Separator>}
-                  {endedAt && <TimeBadge>종료: {formatHM(endedAt)}</TimeBadge>}
-                </Times>
-              )}
+              <Right>
+                {(startedAt || endedAt) && (
+                  <Times aria-label="시작/종료 시간">
+                    {startedAt && <TimeBadge>시작: {formatHM(startedAt)}</TimeBadge>}
+                    {startedAt && endedAt && <Separator aria-hidden="true">·</Separator>}
+                    {endedAt && <TimeBadge>종료: {formatHM(endedAt)}</TimeBadge>}
+                  </Times>
+                )}
 
-              <StepActionBtn
-                isPlaying={isPlaying}
-                onClick={() => {
-                  void onAction?.({ id: it.id, stepId: it.stepId });
-                }}
-                size={29}
-              />
-            </Right>
-          </Item>
-        );
-      })}
-    </List>
+                <StepActionBtn
+                  isPlaying={isPlaying}
+                  onClick={() => {
+                    void onAction?.({ id: it.id, stepId: it.stepId });
+                  }}
+                  size={29}
+                />
+              </Right>
+            </Item>
+          );
+        })}
+      </List>
+      {playingModal && (
+        <StepPlayingModal
+          open={playingModal.open}
+          onClose={playingModal.onClose}
+          onConfirm={playingModal.onConfirm}
+          onPause={playingModal.onPause}
+          record={playingModal.record}
+          stepDescription={playingDescription}
+        />
+      )}
+    </>
   );
 }
 

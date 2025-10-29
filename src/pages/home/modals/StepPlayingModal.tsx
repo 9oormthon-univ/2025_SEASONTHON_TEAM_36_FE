@@ -1,26 +1,31 @@
 import styled from "styled-components";
 
+import { RespStepRecord } from "@/common/types/response/step";
+
 import PageModal from "../../../common/components/PageModal";
 import GoalHeader from "../components/GoalHeader";
 
 interface StepPlayingModalProps {
   open: boolean;
   onClose?: () => void;
-  onConfirm?: () => void | Promise<void>; // 🐸 추가
-  onPause?: () => void | Promise<void>; // 🐸 추가
+  onConfirm?: () => void | Promise<void>;
+  onPause?: () => void | Promise<void>;
+  record?: RespStepRecord | null; // 🐸 추가
+  stepDescription?: string; // 🐸 추가
 }
-
 export default function StepPlayingModal({
   open,
   onClose,
   onConfirm,
   onPause,
+  record,
+  stepDescription,
 }: StepPlayingModalProps) {
   // ---- 데모용 더미 텍스트 (기능 구현 전) ----
   const dDay = "D-1";
   const goalTitle = "총균쇠 독후감 작성";
-  const stepTitle = "p130 ~ 170까지 읽기";
-  const breakCountText = "휴식 3회";
+  const stepTitle = stepDescription || "1단계: 서문 읽기";
+  const breakCountText = record?.breakCount || "3";
   const timerText = "03 : 15 : 00";
 
   // 게이지 표시용 데모 진행도(정적)
@@ -40,7 +45,7 @@ export default function StepPlayingModal({
             <Ring timeElapsed={timeElapsed}>
               {ringSVG}
               <RingCenter>
-                <SmallPill className="typo-body-xs">{breakCountText}</SmallPill>
+                <SmallPill className="typo-body-xs">{`휴식 ${breakCountText}회`}</SmallPill>
                 <Timer aria-label="남은 시간" className="typo-h1">
                   {timerText}
                 </Timer>

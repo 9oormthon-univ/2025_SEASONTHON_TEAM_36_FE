@@ -9,7 +9,6 @@ import DailyCheckInModal from "../../modals/DailyCheckInModal";
 import DayCompleteSplash from "../../modals/DayCompleteSplash";
 import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
 import StepPauseSplash from "../../modals/StepPauseSplash";
-import StepPlayingModal from "../../modals/StepPlayingModal";
 import StepStopSplash from "../../modals/StepStopSplash";
 import { useActiveGoalStore } from "../../store/useActiveGoalStore";
 import { useBottomSheetStore } from "../../store/useBottomSheetStore";
@@ -41,6 +40,7 @@ export default function TodayStepsSheet() {
     startTimes,
     endTimes,
     lastProgress,
+    lastRecord,
     stepStopOpen,
     goalCompleteOpen,
     dayCompleteOpen,
@@ -75,6 +75,13 @@ export default function TodayStepsSheet() {
                     onAction={handleAction}
                     startTimes={startTimes}
                     endTimes={endTimes}
+                    playingModal={{
+                      open: playingModalOpen,
+                      onClose: () => setPlayingModalOpen(false),
+                      onConfirm: handleStopFromModal,
+                      onPause: handlePauseFromModal,
+                      record: lastRecord,
+                    }}
                   />
                 </SheetListSection>
               ))}
@@ -96,12 +103,13 @@ export default function TodayStepsSheet() {
 
       <DailyCheckInModal open={modalOpen} onClose={closeAndMark} />
 
-      <StepPlayingModal
+      {/* <StepPlayingModal
         open={playingModalOpen}
         onClose={() => setPlayingModalOpen(false)}
         onConfirm={handleStopFromModal}
         onPause={handlePauseFromModal}
-      />
+        record={lastRecord}
+      /> */}
 
       <StepStopSplash open={stepStopOpen} onClose={closeStepStop} progress={lastProgress ?? 0} />
       <GoalCompleteSplash open={goalCompleteOpen} onClose={closeGoal} />
