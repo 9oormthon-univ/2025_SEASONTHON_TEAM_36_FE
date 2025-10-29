@@ -52,11 +52,13 @@ function ddayStyles(dDay?: string) {
     `;
   }
 
-  // D+N (마감 지난 목표) → 회색 처리
+  // D+N (마감 지난 목표)
   if (sign === "+") {
     return css`
-      background: #d9d9d9;
-      color: #555;
+      // background: #d9d9d9;
+      // color: #555;
+      background: #ff0000;
+      color: #fff;
     `;
   }
 

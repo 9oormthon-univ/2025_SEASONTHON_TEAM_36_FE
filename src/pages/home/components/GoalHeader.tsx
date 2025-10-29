@@ -1,27 +1,45 @@
+// src/pages/home/components/GoalHeader.tsx
 import React, { useMemo } from "react";
 import styled from "styled-components";
 
+import { useActiveGoalStore } from "../store/useActiveGoalStore";
+import { useGoalsStore } from "../store/useGoalsStore";
 import { DDayIcon } from "../styles/DDayIcon";
 
 export interface GoalHeaderProps {
-  dDay: string;
-  title: string;
   onSirenClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-export default function GoalHeader({ dDay, title, onSirenClick }: GoalHeaderProps) {
+export default function GoalHeader({ onSirenClick }: GoalHeaderProps) {
+  // ===== 스토어에서 활성 goal 가져오기 =====
+  const activeId = useActiveGoalStore(s => s.activeId);
+  const goals = useGoalsStore(s => s.goals);
+
+  const activeGoal = useMemo(() => goals.find(g => g.id === activeId) ?? null, [goals, activeId]);
+
+  // 없을 때 안전한 기본값
+  const dDay = activeGoal?.dDay ?? "D-day";
+  const title = activeGoal?.title ?? "목표를 선택하세요";
+
   // ===== D-Day 파싱 & 긴급 판단 =====
-  const { num, isDay } = useMemo(() => {
+  const { num, sign, isDay } = useMemo(() => {
     const m = /D\s*([+-])?\s*(\d+|day)/i.exec(String(dDay));
-    if (!m) return { num: null as number | null, isDay: false };
+    if (!m) return { num: null as number | null, sign: null as string | null, isDay: false };
     const val = m[2]?.toLowerCase();
-    if (val === "day") return { num: 0, isDay: true };
+    const signVal = m[1] ?? null;
+    if (val === "day") return { num: 0, sign: signVal, isDay: true };
     const n = parseInt(val, 10);
-    return { num: Number.isNaN(n) ? null : n, isDay: false };
+    return { num: Number.isNaN(n) ? null : n, sign: signVal, isDay: false };
   }, [dDay]);
 
-  // 부호와 무관: D-day 또는 숫자 ≤ 3 이면 긴급
-  const isUrgent = isDay || (num != null && num <= 3);
+  /** 긴급 판단
+   * D-day → true
+   * D+N (모두) → true
+   * D–1~3 → true
+   */
+  const isUrgent =
+    isDay || (num != null && ((sign === "+" && num >= 0) || (sign !== "+" && num <= 3)));
+
   return (
     <HeaderRow>
       <DDayIcon $dDay={dDay}>{dDay}</DDayIcon>
@@ -30,8 +48,8 @@ export default function GoalHeader({ dDay, title, onSirenClick }: GoalHeaderProp
         <SirenButton
           type="button"
           onClick={onSirenClick}
-          // 접근성: 긴급이 아니면 탭 포커스 제외
           tabIndex={isUrgent ? 0 : -1}
+          aria-label={isUrgent ? "긴급 알림" : "긴급 아님"}
         >
           {isUrgent ? siren : graySiren}
         </SirenButton>

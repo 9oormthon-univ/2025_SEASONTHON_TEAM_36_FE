@@ -35,9 +35,6 @@ export default function StepPlayingModal({
   record,
   stepDescription,
 }: StepPlayingModalProps) {
-  // ---- 데모 텍스트 (기능 구현 전) ----
-  const dDay = "D-1";
-  const goalTitle = "총균쇠 독후감 작성";
   const stepTitle = stepDescription || "나의 Step";
   const breakCountText = record?.breakCount ?? "N";
 
@@ -69,7 +66,7 @@ export default function StepPlayingModal({
   }, [elapsedSec]);
 
   // ✅ 1시간 단위로 색상 진해짐
-  const colorToken = useMemo(() => {
+  const colortoken = useMemo(() => {
     const hours = Math.floor(elapsedSec / 3600);
     if (hours >= 3) return "var(--green-500)";
     if (hours === 2) return "var(--green-400)";
@@ -82,13 +79,13 @@ export default function StepPlayingModal({
     <PageModal title="" open={open} onClose={onClose} hideHeader>
       <Body>
         <HeaderWrapper>
-          <GoalHeader dDay={dDay} title={goalTitle} />
+          <GoalHeader />
           <Title className="typo-h3">{stepTitle}</Title>
         </HeaderWrapper>
 
         <Content role="region" aria-label="step 진행 중">
           <GaugeArea>
-            <Ring colorToken={colorToken}>
+            <Ring colortoken={colortoken}>
               {ringSVG}
               <RingCenter>
                 <SmallPill className="typo-body-xs">{`휴식 ${breakCountText}회`}</SmallPill>
@@ -153,7 +150,7 @@ const GaugeArea = styled.div`
   min-height: 48vh;
 `;
 
-const Ring = styled.div<{ colorToken: string }>`
+const Ring = styled.div<{ colortoken: string }>`
   position: relative;
   width: 80vw;
   aspect-ratio: 1 / 1;
@@ -164,7 +161,7 @@ const Ring = styled.div<{ colorToken: string }>`
     grid-area: 1 / 1;
     width: 100%;
     height: 100%;
-    color: ${({ colorToken }) => colorToken};
+    color: ${({ colortoken }) => colortoken};
     transition: color 0.4s ease;
   }
 `;

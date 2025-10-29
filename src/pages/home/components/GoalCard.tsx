@@ -29,8 +29,6 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
 
   // goal 파생값
   const goalId = goal?.id;
-  const dDay = goal?.dDay ?? "";
-  const title = goal?.title ?? "";
   const progress = goal?.progress ?? 0;
   const warmMessage = goal?.warmMessage;
 
@@ -103,7 +101,7 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
         data-goal-id={goalId}
         $shrink={shrink}
       >
-        <GoalHeader dDay={dDay} title={title} onSirenClick={onSirenClick} />
+        <GoalHeader onSirenClick={onSirenClick} />
 
         <CheerMsg className="typo-label-l">{warmMessage || "파이팅! 오늘도 한 걸음."}</CheerMsg>
 
