@@ -43,6 +43,7 @@ export function useStepPlayback({
   const [stepStopOpen, setStepStopOpen] = useState(false); // 일시정지가 아닌 "종료" 스플래시임!
   const [goalCompleteOpen, setGoalCompleteOpen] = useState(false);
   const [dayCompleteOpen, setDayCompleteOpen] = useState(false);
+  const [stepPauseOpen, setStepPauseOpen] = useState(false);
 
   // 🐸 새로 추가: StepPlayingModal 열림 상태
   const [playingModalOpen, setPlayingModalOpen] = useState(false);
@@ -56,6 +57,7 @@ export function useStepPlayback({
   const closeStepStop = () => setStepStopOpen(false);
   const closeGoal = () => setGoalCompleteOpen(false);
   const closeDay = () => setDayCompleteOpen(false);
+  const closeStepPause = () => setStepPauseOpen(false);
 
   // RespStepRecord 기반으로 직접 판정 (외부 유틸 의존성 제거)
   const handleStopResult = useCallback(
@@ -203,6 +205,8 @@ export function useStepPlayback({
       alert(e || "일시정지 중 오류가 발생했습니다.");
     } finally {
       busyRef.current = false;
+      setStepPauseOpen(true);
+      setPlayingModalOpen(false);
       // void reloadTodos(); 삭제함
     }
   };
@@ -217,6 +221,7 @@ export function useStepPlayback({
     goalCompleteOpen,
     dayCompleteOpen,
     playingModalOpen, // 🐸 stepPlayingModal 열림 상태
+    stepPauseOpen,
     setPlayingModalOpen, // 🐸
     handleAction,
     handleStopFromModal, // 🐸 모달 내 “완료” 버튼
@@ -224,5 +229,6 @@ export function useStepPlayback({
     closeStepStop,
     closeGoal,
     closeDay,
+    closeStepPause,
   };
 }
