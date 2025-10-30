@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react";
 import styled from "styled-components";
 
 import CardsCarousel from "./components/CardsCarousel";
+import ChatbotBtn from "./components/ChatbotBtn";
 import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import GoalCard from "./components/GoalCard";
@@ -76,6 +77,7 @@ export default function HomePage() {
     <Page>
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <TopSpacing />
+        <ChatbotBtn isSheetOpen={isSheetOpen} />
         <DateView hideYear={isSheetOpen} />
 
         {hasGoals ? (
