@@ -79,10 +79,14 @@ export const TextInput = styled.input`
 
 export const Textarea = styled.textarea<{
   $fontSize: number | string;
+  $isModify?: boolean;
 }>`
   width: 100%;
   border: none;
-  padding: 8px;
+  border-bottom: ${props => (props.$isModify ? "1px solid black" : "none")};
+  margin-left: 13px;
+  margin-right: 28px;
+  padding-top: 2px;
   background: none;
   color: black;
   font-size: ${props => props.$fontSize};
@@ -93,7 +97,8 @@ export const Textarea = styled.textarea<{
   }
   @media (max-height: 667px), (max-width: 375px) {
     font-size: var(--fs-sm);
-    padding-left: 8px;
-    padding-right: 8px;
+    margin-left: 8px;
+    margin-right: 20px;
+    padding-top: 0px;
   }
 `;
