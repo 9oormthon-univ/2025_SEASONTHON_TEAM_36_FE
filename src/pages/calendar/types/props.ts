@@ -12,16 +12,14 @@ export interface StepManagerProps {
   setIsModify: Dispatch<SetStateAction<boolean>>;
   handleModifyStep: () => void;
   handleDeleteStep: () => void;
-  detail: boolean;
-  handleShowingStepDetail: () => void;
+  isShowing: boolean;
+  setIsShowing: () => void;
   cancelModify: () => void;
 }
 
 export interface StepProps {
   goalId: number;
   step: CustomStepType;
-  detail: boolean;
-  handleShowingStepDetail: () => void;
 }
 
 export interface GoalProps {

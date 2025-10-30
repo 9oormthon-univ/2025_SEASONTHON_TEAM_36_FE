@@ -1,11 +1,14 @@
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 
 import CloseImg from "@/assets/images/close.png";
-import DeleteImg from "@/assets/images/delete.png";
-import ModifyImg from "@/assets/images/modify.png";
+import Delete from "@/assets/images/delete.png";
+import Modify from "@/assets/images/modify.png";
 import MoreImg from "@/assets/images/more.png";
 
 import {
+  DeleteImg,
+  Divider,
+  ModifyImg,
   MoreButton,
   StepManagerOption,
   StepManagerOptions,
@@ -18,57 +21,53 @@ const StepManager = ({
   setIsModify,
   handleModifyStep,
   handleDeleteStep,
-  detail,
-  handleShowingStepDetail,
+  isShowing,
+  setIsShowing,
   cancelModify,
 }: StepManagerProps) => {
   const stepManagerRef = useRef<HTMLDivElement>(null);
 
-  const handleShowManager = useCallback(() => {
-    handleShowingStepDetail();
-  }, [handleShowingStepDetail]);
-
   return (
     <StepManagerStyle ref={stepManagerRef} data-step-manager>
-      {detail && (
-        <StepManagerOptions $isShowing={detail}>
+      {isShowing && (
+        <StepManagerOptions $isShowing={isShowing}>
           <StepManagerOption
             onClick={() => {
               if (isModify) {
                 handleModifyStep();
-                handleShowManager();
+                setIsShowing();
               }
               setIsModify(prev => !prev);
             }}
           >
-            <span>{isModify ? "확인" : "수정"}</span>
-            {!isModify && <img src={ModifyImg as string} alt="수정" width="18" height="18" />}
+            <span>{isModify ? "확인" : "수정하기"}</span>
+            {!isModify && <ModifyImg src={Modify as string} alt="수정" />}
           </StepManagerOption>
+          <Divider />
           <StepManagerOption
             onClick={() => {
               if (!isModify) {
                 handleDeleteStep();
+                setIsShowing();
+              } else {
+                cancelModify();
               }
-              if (isModify) cancelModify();
-              setIsModify(false);
-              handleShowManager();
             }}
           >
-            <span>{isModify ? "취소" : "삭제"}</span>
-            {!isModify && <img src={DeleteImg as string} alt="삭제" width="18" height="18" />}
+            <span>{isModify ? "취소" : "삭제하기"}</span>
+            {!isModify && <DeleteImg src={Delete as string} alt="삭제" />}
           </StepManagerOption>
         </StepManagerOptions>
       )}
-
       <MoreButton
         onClick={() => {
-          handleShowManager();
+          setIsShowing();
           setIsModify(false);
           if (isModify) cancelModify();
         }}
       >
         <img
-          src={detail ? (CloseImg as string) : (MoreImg as string)}
+          src={isShowing ? (CloseImg as string) : (MoreImg as string)}
           alt="더보기"
           width="24"
           height="24"
