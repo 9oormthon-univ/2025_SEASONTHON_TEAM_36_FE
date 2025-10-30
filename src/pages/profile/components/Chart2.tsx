@@ -5,6 +5,8 @@ import {
   CartesianGrid,
   LabelProps,
   Legend,
+  Rectangle,
+  RectangleProps,
   ResponsiveContainer,
   XAxis,
   YAxis,
@@ -34,6 +36,8 @@ const data = [
 ];
 
 interface CustomLabelProps extends LabelProps {
+  x?: string | number;
+  y?: string | number;
   activeBar: { index: number; dataKey: string } | null;
   dataKey: string;
 }
@@ -50,6 +54,11 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
     }
   }, [value]);
 
+  // x, y가 유효한 숫자가 아니면 렌더링하지 않음
+  if (typeof x !== "number" || typeof y !== "number") {
+    return null;
+  }
+
   // 클릭된 Bar가 아니면 렌더링하지 않음
   if (!activeBar || activeBar.index !== index || activeBar.dataKey !== dataKey) {
     return null;
@@ -57,11 +66,11 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
 
   return (
     <foreignObject
-      x={(x as number) - width / 2 + 6}
-      y={(y as number) - 36}
+      x={x - width / 2 + 6}
+      y={-28}
       width={width || 100}
       height={height || 30}
-      style={{ overflow: "visible" }}
+      style={{ overflow: "visible", position: "relative" }}
     >
       <div
         ref={ref}
@@ -81,20 +90,48 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
       >
         {`${value}시간`}
       </div>
+      <div
+        style={{
+          width: "2px",
+          height: `${y + 1.2}px`,
+          background: dataKey === "최대" ? "green" : "lightgreen",
+          position: "absolute",
+          left: `${width / 2 + 1.5}px`,
+        }}
+      ></div>
     </foreignObject>
   );
 };
 
+interface CustomActiveBarProps extends RectangleProps {
+  dataKey?: string;
+}
+
 const Chart2 = () => {
   const [activeBar, setActiveBar] = useState<{ index: number; dataKey: string } | null>(null);
 
-  const handleBarClick = (data: any, index: number, dataKey: string) => {
-    // 같은 Bar를 다시 클릭하면 토글
-    if (activeBar?.index === index && activeBar?.dataKey === dataKey) {
-      setActiveBar(null);
-    } else {
-      setActiveBar({ index, dataKey });
-    }
+  const CustomActiveBar = (props: CustomActiveBarProps) => {
+    const { dataKey } = props;
+    const originProps = { ...props };
+    delete originProps.dataKey;
+    return (
+      <Rectangle
+        {...originProps}
+        fill={
+          activeBar
+            ? dataKey === "최대" && activeBar.dataKey === "최대"
+              ? "var(--green-500)"
+              : dataKey === "최소" && activeBar.dataKey === "최소"
+                ? "var(--green-200)"
+                : dataKey === "최대"
+                  ? "#ABAFB7"
+                  : "#DEE1E6"
+            : dataKey === "최대"
+              ? "var(--green-500)"
+              : "var(--green-200)"
+        }
+      />
+    );
   };
 
   return (
@@ -122,8 +159,10 @@ const Chart2 = () => {
           barSize={17}
           fill="#DEE1E6"
           cursor="pointer"
-          activeBar={{ fill: "#86EC78" }}
-          onClick={(data, index) => handleBarClick(data, index, "최소")}
+          activeBar={<CustomActiveBar />}
+          onPointerDown={(_, index) => setActiveBar({ index, dataKey: "최소" })}
+          onPointerUp={() => setActiveBar(null)}
+          isAnimationActive={false}
           label={props => <CustomLabel {...props} activeBar={activeBar} dataKey="최소" />}
         />
         <Bar
@@ -131,8 +170,10 @@ const Chart2 = () => {
           barSize={17}
           fill="#ABAFB7"
           cursor="pointer"
-          activeBar={{ fill: "#0E7400" }}
-          onClick={(data, index) => handleBarClick(data, index, "최대")}
+          activeBar={<CustomActiveBar />}
+          onPointerDown={(_, index) => setActiveBar({ index, dataKey: "최대" })}
+          onPointerUp={() => setActiveBar(null)}
+          isAnimationActive={false}
           label={props => <CustomLabel {...props} activeBar={activeBar} dataKey="최대" />}
         />
         <Legend

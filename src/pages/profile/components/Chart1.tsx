@@ -34,10 +34,14 @@ const Chart1 = () => {
   const CustomActiveDot = (props: CustomDotProps) => {
     const { cx, cy, index } = props;
 
-    const handleClick = (e: React.MouseEvent) => {
+    const handlePointerDown = (e: React.MouseEvent) => {
       e.stopPropagation();
-      // 같은 점을 다시 클릭하면 토글
-      setActiveIndex(prev => (prev === index ? null : (index as number)));
+      setActiveIndex(index as number);
+    };
+
+    const handlePointerUp = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setActiveIndex(null);
     };
 
     return (
@@ -46,9 +50,10 @@ const Chart1 = () => {
         cy={cy}
         r={3}
         fill="white"
-        stroke="red"
+        stroke={"red"}
         strokeWidth={2}
-        onClick={handleClick}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
         style={{ cursor: "pointer", filter: "none" }}
       />
     );
