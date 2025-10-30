@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-export const useMoveDate = (): [number, number, (offset: number) => void] => {
+export const useMoveDate = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [year, setYear] = useState(Number(searchParams.get("year") ?? new Date().getFullYear()));
   const [month, setMonth] = useState(
@@ -25,5 +25,5 @@ export const useMoveDate = (): [number, number, (offset: number) => void] => {
     [month, year, setYear, setMonth],
   );
 
-  return [year, month, handleMoveMonth];
+  return { year, month, handleMoveMonth };
 };
