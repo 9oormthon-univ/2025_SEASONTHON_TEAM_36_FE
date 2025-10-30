@@ -5,7 +5,6 @@ export const Page = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 0 30px;
-  overflow-x: hidden;
   margin-top: clamp(36px, calc(36px + ((100vh - 667px) * 40 / 225)), 76px);
   margin-bottom: clamp(20px, calc(20px + ((100vh - 667px) * 16 / 225)), 36px);
 `;
@@ -15,22 +14,20 @@ export const Wrapper = styled.div`
 `;
 
 export const Header = styled.header`
-  width: min(300px, 80%);
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-`;
-
-export const HeaderWrapper = styled.div`
   width: 100%;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 50px 1fr 50px;
+  align-items: center;
+  gap: 8px;
 `;
 
 export const HeaderTitle = styled.h2`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: clamp(var(--fs-xs), 5vw, var(--fs-xl));
   font-weight: 700;
-  text-align: center;
 `;
 
 export const Title = styled.h2<{ $fontSize?: string | number; $fontWeight?: number }>`
