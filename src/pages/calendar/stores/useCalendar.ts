@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 
-import { deleteStep, modifyStep } from "@/apis/step";
+import { deleteStep, fetchSteps, modifyStep } from "@/apis/step";
 import { deleteTodo } from "@/apis/todo";
 import { dateToFormatString } from "@/common/utils/dateUtils";
 
@@ -103,10 +103,6 @@ export const useCalendar = create<CalendarState>(
               let newAllToDo;
               if (newSteps.length === 0) {
                 // Optimistic UI: UI를 먼저 업데이트하고 API 호출
-                deleteTodo(goalId).catch(error => {
-                  console.error("Failed to delete todo:", error);
-                  // 필요시 롤백 로직 추가
-                });
 
                 const newGoalsForDate = { ...state.allToDo[dateString] };
                 delete newGoalsForDate[goalId];
@@ -115,6 +111,21 @@ export const useCalendar = create<CalendarState>(
                   ...state.allToDo,
                   [dateString]: newGoalsForDate,
                 };
+
+                fetchSteps(goalId)
+                  .then(response => {
+                    if (
+                      response &&
+                      typeof response === "object" &&
+                      "steps" in response &&
+                      response.steps.length === 0
+                    ) {
+                      deleteTodo(goalId).catch(error => {
+                        console.error("Failed to delete todo:", error);
+                      });
+                    }
+                  })
+                  .catch(error => console.error(error));
               } else {
                 newAllToDo = {
                   ...state.allToDo,
