@@ -1,6 +1,11 @@
 import { useState } from "react";
 import styled from "styled-components";
 
+import activeCloudy from "@/assets/images/weathers/a-cloudy.svg";
+import activeFoggy from "@/assets/images/weathers/a-foggy.svg";
+import activeRainy from "@/assets/images/weathers/a-rainy.svg";
+import activeSnowy from "@/assets/images/weathers/a-snowy.svg";
+import activeSunny from "@/assets/images/weathers/a-sunny.svg";
 import cloudy from "@/assets/images/weathers/cloudy.svg";
 import foggy from "@/assets/images/weathers/foggy.svg";
 import rainy from "@/assets/images/weathers/rainy.svg";
@@ -13,6 +18,7 @@ import DotsSelector from "../components/DotsSelector";
 import { ModalContainer } from "../styles/ModalContainer";
 import DayStartSplash from "./DayStartSplash";
 
+/** 선택지 정의 */
 const WEATHERS = [
   { id: "sunny", label: "맑음" },
   { id: "cloudy", label: "구름" },
@@ -23,13 +29,13 @@ const WEATHERS = [
 
 type WeatherId = (typeof WEATHERS)[number]["id"];
 
-// id → 이미지 매핑
-const WEATHER_ICONS: Record<WeatherId, string> = {
-  sunny,
-  cloudy,
-  rainy,
-  foggy,
-  snowy,
+/** 아이콘 매핑(기본/활성) */
+const WEATHER_ICONS: Record<WeatherId, { idle: string; active: string }> = {
+  sunny: { idle: sunny, active: activeSunny },
+  cloudy: { idle: cloudy, active: activeCloudy },
+  rainy: { idle: rainy, active: activeRainy },
+  foggy: { idle: foggy, active: activeFoggy },
+  snowy: { idle: snowy, active: activeSnowy },
 };
 
 export default function DailyCheckInModal({
@@ -63,24 +69,23 @@ export default function DailyCheckInModal({
           <Section>
             <Question className="typo-h3">오늘의 날씨는 어때요?</Question>
             <ButtonGrid>
-              {WEATHERS.map(w => (
-                <ChoiceButton
-                  key={w.id}
-                  type="button"
-                  onClick={() => setWeather(w.id)}
-                  aria-pressed={weather === w.id}
-                >
-                  <WeatherIcon $active={weather === w.id}>
-                    <IconImg
-                      $active={weather === w.id}
-                      src={WEATHER_ICONS[w.id]}
-                      alt={w.label}
-                      draggable={false}
-                    />
-                  </WeatherIcon>
-                  <Label>{w.label}</Label>
-                </ChoiceButton>
-              ))}
+              {WEATHERS.map(w => {
+                const isActive = weather === w.id;
+                const iconSrc = WEATHER_ICONS[w.id][isActive ? "active" : "idle"];
+                return (
+                  <ChoiceButton
+                    key={w.id}
+                    type="button"
+                    onClick={() => setWeather(w.id)}
+                    aria-pressed={isActive}
+                  >
+                    <WeatherIcon>
+                      <IconImg src={iconSrc} alt={w.label} draggable={false} />
+                    </WeatherIcon>
+                    <Label>{w.label}</Label>
+                  </ChoiceButton>
+                );
+              })}
             </ButtonGrid>
           </Section>
 
@@ -123,7 +128,6 @@ export default function DailyCheckInModal({
   );
 }
 
-/* ===== Styles ===== */
 const Header = styled.header`
   display: flex;
   flex-direction: column;
@@ -192,11 +196,10 @@ const ChoiceButton = styled.button`
 `;
 
 /* active 스타일은 여기서만 처리 */
-const WeatherIcon = styled.div<{ $active: boolean }>`
+const WeatherIcon = styled.div`
   width: 55px;
   height: 55px;
   border-radius: 50%;
-  background: ${({ $active }) => ($active ? "var(--primary-1)" : "var(--natural-200)")};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -206,7 +209,7 @@ const WeatherIcon = styled.div<{ $active: boolean }>`
   transition: all 0.25s ease;
 `;
 
-const IconImg = styled.img<{ $active: boolean }>`
+const IconImg = styled.img`
   user-select: none;
   pointer-events: none;
 `;
