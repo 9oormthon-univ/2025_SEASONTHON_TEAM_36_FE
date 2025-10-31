@@ -6,10 +6,10 @@ import dragUp from "@/assets/images/drag-up.svg";
 
 import BottomSheet from "../../../../layout/BottomSheet";
 import DailyCheckInModal from "../../modals/DailyCheckInModal";
-import DayCompleteSplash from "../../modals/DayCompleteSplash";
-import GoalCompleteSplash from "../../modals/GoalCompleteSplash";
-import StepPauseSplash from "../../modals/StepPauseSplash";
-import StepStopSplash from "../../modals/StepStopSplash";
+import DayCompleteSplash from "../../splashes/DayCompleteSplash";
+import GoalCompleteSplash from "../../splashes/GoalCompleteSplash";
+import StepPauseSplash from "../../splashes/StepPauseSplash";
+import StepStopSplash from "../../splashes/StepStopSplash";
 import { useActiveGoalStore } from "../../store/useActiveGoalStore";
 import { useBottomSheetStore } from "../../store/useBottomSheetStore";
 import { useDailyCheckIn } from "./hooks/useDailyCheckIn";

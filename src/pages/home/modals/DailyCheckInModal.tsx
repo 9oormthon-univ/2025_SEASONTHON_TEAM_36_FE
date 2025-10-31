@@ -15,8 +15,8 @@ import sunny from "@/assets/images/weathers/sunny.svg";
 import GreenButton from "../../../common/components/GreenButton";
 import PageModal from "../../../common/components/PageModal";
 import DotsSelector from "../components/DotsSelector";
+import DayStartSplash from "../splashes/DayStartSplash";
 import { ModalContainer } from "../styles/ModalContainer";
-import DayStartSplash from "./DayStartSplash";
 
 /** 선택지 정의 */
 const WEATHERS = [

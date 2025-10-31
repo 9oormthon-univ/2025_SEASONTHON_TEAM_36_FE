@@ -18,13 +18,13 @@ export default function StepStopSplash({
   onClose?: () => void;
   progress: number | null;
 }) {
-  // open 상태가 true가 되면 3.5초 뒤 자동 닫기
+  // open 상태가 true가 되면 3초 뒤 자동 닫기
   useEffect(() => {
     if (!open) return;
 
     const timer = setTimeout(() => {
       onClose?.();
-    }, 3500);
+    }, 3000);
 
     return () => clearTimeout(timer); // cleanup
   }, [open, onClose]);
