@@ -115,7 +115,6 @@ const Body = styled.div<BodyStyledProps>`
   justify-content: space-between;
   width: 100%;
   min-height: 0;
-  height: calc((100dvh - ${p => p.$sheetHeight}px - var(--navbar-height, 0px)) * ${p => p.$shrink});
 `;
 
 const TopSpacing = styled.div`
