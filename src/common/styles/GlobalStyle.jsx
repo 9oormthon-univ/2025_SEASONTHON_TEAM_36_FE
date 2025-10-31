@@ -87,8 +87,8 @@ export const GlobalStyle = createGlobalStyle`
 
     /* Background */
     --bg-1:       #FFFFFF;
-    --bg-1-soft:  #F8FBFF;
-    --bg-2:       linear-gradient(0deg, #FFFFFF 0%, #ECFFE2 100%);
+    --bg-2:  #F8FBFF;
+    --bg-3:       linear-gradient(0deg, #FFFFFF 0%, #ECFFE2 100%);
   }
 
   /* ===== 3) Semantic tokens: Dark ===== */
@@ -113,8 +113,8 @@ export const GlobalStyle = createGlobalStyle`
 
     /* Background */
     --bg-1:       #0E1116;
-    --bg-1-soft:  #131821;
-    --bg-2:       linear-gradient(0deg, #0E1116 0%, #10151C 100%);
+    --bg-2:  #131821;
+    --bg-3:       linear-gradient(0deg, #0E1116 0%, #10151C 100%);
   }
 
   /* ===== 4) Typography semantic styles ===== */

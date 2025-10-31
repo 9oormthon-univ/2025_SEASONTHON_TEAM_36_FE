@@ -100,7 +100,7 @@ export default function HomePage() {
 
 const Page = styled.section`
   min-height: 100%;
-  background: var(--bg-1);
+  background: var(--bg-2);
   color: var(--text-1);
   display: flex;
   flex-direction: column;

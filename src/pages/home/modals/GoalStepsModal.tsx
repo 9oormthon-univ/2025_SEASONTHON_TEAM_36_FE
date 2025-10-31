@@ -51,7 +51,14 @@ export default function GoalStepsModal({
   };
 
   return (
-    <PageModal title="" open={open} onClose={onClose} headerVariant="back-left" viewNavBar>
+    <PageModal
+      title=""
+      open={open}
+      onClose={onClose}
+      headerVariant="back-left"
+      viewNavBar
+      bgColor="var(--bg-2)"
+    >
       <Body>
         <HeaderWrapper>
           <Header>
@@ -155,6 +162,7 @@ const Body = styled.div`
   flex-direction: column;
   height: 100%;
   min-height: 0;
+  background: var(--bg-2);
 `;
 
 const HeaderWrapper = styled.div`

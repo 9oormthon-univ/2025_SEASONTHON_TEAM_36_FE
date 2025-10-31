@@ -36,7 +36,7 @@ export default function StepPlayingModal({
   stepDescription,
 }: StepPlayingModalProps) {
   const stepTitle = stepDescription || "나의 Step";
-  const breakCountText = record?.breakCount ?? "N";
+  const breakCountText = record?.breakCount != null ? String(record.breakCount) : "0";
 
   // ========== ⏱️ 실시간 경과시간 ==========
   const startAt = useMemo(() => parseUtcAware(record?.startTime), [record?.startTime]);
@@ -76,7 +76,7 @@ export default function StepPlayingModal({
   // =======================================
 
   return (
-    <PageModal title="" open={open} onClose={onClose} hideHeader>
+    <PageModal title="" open={open} onClose={onClose} hideHeader bgColor="var(--bg-2)">
       <Body>
         <HeaderWrapper>
           <GoalHeader />
