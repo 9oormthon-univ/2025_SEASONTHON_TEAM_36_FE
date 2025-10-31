@@ -1,50 +1,58 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 
 import avatarSvg from "@/assets/images/avatar.svg";
 
 import PageModal from "../../../common/components/PageModal";
+import { SCHOOL_OPTIONS, useUserProfile } from "./hooks/useUserProfile";
 
 interface UserProfileModalProps {
   open: boolean;
   onClose?: () => void;
 }
 
-const SCHOOL_OPTIONS = ["초등학교", "중학교", "고등학교", "대학교"] as const;
-type SchoolType = (typeof SCHOOL_OPTIONS)[number];
-const GRADE_OPTIONS: Record<SchoolType, number[]> = {
-  초등학교: [1, 2, 3, 4, 5, 6],
-  중학교: [1, 2, 3],
-  고등학교: [1, 2, 3],
-  대학교: [1, 2, 3, 4],
-};
-
 export default function UserProfileModal({ open, onClose }: UserProfileModalProps) {
-  const [userName, setUserName] = useState<string>("");
-  const [age, setAge] = useState<number | null>(null);
-  const [school, setSchool] = useState<SchoolType | null>(null);
-  const [grade, setGrade] = useState<number | null>(null);
+  // 서버 통신/상태는 전부 커스텀 훅으로 이전
+  const {
+    avatar,
+    userName,
+    age,
+    school,
+    grade,
+    gradeList,
+    loading,
+    savingField,
+    error,
+    changeAge,
+    changeSchool,
+    changeGrade,
+  } = useUserProfile({ enabled: open });
+
+  // UI-only 상태
   const [openSchool, setOpenSchool] = useState(false);
   const [openGrade, setOpenGrade] = useState(false);
 
-  const gradeList = useMemo(() => (school ? GRADE_OPTIONS[school] : []), [school]);
-
-  useEffect(() => {
-    // TODO: API에서 이름을 가져와 1회 세팅
-    setUserName("최유안");
-  }, []); // 의존성 비움: 최초 마운트 때 한 번만 실행
+  // (선택) gradeList를 훅에서 주지만, UI에서 재계산하고 싶다면 이렇게도 가능
+  // const gradeList = useMemo(() => (school ? GRADE_OPTIONS[school] : []), [school]);
 
   return (
     <PageModal open={open} onClose={onClose} headerVariant="back-left">
-      <Sheet>
+      <Sheet aria-busy={loading || Boolean(savingField)}>
         {/* 상단 */}
         <ProfileHeader>
-          <AvatarImg src={avatarSvg} alt="프로필 아바타" draggable={false} />
+          <AvatarImg
+            src={avatar || avatarSvg}
+            alt="프로필 아바타"
+            draggable={false}
+            aria-label="프로필 이미지"
+          />
           <NameLabel aria-label="이름" className="typo-h2">
             {userName || "이름"}
           </NameLabel>
+          {error && <ErrorText role="alert">{error}</ErrorText>}
         </ProfileHeader>
 
+        {/* 나이 */}
         <Row>
           <InlineLabel className="typo-label-l">나이</InlineLabel>
           {age == null ? (
@@ -55,8 +63,12 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                 const v = prompt("나이를 입력하세요 (숫자)"); // 🫠🫠 UI 없음
                 if (!v) return;
                 const n = Number(v);
-                if (!Number.isNaN(n) && n > 0 && n < 120) setAge(n);
+                if (!Number.isNaN(n) && n > 0 && n < 120) {
+                  // eslint가 경고하지 않도록 명시적으로 void 처리
+                  void changeAge(n);
+                }
               }}
+              disabled={savingField === "age" || loading}
             >
               입력하기
             </InlineAction>
@@ -66,7 +78,7 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
         </Row>
         <DividerThin />
 
-        {/* 학교 / 학년 - 한 줄 */}
+        {/* 학교 / 학년 */}
         <SelectRow>
           <SelectBox>
             <SelectButton
@@ -78,6 +90,7 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                 setOpenSchool(v => !v);
                 setOpenGrade(false);
               }}
+              disabled={loading || savingField === "school"}
             >
               <span>{school ?? "학교"}</span>
               <span>{Caret}</span>
@@ -91,9 +104,8 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                     role="option"
                     aria-selected={school === opt}
                     onClick={() => {
-                      setSchool(opt);
-                      setGrade(null);
                       setOpenSchool(false);
+                      void changeSchool(opt);
                     }}
                   >
                     {opt}
@@ -117,6 +129,7 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                 setOpenGrade(v => !v);
                 setOpenSchool(false);
               }}
+              disabled={loading || savingField === "grade" || !school}
             >
               <span>{grade ? `${grade}학년` : "학년"}</span>
               <span>{Caret}</span>
@@ -130,8 +143,8 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                     role="option"
                     aria-selected={grade === g}
                     onClick={() => {
-                      setGrade(g);
                       setOpenGrade(false);
+                      void changeGrade(g);
                     }}
                   >
                     {g}학년
@@ -145,10 +158,20 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
 
         {/* 하단 액션 */}
         <ActionList>
-          <ActionItem className="typo-label-l" type="button" onClick={() => alert("로그아웃")}>
+          <ActionItem
+            className="typo-label-l"
+            type="button"
+            onClick={() => alert("로그아웃")}
+            disabled={loading || Boolean(savingField)}
+          >
             로그아웃
           </ActionItem>
-          <ActionItem className="typo-label-l" type="button" onClick={() => alert("탈퇴")}>
+          <ActionItem
+            className="typo-label-l"
+            type="button"
+            onClick={() => alert("탈퇴")}
+            disabled={loading || Boolean(savingField)}
+          >
             탈퇴
           </ActionItem>
         </ActionList>
@@ -167,7 +190,7 @@ const Sheet = styled.div`
 const ProfileHeader = styled.header`
   display: grid;
   justify-items: center;
-  gap: 28px;
+  gap: 12px;
   padding: 8px 0 4px;
 `;
 
@@ -176,13 +199,19 @@ const AvatarImg = styled.img`
   block-size: 48vw;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  object-fit: cover; /* SVG도 문제없지만, 래스터 이미지 대응 */
+  object-fit: cover;
   user-select: none;
   pointer-events: none;
 `;
 
 const NameLabel = styled.div`
   color: var(--text-1, #000);
+`;
+
+const ErrorText = styled.p`
+  margin: 0;
+  color: #d92d20;
+  font-size: 12px;
 `;
 
 const Row = styled.div`
@@ -202,9 +231,10 @@ const InlineValue = styled.span`
 const InlineAction = styled.button`
   position: relative;
   color: var(--text-2);
-
   cursor: pointer;
   padding-left: 12px;
+  background: transparent;
+  border: none;
   &::before {
     content: "";
     position: absolute;
@@ -225,8 +255,8 @@ const SelectRow = styled.div`
   padding: 0 12px;
   display: flex;
   gap: 12px;
-  min-height: var(--row-h); /* ActionList와 동일 높이 */
-  align-items: center; /* 버튼 수직 중앙 정렬 */
+  min-height: 48px;
+  align-items: center;
   justify-items: start;
   position: relative;
   border-bottom: 1px solid var(--natural-400);
@@ -240,13 +270,13 @@ const SelectButton = styled.button`
   gap: 4px;
   padding: 12px 0;
   border: none;
+  background: transparent;
   color: var(--text-1, #000);
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
 `;
-
 const Dropdown = styled.ul`
   position: absolute;
   top: calc(100% + 20px);
@@ -261,7 +291,6 @@ const Dropdown = styled.ul`
   display: grid;
   z-index: 20;
   border-radius: 11px;
-
   box-shadow:
     -0.3px -0.3px 5px 0 var(--natural-400, #d6d9e0),
     0.3px 0.3px 5px 0 var(--natural-400, #d6d9e0);
@@ -283,6 +312,7 @@ const ActionItem = styled.button`
   text-align: left;
   padding: 0 18px;
   border: none;
+  background: transparent;
   color: #111;
   border-bottom: 1px solid var(--natural-400);
 `;
@@ -292,9 +322,9 @@ const Caret = (
     <path
       d="M18 9L12 15L6 9"
       stroke="#969BA5"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
