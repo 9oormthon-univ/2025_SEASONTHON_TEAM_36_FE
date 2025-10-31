@@ -75,10 +75,10 @@ export default function HomePage() {
 
   return (
     <Page>
+      {!isSheetOpen && <TopSpacing />}
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
-        <TopSpacing />
         <ChatbotBtn isSheetOpen={isSheetOpen} />
-        <DateView hideYear={isSheetOpen} />
+        <DateView />
 
         {hasGoals ? (
           <CardsCarousel ids={ids} maxDots={5}>
@@ -89,9 +89,8 @@ export default function HomePage() {
         ) : (
           <EmptyState />
         )}
-
-        <BottomSpacing />
       </Body>
+      <BottomSpacing />
 
       {hasGoals && <TodayStepsSheet />}
     </Page>
@@ -112,7 +111,7 @@ const Page = styled.section`
 const Body = styled.div<BodyStyledProps>`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   width: 100%;
   min-height: 0;
   height: calc((100dvh - ${p => p.$sheetHeight}px - var(--navbar-height, 0px)) * ${p => p.$shrink});
