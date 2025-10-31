@@ -4,7 +4,7 @@ import styled from "styled-components";
  * ToDoList.tsx 스타일
  */
 export const ToDo = styled.div`
-  padding: 0 26px 90px 26px;
+  padding: 0 26px;
 `;
 
 /**
