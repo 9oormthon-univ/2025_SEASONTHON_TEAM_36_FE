@@ -49,6 +49,15 @@ export function useStepPlayback({
 
   // 동시 입력 (더블 탭 등)으로 인한 중복 실행 방지 플래그
   const busyRef = useRef(false);
+  // 상단 refs 부근에 추가
+  const pendingReloadAfterStopRef = useRef(false);
+  useEffect(() => {
+    // 모달이 닫힌 상태이고, 종료 이후 리로드 대기 플래그가 켜져있을 때만 실행
+    if (!stepStopOpen && pendingReloadAfterStopRef.current) {
+      pendingReloadAfterStopRef.current = false; // 소모
+      void reloadTodos();
+    }
+  }, [stepStopOpen, reloadTodos]);
 
   // 보조 계산) playingKey에서 대응되는 stepId를 찾거나, 이전 재생 중 아이템을 끊을 때 사용
   const allItems = useMemo(() => groups.flatMap(g => g.items), [groups]);
@@ -179,7 +188,7 @@ export function useStepPlayback({
       setStepStopOpen(true);
       setPlayingModalOpen(false);
       setPlayingKey(null);
-      // void reloadTodos();
+      pendingReloadAfterStopRef.current = true; // 모달이 '내부 로직으로 닫힌 이후'에만 reload 되도록 플래그 ON
     }
   };
 

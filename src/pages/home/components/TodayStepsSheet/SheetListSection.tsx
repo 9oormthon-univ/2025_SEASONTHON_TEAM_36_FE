@@ -28,7 +28,7 @@ export default function SheetListSection({
 }
 
 const SectionWrap = styled.section`
-  background: var(--bg-1);
+  background: transparent;
   border-radius: 12px;
   margin: 8px 0 12px;
   padding: 0 0 0 4px;

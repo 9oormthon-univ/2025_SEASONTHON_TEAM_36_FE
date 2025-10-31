@@ -37,8 +37,6 @@ export default function TodayStepsSheet() {
 
   const {
     playingKey,
-    startTimes,
-    endTimes,
     lastProgress,
     lastRecord,
     stepStopOpen,
@@ -73,8 +71,6 @@ export default function TodayStepsSheet() {
                   <TodayStepsList
                     items={g.items}
                     onAction={handleAction}
-                    startTimes={startTimes}
-                    endTimes={endTimes}
                     playingModal={{
                       open: playingModalOpen,
                       onClose: () => setPlayingModalOpen(false),
