@@ -1,11 +1,14 @@
-import { useCallback, useState } from "react";
+import { useRef } from "react";
 
-import DeleteImg from "@/assets/images/delete.png";
-import ModifyImg from "@/assets/images/modify.png";
+import CloseImg from "@/assets/images/close.png";
+import Delete from "@/assets/images/delete.png";
+import Modify from "@/assets/images/modify.png";
 import MoreImg from "@/assets/images/more.png";
 
 import {
+  DeleteImg,
   Divider,
+  ModifyImg,
   MoreButton,
   StepManagerOption,
   StepManagerOptions,
@@ -16,38 +19,52 @@ import type { StepManagerProps } from "../types/props";
 const StepManager = ({
   isModify,
   setIsModify,
-  handleModifyStep,
   handleDeleteStep,
+  isShowing,
+  setIsShowing,
+  cancelModify,
 }: StepManagerProps) => {
-  const [isShowing, setIsShowing] = useState(false);
-  const handleShowManager = useCallback(() => {
-    setIsShowing(prev => !prev);
-  }, []);
+  const stepManagerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <StepManagerStyle>
+    <StepManagerStyle ref={stepManagerRef} data-step-manager>
+      {isShowing && (
+        <StepManagerOptions $isShowing={isShowing}>
+          <StepManagerOption
+            onClick={() => {
+              setIsShowing();
+              setIsModify(prev => !prev);
+            }}
+          >
+            <span>수정하기</span>
+            <ModifyImg src={Modify as string} alt="수정" />
+          </StepManagerOption>
+          <Divider />
+          <StepManagerOption
+            onClick={() => {
+              handleDeleteStep();
+              setIsShowing();
+            }}
+          >
+            <span>삭제하기</span>
+            <DeleteImg src={Delete as string} alt="삭제" />
+          </StepManagerOption>
+        </StepManagerOptions>
+      )}
       <MoreButton
         onClick={() => {
-          handleShowManager();
-          if (isModify) {
-            handleModifyStep();
-            setIsModify();
-          }
+          setIsShowing();
+          setIsModify(false);
+          if (isModify) cancelModify();
         }}
       >
-        <img src={MoreImg} alt="더보기" width="24" height="24" />
+        <img
+          src={isShowing ? (CloseImg as string) : (MoreImg as string)}
+          alt="더보기"
+          width="24"
+          height="24"
+        />
       </MoreButton>
-      <StepManagerOptions $isShowing={isShowing}>
-        <StepManagerOption onClick={setIsModify}>
-          <span>수정하기</span>
-          <img src={ModifyImg} alt="수정" width="18" height="18" />
-        </StepManagerOption>
-        <Divider />
-        <StepManagerOption onClick={handleDeleteStep}>
-          <span>삭제하기</span>
-          <img src={DeleteImg} alt="삭제" width="18" height="18" />
-        </StepManagerOption>
-      </StepManagerOptions>
     </StepManagerStyle>
   );
 };

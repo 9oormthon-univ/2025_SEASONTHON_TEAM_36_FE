@@ -1,4 +1,4 @@
-import type { MonthConstellation } from "../types/Constellation";
+import type { MonthConstellation } from "../types/constellation";
 
 /**
  * 모든 별자리들을 414 x 896 디바이스 크기 기준에 맞춤

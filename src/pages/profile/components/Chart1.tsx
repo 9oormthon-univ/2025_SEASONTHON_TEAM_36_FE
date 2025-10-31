@@ -1,4 +1,5 @@
-import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import { useLayoutEffect, useRef, useState } from "react";
+import { CartesianGrid, DotProps, LabelProps, Line, LineChart, XAxis, YAxis } from "recharts";
 
 const data = [
   {
@@ -19,7 +20,88 @@ const data = [
   },
 ];
 
+interface CustomDotProps {
+  cx?: number;
+  cy?: number;
+  value?: number;
+  index?: number;
+  stroke?: string;
+  fill?: string;
+}
+
 const Chart1 = () => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const CustomActiveDot = (props: CustomDotProps) => {
+    const { cx, cy, index } = props;
+
+    const handlePointerDown = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setActiveIndex(index as number);
+    };
+
+    const handlePointerUp = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setActiveIndex(null);
+    };
+
+    return (
+      <circle
+        cx={cx}
+        cy={cy}
+        r={3}
+        fill="white"
+        stroke={"red"}
+        strokeWidth={2}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        style={{ cursor: "pointer", filter: "none" }}
+      />
+    );
+  };
+
+  const CustomLabel = ({ x, y, value, index }: LabelProps) => {
+    const ref = useRef<HTMLDivElement>(null);
+    const [width, setWidth] = useState(0);
+    const [height, setHeight] = useState(0);
+
+    useLayoutEffect(() => {
+      if (ref.current) {
+        setWidth(ref.current.offsetWidth);
+        setHeight(ref.current.offsetHeight);
+      }
+    }, [value]);
+
+    if (activeIndex !== index) {
+      return null;
+    }
+
+    return (
+      <foreignObject
+        x={(x as number) - width / 2}
+        y={(y as number) - 36} // 위쪽으로 이동
+        width={width}
+        height={height}
+        style={{ overflow: "visible" }}
+      >
+        <div
+          ref={ref}
+          style={{
+            color: "var(--green-500)",
+            fontSize: "var(--fs-md)",
+            background: "white",
+            border: "1px solid var(--green-500)",
+            borderRadius: "7px",
+            boxShadow:
+              "-0.3px -0.3px 5px 0 var(--natural-color-natural-400, #D6D9E0), 0.3px 0.3px 5px 0 var(--natural-color-natural-400, #D6D9E0)",
+            padding: "4px 21px",
+            display: "inline-block",
+          }}
+        >
+          {`${value}%`}
+        </div>
+      </foreignObject>
+    );
+  };
   return (
     <LineChart
       style={{
@@ -32,13 +114,11 @@ const Chart1 = () => {
     >
       <CartesianGrid stroke="rgba(0, 0, 42, 0.15)" strokeDasharray="3 3" vertical={false} />
       <defs>
-        <filter id="dualShadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur1" />
-          <feOffset in="blur1" dx="6" dy="0" result="off1" />
-          <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur2" />
-          <feOffset in="blur2" dx="-6" dy="0" result="off2" />
-          <feFlood floodColor="#3CC3DF" floodOpacity="0.4" result="color1" />
-          <feComposite in="color1" in2="off1" operator="in" result="shadow1" />
+        <filter id="dualShadow" x="-40%" y="-40%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur1" />
+          <feOffset in="blur1" dx="3" dy="0" result="off1" />
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur2" />
+          <feOffset in="blur2" dx="-3" dy="0" result="off2" />
           <feFlood floodColor="#3CC3DF" floodOpacity="0.4" result="color2" />
           <feComposite in="color2" in2="off2" operator="in" result="shadow2" />
           <feMerge>
@@ -76,11 +156,13 @@ const Chart1 = () => {
       <Line
         dataKey="달성률"
         stroke="#0e7400"
+        dot={{ strokeWidth: 2, style: { filter: "none" } }}
+        activeDot={CustomActiveDot}
+        label={CustomLabel}
         strokeLinecap="round"
         isAnimationActive={false}
         style={{ filter: "url(#dualShadow)" }}
       />
-      <Tooltip isAnimationActive={false} />
     </LineChart>
   );
 };

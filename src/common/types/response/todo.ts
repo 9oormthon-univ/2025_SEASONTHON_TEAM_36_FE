@@ -21,7 +21,6 @@ export interface RespTodo {
   warmMessage: string;
   progress: number;
   isCompleted: boolean;
-  // stepResponses: Array<RespStepInfo>; 25.10.23 수정사항 반영
 }
 
 /**

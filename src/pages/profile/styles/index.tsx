@@ -4,8 +4,7 @@ export const Page = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 20px;
-  overflow-x: hidden;
+  padding: 0 30px;
   margin-top: clamp(36px, calc(36px + ((100vh - 667px) * 40 / 225)), 76px);
   margin-bottom: clamp(20px, calc(20px + ((100vh - 667px) * 16 / 225)), 36px);
 `;
@@ -15,20 +14,26 @@ export const Wrapper = styled.div`
 `;
 
 export const Header = styled.header`
-  width: 70%;
-  display: flex;
-  justify-content: space-between;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 50px 1fr 50px;
   align-items: center;
+  gap: 8px;
 `;
 
-export const HeaderWrapper = styled.div`
+export const HeaderTitle = styled.h2`
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
+  font-size: clamp(var(--fs-xs), 5vw, var(--fs-xl));
+  font-weight: 700;
 `;
 
-export const Title = styled.h2`
-  text-align: center;
+export const Title = styled.h2<{ $fontSize?: string | number; $fontWeight?: number }>`
+  font-size: ${props => props.$fontSize || "var(--fs-xl)"};
+  font-weight: ${props => props.$fontWeight || 700};
+  white-space: pre-line;
 `;
 
 export const SizedBox = styled.div`

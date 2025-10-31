@@ -5,6 +5,7 @@ import AppLayout from "./layout/AppLayout";
 import DiaryLayout from "./layout/DiaryLayout";
 import ProtectedRoute from "./layout/ProtectedRoute";
 import Calendar from "./pages/calendar";
+import Chatbot from "./pages/chatbot";
 import Diary from "./pages/diary";
 import Read from "./pages/diary/components/ReadPage";
 import Write from "./pages/diary/components/WritePage";
@@ -44,6 +45,7 @@ function App() {
           <Route path="/diary/writing" element={<Write />} />
           <Route path="/diary/:id" element={<Read />} />
         </Route>
+        <Route path="/chatbot" element={<Chatbot />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

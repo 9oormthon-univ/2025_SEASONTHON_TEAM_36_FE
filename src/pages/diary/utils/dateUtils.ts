@@ -40,3 +40,20 @@ export const validateMonthString = (month: string | null) => {
     return new Date().getMonth();
   return monthNum - 1;
 };
+
+export const validateYearMonthString = (yearMonth: string | null) => {
+  // yyyy-MM 형식 정규표현식 (yyyy: 4자리 숫자, MM: 1-12 또는 01-12)
+  const yearMonthRegex = /^(\d{4})-(0?[1-9]|1[0-2])$/;
+
+  if (yearMonth === null || !yearMonthRegex.test(yearMonth)) {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    return `${year}-${month}`;
+  }
+
+  const [, year, month] = yearMonth.match(yearMonthRegex)!;
+  const paddedMonth = month.padStart(2, "0");
+
+  return `${year}-${paddedMonth}`;
+};
