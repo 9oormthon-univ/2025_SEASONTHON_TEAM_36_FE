@@ -6,7 +6,7 @@ import AI from "@/assets/images/ai-frog.svg";
 const Button = styled.button<{ $isSheetOpen: boolean }>`
   position: fixed;
   top: 12px;
-  right: 10px;
+  right: 24px;
   transition:
     top 0.3s ease,
     right 0.3s ease;
@@ -20,7 +20,7 @@ const Button = styled.button<{ $isSheetOpen: boolean }>`
 
 const AIImg = styled.img`
   width: 58px;
-  height: 36px;
+  height: 58px;
 `;
 
 const ChatbotBtn = ({ isSheetOpen }: { isSheetOpen: boolean }) => {

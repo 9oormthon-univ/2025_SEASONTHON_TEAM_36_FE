@@ -122,6 +122,7 @@ const TopSpacing = styled.div`
   @media (min-height: 700px) {
     height: calc(75px + env(safe-area-inset-top, 0px));
   }
+  width: 100%;
 `;
 
 const BottomSpacing = styled.div`
@@ -129,4 +130,5 @@ const BottomSpacing = styled.div`
   @media (min-height: 700px) {
     height: calc(90px + env(safe-area-inset-bottom, 0px));
   }
+  width: 100%;
 `;

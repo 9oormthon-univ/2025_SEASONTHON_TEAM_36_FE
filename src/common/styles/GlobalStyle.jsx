@@ -119,7 +119,7 @@ export const GlobalStyle = createGlobalStyle`
 
   /* ===== 4) Typography semantic styles ===== */
 /* 필요 시 토큰으로 바꾸기 쉽게 변수로 분리함 (이 부분만 Primitive(Font Size)랑 다름*/
-:root { --h1-size: 30px; } /* 디자인시스템 값. 토큰 쓰려면 var(--fs-3xl) */
+:root { --h1-size: 28px; } /* 디자인시스템 값. 토큰 쓰려면 var(--fs-3xl) */
 
 .typo-h1 {
   font-family: var(--ff-sans);
