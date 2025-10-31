@@ -46,6 +46,7 @@ const Shell = styled.div`
 
   /* 상태바 여백 */
   padding-top: var(--safe-top);
+  padding-bottom: var(--navbar-height);
   box-sizing: border-box;
 
   /* overflow가 필요하다면 활성화 */
