@@ -19,7 +19,6 @@ import type { StepManagerProps } from "../types/props";
 const StepManager = ({
   isModify,
   setIsModify,
-  handleModifyStep,
   handleDeleteStep,
   isShowing,
   setIsShowing,
@@ -33,29 +32,22 @@ const StepManager = ({
         <StepManagerOptions $isShowing={isShowing}>
           <StepManagerOption
             onClick={() => {
-              if (isModify) {
-                handleModifyStep();
-                setIsShowing();
-              }
+              setIsShowing();
               setIsModify(prev => !prev);
             }}
           >
-            <span>{isModify ? "확인" : "수정하기"}</span>
-            {!isModify && <ModifyImg src={Modify as string} alt="수정" />}
+            <span>수정하기</span>
+            <ModifyImg src={Modify as string} alt="수정" />
           </StepManagerOption>
           <Divider />
           <StepManagerOption
             onClick={() => {
-              if (!isModify) {
-                handleDeleteStep();
-                setIsShowing();
-              } else {
-                cancelModify();
-              }
+              handleDeleteStep();
+              setIsShowing();
             }}
           >
-            <span>{isModify ? "취소" : "삭제하기"}</span>
-            {!isModify && <DeleteImg src={Delete as string} alt="삭제" />}
+            <span>삭제하기</span>
+            <DeleteImg src={Delete as string} alt="삭제" />
           </StepManagerOption>
         </StepManagerOptions>
       )}

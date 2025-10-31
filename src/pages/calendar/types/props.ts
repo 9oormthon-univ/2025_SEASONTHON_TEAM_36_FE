@@ -10,7 +10,6 @@ export interface ModifyDeleteProps {
 export interface StepManagerProps {
   isModify: boolean;
   setIsModify: Dispatch<SetStateAction<boolean>>;
-  handleModifyStep: () => void;
   handleDeleteStep: () => void;
   isShowing: boolean;
   setIsShowing: () => void;

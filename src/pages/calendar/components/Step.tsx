@@ -26,7 +26,8 @@ const Step = ({ goalId, step }: StepProps) => {
 
   useOnClickOutside(stepRef, () => {
     if (isModify) {
-      cancelModify();
+      handleModifyStep(goalId, step.id, updatedStep.name);
+      setIsModify(false);
     }
     if (isShowing) {
       setIsShowing(prev => !prev);
@@ -81,9 +82,6 @@ const Step = ({ goalId, step }: StepProps) => {
           <StepManager
             isModify={isModify}
             setIsModify={setIsModify}
-            handleModifyStep={() => {
-              handleModifyStep(goalId, step.id, updatedStep.name);
-            }}
             handleDeleteStep={() => {
               handleDeleteStep(goalId, step.id);
             }}
