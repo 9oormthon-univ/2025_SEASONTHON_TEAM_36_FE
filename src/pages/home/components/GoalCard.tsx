@@ -5,8 +5,8 @@ import { RespTodo } from "@/common/types/response/todo";
 
 import AdjustGoalModal from "../modals/AdjustGoalModal";
 import GoalStepsModal from "../modals/GoalStepsModal";
-import { pickRandomFrog } from "../store/frogs";
 import { useGoalsStore } from "../store/useGoalsStore"; // reloadTodos 불러오기
+import { getFrogByTodoType } from "../utils/selectFrog";
 import FrogBar from "./FrogBar";
 import GoalHeader from "./GoalHeader";
 
@@ -34,7 +34,7 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
 
   // 개구리 이미지 1회 선택
   if (frogRef.current == null) {
-    frogRef.current = pickRandomFrog();
+    frogRef.current = getFrogByTodoType(goal?.todoType);
   }
 
   const anyOpen = openSteps || openAdjust;

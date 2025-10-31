@@ -12,6 +12,13 @@
  * src/apis/todo.ts의 addTodo
  */
 
+export type TodoType =
+  | "PREVIEW_REVIEW"
+  | "HOMEWORK"
+  | "TEST_STUDY"
+  | "PERFORMANCE_ASSESSMENT"
+  | "CAREER_ACTIVITY"
+  | "ETC";
 export interface RespTodo {
   currentDate: string;
   id: number;
@@ -21,6 +28,7 @@ export interface RespTodo {
   warmMessage: string;
   progress: number;
   isCompleted: boolean;
+  todoType: TodoType;
 }
 
 /**
