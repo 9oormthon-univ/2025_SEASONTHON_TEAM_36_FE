@@ -38,10 +38,10 @@ export function useStepPlayback({
   const [lastProgress, setLastProgress] = useState<number | null>(null);
 
   // 스플래시 상태
-  const [stepStopOpen, setStepStopOpen] = useState(false); // 일시정지가 아닌 "종료" 스플래시임!
-  const [goalCompleteOpen, setGoalCompleteOpen] = useState(false);
-  const [dayCompleteOpen, setDayCompleteOpen] = useState(false);
-  const [stepPauseOpen, setStepPauseOpen] = useState(false);
+  const [stepStopOpen, setStepStopOpen] = useState<boolean>(false); // 일시정지가 아닌 "종료" 스플래시임!
+  const [goalCompleteOpen, setGoalCompleteOpen] = useState<boolean>(false);
+  const [dayCompleteOpen, setDayCompleteOpen] = useState<boolean>(false);
+  const [stepPauseOpen, setStepPauseOpen] = useState<boolean>(false);
 
   // 🐸 새로 추가: StepPlayingModal 열림 상태
   const [playingModalOpen, setPlayingModalOpen] = useState(false);
