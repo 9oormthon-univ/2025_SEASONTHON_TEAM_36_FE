@@ -60,12 +60,23 @@ export function useTodaySteps(todoId?: number | null) {
     try {
       const result = (await fetchTodaySteps(todoId)) as RespTodayStep;
 
+      // today
       const todayItems = sortDescByDate(
         (result.todayStepResponses ?? []).map(mapRespToListItem("today")),
       );
-      const pastItems = sortDescByDate(
-        (result.missedStepResponses ?? []).map(mapRespToListItem("past")),
+
+      // past: missed + completedMissed 모두 포함
+      const pastRaw = [
+        ...(result.missedStepResponses ?? []),
+        ...(result.completedMissedStepResponses ?? []),
+      ];
+
+      // ☁️ 안전: stepId 기준으로 중복 제거
+      const pastDedup = Array.from(
+        new Map<number, RespStepItem>(pastRaw.map(s => [s.stepId, s])).values(),
       );
+
+      const pastItems = sortDescByDate(pastDedup.map(mapRespToListItem("past")));
 
       setGroups([
         { key: "today", title: "오늘의 한 걸음", items: todayItems },

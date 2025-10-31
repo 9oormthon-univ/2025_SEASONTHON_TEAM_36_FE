@@ -42,8 +42,9 @@ export interface RespStepItem {
   isCompleted: boolean;
 }
 export interface RespTodayStep {
-  todayStepResponses: RespStepItem[];
-  missedStepResponses: RespStepItem[];
+  todayStepResponses: RespStepItem[]; // 오늘의 한 걸음
+  missedStepResponses: RespStepItem[]; // 놓친 한 걸음
+  completedMissedStepResponses: RespStepItem[]; // 놓친 한 걸음 중 완료된
 }
 
 /**
