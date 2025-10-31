@@ -1,5 +1,6 @@
 import axios from "axios";
-import { ErrorResponse } from "react-router-dom";
+
+import { ErrorResponse } from "@/common/types/error";
 
 // API 요청 처리를 위한 공통 함수
 export async function handleApiRequest<T>(
