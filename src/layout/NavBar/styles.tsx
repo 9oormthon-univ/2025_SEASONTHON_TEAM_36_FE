@@ -73,9 +73,6 @@ export const Bar = styled.nav<BarProps>`
 
   background: var(--bg-1);
   border-top: 1px solid var(--natural-400);
-
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --navbar-height: calc(54px + 34px + var(--safe-bottom));
 `;
 
 /** 내부 컨테이너 */
