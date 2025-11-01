@@ -2705,7 +2705,7 @@ export const SEPTEMBER: MonthConstellation = {
   1: {
     star: {
       x: 109,
-      y: 56,
+      y: 41,
     },
     text: {
       x: 12,
@@ -2715,8 +2715,8 @@ export const SEPTEMBER: MonthConstellation = {
   },
   2: {
     star: {
-      x: 93,
-      y: 88,
+      x: 91,
+      y: 73,
     },
     text: {
       x: 3,
@@ -2726,8 +2726,8 @@ export const SEPTEMBER: MonthConstellation = {
   },
   3: {
     star: {
-      x: 60,
-      y: 117,
+      x: 59,
+      y: 102,
     },
     text: {
       x: 3,
@@ -2737,8 +2737,8 @@ export const SEPTEMBER: MonthConstellation = {
   },
   4: {
     star: {
-      x: 27,
-      y: 145,
+      x: 26,
+      y: 130,
     },
     text: {
       x: 4.1,
@@ -2749,7 +2749,7 @@ export const SEPTEMBER: MonthConstellation = {
   5: {
     star: {
       x: -14,
-      y: 164,
+      y: 149,
     },
     text: {
       x: -3,
@@ -2760,7 +2760,7 @@ export const SEPTEMBER: MonthConstellation = {
   6: {
     star: {
       x: 11,
-      y: 207,
+      y: 192,
     },
     text: {
       x: -7,
@@ -2771,7 +2771,7 @@ export const SEPTEMBER: MonthConstellation = {
   7: {
     star: {
       x: 27,
-      y: 239,
+      y: 224,
     },
     text: {
       x: -6.5,
@@ -2782,7 +2782,7 @@ export const SEPTEMBER: MonthConstellation = {
   8: {
     star: {
       x: 45,
-      y: 272,
+      y: 257,
     },
     text: {
       x: -6.5,
@@ -2793,7 +2793,7 @@ export const SEPTEMBER: MonthConstellation = {
   9: {
     star: {
       x: 50,
-      y: 295,
+      y: 280,
     },
     text: {
       x: -3,
@@ -2804,7 +2804,7 @@ export const SEPTEMBER: MonthConstellation = {
   10: {
     star: {
       x: 48,
-      y: 338,
+      y: 323,
     },
     text: {
       x: -12,
@@ -2815,7 +2815,7 @@ export const SEPTEMBER: MonthConstellation = {
   11: {
     star: {
       x: 31,
-      y: 360,
+      y: 345,
     },
     text: {
       x: -6,
@@ -2826,7 +2826,7 @@ export const SEPTEMBER: MonthConstellation = {
   12: {
     star: {
       x: 33,
-      y: 164,
+      y: 149,
     },
     text: {
       x: 10.5,
@@ -2837,7 +2837,7 @@ export const SEPTEMBER: MonthConstellation = {
   13: {
     star: {
       x: 79,
-      y: 172.04,
+      y: 157,
     },
     text: {
       x: 1.5,
@@ -2848,7 +2848,7 @@ export const SEPTEMBER: MonthConstellation = {
   14: {
     star: {
       x: 127,
-      y: 172,
+      y: 157,
     },
     text: {
       x: 1.5,
@@ -2859,7 +2859,7 @@ export const SEPTEMBER: MonthConstellation = {
   15: {
     star: {
       x: 178,
-      y: 171.12,
+      y: 156.12,
     },
     text: {
       x: 1.5,
@@ -2870,7 +2870,7 @@ export const SEPTEMBER: MonthConstellation = {
   16: {
     star: {
       x: 227,
-      y: 171,
+      y: 156,
     },
     text: {
       x: 1.5,
@@ -2881,7 +2881,7 @@ export const SEPTEMBER: MonthConstellation = {
   17: {
     star: {
       x: 276,
-      y: 171,
+      y: 156,
     },
     text: {
       x: 1.5,
@@ -2892,7 +2892,7 @@ export const SEPTEMBER: MonthConstellation = {
   18: {
     star: {
       x: 313,
-      y: 161,
+      y: 146,
     },
     text: {
       x: 28,
@@ -2903,7 +2903,7 @@ export const SEPTEMBER: MonthConstellation = {
   19: {
     star: {
       x: 318,
-      y: 208,
+      y: 193,
     },
     text: {
       x: 16,
@@ -2914,7 +2914,7 @@ export const SEPTEMBER: MonthConstellation = {
   20: {
     star: {
       x: 313.5,
-      y: 240,
+      y: 225,
     },
     text: {
       x: 15,
@@ -2925,7 +2925,7 @@ export const SEPTEMBER: MonthConstellation = {
   21: {
     star: {
       x: 310,
-      y: 270,
+      y: 255,
     },
     text: {
       x: 15.5,
@@ -2936,7 +2936,7 @@ export const SEPTEMBER: MonthConstellation = {
   22: {
     star: {
       x: 307,
-      y: 298,
+      y: 283,
     },
     text: {
       x: 15,
@@ -2947,7 +2947,7 @@ export const SEPTEMBER: MonthConstellation = {
   23: {
     star: {
       x: 304,
-      y: 324,
+      y: 309,
     },
     text: {
       x: 15,
@@ -2958,7 +2958,7 @@ export const SEPTEMBER: MonthConstellation = {
   24: {
     star: {
       x: 292,
-      y: 344,
+      y: 329,
     },
     text: {
       x: 30,
@@ -2969,7 +2969,7 @@ export const SEPTEMBER: MonthConstellation = {
   25: {
     star: {
       x: 317,
-      y: 369,
+      y: 354,
     },
     text: {
       x: 30,
@@ -2980,7 +2980,7 @@ export const SEPTEMBER: MonthConstellation = {
   26: {
     star: {
       x: 286,
-      y: 152.04,
+      y: 137.04,
     },
     text: {
       x: 12,
@@ -2991,7 +2991,7 @@ export const SEPTEMBER: MonthConstellation = {
   27: {
     star: {
       x: 252.5,
-      y: 135.04,
+      y: 120.04,
     },
     text: {
       x: 12,
@@ -3002,7 +3002,7 @@ export const SEPTEMBER: MonthConstellation = {
   28: {
     star: {
       x: 220,
-      y: 118,
+      y: 103,
     },
     text: {
       x: 12,
@@ -3013,7 +3013,7 @@ export const SEPTEMBER: MonthConstellation = {
   29: {
     star: {
       x: 189,
-      y: 102.04,
+      y: 87.04,
     },
     text: {
       x: 12,
@@ -3024,7 +3024,7 @@ export const SEPTEMBER: MonthConstellation = {
   30: {
     star: {
       x: 148,
-      y: 75,
+      y: 60,
     },
     text: {
       x: 12,
