@@ -38,7 +38,7 @@ export const StarImg = styled.img<{ $big: boolean }>`
 
 export const Day = styled.span<{ $toggle: boolean; $x: number; $y: number }>`
   color: white;
-  font-size: clamp(10px, 2.5vw, 14px);
+  font-size: clamp(10px, 2.5vw, 12px);
   display: ${props => (props.$toggle ? "block" : "none")};
   position: absolute;
   top: calc(${props => props.$y}px * var(--constellation-scale));
