@@ -2,14 +2,18 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
   position: relative;
-  margin-top: clamp(0px, calc((100vh - 700px) * 35 / 112), 35px);
-  width: auto;
-  height: clamp(360px, 60vh, 451px);
+  margin-top: clamp(20px, calc((100vh - 700px) * 35 / 112), 35px);
+  width: clamp(220px, min(85vw, calc(55vh * 352 / 451)), 352px);
+  height: clamp(282px, min(calc(85vw * 451 / 352), 55vh), 451px);
   aspect-ratio: 352 / 451;
-  max-width: min(352px, 90vw);
-  max-height: 100%;
-  --constellation-scale-w: clamp(0.6, calc(min(90vw, 352px) / 352px), 1);
-  --constellation-scale-h: clamp(0.6, calc(clamp(360px, 60vh, 451px) / 451px), 1);
+  max-width: 352px;
+  max-height: 451px;
+  --constellation-scale-w: clamp(0.625, calc(min(85vw, 352px) / 352px), 1);
+  --constellation-scale-h: clamp(
+    0.625,
+    calc(clamp(282px, min(calc(85vw * 451 / 352), 55vh), 451px) / 451px),
+    1
+  );
   --constellation-scale: min(var(--constellation-scale-w), var(--constellation-scale-h));
 `;
 
@@ -28,12 +32,15 @@ export const Star = styled.div<{ $x: number; $y: number }>`
   position: absolute;
   left: calc(${props => props.$x}px * var(--constellation-scale));
   top: calc(${props => props.$y}px * var(--constellation-scale));
-  z-index: 1;
+  cursor: pointer;
 `;
 
 export const StarImg = styled.img<{ $big: boolean }>`
+  display: block;
   width: ${props => (props.$big ? "clamp(28px, 8.5vw, 34.7px)" : "clamp(12px, 4.5vw, 17px)")};
   height: ${props => (props.$big ? "clamp(28px, 8.5vw, 34.7px)" : "clamp(12px, 4.5vw, 17px)")};
+  z-index: 1;
+  position: relative;
 `;
 
 export const Day = styled.span<{ $toggle: boolean; $x: number; $y: number }>`
@@ -44,6 +51,19 @@ export const Day = styled.span<{ $toggle: boolean; $x: number; $y: number }>`
   top: calc(${props => props.$y}px * var(--constellation-scale));
   left: calc(${props => props.$x}px * var(--constellation-scale));
   white-space: nowrap;
+`;
+
+export const Light = styled.div<{ $big: boolean }>`
+  background: #fff;
+  border: 1px solid #000;
+  filter: ${props => (props.$big ? "blur(8.55px)" : "blur(5px)")};
+  width: ${props => (props.$big ? "clamp(28px, 8.5vw, 34.7px)" : "clamp(21px, 4.5vw, 25px)")};
+  height: ${props => (props.$big ? "clamp(28px, 8.5vw, 34.7px)" : "clamp(21px, 4.5vw, 25px)")};
+  border-radius: 50%;
+  position: absolute;
+  left: ${props => (props.$big ? 0 : -1.5)}px;
+  top: ${props => (props.$big ? 0 : -1.5)}px;
+  z-index: 0;
 `;
 
 export const ToggleButton = styled.button<{ $toggle: boolean }>`

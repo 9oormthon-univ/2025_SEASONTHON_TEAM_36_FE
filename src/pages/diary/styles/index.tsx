@@ -31,6 +31,6 @@ export const Title = styled.h1`
 export const Message = styled.h3`
   font-size: clamp(var(--fs-sm), 2vw, var(--fs-md));
   font-weight: 500;
-  margin-top: clamp(12px, calc((100vh - 700px) * 26 / 112), 38px);
+  margin-top: clamp(24px, calc((100vh - 700px) * 26 / 112), 38px);
   color: white;
 `;

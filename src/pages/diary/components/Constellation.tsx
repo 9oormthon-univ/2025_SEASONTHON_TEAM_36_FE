@@ -8,7 +8,7 @@ import { EMOTION_IMG } from "../constants/emotion_img";
 import { LINES } from "../constants/line";
 import { MONTH_CONSTELLATION } from "../constants/month";
 import { useMood } from "../hooks/useMood";
-import { Day, Line, Star, StarImg, ToggleButton, Wrapper } from "../styles/Constellation";
+import { Day, Light, Line, Star, StarImg, ToggleButton, Wrapper } from "../styles/Constellation";
 import { createLineProps } from "../utils/createLineProps";
 
 const Constellation = ({ date }: { date: Date }) => {
@@ -49,6 +49,9 @@ const Constellation = ({ date }: { date: Date }) => {
               <Day $toggle={toggle} $x={constellation.text?.x ?? 0} $y={constellation.text?.y ?? 0}>
                 {day}
               </Day>
+              {date.getFullYear() == new Date().getFullYear() &&
+                date.getMonth() == new Date().getMonth() &&
+                Number(day) == new Date().getDate() && <Light $big={constellation.big} />}
             </Star>
           );
         })}
