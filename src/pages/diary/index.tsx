@@ -11,7 +11,9 @@ export default function Diary() {
         <Title>일기</Title>
       </Header>
       <DateNavigation handleMoveMonth={handleMoveMonth} date={new Date(date)} />
-      <Constellation date={new Date(date)} />
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Constellation date={new Date(date)} />
+      </div>
       <Message>{"개구리가 우물 안에서 볼 밤하늘을 밝혀주세요"}</Message>
     </Page>
   );
