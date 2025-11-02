@@ -1,0 +1,7 @@
+export type TodoType =
+  | "PREVIEW_REVIEW"
+  | "HOMEWORK"
+  | "TEST_STUDY"
+  | "PERFORMANCE_ASSESSMENT"
+  | "CAREER_ACTIVITY"
+  | "ETC";
