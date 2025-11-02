@@ -46,8 +46,8 @@ const CircleButton = styled.button`
   cursor: pointer;
 
   position: absolute;
-  right: 25px;
-  top: clamp(24px, calc(24px + (100vh - 667px) * 32 / 229), 56px);
+  right: 0px;
+  top: clamp(-24px, calc(-12px + (100vh - 667px) * -12 / 229), -12px);
 
   transition:
     transform 0.2s ease,

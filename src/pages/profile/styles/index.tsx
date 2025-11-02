@@ -19,6 +19,7 @@ export const Header = styled.header`
   grid-template-columns: 50px 1fr 50px;
   align-items: center;
   gap: 8px;
+  position: relative;
 `;
 
 export const HeaderTitle = styled.h2`
