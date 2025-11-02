@@ -1,24 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { CartesianGrid, DotProps, LabelProps, Line, LineChart, XAxis, YAxis } from "recharts";
 
-const data = [
-  {
-    name: "9월 1주",
-    달성률: 25,
-  },
-  {
-    name: "9월 2주",
-    달성률: 64,
-  },
-  {
-    name: "9월 3주",
-    달성률: 44,
-  },
-  {
-    name: "9월 4주",
-    달성률: 88,
-  },
-];
+import { useStatistics } from "../hooks/useStatistics";
 
 interface CustomDotProps {
   cx?: number;
@@ -30,6 +13,7 @@ interface CustomDotProps {
 }
 
 const Chart1 = () => {
+  const { achievementRate } = useStatistics();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const CustomActiveDot = (props: CustomDotProps) => {
     const { cx, cy, index } = props;
@@ -110,7 +94,7 @@ const Chart1 = () => {
         maxWidth: 600,
         paddingRight: "16px",
       }}
-      data={data}
+      data={achievementRate}
     >
       <CartesianGrid stroke="rgba(0, 0, 42, 0.15)" strokeDasharray="3 3" vertical={false} />
       <defs>
@@ -133,11 +117,11 @@ const Chart1 = () => {
         dataKey="name"
         tickLine={false}
         tickMargin={4}
-        interval={"preserveStartEnd"}
-        padding={{ left: 35, right: 35 }}
+        interval={0}
+        padding={{ left: 28, right: 28 }}
         fontWeight={500}
         stroke="#6f737b"
-        tick={{ fill: "#000", fontSize: 12, fontWeight: 500 }}
+        tick={{ fill: "#000", fontSize: 11, fontWeight: 500 }}
       />
       <YAxis
         axisLine={false}
@@ -154,7 +138,7 @@ const Chart1 = () => {
         }}
       />
       <Line
-        dataKey="달성률"
+        dataKey="rate"
         stroke="#0e7400"
         dot={{ strokeWidth: 2, style: { filter: "none" } }}
         activeDot={CustomActiveDot}
