@@ -67,7 +67,7 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
   return (
     <foreignObject
       x={x - width / 2 + 6}
-      y={-28}
+      y={-22}
       width={width || 100}
       height={height || 30}
       style={{ overflow: "visible", position: "relative" }}
@@ -93,7 +93,7 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
       <div
         style={{
           width: "2px",
-          height: `${y + 1.2}px`,
+          height: `${y - 4}px`,
           background: dataKey === "최대" ? "green" : "lightgreen",
           position: "absolute",
           left: `${width / 2 + 1.5}px`,
