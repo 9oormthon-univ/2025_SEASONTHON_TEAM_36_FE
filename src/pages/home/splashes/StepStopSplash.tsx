@@ -9,7 +9,7 @@ import PageModal from "../../../common/components/PageModal";
 /**
  * PageModal + FrogNoti 조합 컴포넌트
  */
-export default function PauseSplash({
+export default function StepStopSplash({
   open,
   onClose,
   progress,

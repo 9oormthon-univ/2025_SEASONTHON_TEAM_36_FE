@@ -1,25 +1,43 @@
 import { useState } from "react";
 import styled from "styled-components";
 
+import activeCloudy from "@/assets/images/weathers/a-cloudy.svg";
+import activeFoggy from "@/assets/images/weathers/a-foggy.svg";
+import activeRainy from "@/assets/images/weathers/a-rainy.svg";
+import activeSnowy from "@/assets/images/weathers/a-snowy.svg";
+import activeSunny from "@/assets/images/weathers/a-sunny.svg";
+import cloudy from "@/assets/images/weathers/cloudy.svg";
+import foggy from "@/assets/images/weathers/foggy.svg";
+import rainy from "@/assets/images/weathers/rainy.svg";
+import snowy from "@/assets/images/weathers/snowy.svg";
+import sunny from "@/assets/images/weathers/sunny.svg";
+
 import GreenButton from "../../../common/components/GreenButton";
 import PageModal from "../../../common/components/PageModal";
 import DotsSelector from "../components/DotsSelector";
+import DayStartSplash from "../splashes/DayStartSplash";
 import { ModalContainer } from "../styles/ModalContainer";
-import DayStartSplash from "./DayStartSplash";
 
-// 위치 후보를 literal type으로 고정
-const LOCATIONS = [
-  { id: "home", label: "집" },
-  { id: "office", label: "직장" },
-  { id: "cafe", label: "카페" },
-  { id: "library", label: "도서관" },
-  { id: "class", label: "강의실" },
-  { id: "etc", label: "기타" },
+/** 선택지 정의 */
+const WEATHERS = [
+  { id: "sunny", label: "맑음" },
+  { id: "cloudy", label: "구름" },
+  { id: "rainy", label: "비" },
+  { id: "foggy", label: "안개" },
+  { id: "snowy", label: "눈" },
 ] as const;
 
-type LocationId = (typeof LOCATIONS)[number]["id"];
+type WeatherId = (typeof WEATHERS)[number]["id"];
 
-/** ====== 컴포넌트 ====== */
+/** 아이콘 매핑(기본/활성) */
+const WEATHER_ICONS: Record<WeatherId, { idle: string; active: string }> = {
+  sunny: { idle: sunny, active: activeSunny },
+  cloudy: { idle: cloudy, active: activeCloudy },
+  rainy: { idle: rainy, active: activeRainy },
+  foggy: { idle: foggy, active: activeFoggy },
+  snowy: { idle: snowy, active: activeSnowy },
+};
+
 export default function DailyCheckInModal({
   open,
   onClose,
@@ -27,17 +45,16 @@ export default function DailyCheckInModal({
   open: boolean;
   onClose?: () => void;
 }) {
+  const [weather, setWeather] = useState<WeatherId | null>(null);
   const [feeling, setFeeling] = useState<number>(3);
   const [energy, setEnergy] = useState<number>(3);
-  const [location, setLocation] = useState<LocationId | null>(null);
 
-  // START 클릭 시 띄울 모달 상태
   const [splashOpen, setSplashOpen] = useState<boolean>(false);
 
-  const canStart = location != null;
+  const canStart = weather != null;
   const onStart = () => {
     setSplashOpen(true);
-    onClose?.(); // 현재 모달은 닫기
+    onClose?.();
   };
 
   return (
@@ -50,7 +67,30 @@ export default function DailyCheckInModal({
           </Header>
 
           <Section>
-            <Question className="typo-h3">지금 느끼는 감정이 어떤가요?</Question>
+            <Question className="typo-h3">오늘의 날씨는 어때요?</Question>
+            <ButtonGrid>
+              {WEATHERS.map(w => {
+                const isActive = weather === w.id;
+                const iconSrc = WEATHER_ICONS[w.id][isActive ? "active" : "idle"];
+                return (
+                  <ChoiceButton
+                    key={w.id}
+                    type="button"
+                    onClick={() => setWeather(w.id)}
+                    aria-pressed={isActive}
+                  >
+                    <WeatherIcon>
+                      <IconImg src={iconSrc} alt={w.label} draggable={false} />
+                    </WeatherIcon>
+                    <Label>{w.label}</Label>
+                  </ChoiceButton>
+                );
+              })}
+            </ButtonGrid>
+          </Section>
+
+          <Section>
+            <Question className="typo-h3">지금 감정이 어떤가요?</Question>
             <DotsSelector
               name="feeling"
               value={feeling}
@@ -73,24 +113,6 @@ export default function DailyCheckInModal({
               leftLabel="기운 없음"
               rightLabel="에너지 넘침"
             />
-          </Section>
-
-          <Section>
-            <Question className="typo-h3">오늘의 여정은 어디서 진행되나요?</Question>
-            <ButtonGrid>
-              {LOCATIONS.map(loc => (
-                <ChoiceButton
-                  className="typo-label-l"
-                  key={loc.id}
-                  type="button"
-                  $active={location === loc.id}
-                  onClick={() => setLocation(loc.id)}
-                  aria-pressed={location === loc.id}
-                >
-                  {loc.label}
-                </ChoiceButton>
-              ))}
-            </ButtonGrid>
           </Section>
 
           <ButtonRow>
@@ -144,24 +166,58 @@ const Question = styled.h3`
 
 const ButtonGrid = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: nowrap;
+  margin-top: 8px;
 `;
 
-const ChoiceButton = styled.button<{ $active: boolean }>`
-  flex: 1 0 calc(33% - 10px);
-  padding: 5% 13px;
-  border-radius: 20px;
-  border: 1px solid var(--bg-2);
-  background: ${({ $active }) => ($active ? "var(--primary-1)" : "var(--natural-200)")};
-  color: ${({ $active }) => ($active ? "var(--text-w1)" : "var(--text-1)")};
+const ChoiceButton = styled.button`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border: none;
+  background: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.15s ease;
+
+  &:active {
+    transform: translateY(1px);
+  }
 
   &:focus-visible {
     outline: 2px solid var(--primary-1);
-    outline-offset: 2px;
+    outline-offset: 3px;
+    border-radius: 16px;
   }
+`;
+
+/* active 스타일은 여기서만 처리 */
+const WeatherIcon = styled.div`
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    -0.3px -0.3px 5px 0 var(--natural-400, #d6d9e0),
+    0.3px 0.3px 5px 0 var(--natural-400, #d6d9e0);
+  transition: all 0.25s ease;
+`;
+
+const IconImg = styled.img`
+  user-select: none;
+  pointer-events: none;
+`;
+
+const Label = styled.span`
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: var(--text-1);
 `;
 
 const ButtonRow = styled.div`
