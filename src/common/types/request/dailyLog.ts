@@ -1,3 +1,5 @@
+import { CompletionLevel, Mood } from "../enums";
+
 /** BEFORE (시작 전) */
 export interface ReqDailyLogBefore {
   emotion: number; // 1~5
@@ -7,9 +9,6 @@ export interface ReqDailyLogBefore {
 }
 
 /** AFTER (종료 후) */
-export type Mood = string; // 예: "HAPPY"
-export type CompletionLevel = string; // 예: "ZERO" | "TWENTY" | "FIFTY" | "EIGHTY" | "COMPLETE"
-
 export interface ReqDailyLogAfter {
   mood: Mood;
   focusLevel: number; // 1~5
