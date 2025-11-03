@@ -12,5 +12,10 @@ export const fetchDiaryOfMonth = (yearMonth: string) => {
 
 /** [GET] 특정 달의 Diary 상세 조회 (쿼리 파라미터: date -> "yyyy-MM-dd" 형식) */
 export const fetchDiaryDetail = (date: string) => {
-  return handleApiRequest<RespDiaryDetail>(() => mainApi.get(`${BASE}/detail?date=${date}`));
+  return handleApiRequest<RespDiaryDetail>(() =>
+    mainApi.get(`${BASE}/detail`, {
+      params: { date }, // 쿼리 파라미터 안전하게 전달
+      headers: { Accept: "application/json" },
+    }),
+  );
 };
