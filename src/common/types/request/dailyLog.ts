@@ -3,7 +3,6 @@ import { CompletionLevel, Mood } from "../enums";
 /** BEFORE (시작 전) */
 export interface ReqDailyLogBefore {
   emotion: number; // 1~5
-  userId: number; // 로그인 유저 ID
   energy: number; // 1~5
   place: string; // "HOME" | "CAFE" | ... (백엔드 enum 문자열)
 }
