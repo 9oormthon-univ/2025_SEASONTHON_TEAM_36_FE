@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
+
+import { createDailyLogBefore } from "@/apis/diaryLog";
 
 import GreenButton from "../../../common/components/GreenButton";
 import PageModal from "../../../common/components/PageModal";
@@ -19,6 +21,16 @@ const LOCATIONS = [
 
 type LocationId = (typeof LOCATIONS)[number]["id"];
 
+// 백엔드 enum 문자열 매핑
+const PLACE_MAP: Record<LocationId, string> = {
+  home: "HOME",
+  office: "OFFICE",
+  cafe: "CAFE",
+  library: "LIBRARY",
+  class: "CLASS",
+  etc: "ETC",
+};
+
 /** ====== 컴포넌트 ====== */
 export default function DailyCheckInModal({
   open,
@@ -27,19 +39,49 @@ export default function DailyCheckInModal({
   open: boolean;
   onClose?: () => void;
 }) {
-  const [feeling, setFeeling] = useState<number>(3);
+  const [emotion, setEmotion] = useState<number>(3);
   const [energy, setEnergy] = useState<number>(3);
   const [location, setLocation] = useState<LocationId | null>(null);
 
   // START 클릭 시 띄울 모달 상태
   const [splashOpen, setSplashOpen] = useState<boolean>(false);
 
-  const canStart = location != null;
-  const onStart = () => {
+  // 로딩/에러
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const canStart = useMemo(() => location != null && !loading, [location, loading]);
+
+  const onStart = async () => {
+    if (!location) return;
+
+    setLoading(true);
+    setSubmitError(null);
+
+    const payload = {
+      emotion,
+      energy,
+      place: PLACE_MAP[location],
+    };
+
+    const res = await createDailyLogBefore(payload);
+
+    setLoading(false);
+
+    if (typeof res === "string") {
+      // apiUtils에서 string으로 에러가 올 수도 있어 가드
+      setSubmitError(res || "오류가 발생했습니다.");
+      alert(submitError);
+      return;
+    }
+    // if (isErrorResponse(res)) {
+    //   setSubmitError(res.message || "요청에 실패했습니다.");
+    //   return;
+    // }
+    // 성공(RespDailyLogBefore)
+    // 필요하다면 res를 전역 상태로 보관하거나 analytics 로깅
     setSplashOpen(true);
     onClose?.(); // 현재 모달은 닫기
   };
-
   return (
     <>
       <PageModal open={open} onClose={onClose}>
@@ -53,8 +95,8 @@ export default function DailyCheckInModal({
             <Question className="typo-h3">지금 느끼는 감정이 어떤가요?</Question>
             <DotsSelector
               name="feeling"
-              value={feeling}
-              onChange={setFeeling}
+              value={emotion}
+              onChange={setEmotion}
               min={1}
               max={5}
               leftLabel="매우 좋지 않음"
@@ -95,7 +137,7 @@ export default function DailyCheckInModal({
 
           <ButtonRow>
             <GreenButton disabled={!canStart} onClick={onStart}>
-              START
+              {loading ? "STARTING..." : "START"}
             </GreenButton>
           </ButtonRow>
         </ModalContainer>
