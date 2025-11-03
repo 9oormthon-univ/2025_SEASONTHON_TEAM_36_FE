@@ -6,7 +6,7 @@ import AI from "@/assets/images/ai-frog.svg";
 const Button = styled.button<{ $isSheetOpen: boolean }>`
   position: fixed;
   top: 12px;
-  right: 24px;
+  right: 26px;
   transition:
     top 0.3s ease,
     right 0.3s ease;
@@ -14,7 +14,7 @@ const Button = styled.button<{ $isSheetOpen: boolean }>`
     right: 26px;
   }
   @media (min-height: 700px) {
-    top: calc(${props => (props.$isSheetOpen ? 12 : 73)}px + env(safe-area-inset-bottom, 0px));
+    top: calc(${props => (props.$isSheetOpen ? 12 : 48)}px + env(safe-area-inset-bottom, 0px));
   }
 `;
 

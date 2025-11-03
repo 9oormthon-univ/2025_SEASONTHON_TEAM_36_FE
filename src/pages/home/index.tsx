@@ -60,7 +60,7 @@ export default function HomePage() {
   if (loading) {
     return (
       <Page>
-        <div style={{ padding: "2rem" }}>불러오는 중…</div>
+        <div style={{ padding: "2rem", textAlign: "center" }}>불러오는 중…</div>
       </Page>
     );
   }
@@ -68,16 +68,16 @@ export default function HomePage() {
   if (error) {
     return (
       <Page>
-        <div style={{ padding: "2rem" }}>에러가 발생했어요 😢</div>
+        <div style={{ padding: "2rem", textAlign: "center" }}>에러가 발생했어요 😢</div>
       </Page>
     );
   }
 
   return (
     <Page>
+      <ChatbotBtn isSheetOpen={isSheetOpen} />
       {!isSheetOpen && <TopSpacing />}
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
-        <ChatbotBtn isSheetOpen={isSheetOpen} />
         <DateView />
 
         {hasGoals ? (
