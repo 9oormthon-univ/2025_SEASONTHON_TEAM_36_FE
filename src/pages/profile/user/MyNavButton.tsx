@@ -1,6 +1,8 @@
 import { useState } from "react";
 import styled from "styled-components";
 
+import ProfileImg from "@/assets/images/profile-fill-new.svg";
+
 import UserProfileModal from "./UserProfileModal";
 
 export default function MyButton() {
@@ -14,7 +16,7 @@ export default function MyButton() {
         onClick={() => setOpen(true)}
         aria-label="마이 페이지"
       >
-        MY
+        <img src={ProfileImg} alt="마이 페이지" width="20" height="20" />
       </CircleButton>
 
       <UserProfileModal open={open} onClose={() => setOpen(false)} />
@@ -24,7 +26,7 @@ export default function MyButton() {
 
 /* ===== Styles ===== */
 const CircleButton = styled.button`
-  --btn-size: 48px;
+  --btn-size: 36px;
 
   /* 항상 원형 유지 */
   inline-size: var(--btn-size);
@@ -36,17 +38,16 @@ const CircleButton = styled.button`
   place-items: center;
 
   padding: 0;
-  border: none;
-  background-color: var(--natural-200);
+  border: 0.75px solid #969ba5;
+  background-color: white;
   color: var(--text-1, #000);
   line-height: 1; /* 텍스트가 높이에 영향 주지 않도록 */
   user-select: none;
   cursor: pointer;
 
-  /* 쉐도우 정상 적용 (콤마로 다중 쉐도우) */
-  box-shadow:
-    0.3px 0.3px 5px var(--natural-400, #d6d9e0),
-    -0.3px -0.3px 5px var(--natural-400, #d6d9e0);
+  position: absolute;
+  right: 0px;
+  top: clamp(-24px, calc(-12px + (100vh - 667px) * -12 / 229), -12px);
 
   transition:
     transform 0.2s ease,

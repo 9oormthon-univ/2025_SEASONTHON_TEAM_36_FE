@@ -12,28 +12,7 @@ import {
   YAxis,
 } from "recharts";
 
-const data = [
-  {
-    name: "9월 1주",
-    최대: 10,
-    최소: 2,
-  },
-  {
-    name: "9월 2주",
-    최대: 11,
-    최소: 4,
-  },
-  {
-    name: "9월 3주",
-    최대: 12,
-    최소: 6,
-  },
-  {
-    name: "9월 4주",
-    최대: 14,
-    최소: 8,
-  },
-];
+import { useStatistics } from "../hooks/useStatistics";
 
 interface CustomLabelProps extends LabelProps {
   x?: string | number;
@@ -67,7 +46,7 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
   return (
     <foreignObject
       x={x - width / 2 + 6}
-      y={-28}
+      y={-22}
       width={width || 100}
       height={height || 30}
       style={{ overflow: "visible", position: "relative" }}
@@ -93,7 +72,7 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
       <div
         style={{
           width: "2px",
-          height: `${y + 1.2}px`,
+          height: `${y - 4}px`,
           background: dataKey === "최대" ? "green" : "lightgreen",
           position: "absolute",
           left: `${width / 2 + 1.5}px`,
@@ -108,6 +87,7 @@ interface CustomActiveBarProps extends RectangleProps {
 }
 
 const Chart2 = () => {
+  const { focusTime } = useStatistics();
   const [activeBar, setActiveBar] = useState<{ index: number; dataKey: string } | null>(null);
 
   const CustomActiveBar = (props: CustomActiveBarProps) => {
@@ -136,16 +116,16 @@ const Chart2 = () => {
 
   return (
     <ResponsiveContainer width={"100%"} aspect={1.618}>
-      <BarChart margin={{ top: 10, right: 5 }} data={data} style={{ paddingRight: "16px" }}>
+      <BarChart margin={{ top: 10, right: 5 }} data={focusTime} style={{ paddingRight: "16px" }}>
         <CartesianGrid stroke="rgba(0, 0, 42, 0.15)" strokeDasharray="3 3" vertical={false} />
         <XAxis
           dataKey="name"
           tickLine={false}
           tickMargin={4}
-          interval={"preserveStartEnd"}
+          interval={0}
           fontWeight={500}
           stroke="#6f737b"
-          tick={{ fill: "#000", fontSize: 12, fontWeight: 500 }}
+          tick={{ fill: "#000", fontSize: 11, fontWeight: 500 }}
         />
         <YAxis
           axisLine={false}
