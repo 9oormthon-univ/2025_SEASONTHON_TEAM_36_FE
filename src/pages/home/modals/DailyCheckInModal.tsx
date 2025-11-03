@@ -84,7 +84,7 @@ export default function DailyCheckInModal({
   };
   return (
     <>
-      <PageModal open={open} onClose={onClose}>
+      <PageModal open={open} onClose={onClose} hideHeader={true}>
         <ModalContainer $gap="7%">
           <Header>
             <Title className="typo-h2">오늘의 도약 전</Title>
@@ -152,6 +152,7 @@ const Header = styled.header`
   display: flex;
   flex-direction: column;
   gap: 2vh;
+  margin-top: 3vh;
 `;
 
 const Title = styled.h1`
