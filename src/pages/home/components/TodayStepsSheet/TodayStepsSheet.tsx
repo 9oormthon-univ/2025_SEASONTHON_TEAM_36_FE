@@ -4,7 +4,7 @@ import styled, { CSSProperties } from "styled-components";
 
 import dragUp from "@/assets/images/drag-up.svg";
 
-import BottomSheet from "../../../../layout/BottomSheet";
+import BottomSheet from "../../../../common/components/BottomSheet";
 import DailyCheckInModal from "../../modals/DailyCheckInModal";
 import DayCompleteSplash from "../../splashes/DayCompleteSplash";
 import GoalCompleteSplash from "../../splashes/GoalCompleteSplash";
