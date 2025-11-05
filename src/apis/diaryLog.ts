@@ -12,29 +12,35 @@ export async function createDailyLogBefore(
   return handleApiRequest<RespDailyLogBefore>(() => mainApi.post("/api/v1/daily-log/before", body));
 }
 
-/** [POST] 오늘 DailyLogAfter 생성 (사진 URL 포함 가능) */
+/** [POST] 특정 날짜 DailyLogAfter 생성 (사진 URL 포함 가능) */
 export async function createDailyLogAfter(
   body: ReqDailyLogAfter,
+  date: string,
 ): Promise<RespDailyLogAfter | ErrorResponse | string> {
-  return handleApiRequest<RespDailyLogAfter>(() => mainApi.post("/api/v1/daily-log/after", body));
+  return handleApiRequest<RespDailyLogAfter>(() =>
+    mainApi.post("/api/v1/daily-log/after/date", body, {
+      params: { date },
+    }),
+  );
 }
 
-/** [GET] 오늘 DailyLogBefore 조회 */
-export async function getDailyLogBeforeToday() {
+/** [GET] 특정 날짜 DailyLogBefore 조회 */
+export async function getDailyLogBeforeToday(date: string) {
   return handleApiRequest<RespDailyLogBefore | null>(() =>
-    mainApi.get("/api/v1/daily-log/before/today", {
+    mainApi.get("/api/v1/daily-log/before/date", {
+      params: { date },
       headers: { Accept: "application/json" },
     }),
   );
 }
 
 /** [GET] 오늘 DailyLogAfter 조회 */
-export async function getDailyLogAfterToday() {
-  return handleApiRequest<RespDailyLogAfter>(() =>
-    mainApi.get("/api/v1/daily-log/after/today", {
-      headers: { Accept: "application/json" },
-    }),
-  );
-}
+// export async function getDailyLogAfterToday() {
+//   return handleApiRequest<RespDailyLogAfter>(() =>
+//     mainApi.get("/api/v1/daily-log/after/today", {
+//       headers: { Accept: "application/json" },
+//     }),
+//   );
+// }
 
 // 추후 통계 관련 GET api 구현

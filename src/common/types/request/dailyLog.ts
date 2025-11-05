@@ -1,10 +1,10 @@
-import { CompletionLevel, Mood } from "../enums";
+import { CompletionLevel, Mood, Weather } from "../enums";
 
 /** BEFORE (시작 전) */
 export interface ReqDailyLogBefore {
   emotion: number; // 1~5
   energy: number; // 1~5
-  place: string; // "HOME" | "CAFE" | ... (백엔드 enum 문자열)
+  weather: Weather;
 }
 
 /** AFTER (종료 후) */

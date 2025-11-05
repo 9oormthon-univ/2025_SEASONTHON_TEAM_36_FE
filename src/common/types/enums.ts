@@ -1,5 +1,6 @@
 // RespDiaryDetail 필드 안 enum 값들
 export type Place = "HOME" | "WORK" | "CAFE" | "LIBRARY" | "CLASSROOM" | "OTHER";
+export type Weather = "SUNNY" | "CLOUDY" | "RAINY" | "SNOWY" | "WINDY";
 
 export type Mood =
   | "HAPPY"

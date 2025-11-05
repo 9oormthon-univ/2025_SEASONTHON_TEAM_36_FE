@@ -67,17 +67,16 @@ function likert1to5ToIndex(v: number | null | undefined, arrLen: number) {
 
 export default function Read() {
   const { date } = useParams<{ date: string }>();
-  const queryDate = date ?? "";
 
   const [detail, setDetail] = useState<RespDiaryDetail | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!queryDate) return;
+    if (!date) return;
     let alive = true;
 
     void (async () => {
-      const res = await fetchDiaryDetail(queryDate);
+      const res = await fetchDiaryDetail(date);
       if (!alive) return;
       console.info(res);
       if (typeof res === "string") {
@@ -94,7 +93,7 @@ export default function Read() {
     return () => {
       alive = false;
     };
-  }, [queryDate]);
+  }, [date]);
 
   if (loadErr) return <div>❌ {loadErr}</div>;
   if (!detail) return <div style={{ textAlign: "center" }}>불러오는 중...</div>;
@@ -118,7 +117,6 @@ export default function Read() {
 
   const headerDate = (() => {
     const str = detail.date;
-    if (!str) return formatKoreanDate(new Date());
     const [y, m, d] = str.split("-").map(Number);
     return formatKoreanDate(new Date(y, (m ?? 1) - 1, d ?? 1));
   })();

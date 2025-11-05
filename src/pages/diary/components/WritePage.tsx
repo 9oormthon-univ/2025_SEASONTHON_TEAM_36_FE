@@ -1,12 +1,13 @@
 // 일기 작성 페이지
 import { useState } from "react";
-import { ErrorResponse, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { createDailyLogAfter } from "@/apis/diaryLog";
 import focus_01 from "@/assets/images/frog-face-1.svg";
 import focus_05 from "@/assets/images/frog-face-5.svg";
 import cafe from "@/assets/images/places/cafe.svg";
 import { CompletionLevel, Mood } from "@/common/types/enums";
+import { ErrorResponse } from "@/common/types/error";
 import { ReqDailyLogAfter } from "@/common/types/request/dailyLog";
 
 import GreenButton from "../../../common/components/GreenButton";
@@ -40,6 +41,8 @@ const ID_TO_MOOD: Record<number, Mood> = {
 export default function Write() {
   const { state } = useLocation() as { state: string };
   const navigate = useNavigate();
+
+  console.info(state);
 
   const goals = [
     { id: 1, name: "LG 전자제품 IMC 기획서 작성", color: "var(--green-200)" },
@@ -77,15 +80,15 @@ export default function Write() {
 
     try {
       setSubmitting(true);
-      const res = await createDailyLogAfter(body);
+      const res = await createDailyLogAfter(body, String(state));
 
       if (typeof res === "string") {
         alert(res || "알 수 없는 오류가 발생했어요.");
         return;
       }
       const maybeErr = res as ErrorResponse;
-      if (maybeErr?.status && maybeErr?.statusText) {
-        alert(maybeErr.statusText || "저장 중 오류가 발생했어요.");
+      if (maybeErr?.code && maybeErr?.message) {
+        alert(maybeErr.message || "저장 중 오류가 발생했어요.");
         return;
       }
       alert("일기가 저장됐어요!");
@@ -104,7 +107,7 @@ export default function Write() {
 
       {/* 날짜 바 */}
       <DateBar>
-        <DateText className="typo-h3">{formatKoreanDate(new Date(state || new Date()))}</DateText>
+        <DateText className="typo-h3">{formatKoreanDate(new Date(state))}</DateText>
       </DateBar>
       {/* 차트 + 범례 */}
       <ChartWithLegend chartSrc={timetable} goals={goals} chartWidthPct={75} />
