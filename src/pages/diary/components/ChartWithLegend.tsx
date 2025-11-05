@@ -8,7 +8,7 @@ import ClockPie24 from "./ClockPie24";
 export default function ChartWithLegend({
   goals,
   chartWidthPct = 75,
-  emptyText = "데이터가 없습니다",
+  emptyText = "오늘 한 일 데이터가 없습니다",
 }: {
   goals: GoalForChart[];
   chartWidthPct?: number; // 차트 가로 비율(%)
@@ -29,7 +29,6 @@ export default function ChartWithLegend({
 
   const total = useMemo(() => data.reduce((acc, d) => acc + d.value, 0), [data]);
 
-  type Item = (typeof data)[number];
   const hasAny = total > 0;
 
   return (

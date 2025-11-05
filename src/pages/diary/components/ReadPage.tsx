@@ -1,9 +1,6 @@
 // src/pages/diary/components/Read.tsx
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { fetchDiaryDetail } from "@/apis/diary";
-import type { RespDiaryDetail } from "@/common/types/response/diary";
 import {
   ENUM_TO_WEATHER_ID,
   getWeatherIcons,
@@ -17,6 +14,7 @@ import {
   PERFECTION,
   PREV_EMOTION,
 } from "../constants/readConstants";
+import useDiaryDetail from "../hooks/useDiaryDetail";
 import { Label } from "../styles/InfoCard";
 import { DateBar, DateText, Page, Section } from "../styles/ReadPage";
 import { formatKoreanDate } from "../utils/dateUtils";
@@ -33,34 +31,11 @@ import PhotoPicker from "./PhotoPicker";
 
 export default function Read() {
   const { date } = useParams<{ date: string }>();
-  const [detail, setDetail] = useState<RespDiaryDetail | null>(null);
-  const [loadErr, setLoadErr] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!date) return;
-    let alive = true;
-
-    void (async () => {
-      const res = await fetchDiaryDetail(date);
-      if (!alive) return;
-      if (typeof res === "string") {
-        setLoadErr(res || "알 수 없는 오류가 발생했습니다.");
-        return;
-      }
-      if (res && typeof res === "object" && "message" in res) {
-        setLoadErr(res.message || "요청에 실패했습니다.");
-        return;
-      }
-      setDetail(res);
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, [date]);
+  const { detail, error: loadErr, loading } = useDiaryDetail(date ?? null);
 
   if (loadErr) return <div>❌ {loadErr}</div>;
-  if (!detail) return <div style={{ textAlign: "center" }}>불러오는 중...</div>;
+  if (loading || !detail) return <div style={{ textAlign: "center" }}>불러오는 중...</div>;
 
   // ---------- 서버 데이터 → UI 매핑 ----------
   const prevEmotionIdx = likert1to5ToIndex(detail.emotion, 5);
@@ -72,10 +47,20 @@ export default function Read() {
   const perfectionPct = COMPLETION_TO_PERCENT[detail.completionLevel] ?? 0;
   const perfectionIdx = Math.floor(perfectionPct === 100 ? 4 : perfectionPct / 20);
 
+  // 실제 데이터 사용 (권장)
   const goals = mapTodosToChartGoals(detail.todayCompletedTodoResponses);
 
+  // 필요 시 더미 데이터를 잠깐 쓰고 싶다면 위 줄을 주석 처리하고 아래 블록 사용
+  /*
+  const goals = mapTodosToChartGoals([
+    { todoId: 1, todoTitle: "2026학년도 수능 15일 플랜", processTime: "PT3H5M3S", ratio: 0.85 },
+    { todoId: 2, todoTitle: "영어 모의고사 풀이 및 오답노트 정리", processTime: "PT1H42M17S", ratio: 0.65 },
+    { todoId: 3, todoTitle: "수학 확통 기출 분석 및 개념 복습", processTime: "PT2H28M50S", ratio: 0.9 },
+  ]);
+  */
+
   const headerDate = (() => {
-    const str = detail.date;
+    const str = detail.date; // "yyyy-MM-dd"
     const [y, m, d] = str.split("-").map(Number);
     return formatKoreanDate(new Date(y, (m ?? 1) - 1, d ?? 1));
   })();
@@ -107,8 +92,6 @@ export default function Read() {
             },
             {
               title: "날씨",
-              // getWeatherIcons가 배열/맵이라면 아래 그대로,
-              // 함수라면 getWeatherIcons(weatherIdx).active 로 바꿔주세요.
               imgSrc: getWeatherIcons(weatherIdx)?.active,
               label: getWeatherLabelFromEnum(detail.weather) ?? "",
             },
@@ -131,11 +114,7 @@ export default function Read() {
               imgSrc: CONCENTRATION[concentrationIdx]?.img,
               label: CONCENTRATION[concentrationIdx]?.text ?? "",
             },
-            {
-              title: "완성도",
-              imgSrc: PERFECTION[perfectionIdx],
-              label: `${perfectionPct}%`,
-            },
+            { title: "완성도", imgSrc: PERFECTION[perfectionIdx], label: `${perfectionPct}%` },
           ]}
         />
       </Section>

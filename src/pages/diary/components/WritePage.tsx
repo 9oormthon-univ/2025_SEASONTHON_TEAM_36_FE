@@ -3,53 +3,35 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { createDailyLogAfter } from "@/apis/diaryLog";
-import focus_01 from "@/assets/images/frog-face-1.svg";
-import focus_05 from "@/assets/images/frog-face-5.svg";
-import cafe from "@/assets/images/places/cafe.svg";
-import { CompletionLevel, Mood } from "@/common/types/enums";
+import { CompletionLevel } from "@/common/types/enums";
 import { ErrorResponse } from "@/common/types/error";
 import { ReqDailyLogAfter } from "@/common/types/request/dailyLog";
+import { getWeatherIcons, getWeatherLabelFromEnum } from "@/common/utils/mapWeather";
 
 import GreenButton from "../../../common/components/GreenButton";
+import { ENERGY, PREV_EMOTION } from "../constants/readConstants";
 import type { SelectorItem } from "../constants/writeConstants";
 import { EMOTIONS, FOCUSES } from "../constants/writeConstants";
-import timetable from "../dummyImages/시간표.png";
+import useDiaryDetail from "../hooks/useDiaryDetail";
 import { CompletionRow, DateBar, DateText, Label, Page, Section } from "../styles/WritePage";
 import { formatKoreanDate } from "../utils/dateUtils";
+import { ID_TO_MOOD, likert1to5ToIndex, mapTodosToChartGoals } from "../utils/diaryUtils";
 import ChartWithLegend from "./ChartWithLegend";
 import CompletionSelector from "./CompletionSelector";
-import BeforeJourney from "./JourneyRow";
+import { default as JourneyRow } from "./JourneyRow";
 import MemoBox from "./MemoBox";
 import PhotoPicker from "./PhotoPicker";
 import Selector from "./Selector";
 
-// 🐸 id(1~10) → 서버 Mood enum 매핑
-const ID_TO_MOOD: Record<number, Mood> = {
-  1: "HAPPY", // 즐거웠어
-  2: "EXCITED", // 설렜어 (LOVE 이미지는 EXCITED로 매핑)
-  3: "CALM", // 평온했어
-  4: "NORMAL", // 그저그래
-  5: "THRILLING", // 짜릿했어
-  6: "FRUSTRATED", // 답답했어
-  7: "DEPRESSED", // 우울했어
-  8: "EMPTY", // 허무했어
-  9: "ANGRY", // 화가났어
-  10: "DISAPPOINTED", // 실망했어
-};
-
-// TODO: 실제 데이터 props 또는 API 연결 필요
 export default function Write() {
   const { state } = useLocation() as { state: string };
+  console.info(state);
+  const date = String(state); // state -> data에 문자열로 저장
   const navigate = useNavigate();
 
-  console.info(state);
+  const { detail, error: loadErr, loading: loadingDetail } = useDiaryDetail(date);
 
-  const goals = [
-    { id: 1, name: "LG 전자제품 IMC 기획서 작성", color: "var(--green-200)" },
-    { id: 2, name: "총균쇠 독후감 작성하기", color: "var(--green-300)" },
-    { id: 3, name: "브랜딩 광고 영상 ppt 만들기", color: "var(--green-400)" },
-  ];
-
+  // 일기 작성 상태
   const [mood, setMood] = useState<SelectorItem | null>(null); // 기분
   const [focus, setFocus] = useState<SelectorItem | null>(null); // 집중도
   const [completion, setCompletion] = useState<CompletionLevel>("FIFTY"); // enum 완성도
@@ -58,6 +40,18 @@ export default function Write() {
 
   // 전송 상태
   const [submitting, setSubmitting] = useState(false);
+
+  if (loadErr) return <div>❌ {loadErr}</div>;
+  if (loadingDetail || !detail) return <div style={{ textAlign: "center" }}>불러오는 중...</div>;
+
+  // ---------- 서버 데이터 → UI 매핑 ----------
+  const goals = mapTodosToChartGoals(detail.todayCompletedTodoResponses);
+
+  const prevEmotionIdx = likert1to5ToIndex(detail.emotion, 5);
+  const energyIdx = likert1to5ToIndex(detail.energy, 5);
+  const weatherIdx = ENUM_TO_WEATHER_ID[detail.weather] ?? 0;
+
+  const headerDate = formatKoreanDate(new Date(state));
 
   const handleSubmit = async () => {
     if (!mood?.id) return alert("기분을 선택해주세요.");
@@ -103,25 +97,40 @@ export default function Write() {
 
   return (
     <Page>
-      {/* 추후 실제 api 데이터 연결 */}
-
       {/* 날짜 바 */}
       <DateBar>
-        <DateText className="typo-h3">{formatKoreanDate(new Date(state))}</DateText>
+        <DateText className="typo-h3">{headerDate}</DateText>
       </DateBar>
-      {/* 차트 + 범례 */}
-      <ChartWithLegend chartSrc={timetable} goals={goals} chartWidthPct={75} />
 
+      {/* 실제 파이 차트 + 범례 (터치/클릭 시 상세 시간) */}
+      <ChartWithLegend goals={goals} />
+
+      {/* 여정 전 */}
       <Section>
         <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
-        <BeforeJourney
+        <JourneyRow
           items={[
-            { title: "감정", imgSrc: focus_05, label: "좋음" },
-            { title: "잔여 에너지", imgSrc: focus_01, label: "기운 없음" },
-            { title: "장소", imgSrc: cafe, label: "카페" },
+            {
+              title: "감정",
+              imgSrc: PREV_EMOTION[prevEmotionIdx]?.img,
+              label: PREV_EMOTION[prevEmotionIdx]?.text ?? "",
+            },
+            {
+              title: "잔여 에너지",
+              imgSrc: ENERGY[energyIdx]?.img,
+              label: ENERGY[energyIdx]?.text ?? "",
+            },
+            {
+              title: "날씨",
+              // getWeatherIcons가 배열/맵이라면 아래 그대로,
+              // 함수라면 getWeatherIcons(weatherIdx).active 로 바꿔주세요.
+              imgSrc: getWeatherIcons(weatherIdx)?.active,
+              label: getWeatherLabelFromEnum(detail.weather) ?? "",
+            },
           ]}
         />
       </Section>
+
       {/*===== 작성 부분 시작 ===== */}
       {/* 기분 */}
       <Section>

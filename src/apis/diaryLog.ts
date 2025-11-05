@@ -12,6 +12,25 @@ export async function createDailyLogBefore(
   return handleApiRequest<RespDailyLogBefore>(() => mainApi.post("/api/v1/daily-log/before", body));
 }
 
+/** [GET] 오늘 DailyLogBefore 조회 */
+export async function getTodayDailyLogBefore() {
+  return handleApiRequest<RespDailyLogBefore>(() =>
+    mainApi.get("/api/v1/daily-log/before/today", {
+      headers: { Accept: "application/json" },
+    }),
+  );
+}
+
+/** [GET] 특정 날짜 DailyLogBefore 조회 */
+export async function getDailyLogBefore(date: string) {
+  return handleApiRequest<RespDailyLogBefore | null>(() =>
+    mainApi.get("/api/v1/daily-log/before/date", {
+      params: { date },
+      headers: { Accept: "application/json" },
+    }),
+  );
+}
+
 /** [POST] 특정 날짜 DailyLogAfter 생성 (사진 URL 포함 가능) */
 export async function createDailyLogAfter(
   body: ReqDailyLogAfter,
@@ -20,16 +39,6 @@ export async function createDailyLogAfter(
   return handleApiRequest<RespDailyLogAfter>(() =>
     mainApi.post("/api/v1/daily-log/after/date", body, {
       params: { date },
-    }),
-  );
-}
-
-/** [GET] 특정 날짜 DailyLogBefore 조회 */
-export async function getDailyLogBeforeToday(date: string) {
-  return handleApiRequest<RespDailyLogBefore | null>(() =>
-    mainApi.get("/api/v1/daily-log/before/date", {
-      params: { date },
-      headers: { Accept: "application/json" },
     }),
   );
 }
