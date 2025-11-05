@@ -29,44 +29,77 @@ export default function ClockPie24({
   thickness?: number; // (현재 미사용: 도넛 변형 대비)
   showCenterInfo?: boolean;
 }) {
-  const { data } = useMemo(() => {
-    // 입력 goals → 파이 조각들로 변환(메모이제)
-    const safe = (goals ?? []).map(g => ({
-      // null/undefined 방어 후 매핑
-      id: Number(g.id), // id는 number로 강제
-      name: g.name, // 라벨
-      value: Math.max(0, Math.floor(g.timeSecs || 0)), // 초 단위 값(음수/NaN 방지)
-      color: g.color, // 색상
-      isRemain: false, // 기본: 남은 시간 아님
-    }));
-    const usedSecs = safe.reduce((a, b) => a + b.value, 0); // 사용된 총 집중 시간(초)
-    const remain = Math.max(0, TOTAL_SECONDS - usedSecs); // 24h 기준 남은 시간(초, 최소 0)
-    const arr: Slice[] = [...safe]; // 조각 배열 복사
-    if (remain > 0) {
-      // 남은 시간이 있다면
-      arr.push({
-        // '남은 시간' 조각을 추가
-        id: REMAIN_ID,
-        name: "남은 시간",
-        value: remain,
-        color: "white", // 배경처럼 보이게 흰색
-        isRemain: true,
-      });
-    }
-    return { data: arr, used: usedSecs }; // 조각 목록과 사용 총합 반환
-  }, [goals]); // goals 변경시에만 재계산
-
-  const [selectedId, setSelectedId] = useState<number | null>(null); // 선택된 조각 ID 상태
-
   // 12시(위)에서 시작해서 시계 방향으로 그리기 위한 각도 설정
   const START_ANGLE = 90; // Recharts: 0도=3시 → 90도=12시
   const END_ANGLE = -270; // 12시부터 시계 방향 한 바퀴
+  const SWEEP = END_ANGLE - START_ANGLE; // -360
 
-  // 원형 반지름(외곽): 도넛이 아니라 꽉 채우는 파이여서 innerRadius는 0으로 둘 것
+  const { data, total, cumAngles } = useMemo(() => {
+    const safe = (goals ?? []).map(g => ({
+      id: Number(g.id),
+      name: g.name,
+      value: Math.max(0, Math.floor(g.timeSecs || 0)),
+      color: g.color,
+      isRemain: false,
+    }));
+    const used = safe.reduce((a, b) => a + b.value, 0);
+    const remain = Math.max(0, TOTAL_SECONDS - used);
+    const arr: Slice[] = [...safe];
+    if (remain > 0) {
+      arr.push({ id: REMAIN_ID, name: "남은 시간", value: remain, color: "white", isRemain: true });
+    }
+
+    // 누적 비율 기반 각도표(시작/끝/중앙 각도) 계산
+    const tot = arr.reduce((a, b) => a + b.value, 0) || 1; // 0 분모 방지
+    const res: Array<{ id: number; startDeg: number; endDeg: number; midDeg: number }> = [];
+    let acc = 0;
+    for (const s of arr) {
+      const startDeg = START_ANGLE + (acc / tot) * SWEEP;
+      const endDeg = START_ANGLE + ((acc + s.value) / tot) * SWEEP;
+      const midDeg = (startDeg + endDeg) / 2;
+      res.push({ id: s.id, startDeg, endDeg, midDeg });
+      acc += s.value;
+    }
+
+    return { data: arr, total: used, cumAngles: res };
+  }, [goals]);
+
+  const [selectedId, setSelectedId] = useState<number | null>(null); // 선택된 조각 ID 상태
+
   const radiusOuter = size / 2 - 2; // 외곽 반지름
-
   const labelRadius = radiusOuter + 10; // 시계 숫자(0·6·12·18) 배치 반지름
 
+  // ----- 유틸 -----
+  const fmtHMS = (sec: number) => {
+    const s = Math.max(0, Math.floor(sec));
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const r = s % 60;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+  };
+  const deg2rad = (deg: number) => (deg * Math.PI) / 180;
+
+  // 선택된 조각의 말풍선 좌표 계산 (중앙각 기준)
+  const bubble = useMemo(() => {
+    if (selectedId == null) return null;
+    const s = data.find(d => d.id === selectedId);
+    if (!s || s.isRemain) return null; // 남은 시간엔 말풍선 미표시
+    const angles = cumAngles.find(a => a.id === selectedId);
+    if (!angles) return null;
+
+    // 말풍선 위치: 원의 75% 지점 기준, 약간 바깥쪽으로
+    const r = radiusOuter * 0.75;
+    const rad = deg2rad(angles.midDeg);
+    const x = size / 2 + r * Math.cos(rad);
+    const y = size / 2 - r * Math.sin(rad);
+
+    // 좌표를 absolutely positioned div로 표시
+    return {
+      left: x,
+      top: y,
+      text: fmtHMS(s.value),
+    };
+  }, [selectedId, data, cumAngles, radiusOuter, size]);
   return (
     <Wrap style={{ width: size, height: size }}>
       {/* 컴포넌트 래퍼(절대 배치용) */}
@@ -141,10 +174,48 @@ export default function ClockPie24({
           })}
         </RChart>
       </ResponsiveContainer>
+      {/* 🔵 클릭 시 나타나는 HMS 말풍선 */}
+      {bubble && (
+        <Bubble
+          style={{
+            left: bubble.left,
+            top: bubble.top,
+            transform: "translate(-50%, -110%)", // 중앙 위쪽으로 살짝
+          }}
+        >
+          {bubble.text}
+        </Bubble>
+      )}
     </Wrap>
   );
 }
 
 const Wrap = styled.div`
   position: relative;
+`;
+
+const Bubble = styled.div`
+  position: absolute;
+  z-index: 2;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--olive-green);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translate(-50%, 0);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--olive-green); /* 꼬리 */
+  }
 `;

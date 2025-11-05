@@ -36,7 +36,7 @@ export default function ChartWithLegend({
     <Wrap>
       <ChartRow $pct={chartWidthPct}>
         <ChartBox>
-          <ClockPie24 goals={goals} size={220} padAngle={0} />
+          <ClockPie24 goals={goals} size={240} padAngle={0} />
         </ChartBox>
 
         <Legend>
