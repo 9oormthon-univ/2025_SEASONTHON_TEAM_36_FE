@@ -24,16 +24,8 @@ export interface RespDiaryDetail {
 export interface TodayCompletedTodo {
   todoId: number;
   todoTitle: string;
-  processTime: ProcessTime;
+  processTime: string;
   ratio: number;
-}
-
-interface ProcessTime {
-  seconds: number;
-  nano: number;
-  negative: boolean;
-  zero: boolean;
-  units: Unit[];
 }
 
 interface Unit {

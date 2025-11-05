@@ -4,6 +4,7 @@
 // ================================
 
 import type { CompletionLevel, Mood, Weather } from "@/common/types/enums";
+import { TodayCompletedTodo } from "@/common/types/response/diary";
 
 // ---------- Likert 1~5 → 0-based index (배열 길이로 클램프)
 export function likert1to5ToIndex(v: number | null | undefined, arrLen: number): number {
@@ -78,14 +79,6 @@ export function parseISODurationToSeconds(input: string | null | undefined): num
   const minutes = parseFloat(match[2] || "0");
   const seconds = parseFloat(match[3] || "0");
   return hours * 3600 + minutes * 60 + seconds;
-}
-
-// 서버에서 내려오는 TodayCompletedTodo 형태(요청 주신 인터페이스)
-export interface TodayCompletedTodo {
-  todoId: number;
-  todoTitle: string;
-  processTime: string; // ??
-  ratio: number;
 }
 
 // 차트 컴포넌트에 주입하기 위한 표준화 타입
