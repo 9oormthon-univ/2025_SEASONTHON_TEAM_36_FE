@@ -1,4 +1,5 @@
-import { useStatistics } from "../hooks/useStatistics";
+import { RespMonthlyTodos } from "@/common/types/response/statistics";
+
 import { Subjects, Wrapper } from "../styles/AchievedGoals";
 import GoalInfo from "./GoalInfo";
 import Status from "./Status";
@@ -6,9 +7,13 @@ import Subject from "./Subject";
 
 const todoTypeKor = ["예습/복습", "수행평가", "시험공부", "진로활동", "취미", "기타"];
 
-const AchievedGoals = () => {
-  const { clickedSubject, subjects, handleSubjectNumber } = useStatistics();
+interface AchievedGoalsProps {
+  clickedSubject: number;
+  subjects: RespMonthlyTodos[] | null | undefined;
+  handleSubjectNumber: (index: number) => void;
+}
 
+const AchievedGoals = ({ clickedSubject, subjects, handleSubjectNumber }: AchievedGoalsProps) => {
   return (
     <Wrapper>
       <Subjects>

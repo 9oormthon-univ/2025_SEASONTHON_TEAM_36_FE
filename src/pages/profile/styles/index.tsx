@@ -7,10 +7,29 @@ export const Page = styled.div`
   padding: 0 30px;
   margin-top: clamp(36px, calc(36px + ((100vh - 667px) * 40 / 225)), 76px);
   margin-bottom: clamp(20px, calc(20px + ((100vh - 667px) * 16 / 225)), 36px);
+  touch-action: pan-y pinch-zoom;
+  overscroll-behavior-x: contain;
 `;
 
 export const Wrapper = styled.div`
   width: min(100%, 600px);
+`;
+
+export const ContentWrapper = styled.div<{
+  $dragOffset: number;
+  $isDragging: boolean;
+  $isTransitioning?: boolean;
+}>`
+  transform: translateX(${props => props.$dragOffset}px);
+  transition: ${props =>
+    props.$isDragging ? "none" : "transform 0.3s ease-out, opacity 0.3s ease-out"};
+  opacity: ${props => (props.$isTransitioning ? 0.5 : 1)};
+  cursor: grab;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
 `;
 
 export const Header = styled.header`
