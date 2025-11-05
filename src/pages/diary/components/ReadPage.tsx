@@ -1,4 +1,5 @@
 // src/pages/diary/components/Read.tsx
+import { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import {
@@ -28,11 +29,24 @@ import ChartWithLegend from "./ChartWithLegend";
 import JourneyRow from "./JourneyRow";
 import MemoBox from "./MemoBox";
 import PhotoPicker from "./PhotoPicker";
+import ViewPicture from "./ViewPicture";
 
 export default function Read() {
   const { date } = useParams<{ date: string }>();
 
   const { detail, error: loadErr, loading } = useDiaryDetail(date ?? null);
+
+  // 프리뷰 상태
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  const handleImageClick = useCallback(() => {
+    // if (!detail?.photoUrl) return;
+    setPreviewOpen(true);
+  }, [detail?.photoUrl]);
+
+  const handleClosePreview = useCallback(() => {
+    setPreviewOpen(false);
+  }, []);
 
   if (loadErr) return <div>❌ {loadErr}</div>;
   if (loading || !detail) return <div style={{ textAlign: "center" }}>불러오는 중...</div>;
@@ -135,12 +149,16 @@ export default function Read() {
       <Section>
         <Label className="typo-h4">사진</Label>
         <PhotoPicker
-          photoUrl={detail.photoUrl ?? ""}
-          onImageClick={() => {
-            /* 확대 보기 등 */
-          }}
+          photoUrl={detail.photoUrl ?? "https://picsum.photos/400"}
+          onImageClick={handleImageClick}
         />
       </Section>
+      <ViewPicture
+        open={previewOpen}
+        src={detail.photoUrl ?? "https://picsum.photos/400"}
+        alt="사진 미리보기"
+        onClose={handleClosePreview}
+      />
     </Page>
   );
 }
