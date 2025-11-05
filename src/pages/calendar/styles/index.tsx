@@ -38,10 +38,16 @@ export const Input = styled.input<{ disabled: boolean; $fontSize: number | strin
   padding: 4px 10.5px 4px 13px;
   background: none;
   color: black;
+  -webkit-text-fill-color: black;
+  opacity: 1;
   font-size: ${props => props.$fontSize};
   font-weight: 500;
   &:focus {
     outline: none;
+  }
+  &:disabled {
+    -webkit-text-fill-color: black;
+    opacity: 1;
   }
   @media (max-height: 667px), (max-width: 375px) {
     font-size: var(--fs-sm);
@@ -89,11 +95,17 @@ export const Textarea = styled.textarea<{
   padding-top: 2px;
   background: none;
   color: black;
+  -webkit-text-fill-color: black;
+  opacity: 1;
   font-size: ${props => props.$fontSize};
   font-family: var(--ff-sans);
   resize: none;
   &:focus {
     outline: none;
+  }
+  &:disabled {
+    -webkit-text-fill-color: black;
+    opacity: 1;
   }
   @media (max-height: 667px), (max-width: 375px) {
     font-size: var(--fs-sm);
