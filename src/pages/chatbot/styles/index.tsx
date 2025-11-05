@@ -44,7 +44,7 @@ export const Button = styled.button`
 `;
 
 export const Textarea = styled.textarea<{
-  $fontSize: number | string;
+  $fontSize?: number | string;
   $isModify?: boolean;
 }>`
   width: 100%;
@@ -52,15 +52,13 @@ export const Textarea = styled.textarea<{
   border-bottom: ${props => (props.$isModify ? "1px solid black" : "none")};
   background: none;
   color: black;
-  font-size: ${props => props.$fontSize};
+  font-size: clamp(13px, 3.86vw, 16px);
   font-weight: 500;
+  line-height: clamp(1.3, 1.4, 1.5);
   font-family: var(--ff-sans);
   resize: none;
   overflow: hidden;
   &:focus {
     outline: none;
-  }
-  @media (max-height: 667px), (max-width: 375px) {
-    font-size: var(--fs-sm);
   }
 `;
