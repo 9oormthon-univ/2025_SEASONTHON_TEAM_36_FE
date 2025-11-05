@@ -19,6 +19,7 @@ export default function ConfirmModal({
   message = "정말 삭제하겠습니까?",
   confirmText = "예",
   cancelText = "아니오",
+  cancelCentric = false,
 }) {
   if (!open) return null;
 
@@ -44,7 +45,7 @@ export default function ConfirmModal({
     // 초기 포커스: 취소 버튼에
     setTimeout(() => cancelRef.current?.focus(), 0);
 
-    const onKey = (e) => {
+    const onKey = e => {
       if (e.key === "Escape") onCancel?.();
       if (e.key === "Enter") onConfirm?.();
     };
@@ -58,42 +59,49 @@ export default function ConfirmModal({
   const portalRoot = getRoot();
 
   return createPortal(
-    <Overlay role="presentation" onMouseDown={(e) => {
-      // 바깥 클릭으로 닫기 (컨텐츠 클릭은 무시)
-      if (e.target === e.currentTarget) onCancel?.();
-    }}>
+    <Overlay
+      role="presentation"
+      onMouseDown={e => {
+        // 바깥 클릭으로 닫기 (컨텐츠 클릭은 무시)
+        if (e.target === e.currentTarget) onCancel?.();
+      }}
+    >
       <Dialog
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-delete-title"
       >
-        <Message id="confirm-delete-title" className="typo-button">{message}</Message>
+        <Message id="confirm-delete-title" className="typo-button">
+          {message}
+        </Message>
 
         <Buttons role="group" aria-label="삭제 확인">
-
-          <Button
-            ref={cancelRef}
-            data-variant="cancel"
-            onClick={onCancel}
-            aria-label={`${cancelText} (취소)`}
-          >
-            {cancelText}
-          </Button>
-          <Divider aria-hidden="true" />
           <Button
             ref={confirmRef}
             data-variant="confirm"
             onClick={onConfirm}
             aria-label={`${confirmText} (확인)`}
             className="typo-body-m"
+            $cancelCentric={cancelCentric}
           >
             {confirmText}
+          </Button>
+          <Divider aria-hidden="true" />
+          <Button
+            ref={cancelRef}
+            data-variant="cancel"
+            onClick={onCancel}
+            aria-label={`${cancelText} (취소)`}
+            className="typo-body-m"
+            $cancelCentric={cancelCentric}
+          >
+            {cancelText}
           </Button>
         </Buttons>
       </Dialog>
     </Overlay>,
-    portalRoot
+    portalRoot,
   );
 }
 
@@ -108,8 +116,12 @@ const Overlay = styled.div`
   /* 애니메이션 */
   animation: fadeIn 140ms ease-out;
   @keyframes fadeIn {
-    from { opacity: .001; }
-    to { opacity: 1; }
+    from {
+      opacity: 0.001;
+    }
+    to {
+      opacity: 1;
+    }
   }
 `;
 
@@ -119,8 +131,8 @@ const Dialog = styled.div`
   color: var(--text-1, #111);
   border-radius: 14px;
   box-shadow:
-    0 8px 28px rgba(0,0,0,.14),
-    0 2px 8px rgba(0,0,0,.10);
+    0 8px 28px rgba(0, 0, 0, 0.14),
+    0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 
   /* 컨텐츠 간격 */
@@ -134,18 +146,19 @@ const Message = styled.div`
   font-size: 16px;
   line-height: 1.35;
   font-weight: 600;
+  white-space: pre-wrap;
 `;
 
 const Buttons = styled.div`
   display: grid;
   grid-template-columns: 1fr 1px 1fr;
   align-items: stretch;
-  border-top: 1px solid var(--natural-600, #969BA5);
+  border-top: 0.27px solid var(--natural-600, #969ba5);
 `;
 
 const Divider = styled.div`
-  width: 1px;
-  background: var(--natural-600, #969BA5);
+  width: 0.27px;
+  background: var(--natural-600, #969ba5);
 `;
 
 const Button = styled.button`
@@ -156,11 +169,16 @@ const Button = styled.button`
   padding: 10px;
   cursor: pointer;
 
-  color: ${({ ["data-variant"]: v }) =>
-    v === "confirm" ? "var(--brand-1, #0E7400)" : "var(--text-1, #111)"};
+  color: ${({ ["data-variant"]: v, $cancelCentric }) => {
+    return $cancelCentric
+      ? v === "cancel"
+        ? "var(--brand-1, #0E7400)"
+        : "var(--text-3, #969BA5)"
+      : "var(--text-1, #111)";
+  }};
 
   &:focus-visible {
-    outline: 2px solid var(--brand-1, #0E7400);
+    outline: 2px solid var(--brand-1, #0e7400);
     outline-offset: -2px;
   }
 
