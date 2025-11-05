@@ -1,15 +1,12 @@
 // FrogNotiModal.jsx
 import { useEffect } from "react";
 
-import frogCompl from "@/assets/images/frog-sleep.svg";
+import frogSwim from "@/assets/images/frog-swim.svg";
 
 import FrogNoti from "../../../common/components/FrogNoti";
 import PageModal from "../../../common/components/PageModal";
 
-/**
- * PageModal + FrogNoti 조합 컴포넌트
- */
-export default function GoalCompleteSplash({
+export default function StepPauseSplash({
   open,
   onClose,
 }: {
@@ -30,9 +27,9 @@ export default function GoalCompleteSplash({
   return (
     <PageModal open={open} onClose={onClose} headerVariant="close-right">
       <FrogNoti
-        topText={`오늘의 여정이 끝났어요.\n오늘도 수고 많았어요!`}
-        imageSrc={frogCompl}
-        bottomText={`개구리가 내일의 여정을 위해\n쉬고 있어요`}
+        topText={`더 높이 뛰기 위해선 잠시\n웅크릴 시간도 필요해요`}
+        imageSrc={frogSwim}
+        bottomText={`개구리가 잠시 숨을 돌리고 있어요`}
       />
     </PageModal>
   );

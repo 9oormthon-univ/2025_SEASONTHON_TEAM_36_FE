@@ -18,7 +18,7 @@ export interface StepViewItem {
   stepOrder: number; // 정렬용(없는 경우 idx+1)
   stepDate: string; // ISO(없으면 "")
   description: string;
-  count: number; // 기본 0
+  // count: number; // 기본 0
   isCompleted: boolean;
 }
 
@@ -30,19 +30,6 @@ export interface GoalStepsView {
   progressText: string;
   progress: number; // 0~100 가정(정규화는 호출부에서)
   steps: StepViewItem[]; // 날짜 최신순 정렬
-}
-
-/** 오늘/과거 리스트 결과 (toTodayAndPastLists 반환) */
-export interface TodayPastLists {
-  meta: {
-    dDay: string;
-    title: string;
-    endDate: string;
-    progressText: string;
-    progress: number;
-  };
-  today: StepViewItem[]; // 완료 제외 + 오늘만
-  past: StepViewItem[]; // 완료 제외 + 과거만(미래 제외)
 }
 
 /** applyPlayingState에 들어가는 그룹 구조(섹션 2개: prep / carried 등 가정) */

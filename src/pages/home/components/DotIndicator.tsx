@@ -101,7 +101,7 @@ const Bar = styled.div<DotBarProps>`
   align-items: center;
   justify-content: center;
   gap: ${p => p.$gap}px;
-  margin: 30px 0;
+  margin: 3vh 0;
 `;
 
 /* 점 래퍼는 최대 크기로 고정, 실제 원은 ::after로 그리고 scale로 크기 변경 */

@@ -1,7 +1,4 @@
-// src/apis/diaryLog.ts
-import type { ErrorResponse } from "react-router-dom";
-
-// 타입: common/types/ 에서 가져오기
+import { ErrorResponse } from "@/common/types/error";
 import type { ReqDailyLogAfter, ReqDailyLogBefore } from "@/common/types/request/dailyLog";
 import type { RespDailyLogAfter, RespDailyLogBefore } from "@/common/types/response/dailyLog";
 

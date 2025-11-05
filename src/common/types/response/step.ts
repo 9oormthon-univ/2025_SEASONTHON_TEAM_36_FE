@@ -34,6 +34,19 @@ export interface RespTodoSteps {
   steps: Array<RespStepInfo>;
 }
 
+/** [GET] 오늘의 한 걸음 / 놓친 한 걸음 조회 */
+export interface RespStepItem {
+  stepId: number;
+  stepDate: string; // e.g. "2025-09-02"
+  description: string;
+  isCompleted: boolean;
+}
+export interface RespTodayStep {
+  todayStepResponses: RespStepItem[]; // 오늘의 한 걸음
+  missedStepResponses: RespStepItem[]; // 놓친 한 걸음
+  completedMissedStepResponses: RespStepItem[]; // 놓친 한 걸음 중 완료된
+}
+
 /**
  * End-Point: /api/v1/steps/{stepId}/start
  * Step 기록 시작
@@ -42,6 +55,10 @@ export interface RespTodoSteps {
  * End-Point: /api/v1/steps/{stepId}/stop
  * Step 기록 종료
  * src/apis/ai.ts의 stopStep
+ *
+ * End-Point: /api/v1/step-records/{stepId}/pause
+ * Step 기록 일시정지
+ * src/apis/step.ts의 pauseStep
  */
 export interface RespStepRecord {
   stepId: number;
@@ -49,7 +66,9 @@ export interface RespStepRecord {
   startTime: string;
   endTime: string;
   duration: number;
+  breakCount: number;
   progress: number;
+  isCompleted: boolean;
   isCompletedTodaySteps: boolean;
 }
 

@@ -60,7 +60,7 @@ export default function HomePage() {
   if (loading) {
     return (
       <Page>
-        <div style={{ padding: "2rem" }}>불러오는 중…</div>
+        <div style={{ padding: "2rem", textAlign: "center" }}>불러오는 중…</div>
       </Page>
     );
   }
@@ -68,17 +68,17 @@ export default function HomePage() {
   if (error) {
     return (
       <Page>
-        <div style={{ padding: "2rem" }}>에러가 발생했어요 😢</div>
+        <div style={{ padding: "2rem", textAlign: "center" }}>에러가 발생했어요 😢</div>
       </Page>
     );
   }
 
   return (
     <Page>
+      <ChatbotBtn isSheetOpen={isSheetOpen} />
+      {!isSheetOpen && <TopSpacing />}
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
-        <TopSpacing />
-        <ChatbotBtn isSheetOpen={isSheetOpen} />
-        <DateView hideYear={isSheetOpen} />
+        <DateView />
 
         {hasGoals ? (
           <CardsCarousel ids={ids} maxDots={5}>
@@ -89,9 +89,8 @@ export default function HomePage() {
         ) : (
           <EmptyState />
         )}
-
-        <BottomSpacing />
       </Body>
+      <BottomSpacing />
 
       {hasGoals && <TodayStepsSheet />}
     </Page>
@@ -100,7 +99,7 @@ export default function HomePage() {
 
 const Page = styled.section`
   min-height: 100%;
-  background: var(--bg-1);
+  background: var(--bg-2);
   color: var(--text-1);
   display: flex;
   flex-direction: column;
@@ -112,7 +111,7 @@ const Page = styled.section`
 const Body = styled.div<BodyStyledProps>`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   width: 100%;
   min-height: 0;
 `;
@@ -122,6 +121,7 @@ const TopSpacing = styled.div`
   @media (min-height: 700px) {
     height: calc(75px + env(safe-area-inset-top, 0px));
   }
+  width: 100%;
 `;
 
 const BottomSpacing = styled.div`
@@ -129,4 +129,5 @@ const BottomSpacing = styled.div`
   @media (min-height: 700px) {
     height: calc(90px + env(safe-area-inset-bottom, 0px));
   }
+  width: 100%;
 `;

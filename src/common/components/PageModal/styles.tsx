@@ -1,7 +1,10 @@
 import styled from "styled-components";
 
 /* ===== styles: NavBar 제외 전체 덮기 ===== */
-export const Screen = styled.div<{ $viewNavBar?: boolean }>`
+export const Screen = styled.div<{
+  $viewNavBar?: boolean;
+  $bgColor?: string; // ☁️ 배경색 prop 추가
+}>`
   position: fixed;
   left: 0;
   right: 0;
@@ -14,7 +17,7 @@ export const Screen = styled.div<{ $viewNavBar?: boolean }>`
       : "0"};
 
   z-index: 2147483647; /* 앱 모든 요소 위 */
-  background: var(--bg-1);
+  background: ${({ $bgColor }) => $bgColor ?? "var(--bg-1)"}; /* 기본값 fallback */
   color: var(--text-1);
   display: flex;
   flex-direction: column;
@@ -52,7 +55,7 @@ export const HeaderBar = styled.header`
   padding-left: 12px;
   padding-right: 12px;
 
-  background: var(--bg-1);
+  background: transparent;
 `;
 
 export const Title = styled.h2`

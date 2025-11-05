@@ -71,6 +71,7 @@ export interface PageModalProps {
   viewNavBar?: boolean;
   /** 헤더 숨기기 */
   hideHeader?: boolean;
+  bgColor?: string;
 }
 
 export default function PageModal({
@@ -81,6 +82,7 @@ export default function PageModal({
   headerVariant = "close-right",
   viewNavBar = false,
   hideHeader = false,
+  bgColor,
 }: PageModalProps) {
   const rootRef = React.useRef<HTMLElement | null>(null);
 
@@ -115,6 +117,7 @@ export default function PageModal({
       aria-modal="true"
       aria-labelledby="page-modal-title"
       $viewNavBar={viewNavBar}
+      $bgColor={bgColor}
     >
       {!hideHeader && (
         <ModalHeader

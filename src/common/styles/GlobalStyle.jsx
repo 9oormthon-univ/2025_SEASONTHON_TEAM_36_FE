@@ -19,6 +19,17 @@ export const GlobalStyle = createGlobalStyle`
     --natural-200:  #F1F4F8;
     --natural-0:    #FFFFFF;
 
+    /* 감정표현 */
+    --basic: #FFFFFF;
+    --yellow1: #FFE578;
+    --yellow2: #FFFF4A;
+    --pink: #FFC8F2;
+    --oragne: #FFB378;
+    --deep-blue: #75A0CE;
+    --olive-green: #9BAEAA;
+    --red: #EA7678;
+    --deep-brown: #74626B;
+
     /* 이외 사용되는 색상 */
     --blue: #8FE5FF;
 
@@ -57,7 +68,7 @@ export const GlobalStyle = createGlobalStyle`
   /* ===== 2) Semantic tokens: Light ===== */
   :root[data-theme="light"] {
     /* Brand */
-    --primary-1: #007410; 
+    --primary-1: #007410;
     --primary-2: #000000;
 
     /* Text color */
@@ -76,8 +87,8 @@ export const GlobalStyle = createGlobalStyle`
 
     /* Background */
     --bg-1:       #FFFFFF;
-    --bg-1-soft:  #F8FBFF;
-    --bg-2:       linear-gradient(0deg, #FFFFFF 0%, #ECFFE2 100%);
+    --bg-2:  #F8FBFF;
+    --bg-3:       linear-gradient(0deg, #FFFFFF 0%, #ECFFE2 100%);
   }
 
   /* ===== 3) Semantic tokens: Dark ===== */
@@ -102,13 +113,13 @@ export const GlobalStyle = createGlobalStyle`
 
     /* Background */
     --bg-1:       #0E1116;
-    --bg-1-soft:  #131821;
-    --bg-2:       linear-gradient(0deg, #0E1116 0%, #10151C 100%);
+    --bg-2:  #131821;
+    --bg-3:       linear-gradient(0deg, #0E1116 0%, #10151C 100%);
   }
 
   /* ===== 4) Typography semantic styles ===== */
 /* 필요 시 토큰으로 바꾸기 쉽게 변수로 분리함 (이 부분만 Primitive(Font Size)랑 다름*/
-:root { --h1-size: 30px; } /* 디자인시스템 값. 토큰 쓰려면 var(--fs-3xl) */
+:root { --h1-size: 28px; } /* 디자인시스템 값. 토큰 쓰려면 var(--fs-3xl) */
 
 .typo-h1 {
   font-family: var(--ff-sans);
