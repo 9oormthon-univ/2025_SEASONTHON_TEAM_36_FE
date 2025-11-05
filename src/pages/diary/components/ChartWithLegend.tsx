@@ -1,105 +1,127 @@
+// src/pages/diary/components/ChartWithLegend.tsx
+import { useMemo } from "react";
 import styled from "styled-components";
 
-type Goal = {
-  id: string | number;
-  name: string;
-  color: string; // e.g. "var(--green-200)"
-};
-
-interface ChartWithLegendProps {
-  /** 원형 차트 이미지 경로 */
-  chartSrc: string;
-  /** 이미지 대체 텍스트 */
-  chartAlt?: string;
-  /** 범례에 표시할 목표 목록 */
-  goals: Goal[];
-  /** 차트 너비 비율 (기본 75%) */
-  chartWidthPct?: number;
-  className?: string;
-}
+import type { GoalForChart } from "../utils/diaryUtils";
+import ClockPie24 from "./ClockPie24";
 
 export default function ChartWithLegend({
-  chartSrc,
-  chartAlt = "시간표",
   goals,
   chartWidthPct = 75,
-  className,
-}: ChartWithLegendProps) {
-  return (
-    <Wrapper className={className}>
-      <ChartBox>
-        <CircleChart
-          src={chartSrc}
-          alt={chartAlt}
-          $widthPct={chartWidthPct}
-          loading="lazy"
-          decoding="async"
-        />
-      </ChartBox>
+  emptyText = "데이터가 없습니다",
+}: {
+  goals: GoalForChart[];
+  chartWidthPct?: number; // 차트 가로 비율(%)
+  emptyText?: string;
+}) {
+  // 내부 렌더링용 데이터로 정규화
+  const data = useMemo(
+    () =>
+      (goals ?? []).map(g => ({
+        id: g.id,
+        label: g.name,
+        color: g.color,
+        value: Math.max(0, Number.isFinite(g.timeSecs) ? g.timeSecs : 0), // 파이값
+        timeSecs: Math.max(0, Number.isFinite(g.timeSecs) ? g.timeSecs : 0), // 표시용
+      })),
+    [goals],
+  );
 
-      <Legend>
-        {goals.map(g => (
-          <LegendItem key={g.id}>
-            <LegendLeft>
-              <ColorDot style={{ background: g.color }} />
-              <span className="typo-h4">{g.name}</span>
-            </LegendLeft>
-          </LegendItem>
-        ))}
-      </Legend>
-    </Wrapper>
+  const total = useMemo(() => data.reduce((acc, d) => acc + d.value, 0), [data]);
+
+  type Item = (typeof data)[number];
+  const hasAny = total > 0;
+
+  return (
+    <Wrap>
+      <ChartRow $pct={chartWidthPct}>
+        <ChartBox>
+          <ClockPie24 goals={goals} size={220} padAngle={0} />
+        </ChartBox>
+
+        <Legend>
+          {data.length === 0 || !hasAny ? (
+            <Empty>{emptyText}</Empty>
+          ) : (
+            data
+              .slice()
+              .sort((a, b) => b.value - a.value)
+              .map(g => (
+                <LegendItem key={g.id}>
+                  <ColorDot style={{ background: g.color }} />
+                  <span className="typo-h4">{g.label}</span>
+                  {/* <span className="time">{fmtHMS(g.timeSecs)}</span> */}
+                  {/* 시간 추가하면 좋을 듯 ! */}
+                </LegendItem>
+              ))
+          )}
+        </Legend>
+      </ChartRow>
+    </Wrap>
   );
 }
 
-const Wrapper = styled.div`
+const Wrap = styled.div`
   width: 100%;
 `;
 
-const ChartBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 30px;
-`;
+const ChartRow = styled.div<{ $pct: number }>`
+  display: grid;
+  grid-template-columns: ${({ $pct }) => `${$pct}%`} 1fr;
+  gap: 16px;
 
-const CircleChart = styled.img<{ $widthPct: number }>`
-  object-fit: cover;
-  width: ${({ $widthPct }) => `${$widthPct}%`};
-  max-width: 560px;
-`;
-
-export const Legend = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 0 14px;
-`;
-
-export const LegendItem = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-  padding: 2px 0;
-  color: var(--text-1);
-`;
-
-export const LegendLeft = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 20px;
-  min-width: 0; /* ellipsis를 위해 필요 */
-  > span {
-    color: var(--text-1);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 64vw; /* 이름이 길 때 줄바꿈 대신 말줄임 */
+  @media (max-width: 820px) {
+    grid-template-columns: 1fr;
   }
 `;
 
-export const ColorDot = styled.span`
+const ChartBox = styled.div`
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 8px 0;
+`;
+
+const Legend = styled.div`
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 12px;
+  margin-top: 14px;
+`;
+
+const LegendItem = styled.span`
+  width: 100%;
+  border: none;
+  background: var(--gray-50);
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  .name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .time {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+`;
+
+const ColorDot = styled.span`
   width: 12px;
   height: 12px;
   border-radius: 2px;
+  display: inline-block;
+`;
+
+const Empty = styled.div`
+  padding: 12px;
+  color: var(--gray-500);
+  background: var(--gray-50);
+  border-radius: 12px;
 `;

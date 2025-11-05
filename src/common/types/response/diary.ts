@@ -10,7 +10,7 @@ export interface RespDiary {
 export interface RespDiaryDetail {
   /** "yyyy-MM-dd" */
   date: string;
-  todayCompletedTodoResponses: TodayCompletedTodo[]; // 추후 수정 필요
+  todayCompletedTodoResponses: TodayCompletedTodo[];
   emotion: number;
   energy: number;
   place: Place; // enum
@@ -21,8 +21,7 @@ export interface RespDiaryDetail {
   photoUrl: string;
 }
 
-interface TodayCompletedTodo {
-  // 추후 수정 필요
+export interface TodayCompletedTodo {
   todoId: number;
   todoTitle: string;
   processTime: ProcessTime;
