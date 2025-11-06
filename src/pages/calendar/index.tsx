@@ -5,10 +5,12 @@ import { useEffect } from "react";
 import CustomCalendar from "./components/CustomCalendar";
 import GoalList from "./components/GoalList";
 import { useInitAllTodo } from "./hooks/useInitAllTodo";
+import { useCalendar } from "./stores/useCalendar";
 import { Main, Page, Title } from "./styles";
 import { ToDo } from "./styles/Goal";
 
 const CalendarScreen = () => {
+  const view = useCalendar(state => state.view);
   useInitAllTodo();
 
   useEffect(() => {
@@ -27,10 +29,12 @@ const CalendarScreen = () => {
     <Page>
       <Main>
         <CustomCalendar />
-        <ToDo>
-          <Title $fontSize={"var(--fs-lg)"}>Task To-Do</Title>
-          <GoalList />
-        </ToDo>
+        {view === "month" && (
+          <ToDo>
+            <Title $fontSize={"var(--fs-lg)"}>Task To-Do</Title>
+            <GoalList />
+          </ToDo>
+        )}
       </Main>
     </Page>
   );
