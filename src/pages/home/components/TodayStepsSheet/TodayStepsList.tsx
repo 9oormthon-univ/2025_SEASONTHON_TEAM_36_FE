@@ -1,29 +1,14 @@
 // src/pages/home/components/TodayStepsList.tsx
 import styled from "styled-components";
 
-import { RespStepRecord } from "@/common/types/response/step";
-
-import StepPlayingModal from "../../modals/StepPlayingModal";
 import type { StepListItem } from "../../types/steps"; // ← 공용 타입 재사용
-
-type PlayingModalProps = {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => void | Promise<void>;
-  onPause: () => void | Promise<void>;
-  record?: RespStepRecord | null;
-};
 
 interface TodayStepsListProps {
   items: StepListItem[];
   onAction?: (it: { id: string | number; stepId: number | null }) => void | Promise<void>;
-  playingModal?: PlayingModalProps;
 }
 
-export default function TodayStepsList({ items = [], onAction, playingModal }: TodayStepsListProps) {
-  const playingItem = items.find(it => it.state === "play");
-  const playingDescription = playingItem ? playingItem.description : "";
-
+export default function TodayStepsList({ items = [], onAction }: TodayStepsListProps) {
   return (
     <>
       <List role="list">
@@ -69,7 +54,7 @@ export default function TodayStepsList({ items = [], onAction, playingModal }: T
         })}
       </List>
 
-      {playingModal && (
+      {/* {playingModal && (
         <StepPlayingModal
           open={playingModal.open}
           onClose={playingModal.onClose}
@@ -78,7 +63,7 @@ export default function TodayStepsList({ items = [], onAction, playingModal }: T
           record={playingModal.record}
           stepDescription={playingDescription}
         />
-      )}
+      )} */}
     </>
   );
 }
