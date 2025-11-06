@@ -42,10 +42,7 @@ export const Header = styled.header`
 `;
 
 export const HeaderTitle = styled.h2`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: fix-content;
   font-size: clamp(var(--fs-xs), 5vw, var(--fs-xl));
   font-weight: 700;
 `;
@@ -62,4 +59,15 @@ export const SizedBox = styled.div`
 
 export const Text = styled.h3`
   margin-bottom: 20px;
+`;
+
+export const Center = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+`;
+
+export const DatePickerButton = styled.button`
+  transform: rotateZ(90deg);
 `;
