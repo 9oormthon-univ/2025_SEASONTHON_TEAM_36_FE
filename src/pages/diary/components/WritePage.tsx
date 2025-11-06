@@ -154,25 +154,29 @@ export default function Write() {
       {/* 여정 전 — DailyLogBefore 기반(없으면 빈 값) */}
       <Section>
         <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
-        <JourneyRow
-          items={[
-            {
-              title: "감정",
-              imgSrc: PREV_EMOTION[prevEmotionIdx]?.img,
-              label: PREV_EMOTION[prevEmotionIdx]?.text ?? "",
-            },
-            {
-              title: "잔여 에너지",
-              imgSrc: ENERGY[energyIdx]?.img,
-              label: ENERGY[energyIdx]?.text ?? "",
-            },
-            {
-              title: "날씨",
-              imgSrc: getWeatherIcons(weatherIdx)?.active,
-              label: before ? getWeatherLabelFromEnum(before.weather) : "",
-            },
-          ]}
-        />
+        {before ? (
+          <JourneyRow
+            items={[
+              {
+                title: "감정",
+                imgSrc: PREV_EMOTION[prevEmotionIdx]?.img,
+                label: PREV_EMOTION[prevEmotionIdx]?.text ?? "",
+              },
+              {
+                title: "잔여 에너지",
+                imgSrc: ENERGY[energyIdx]?.img,
+                label: ENERGY[energyIdx]?.text ?? "",
+              },
+              {
+                title: "날씨",
+                imgSrc: getWeatherIcons(weatherIdx)?.active,
+                label: before ? getWeatherLabelFromEnum(before.weather) : "",
+              },
+            ]}
+          />
+        ) : (
+          "시작 전 데이터가 없습니다."
+        )}
       </Section>
 
       {/*===== 작성 부분 시작 ===== */}
