@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 
 /**
@@ -9,12 +8,7 @@ import styled from "styled-components";
  * - onClick: 클릭 핸들러
  * - disabled: 버튼 비활성화
  */
-export default function GreenButton({
-  children,
-  onClick,
-  disabled = false,
-  ...rest
-}) {
+export default function GreenButton({ children, onClick, disabled = false, ...rest }) {
   return (
     <StyledButton onClick={onClick} disabled={disabled} {...rest}>
       {children}
@@ -28,15 +22,15 @@ const StyledButton = styled.button`
 
   /* 텍스트 길이에 따라 유동 폭 */
   padding: 12px 20px;
-  min-width: 134px;   /* 기본 최소 너비 */
-  height: 50px;       /* 고정 높이 */
+  min-width: 134px; /* 기본 최소 너비 */
+  height: 50px; /* 고정 높이 */
 
-  background: var(--primary-1, #0E7400);
+  background: var(--primary-1, #0e7400);
   color: var(--text-w1, #fff);
 
   font-size: var(--fs-lg, 16px);
   font-weight: 500;
-  border: 0.5px solid var(--primary-1, #0E7400);
+  border: 0.5px solid var(--primary-1, #0e7400);
   border-radius: 24px;
 
   cursor: pointer;
@@ -52,7 +46,7 @@ const StyledButton = styled.button`
   }
 
   &:disabled {
-    background: var(--natural-0, #FFF);
+    background: var(--natural-0, #fff);
     color: var(--text-1, #000);
     cursor: not-allowed;
   }

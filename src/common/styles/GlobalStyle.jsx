@@ -22,7 +22,7 @@ export const GlobalStyle = createGlobalStyle`
     /* 감정표현 */
     --basic: #FFFFFF;
     --yellow1: #FFE578;
-    --yellow2: #FFFF4A;
+    --yellow2: #FFFFB9;
     --pink: #FFC8F2;
     --oragne: #FFB378;
     --deep-blue: #75A0CE;
