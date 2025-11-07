@@ -119,7 +119,7 @@ const Body = styled.div<BodyStyledProps>`
 const TopSpacing = styled.div`
   height: calc(30px + env(safe-area-inset-top, 0px));
   @media (min-height: 700px) {
-    height: calc(75px + env(safe-area-inset-top, 0px));
+    height: calc(50px + env(safe-area-inset-top, 0px));
   }
   width: 100%;
 `;
