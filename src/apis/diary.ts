@@ -1,4 +1,4 @@
-import type { RespDiary, RespDiaryDetail, TodayCompletedTodo } from "@/common/types/response/diary";
+import type { RespDiary, RespDiaryDetail } from "@/common/types/response/diary";
 
 import mainApi from ".";
 import { handleApiRequest } from "./apiUtils";
@@ -21,11 +21,11 @@ export const fetchDiaryDetail = (date: string) => {
 };
 
 /** [GET] 특정 날짜의 todayCompletedTodoResponses 조회 */
-export const fetchCompletedTodos = (date: string) => {
-  return handleApiRequest<TodayCompletedTodo[]>(() =>
-    mainApi.get(`${BASE}/today`, {
-      params: { date }, // 쿼리 파라미터 안전하게 전달
-      headers: { Accept: "application/json" },
-    }),
-  );
-};
+// export const fetchCompletedTodos = (date: string) => {
+//   return handleApiRequest<TodayCompletedTodo[]>(() =>
+//     mainApi.get(`${BASE}/today`, {
+//       params: { date }, // 쿼리 파라미터 안전하게 전달
+//       headers: { Accept: "application/json" },
+//     }),
+//   );
+// };
