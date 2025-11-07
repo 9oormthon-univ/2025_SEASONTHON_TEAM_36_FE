@@ -1,81 +1,134 @@
-// 일기 작성 페이지
-import { useLocation } from "react-router-dom";
+// src/pages/diary/components/Read.tsx
+import { useCallback, useState } from "react";
+import { useParams } from "react-router-dom";
 
-import picture from "@/assets/images/default.png";
+import {
+  ENUM_TO_WEATHER_ID,
+  getWeatherIcons,
+  getWeatherLabelFromEnum,
+} from "@/common/utils/mapWeather";
 
-import { CONCENTRATION, ENERGY, PERFECTION, PLACE, PREV_EMOTION } from "../constants/readConstants";
-import timetable from "../dummyImages/시간표.png";
+import {
+  CONCENTRATION,
+  EMOTION,
+  ENERGY,
+  PERFECTION,
+  PREV_EMOTION,
+} from "../constants/readConstants";
+import useDiaryDetail from "../hooks/useDiaryDetail";
 import { Label } from "../styles/InfoCard";
 import { DateBar, DateText, Page, Section } from "../styles/ReadPage";
-import { Diary } from "../types/Diary";
 import { formatKoreanDate } from "../utils/dateUtils";
+import {
+  COMPLETION_TO_PERCENT,
+  likert1to5ToIndex,
+  mapTodosToChartGoals,
+  MOOD_TO_IDX,
+} from "../utils/diaryUtils";
 import ChartWithLegend from "./ChartWithLegend";
 import JourneyRow from "./JourneyRow";
 import MemoBox from "./MemoBox";
 import PhotoPicker from "./PhotoPicker";
+import ViewPicture from "./ViewPicture";
 
-// TODO: 실제 데이터 props 또는 API 연결 필요
 export default function Read() {
-  const { state } = useLocation() as { state: Diary };
+  const { date } = useParams<{ date: string }>();
 
-  const goals = [
-    { id: 1, name: "LG 전자제품 IMC 기획서 작성", color: "var(--green-200)" },
-    { id: 2, name: "총균쇠 독후감 작성하기", color: "var(--green-300)" },
-    { id: 3, name: "브랜딩 광고 영상 ppt 만들기", color: "var(--green-400)" },
-  ];
+  const { detail, error: loadErr, loading } = useDiaryDetail(date ?? null);
 
-  const photoUrl = null; // URL or null
+  // 프리뷰 상태
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  const handleImageClick = useCallback(() => {
+    // if (!detail?.photoUrl) return;
+    setPreviewOpen(true);
+  }, [detail?.photoUrl]);
+
+  const handleClosePreview = useCallback(() => {
+    setPreviewOpen(false);
+  }, []);
+
+  if (loadErr) return <div>❌ {loadErr}</div>;
+  if (loading || !detail) return <div style={{ textAlign: "center" }}>불러오는 중...</div>;
+
+  // ---------- 서버 데이터 → UI 매핑 ----------
+  const prevEmotionIdx = likert1to5ToIndex(detail.emotion, 5);
+  const energyIdx = likert1to5ToIndex(detail.energy, 5);
+  const weatherIdx = ENUM_TO_WEATHER_ID[detail.weather] ?? 0;
+  const emotionIdx = MOOD_TO_IDX[detail.mood] ?? 0;
+  const concentrationIdx = likert1to5ToIndex(detail.focusLevel, 5);
+
+  const perfectionPct = COMPLETION_TO_PERCENT[detail.completionLevel] ?? 0;
+  const perfectionIdx = Math.floor(perfectionPct === 100 ? 4 : perfectionPct / 20);
+
+  // 실제 데이터 사용 (권장)
+  const goals = mapTodosToChartGoals(detail.todayCompletedTodoResponses);
+
+  // 필요 시 더미 데이터를 잠깐 쓰고 싶다면 위 줄을 주석 처리하고 아래 블록 사용
+  /*
+  const goals = mapTodosToChartGoals([
+    { todoId: 1, todoTitle: "2026학년도 수능 15일 플랜", processTime: "PT3H5M3S", ratio: 0.85 },
+    { todoId: 2, todoTitle: "영어 모의고사 풀이 및 오답노트 정리", processTime: "PT1H42M17S", ratio: 0.65 },
+    { todoId: 3, todoTitle: "수학 확통 기출 분석 및 개념 복습", processTime: "PT2H28M50S", ratio: 0.9 },
+  ]);
+  */
+
+  const headerDate = (() => {
+    const str = detail.date; // "yyyy-MM-dd"
+    const [y, m, d] = str.split("-").map(Number);
+    return formatKoreanDate(new Date(y, (m ?? 1) - 1, d ?? 1));
+  })();
 
   return (
     <Page>
       {/* 날짜 바 */}
       <DateBar>
-        <DateText>{formatKoreanDate(new Date(state.date || new Date()))}</DateText>
+        <DateText className="typo-h3">{headerDate}</DateText>
       </DateBar>
-      {/* 차트 + 범례 */}
-      <ChartWithLegend chartSrc={timetable} goals={goals} chartWidthPct={75} />
+
+      {/* 실제 파이 차트 + 범례 (터치/클릭 시 상세 시간) */}
+      <ChartWithLegend goals={goals} />
+
+      {/* 여정 전 */}
       <Section>
         <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
         <JourneyRow
           items={[
             {
               title: "감정",
-              imgSrc: PREV_EMOTION[state.prevEmotion].img,
-              label: PREV_EMOTION[state.prevEmotion].text,
+              imgSrc: PREV_EMOTION[prevEmotionIdx]?.img,
+              label: PREV_EMOTION[prevEmotionIdx]?.text ?? "",
             },
             {
               title: "잔여 에너지",
-              imgSrc: ENERGY[state.energy].img,
-              label: ENERGY[state.energy].text,
+              imgSrc: ENERGY[energyIdx]?.img,
+              label: ENERGY[energyIdx]?.text ?? "",
             },
             {
-              title: "장소",
-              imgSrc: PLACE[state.place].img,
-              label: PLACE[state.place].text,
+              title: "날씨",
+              imgSrc: getWeatherIcons(weatherIdx)?.active,
+              label: getWeatherLabelFromEnum(detail.weather) ?? "",
             },
           ]}
         />
       </Section>
 
+      {/* 여정 후 */}
       <Section>
         <Label className="typo-h4">오늘의 여정을 끝낸 후</Label>
         <JourneyRow
           items={[
             {
-              title: "감정",
-              imgSrc: PREV_EMOTION[state.prevEmotion].img,
-              label: PREV_EMOTION[state.prevEmotion].text,
+              title: "기분",
+              imgSrc: EMOTION[emotionIdx]?.img,
+              label: EMOTION[emotionIdx]?.text ?? "",
             },
             {
               title: "집중도",
-              imgSrc: CONCENTRATION[state.concentration].img,
-              label: CONCENTRATION[state.concentration].text,
+              imgSrc: CONCENTRATION[concentrationIdx]?.img,
+              label: CONCENTRATION[concentrationIdx]?.text ?? "",
             },
-            {
-              title: "완성도",
-              imgSrc: PERFECTION[Math.floor(state.perfection === 100 ? 4 : state.perfection / 20)],
-              label: `${state.perfection}%`,
-            },
+            { title: "완성도", imgSrc: PERFECTION[perfectionIdx], label: `${perfectionPct}%` },
           ]}
         />
       </Section>
@@ -84,7 +137,7 @@ export default function Read() {
       <Section>
         <Label className="typo-h4">MEMO</Label>
         <MemoBox
-          value={`${state.memo ?? ""}`}
+          value={detail.memo ?? ""}
           placeholder="메모"
           readOnly
           showCounter={false}
@@ -96,12 +149,16 @@ export default function Read() {
       <Section>
         <Label className="typo-h4">사진</Label>
         <PhotoPicker
-          photoUrl={photoUrl ?? picture} // 데이터 없을 때 기본이미지 보여줄 수도 있음
-          onImageClick={() => {
-            // TODO: 클릭 시 확대 보기 등 UI 추가 가능
-          }}
+          photoUrl={detail.photoUrl ?? "https://picsum.photos/400"}
+          onImageClick={handleImageClick}
         />
       </Section>
+      <ViewPicture
+        open={previewOpen}
+        src={detail.photoUrl ?? "https://picsum.photos/400"}
+        alt="사진 미리보기"
+        onClose={handleClosePreview}
+      />
     </Page>
   );
 }

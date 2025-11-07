@@ -13,17 +13,11 @@ import face2 from "@/assets/images/frog-face-2.svg";
 import face3 from "@/assets/images/frog-face-3.svg";
 import face4 from "@/assets/images/frog-face-4.svg";
 import face5 from "@/assets/images/frog-face-5.svg";
+import perfection100 from "@/assets/images/perfection/perfection100.svg";
 import perfection20 from "@/assets/images/perfection/perfection20.svg";
 import perfection40 from "@/assets/images/perfection/perfection40.svg";
 import perfection60 from "@/assets/images/perfection/perfection60.svg";
 import perfection80 from "@/assets/images/perfection/perfection80.svg";
-import perfection100 from "@/assets/images/perfection/perfection100.svg";
-import cafe from "@/assets/images/places/cafe.svg";
-import guitar from "@/assets/images/places/guitar.svg";
-import home from "@/assets/images/places/home.svg";
-import job from "@/assets/images/places/job.svg";
-import lecture from "@/assets/images/places/lecture.svg";
-import library from "@/assets/images/places/library.svg";
 
 interface Info {
   img: string;
@@ -96,33 +90,6 @@ export const CONCENTRATION: Record<number, Info> = {
   4: {
     img: face5,
     text: "초집중",
-  },
-};
-
-export const PLACE: Record<number, Info> = {
-  0: {
-    img: home,
-    text: "집",
-  },
-  1: {
-    img: job,
-    text: "직장",
-  },
-  2: {
-    img: cafe,
-    text: "카페",
-  },
-  3: {
-    img: library,
-    text: "도서관",
-  },
-  4: {
-    img: lecture,
-    text: "강의실",
-  },
-  5: {
-    img: guitar,
-    text: "기타",
   },
 };
 
