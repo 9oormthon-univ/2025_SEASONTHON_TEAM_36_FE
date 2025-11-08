@@ -1,5 +1,4 @@
 // ---
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import AI from "@/assets/images/ai-frog.svg";
@@ -89,7 +88,7 @@ export default function SceneMain() {
   const shrink: number = isSheetOpen ? SHRINK_OPEN : SHRINK_CLOSED;
   return (
     <Page>
-      <OnbChatbotBtn isSheetOpen={isSheetOpen} />
+      <OnbChatbotBtn onClick={() => {}} isSheetOpen={isSheetOpen} />
       {!isSheetOpen && <TopSpacing />}
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <OnbDateView />
@@ -138,15 +137,9 @@ const BottomSpacing = styled.div`
   width: 100%;
 `;
 
-const OnbChatbotBtn = ({ isSheetOpen }: { isSheetOpen: boolean }) => {
-  const navigate = useNavigate();
+const OnbChatbotBtn = ({ isSheetOpen, onClick }: { isSheetOpen: boolean; onClick: () => void }) => {
   return (
-    <Button
-      $isSheetOpen={isSheetOpen}
-      onClick={() => {
-        void navigate("/chatbot");
-      }}
-    >
+    <Button onClick={onClick} $isSheetOpen={isSheetOpen}>
       <AIImg src={AI} alt="AI" />
     </Button>
   );

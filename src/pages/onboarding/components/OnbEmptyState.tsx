@@ -14,7 +14,7 @@ export default function OnbEmptyState({
       </Illustration>
 
       <TextBox>
-        <Message className="typo-h3">{title}</Message>
+        <Message className="typo-h4">{title}</Message>
         <SubMessage className="typo-h4">{subtitle}</SubMessage>
       </TextBox>
     </Container>
@@ -60,9 +60,9 @@ const TextBox = styled.div`
 
 const Message = styled.p`
   white-space: pre-line;
-  font-size: 18px;
+  font-size: 16px;
 `;
 const SubMessage = styled.p`
   white-space: pre-line;
-  font-size: 16px;
+  font-size: 14px;
 `;
