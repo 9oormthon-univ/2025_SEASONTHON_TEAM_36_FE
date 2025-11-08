@@ -16,9 +16,11 @@ export default function SheetListSection({
 }) {
   return (
     <SectionWrap className={className}>
-      <SectionHeader>
-        <SectionTitle className="typo-h3">{title}</SectionTitle>
-      </SectionHeader>
+      <HeaderBackground>
+        <SectionHeader>
+          <SectionTitle className="typo-h3">{title}</SectionTitle>
+        </SectionHeader>
+      </HeaderBackground>
 
       <SectionContent>
         <div>{children}</div>
@@ -34,14 +36,23 @@ const SectionWrap = styled.section`
   padding: 0 0 0 4px;
 `;
 
-const SectionHeader = styled.div`
+const HeaderBackground = styled.div`
+  position: sticky;
+  top: 0; /* 또는 상단 고정 간격을 조절하려면 0 대신 4px, 8px 등 사용 */
+  z-index: 5; /* 콘텐츠 위로 올라오도록 */
   width: 100%;
+  background: white;
+  border-radius: 999px;
+`;
+
+const SectionHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  background: transparent;
+  background: var(--bg-1, #fff); /* 투명 대신 배경색을 줘야 겹칠 때 가독성 유지 */
   color: var(--text-1);
-  margin: 8px 22px;
+  margin: 0 22px;
+  padding: 4px 0;
 `;
 
 const SectionTitle = styled.h3`

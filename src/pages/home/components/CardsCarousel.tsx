@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import SwipeCarousel from "../../../layout/SwipeCarousel";
+import SwipeCarousel from "../../../common/components/SwipeCarousel";
 import { useActiveGoalStore } from "../store/useActiveGoalStore";
 import DotIndicator from "./DotIndicator";
 

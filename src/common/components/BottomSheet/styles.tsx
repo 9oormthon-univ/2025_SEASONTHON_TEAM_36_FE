@@ -44,17 +44,18 @@ export const Panel = styled(motion.div)<PanelProps>`
 
 /** GrabHandle */
 export const GrabHandle = styled.div`
+  position: absolute;
+  z-index: 2;
+  inset: 0 0 auto 0; /* 상단 가로 전체 영역 */
+  height: 56px;
   display: grid;
   place-items: center;
-  padding: 8px 0 0 0;
   cursor: grab;
-
-  & > span {
-    display: block;
-    width: 34px;
-    height: 3px;
-    background: var(--text-w2, #f1f4f8);
-    border-radius: 999px;
+  /* 투명 배경(클릭/드래그 영역만 확보) */
+  background: transparent;
+  /* 드래그 중 커서 */
+  &:active {
+    cursor: grabbing;
   }
 `;
 
@@ -64,4 +65,5 @@ export const SheetViewport = styled.div`
   flex-direction: column;
   height: 90%;
   overflow: hidden;
+  padding: 4px 0 0 0;
 `;
