@@ -120,7 +120,6 @@ const Item = styled.li`
   grid-template-columns: 16px 1fr auto;
   align-items: center;
   gap: 3px;
-  padding: 0 2.3% 3.5% 2.3%;
   background: transparent;
   border-bottom: 1px solid var(--natural-400, #d6d9e0);
 `;

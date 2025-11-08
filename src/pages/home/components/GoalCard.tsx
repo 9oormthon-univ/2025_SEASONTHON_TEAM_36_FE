@@ -134,7 +134,7 @@ const Container = styled.div<ContainerProps>`
   background: var(--bg-1);
   color: inherit;
   width: ${p => 80 * p.$shrink}%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4 / 4.2;
   max-height: calc(100% - 24px);
   margin: 0 auto 0;
   padding: clamp(12px, 4.3vw, 40px) clamp(12px, 3vw, 40px);
