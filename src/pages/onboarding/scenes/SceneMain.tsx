@@ -1,4 +1,5 @@
 // ---
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import AI from "@/assets/images/ai-frog.svg";
@@ -9,6 +10,8 @@ import OnbDateView from "../components/OnbDateView";
 import OnbEmptyState from "../components/OnbEmptyState";
 import OnbGoalCard from "../components/OnbGoalCard";
 import OnbStepsSheet from "../components/OnbStepsSheet";
+import { SceneProps } from "../layout/OnbLayout";
+import { useOnbUiStore } from "../store/useOnbUiStore";
 
 const goals: RespTodo[] = [
   // 마감일 11월 15일로 가정
@@ -102,8 +105,45 @@ export interface BodyStyledProps {
   $shrink: number; // 0~1
 }
 
-export default function SceneMain() {
-  const hasGoals = true;
+export default function SceneMain({ stage, setSpotRect }: SceneProps) {
+  const refChatbot = useRef<HTMLButtonElement>(null);
+  const refGoalCard = useRef<HTMLDivElement>(null);
+  const refSheet = useRef<HTMLDivElement>(null);
+
+  const openBottomSheet = useOnbUiStore(s => s.openBottomSheet);
+  const closeBottomSheet = useOnbUiStore(s => s.closeBottomSheet);
+  const setUrgent = useOnbUiStore(s => s.setUrgent);
+
+  // stage.id 변화 시에만 초기화/분기 실행
+  useEffect(() => {
+    // 공통: 하이라이트 대상 보고
+    if (stage.componenetKey === "chatbot" && refChatbot.current) {
+      setSpotRect(refChatbot.current.getBoundingClientRect());
+    } else if (stage.componenetKey === "goal-card" && refGoalCard.current) {
+      setSpotRect(refGoalCard.current.getBoundingClientRect());
+    } else if (stage.componenetKey === "bottom-sheet" && refSheet.current) {
+      setSpotRect(refSheet.current.getBoundingClientRect());
+    } else {
+      setSpotRect(null);
+    }
+
+    // 분기: stage별로 다른 UI 상태 만들기 (예: 시트 열기)
+    if (stage.id === "sheet-scroll" || stage.id === "sheet-content") {
+      openBottomSheet();
+    } else {
+      closeBottomSheet();
+    }
+
+    // 분기: 시급함 뱃지 켜기/끄기
+    setUrgent(stage.sceneKey === "main-w-urgent");
+
+    const noGoals =
+      stage.id === "start" || stage.id === "chatboticon" || stage.id === "chatbot-icon";
+    setHasGoals(!noGoals);
+  }, [stage.id]); // 핵심 포인트: stage.id가 바뀔 때만
+
+  const hasGoals = useOnbUiStore(s => s.hasGoals);
+  const setHasGoals = useOnbUiStore(s => s.setHasGoals);
   const sheetHeight = useBottomSheetStore(s => s.heightPx);
   const isSheetOpen = useBottomSheetStore(s => s.open);
   // 시트 열림 여부에 따른 카드 축소율

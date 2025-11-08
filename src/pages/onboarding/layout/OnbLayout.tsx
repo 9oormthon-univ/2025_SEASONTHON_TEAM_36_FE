@@ -82,7 +82,7 @@ export default function OnbLayout({
       <FrameWrap>
         <Frame ref={frameRef} aria-label="Onboarding Frame">
           {Scene ? (
-            <Scene stage={stage} setSpotRect={setSpotRect} />
+            <Scene key={stage.id} stage={stage} setSpotRect={setSpotRect} />
           ) : (
             <FramePlaceholder>sceneKey가 없습니다.</FramePlaceholder>
           )}
