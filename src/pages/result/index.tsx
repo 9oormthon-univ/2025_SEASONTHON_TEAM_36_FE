@@ -2,14 +2,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { fetchSteps } from "@/apis/step";
-import { deleteTodo } from "@/apis/todo";
+import { deleteTodo, updateTodoDetail } from "@/apis/todo";
 import EscapeFrogImg from "@/assets/images/frog-escape-new.svg";
 import ModifyImg from "@/assets/images/modify-result.svg";
 import ConfirmModal from "@/common/components/ConfirmModal";
 import FrogNoti from "@/common/components/FrogNoti";
 import GreenButton from "@/common/components/GreenButton";
 import { ModalHeader } from "@/common/components/PageModal";
-import { RespStepInfo } from "@/common/types/response/step";
+import { Todo } from "@/common/types/enums";
+import { RespStepItem } from "@/common/types/response/step";
 
 import Step from "./components/Step";
 import {
@@ -30,21 +31,48 @@ import {
   Wrapper,
 } from "./styles";
 
+const EXPECTED_DAYS_TO_IDX = {
+  MONDAY: 0,
+  TUESDAY: 1,
+  WEDNESDAY: 2,
+  THURSDAY: 3,
+  FRIDAY: 4,
+  SATURDAY: 5,
+  SUNDAY: 6,
+};
+
+const IDX_TO_TODO_TYPE: Todo[] = [
+  "PREVIEW_REVIEW",
+  "HOMEWORK",
+  "TEST_STUDY",
+  "PERFORMANCE_ASSESSMENT",
+  "CAREER_ACTIVITY",
+  "ETC",
+];
+
 const Result = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [title, setTitle] = useState<string>("");
-  // const [startDate, setStartDate] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [splashOpen, setSplashOpen] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
   const [titleModify, setTitleModify] = useState<boolean>(false);
   const [inputWidth, setInputWidth] = useState<number>(240);
-  const [subjectIdx, setSubjectIdx] = useState<number>(-1);
+  const [subjectIdx, setSubjectIdx] = useState<number>(0);
   const measureRef = useRef<HTMLSpanElement>(null);
-  const checkDays = [true, false, true, false, true, true, true];
-  const [steps, setSteps] = useState<RespStepInfo[]>([]);
+  const [checkDays, setCheckDays] = useState<boolean[]>([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+  const [steps, setSteps] = useState<RespStepItem[]>([]);
 
   // Step 업데이트 핸들러
   const handleRemoveTodo = useCallback(() => {
@@ -55,6 +83,16 @@ const Result = () => {
         .catch(error => console.error(error));
     }
   }, [location.state]);
+
+  const handleUpdateTodoDetail = useCallback(() => {
+    const state = location.state as { todoId?: number } | null;
+    if (state?.todoId) {
+      updateTodoDetail(state.todoId, title, IDX_TO_TODO_TYPE[subjectIdx])
+        .then()
+        .catch(error => console.error(error));
+      void navigate("/home");
+    }
+  }, [location.state, navigate, subjectIdx, title]);
 
   useEffect(() => {
     if (measureRef.current) {
@@ -87,9 +125,14 @@ const Result = () => {
           ) {
             setSplashOpen(false);
             setTitle(response.title);
-            // setStartDate(response.startDate);
+            setStartDate(response.startDate.split("-").join("."));
             setEndDate(response.endDate.split("-").join("."));
             setSteps(response.steps);
+            const updatedCheckDays = [...checkDays];
+            response.expectedDays.forEach(value => {
+              updatedCheckDays[EXPECTED_DAYS_TO_IDX[value]] = true;
+            });
+            setCheckDays(updatedCheckDays);
           }
         })
         .catch(error => console.error(error));
@@ -98,7 +141,7 @@ const Result = () => {
       setIsError(true);
       return;
     }
-  }, [location.state]);
+  }, [checkDays, location.state]);
 
   if (!splashOpen && isError) {
     return "할일 정보가 없습니다 🥲";
@@ -145,7 +188,7 @@ const Result = () => {
                 <img src={ModifyImg} alt="수정" width="16" height="16" />
               </Modify>
             </TodoTitle>
-            <TodoDate>{`${"2025.11.08"} ~ ${endDate}`}</TodoDate>
+            <TodoDate>{`${startDate} ~ ${endDate}`}</TodoDate>
             <Days>
               {["월", "화", "수", "목", "금", "토", "일"].map((day, index) => (
                 <Day key={index} $checked={checkDays[index]}>
@@ -177,11 +220,7 @@ const Result = () => {
               ))}
             </TodoList>
             <GreenButtonWrapper>
-              <GreenButton
-                onClick={() => {
-                  void navigate("/home");
-                }}
-              >
+              <GreenButton onClick={() => handleUpdateTodoDetail()} disabled={false}>
                 투두 적용하기
               </GreenButton>
             </GreenButtonWrapper>
