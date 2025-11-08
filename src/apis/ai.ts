@@ -27,7 +27,7 @@ export async function destructToDoByAI(todoId: number, options: { signal?: Abort
  * @returns
  */
 export async function sendMessage(userId: number, message: string) {
-  return handleApiRequest(() =>
+  return handleApiRequest<void>(() =>
     mainApi.post(`${BASE}/send`, message, {
       headers: { "Content-Type": "application/json" },
       params: {
