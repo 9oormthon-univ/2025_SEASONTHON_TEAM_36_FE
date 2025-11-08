@@ -1,5 +1,5 @@
 // ---
-import { useEffect, useRef } from "react";
+import { forwardRef, useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import AI from "@/assets/images/ai-frog.svg";
@@ -152,7 +152,7 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
   const shrink: number = isSheetOpen ? SHRINK_OPEN : SHRINK_CLOSED;
   return (
     <Page>
-      <OnbChatbotBtn onClick={() => {}} isSheetOpen={isSheetOpen} />
+      <OnbChatbotBtn ref={refChatbot} onClick={() => {}} isSheetOpen={isSheetOpen} />
       {!isSheetOpen && <TopSpacing />}
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <OnbDateView />
@@ -201,18 +201,22 @@ const BottomSpacing = styled.div`
   width: 100%;
 `;
 
-const OnbChatbotBtn = ({ isSheetOpen, onClick }: { isSheetOpen: boolean; onClick: () => void }) => {
-  return (
-    <Button onClick={onClick} $isSheetOpen={isSheetOpen}>
-      <AIImg src={AI} alt="AI" />
-    </Button>
-  );
-};
+const OnbChatbotBtn = forwardRef<HTMLButtonElement, { isSheetOpen: boolean; onClick: () => void }>(
+  ({ isSheetOpen, onClick }, ref) => {
+    return (
+      <Button ref={ref} onClick={onClick} $isSheetOpen={isSheetOpen} aria-label="AI 개구리 Rana">
+        <AIImg src={AI} alt="AI" />
+      </Button>
+    );
+  },
+);
+OnbChatbotBtn.displayName = "OnbChatbotBtn";
 
 const Button = styled.button<{ $isSheetOpen: boolean }>`
   position: fixed;
   top: 30px;
   right: 62px;
+  z-index: 10;
   transition:
     top 0.3s ease,
     right 0.3s ease;

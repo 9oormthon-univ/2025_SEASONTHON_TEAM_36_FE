@@ -96,6 +96,12 @@ export default function OnbLayout({
                 <p>{stage.body}</p>
               </CenterBubble>
             ) : null}
+            {stage.componenetKey === "chatbot" && localSpot ? (
+              <>
+                <DottedCircle $rect={localSpot} />
+                <SpotBubble $rect={localSpot}>AI 개구리 ‘Rana’</SpotBubble>
+              </>
+            ) : null}
           </FrameOverlay>
         </Frame>
       </FrameWrap>
@@ -286,4 +292,38 @@ const CenterBubble = styled.div`
     white-space: pre-wrap;
     line-height: 1.6;
   }
+`;
+
+// OnbLayout.tsx 가장 아래 스타일 구역에 추가
+const DottedCircle = styled.div<{ $rect: DOMRect }>`
+  position: absolute;
+  left: ${p => p.$rect.x - 5}px;
+  top: ${p => p.$rect.y - 5}px;
+  width: 50px;
+  height: 50px;
+  border: 2.5px dashed rgba(255, 255, 255, 0.95);
+  border-radius: 9999px;
+  box-shadow:
+    0 0 0 8px rgba(255, 255, 255, 0.12),
+    0 6px 20px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(0.5px);
+  pointer-events: none;
+  z-index: 6;
+`;
+
+const SpotBubble = styled.div<{ $rect: DOMRect }>`
+  position: absolute;
+  left: ${p => p.$rect.x + p.$rect.width / 2 - 65}px;
+  top: ${p => p.$rect.y + p.$rect.height + 12}px; /* 요소 아래 */
+  transform: translateX(-50%);
+  width: 140px;
+  max-width: 240px;
+  background: var(--green-100); /* 연한 연두색 버블 */
+  color: var(--text-1);
+  border-radius: 23px 0 23px 23px;
+  padding: 12px 16px;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.25);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  pointer-events: none; /* 오버레이가 클릭 방해하지 않도록 */
 `;
