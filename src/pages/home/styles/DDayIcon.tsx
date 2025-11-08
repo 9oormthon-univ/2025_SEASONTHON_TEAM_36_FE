@@ -73,9 +73,9 @@ export const DDayIcon = styled.div<{ $dDay?: string }>`
   align-items: center;
   justify-content: center;
   height: 22.5px;
+  width: 40px;
   padding: 0 8px;
   border-radius: 10px;
-
   color: var(--text-1);
   font-size: clamp(8px, 2.8vw, 15px);
   font-weight: 400;

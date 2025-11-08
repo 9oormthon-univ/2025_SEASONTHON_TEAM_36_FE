@@ -134,7 +134,7 @@ const Container = styled.div<ContainerProps>`
   background: var(--bg-1);
   color: inherit;
   width: ${p => 80 * p.$shrink}%;
-  aspect-ratio: 327 / 368;
+  aspect-ratio: 4 / 5;
   max-height: calc(100% - 24px);
   margin: 0 auto 0;
   padding: clamp(12px, 4.3vw, 40px) clamp(12px, 3vw, 40px);
@@ -154,13 +154,14 @@ const Container = styled.div<ContainerProps>`
 `;
 
 const CheerMsg = styled.p`
-  font-size: clamp(10px, 3.5vw, 24px);
   font-weight: 500;
   color: var(--text-2, #6f737b);
   white-space: normal;
   word-break: keep-all;
   overflow-wrap: anywhere;
-  line-height: 1.6;
+  line-height: 1.1;
+  font-size: 14px;
+  text-align: center;
 `;
 
 const ImgContainer = styled.div`

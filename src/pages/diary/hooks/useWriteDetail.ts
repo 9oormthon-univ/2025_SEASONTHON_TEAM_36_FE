@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { fetchCompletedTodos } from "@/apis/diary";
+import { fetchDiaryDetail } from "@/apis/diary";
 import { getDailyLogBefore } from "@/apis/diaryLog";
 import type { ErrorResponse } from "@/common/types/error";
 import { RespDailyLogBefore } from "@/common/types/response/dailyLog";
@@ -36,10 +36,7 @@ export function useWriteDetail(date?: string | null): UseWriteDetailResult {
 
     try {
       // 두 API를 병렬 호출
-      const [beforeRes, todosRes] = await Promise.all([
-        getDailyLogBefore(d),
-        fetchCompletedTodos(d),
-      ]);
+      const [beforeRes, todosRes] = await Promise.all([getDailyLogBefore(d), fetchDiaryDetail(d)]);
 
       // ---- DailyLogBefore 결과 처리 ----
       if (typeof beforeRes === "string") {

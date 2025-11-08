@@ -44,7 +44,7 @@ export default function GoalHeader({ onSirenClick }: GoalHeaderProps) {
     <HeaderRow>
       <DDayIcon $dDay={dDay}>{dDay}</DDayIcon>
       <TitleWrap>
-        <TaskTitle>{title}</TaskTitle>
+        <TaskTitle className="typo-label-l">{title}</TaskTitle>
         <SirenButton
           type="button"
           onClick={onSirenClick}
@@ -65,13 +65,13 @@ const HeaderRow = styled.div`
   gap: 0;
   justify-content: center;
   width: 100%;
-  flex-wrap: wrap;
 `;
 
 const TitleWrap = styled.div`
   display: inline-flex;
   align-items: center;
   min-width: 0;
+  word-break: keep-all;
 `;
 
 const TaskTitle = styled.h3`
