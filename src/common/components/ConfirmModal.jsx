@@ -19,8 +19,8 @@ export default function ConfirmModal({
   message = "정말 삭제하겠습니까?",
   confirmText = "예",
   cancelText = "아니오",
+  cancelCentric = false,
 }) {
-  // 훅은 항상 최상단에서 호출되어야 함
   const cancelRef = React.useRef(null);
   const confirmRef = React.useRef(null);
   const dialogRef = React.useRef(null);
@@ -28,7 +28,6 @@ export default function ConfirmModal({
   // focus first button & esc handler, body scroll lock
   React.useEffect(() => {
     if (!open) return;
-
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     // 초기 포커스: 취소 버튼에
@@ -45,7 +44,6 @@ export default function ConfirmModal({
     };
   }, [open, onCancel, onConfirm]);
 
-  // early return은 모든 훅 호출 후에
   if (!open) return null;
 
   // ensure modal root
@@ -81,22 +79,25 @@ export default function ConfirmModal({
 
         <Buttons role="group" aria-label="삭제 확인">
           <Button
-            ref={cancelRef}
-            data-variant="cancel"
-            onClick={onCancel}
-            aria-label={`${cancelText} (취소)`}
-          >
-            {cancelText}
-          </Button>
-          <Divider aria-hidden="true" />
-          <Button
             ref={confirmRef}
             data-variant="confirm"
             onClick={onConfirm}
             aria-label={`${confirmText} (확인)`}
             className="typo-body-m"
+            $cancelCentric={cancelCentric}
           >
             {confirmText}
+          </Button>
+          <Divider aria-hidden="true" />
+          <Button
+            ref={cancelRef}
+            data-variant="cancel"
+            onClick={onCancel}
+            aria-label={`${cancelText} (취소)`}
+            className="typo-body-m"
+            $cancelCentric={cancelCentric}
+          >
+            {cancelText}
           </Button>
         </Buttons>
       </Dialog>
@@ -146,17 +147,18 @@ const Message = styled.div`
   font-size: 16px;
   line-height: 1.35;
   font-weight: 600;
+  white-space: pre-wrap;
 `;
 
 const Buttons = styled.div`
   display: grid;
   grid-template-columns: 1fr 1px 1fr;
   align-items: stretch;
-  border-top: 1px solid var(--natural-600, #969ba5);
+  border-top: 0.27px solid var(--natural-600, #969ba5);
 `;
 
 const Divider = styled.div`
-  width: 1px;
+  width: 0.27px;
   background: var(--natural-600, #969ba5);
 `;
 
@@ -168,8 +170,13 @@ const Button = styled.button`
   padding: 10px;
   cursor: pointer;
 
-  color: ${({ ["data-variant"]: v }) =>
-    v === "confirm" ? "var(--brand-1, #0E7400)" : "var(--text-1, #111)"};
+  color: ${({ ["data-variant"]: v, $cancelCentric }) => {
+    return $cancelCentric
+      ? v === "cancel"
+        ? "var(--brand-1, #0E7400)"
+        : "var(--text-3, #969BA5)"
+      : "var(--text-1, #111)";
+  }};
 
   &:focus-visible {
     outline: 2px solid var(--brand-1, #0e7400);
