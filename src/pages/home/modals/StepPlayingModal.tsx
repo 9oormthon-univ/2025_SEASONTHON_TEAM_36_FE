@@ -95,16 +95,15 @@ export default function StepPlayingModal({
               </RingCenter>
             </Ring>
           </GaugeArea>
-
-          <BottomActions>
-            <CircleButton aria-label="일시정지" onClick={() => void onPause?.()}>
-              {pauseIcon}
-            </CircleButton>
-            <ConfirmButton aria-label="완료" onClick={() => void onConfirm?.()}>
-              {confirmIcon}
-            </ConfirmButton>
-          </BottomActions>
         </Content>
+        <BottomActions>
+          <CircleButton aria-label="일시정지" onClick={() => void onPause?.()}>
+            {pauseIcon}
+          </CircleButton>
+          <ConfirmButton aria-label="완료" onClick={() => void onConfirm?.()}>
+            {confirmIcon}
+          </ConfirmButton>
+        </BottomActions>
       </Body>
     </PageModal>
   );
@@ -113,6 +112,9 @@ export default function StepPlayingModal({
 const Body = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   height: 100%;
   min-height: 0;
 `;
@@ -152,7 +154,7 @@ const GaugeArea = styled.div`
 
 const Ring = styled.div<{ colortoken: string }>`
   position: relative;
-  width: 80vw;
+  height: 38vh;
   aspect-ratio: 1 / 1;
   display: grid;
   place-items: center;
@@ -190,17 +192,17 @@ const Timer = styled.div`
 `;
 
 const BottomActions = styled.div`
-  position: absolute;
-  bottom: 16vh;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 20vw;
+  bottom: 20vh;
 `;
 
 const CircleButton = styled.button`
-  width: 83px;
-  height: 83px;
+  height: 10vh;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   background: #ffffff;
   border: 1.5px solid #e6e8ec;

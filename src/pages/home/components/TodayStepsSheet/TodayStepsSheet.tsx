@@ -6,6 +6,7 @@ import dragUp from "@/assets/images/drag-up.svg";
 
 import BottomSheet from "../../../../layout/BottomSheet";
 import DailyCheckInModal from "../../modals/DailyCheckInModal";
+import StepPlayingModal from "../../modals/StepPlayingModal";
 import DayCompleteSplash from "../../splashes/DayCompleteSplash";
 import GoalCompleteSplash from "../../splashes/GoalCompleteSplash";
 import StepPauseSplash from "../../splashes/StepPauseSplash";
@@ -59,6 +60,11 @@ export default function TodayStepsSheet() {
   });
 
   const groups = useMemo(() => applyPlayingState(baseGroups, playingKey), [baseGroups, playingKey]);
+  const playingItem = useMemo(
+    () => groups.flatMap(g => g.items).find(it => it.state === "play"),
+    [groups],
+  );
+  const playingDesc = playingItem?.description ?? "";
 
   return (
     <>
@@ -68,17 +74,7 @@ export default function TodayStepsSheet() {
             <ScrollArea role="list" aria-busy={loading}>
               {groups.map(g => (
                 <SheetListSection key={g.key} title={g.title}>
-                  <TodayStepsList
-                    items={g.items}
-                    onAction={handleAction}
-                    playingModal={{
-                      open: playingModalOpen,
-                      onClose: () => setPlayingModalOpen(false),
-                      onConfirm: handleStopFromModal,
-                      onPause: handlePauseFromModal,
-                      record: lastRecord,
-                    }}
-                  />
+                  <TodayStepsList items={g.items} onAction={handleAction} />
                 </SheetListSection>
               ))}
             </ScrollArea>
@@ -99,13 +95,14 @@ export default function TodayStepsSheet() {
 
       <DailyCheckInModal open={modalOpen} onClose={closeAndMark} />
 
-      {/* <StepPlayingModal
+      <StepPlayingModal
         open={playingModalOpen}
         onClose={() => setPlayingModalOpen(false)}
         onConfirm={handleStopFromModal}
         onPause={handlePauseFromModal}
         record={lastRecord}
-      /> */}
+        stepDescription={playingDesc}
+      />
 
       <StepStopSplash open={stepStopOpen} onClose={closeStepStop} progress={lastProgress ?? 0} />
       <GoalCompleteSplash open={goalCompleteOpen} onClose={closeGoal} />

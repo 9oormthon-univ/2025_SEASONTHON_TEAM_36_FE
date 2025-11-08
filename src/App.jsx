@@ -43,7 +43,7 @@ function App() {
         </Route>
         <Route element={<DiaryLayout />}>
           <Route path="/diary/writing" element={<Write />} />
-          <Route path="/diary/:id" element={<Read />} />
+          <Route path="/diary/:date" element={<Read />} />
         </Route>
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="*" element={<Navigate to="/" replace />} />
