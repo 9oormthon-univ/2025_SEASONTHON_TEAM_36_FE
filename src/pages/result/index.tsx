@@ -88,9 +88,8 @@ const Result = () => {
     const state = location.state as { todoId?: number } | null;
     if (state?.todoId) {
       updateTodoDetail(state.todoId, title, IDX_TO_TODO_TYPE[subjectIdx])
-        .then()
+        .then(_ => void navigate("/home"))
         .catch(error => console.error(error));
-      void navigate("/home");
     }
   }, [location.state, navigate, subjectIdx, title]);
 
