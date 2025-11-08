@@ -13,15 +13,8 @@ import HomePage from "./pages/home";
 import Login from "./pages/login";
 import OAuthCallback from "./pages/oauth";
 import Profile from "./pages/profile";
+import Result from "./pages/result";
 import SignUpDone from "./pages/signup";
-
-// 테스트를 위한 임시 페이지 콘텐츠, 추후 삭제 예정
-// const Screen = ({ title }) => (
-//   <div style={{ padding: "24px 16px" }}>
-//     <h1>{title}</h1>
-//     <p>임시 화면</p>
-//   </div>
-// );
 
 function App() {
   // 앱 시작 시 기본 테마 지정 (라이트/다크)
@@ -46,6 +39,7 @@ function App() {
           <Route path="/diary/:date" element={<Read />} />
         </Route>
         <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/chatbot/result" element={<Result />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

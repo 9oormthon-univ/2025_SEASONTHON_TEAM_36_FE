@@ -25,5 +25,5 @@ export const useMoveDate = () => {
     [month, year, setYear, setMonth],
   );
 
-  return { year, month, handleMoveMonth };
+  return { year, month, handleMoveMonth, setYear, setMonth };
 };

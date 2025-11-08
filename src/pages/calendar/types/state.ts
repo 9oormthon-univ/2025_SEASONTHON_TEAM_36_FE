@@ -1,4 +1,4 @@
-import { RespStepInfo } from "@/common/types/response/step";
+import { RespStepItem } from "@/common/types/response/step";
 
 import type { Goal, Goals } from "../types/ToDo";
 
@@ -8,6 +8,7 @@ interface CalendarStore {
   curDate: Date;
   allToDo: Goals; // 날짜별 ToDo 목록 (Record<DateString, Goal>)
   curToDo: Goal; // 현재 선택된 날짜의 ToDo 목록
+  view: string;
 }
 
 // 액션 타입 정의
@@ -16,12 +17,13 @@ interface CalendarActions {
   initAllTodo: (
     todoIds: Array<number>,
     todoTitle: Array<string>,
-    todos: Array<Array<RespStepInfo>>,
+    todos: Array<Array<RespStepItem>>,
   ) => void;
   handleModifyStep: (goalId: number, stepId: number, description: string) => void;
   handleDeleteStep: (goalId: number, stepId: number) => void;
   handleToDo: (selectedDate: string | Date) => void;
   handleMoveMonth: (offset: number) => void;
+  setView: (view: string) => void;
 }
 
 // 전체 스토어 타입은 상태와 액션을 결합

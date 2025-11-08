@@ -1,5 +1,11 @@
 import styled from "styled-components";
 
+interface GreenButtonProps {
+  disabled: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
 /**
  * 재사용 가능한 초록 버튼 컴포넌트
  *
@@ -8,7 +14,12 @@ import styled from "styled-components";
  * - onClick: 클릭 핸들러
  * - disabled: 버튼 비활성화
  */
-export default function GreenButton({ children, onClick, disabled = false, ...rest }) {
+export default function GreenButton({
+  children,
+  onClick,
+  disabled = false,
+  ...rest
+}: GreenButtonProps) {
   return (
     <StyledButton onClick={onClick} disabled={disabled} {...rest}>
       {children}
@@ -21,8 +32,8 @@ const StyledButton = styled.button`
   align-items: center;
 
   /* 텍스트 길이에 따라 유동 폭 */
-  padding: 12px 20px;
-  min-width: 134px; /* 기본 최소 너비 */
+  padding: 12px 10px;
+  min-width: 154px; /* 기본 최소 너비 */
   height: 50px; /* 고정 높이 */
 
   background: var(--primary-1, #0e7400);
