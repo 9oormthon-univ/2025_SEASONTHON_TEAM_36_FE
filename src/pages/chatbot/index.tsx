@@ -9,11 +9,10 @@ import ConfirmModal from "@/common/components/ConfirmModal";
 import { ModalHeader } from "@/common/components/PageModal";
 
 import { Chatbot, User } from "./components/Chat";
-import Choice from "./components/Choice";
 import { useChatForm } from "./hooks/useChatForm";
 import { useChatScroll } from "./hooks/useChatScroll";
 import { Button, Form, Input, Page } from "./styles";
-import { ChatBody, ChatbotChatBlock, ChatDate } from "./styles/Chat";
+import { ChatBody, ChatbotChat, ChatbotChatBlock, ChatDate } from "./styles/Chat";
 import { getKoreanDay } from "./utils/date";
 
 const ChatbotPage = () => {
@@ -31,6 +30,7 @@ const ChatbotPage = () => {
     setUserChat,
     handleSubmit,
     loading,
+    chatbotLoading,
     isError,
     isClosingRef,
     // chatbotRef,
@@ -68,7 +68,7 @@ const ChatbotPage = () => {
         {loading ? (
           "불러오는 중..."
         ) : isError ? (
-          "챗봇 연결을 실패했습니다 ㅠㅠ "
+          "챗봇 연결을 실패했습니다 🥲"
         ) : (
           <>
             <ModalHeader
@@ -98,6 +98,51 @@ const ChatbotPage = () => {
                 ) : (
                   <User key={index}>{chatInfo.content}</User>
                 ),
+              )}
+              {chatbotLoading && (
+                <Chatbot>
+                  <ChatbotChat>
+                    <div
+                      style={{
+                        borderRadius: "10px",
+                        backgroundColor: "var(--natural-200)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: "5px",
+                        padding: "12px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "6px",
+                          height: "6px",
+                          borderRadius: "50%",
+                          backgroundColor: "var(--natural-600)",
+                          animation: "bounce 1.5s ease-in-out infinite",
+                        }}
+                      />
+                      <div
+                        style={{
+                          width: "6px",
+                          height: "6px",
+                          borderRadius: "50%",
+                          backgroundColor: "var(--natural-600)",
+                          animation: "bounce 1.5s ease-in-out 0.2s infinite",
+                        }}
+                      />
+                      <div
+                        style={{
+                          width: "6px",
+                          height: "6px",
+                          borderRadius: "50%",
+                          backgroundColor: "var(--natural-600)",
+                          animation: "bounce 1.5s ease-in-out 0.4s infinite",
+                        }}
+                      />
+                    </div>
+                  </ChatbotChat>
+                </Chatbot>
               )}
             </ChatBody>
             {!status && (

@@ -62,10 +62,16 @@ export async function updateCompleteToDo(todoId: number) {
 
 export async function updateTodoDetail(todoId: number, title: string, todoType: Todo) {
   return handleApiRequest<RespTodo>(() =>
-    mainApi.put(`${BASE}/detail/${todoId}`, {
-      title: title,
-      todoType: todoType,
-    }),
+    mainApi.put(
+      `${BASE}/detail/${todoId}`,
+      {
+        title: title,
+        todoType: todoType,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    ),
   );
 }
 
