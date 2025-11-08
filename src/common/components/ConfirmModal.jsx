@@ -34,7 +34,7 @@ export default function ConfirmModal({
     // 초기 포커스: 취소 버튼에
     setTimeout(() => cancelRef.current?.focus(), 0);
 
-    const onKey = (e) => {
+    const onKey = e => {
       if (e.key === "Escape") onCancel?.();
       if (e.key === "Enter") onConfirm?.();
     };
@@ -62,20 +62,24 @@ export default function ConfirmModal({
   const portalRoot = getRoot();
 
   return createPortal(
-    <Overlay role="presentation" onMouseDown={(e) => {
-      // 바깥 클릭으로 닫기 (컨텐츠 클릭은 무시)
-      if (e.target === e.currentTarget) onCancel?.();
-    }}>
+    <Overlay
+      role="presentation"
+      onMouseDown={e => {
+        // 바깥 클릭으로 닫기 (컨텐츠 클릭은 무시)
+        if (e.target === e.currentTarget) onCancel?.();
+      }}
+    >
       <Dialog
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-delete-title"
       >
-        <Message id="confirm-delete-title" className="typo-button">{message}</Message>
+        <Message id="confirm-delete-title" className="typo-button">
+          {message}
+        </Message>
 
         <Buttons role="group" aria-label="삭제 확인">
-
           <Button
             ref={cancelRef}
             data-variant="cancel"
@@ -97,7 +101,7 @@ export default function ConfirmModal({
         </Buttons>
       </Dialog>
     </Overlay>,
-    portalRoot
+    portalRoot,
   );
 }
 
@@ -112,8 +116,12 @@ const Overlay = styled.div`
   /* 애니메이션 */
   animation: fadeIn 140ms ease-out;
   @keyframes fadeIn {
-    from { opacity: .001; }
-    to { opacity: 1; }
+    from {
+      opacity: 0.001;
+    }
+    to {
+      opacity: 1;
+    }
   }
 `;
 
@@ -123,8 +131,8 @@ const Dialog = styled.div`
   color: var(--text-1, #111);
   border-radius: 14px;
   box-shadow:
-    0 8px 28px rgba(0,0,0,.14),
-    0 2px 8px rgba(0,0,0,.10);
+    0 8px 28px rgba(0, 0, 0, 0.14),
+    0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 
   /* 컨텐츠 간격 */
@@ -144,12 +152,12 @@ const Buttons = styled.div`
   display: grid;
   grid-template-columns: 1fr 1px 1fr;
   align-items: stretch;
-  border-top: 1px solid var(--natural-600, #969BA5);
+  border-top: 1px solid var(--natural-600, #969ba5);
 `;
 
 const Divider = styled.div`
   width: 1px;
-  background: var(--natural-600, #969BA5);
+  background: var(--natural-600, #969ba5);
 `;
 
 const Button = styled.button`
@@ -164,7 +172,7 @@ const Button = styled.button`
     v === "confirm" ? "var(--brand-1, #0E7400)" : "var(--text-1, #111)"};
 
   &:focus-visible {
-    outline: 2px solid var(--brand-1, #0E7400);
+    outline: 2px solid var(--brand-1, #0e7400);
     outline-offset: -2px;
   }
 
