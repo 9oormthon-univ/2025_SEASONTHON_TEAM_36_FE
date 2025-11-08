@@ -7,6 +7,7 @@ import { getUserProfile } from "@/apis/user";
 import { RespUserProfile } from "@/common/types/response/user";
 
 import { ChatType } from "../types/Chat";
+import { getAccessToken } from "@/common/utils/token";
 
 export const useChatForm = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export const useChatForm = () => {
               `${import.meta.env.VITE_API_BASE_URL}/api/v1/ai/connect?userId=${respUserInfo.userId}`,
               {
                 headers: {
-                  Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
+                  Authorization: `Bearer ${getAccessToken()}`,
                   Accept: "text/event-stream",
                 },
               },
