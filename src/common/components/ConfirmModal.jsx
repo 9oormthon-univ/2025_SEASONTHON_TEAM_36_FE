@@ -21,25 +21,13 @@ export default function ConfirmModal({
   cancelText = "아니오",
   cancelCentric = false,
 }) {
-  if (!open) return null;
-
-  // ensure modal root
-  const getRoot = () => {
-    let root = document.getElementById("modal-root");
-    if (!root) {
-      root = document.createElement("div");
-      root.id = "modal-root";
-      document.body.appendChild(root);
-    }
-    return root;
-  };
-
   const cancelRef = React.useRef(null);
   const confirmRef = React.useRef(null);
   const dialogRef = React.useRef(null);
 
   // focus first button & esc handler, body scroll lock
   React.useEffect(() => {
+    if (!open) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     // 초기 포커스: 취소 버튼에
@@ -54,7 +42,20 @@ export default function ConfirmModal({
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
     };
-  }, [onCancel, onConfirm]);
+  }, [open, onCancel, onConfirm]);
+
+  if (!open) return null;
+
+  // ensure modal root
+  const getRoot = () => {
+    let root = document.getElementById("modal-root");
+    if (!root) {
+      root = document.createElement("div");
+      root.id = "modal-root";
+      document.body.appendChild(root);
+    }
+    return root;
+  };
 
   const portalRoot = getRoot();
 
