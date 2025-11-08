@@ -3,19 +3,19 @@ import styled from "styled-components";
 // Illust 컴포넌트에서 사용하던 이미지를 직접 가져옵니다.
 import frogWell from "@/assets/images/frog-well.png";
 
-export default function EmptyState({
+export default function OnbEmptyState({
   title = "오늘은 하루가 비어있어요!",
   subtitle = "AI 챗봇과의 대화를 통해\n업무를 추가해주세요",
 }) {
   return (
     <Container>
       <Illustration>
-        <img src={frogWell} alt="우물 속 개구리 캐릭터" />
+        <img style={{ width: "70%" }} src={frogWell} alt="우물 속 개구리 캐릭터" />
       </Illustration>
 
       <TextBox>
         <Message className="typo-h3">{title}</Message>
-        <SubMessage className="typo-h3">{subtitle}</SubMessage>
+        <SubMessage className="typo-h4">{subtitle}</SubMessage>
       </TextBox>
     </Container>
   );
@@ -60,8 +60,9 @@ const TextBox = styled.div`
 
 const Message = styled.p`
   white-space: pre-line;
+  font-size: 18px;
 `;
 const SubMessage = styled.p`
   white-space: pre-line;
-  font-size: 18px;
+  font-size: 16px;
 `;
