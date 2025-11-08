@@ -7,26 +7,26 @@ import { useFetchTodos } from "../hooks/useFetchTodos";
 
 /** ====== 개발용 더미 데이터 ====== */
 const DUMMY_GOALS: RespTodo[] = [
-  {
-    id: 101,
-    userId: 1,
-    currentDate: "2025-10-22",
-    dDay: "D-5",
-    title: "React 공부하기",
-    warmMessage: "꾸준히 하면 분명 성장할 거예요!",
-    progress: 45,
-    isCompleted: false,
-  },
-  {
-    id: 102,
-    userId: 1,
-    currentDate: "2025-10-22",
-    dDay: "D-10",
-    title: "운동 루틴 만들기",
-    warmMessage: "오늘도 한 발짝 나아가요 💪",
-    progress: 60,
-    isCompleted: false,
-  },
+  // {
+  //   id: 101,
+  //   userId: 1,
+  //   currentDate: "2025-10-22",
+  //   dDay: "D-5",
+  //   title: "React 공부하기",
+  //   warmMessage: "꾸준히 하면 분명 성장할 거예요!",
+  //   progress: 45,
+  //   isCompleted: false,
+  // },
+  // {
+  //   id: 102,
+  //   userId: 1,
+  //   currentDate: "2025-10-22",
+  //   dDay: "D-10",
+  //   title: "운동 루틴 만들기",
+  //   warmMessage: "오늘도 한 발짝 나아가요 💪",
+  //   progress: 60,
+  //   isCompleted: false,
+  // },
 ];
 
 /** ====== Zustand Store Shape ====== */
