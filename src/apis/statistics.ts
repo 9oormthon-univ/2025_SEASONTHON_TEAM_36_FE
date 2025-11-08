@@ -1,4 +1,4 @@
-import { TodoType } from "@/common/types/request/statistics";
+import { Todo } from "@/common/types/enums";
 import {
   RespAchievementRate,
   RespFocusTime,
@@ -11,7 +11,7 @@ import { handleApiRequest } from "./apiUtils";
 const BASE = "/api/v1/statistics";
 
 /** [GET] 이번 달 달성 과제 목록 조회 (쿼리 파라미터: yearMonth -> string, "yyyy-MM" 형식 | todoType -> string) */
-export const fetchMonthlyTodos = (yearMonth: string, todoType: TodoType) => {
+export const fetchMonthlyTodos = (yearMonth: string, todoType: Todo) => {
   return handleApiRequest<RespMonthlyTodos[]>(() =>
     mainApi.get(`${BASE}/todos/monthly?yearMonth=${yearMonth}&todoType=${todoType}`),
   );

@@ -7,7 +7,11 @@ const BASE = "/api/v1/diaries";
 
 /** [GET] 특정 달의 Diary 조회 (쿼리 파라미터: yearMonth -> "yyyy-MM" 형식) */
 export const fetchDiaryOfMonth = (yearMonth: string) => {
-  return handleApiRequest<RespDiary[]>(() => mainApi.get(`${BASE}?yearMonth=${yearMonth}`));
+  return handleApiRequest<RespDiary[]>(() =>
+    mainApi.get(`${BASE}`, {
+      params: { yearMonth },
+    }),
+  );
 };
 
 /** [GET] 특정 날짜의 Diary 상세 조회 (쿼리 파라미터: date -> "yyyy-MM-dd" 형식) */

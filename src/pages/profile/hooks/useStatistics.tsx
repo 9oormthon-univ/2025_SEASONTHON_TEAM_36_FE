@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { fetchAchievementRate, fetchFocusTime, fetchMonthlyTodos } from "@/apis/statistics";
-import { TodoType } from "@/common/types/request/statistics";
-import { RespFocusTime, RespMonthlyTodos } from "@/common/types/response/statistics";
-
-import { useMoveDate } from "./useMoveDate";
+import { Todo } from "@/common/types/enums";
+import { RespMonthlyTodos } from "@/common/types/response/statistics";
 
 interface AchievementRateType {
   name: string;
@@ -17,7 +15,7 @@ interface FocusTimeType {
   최소: number;
 }
 
-const idx2todoType: TodoType[] = [
+const idx2todoType: Todo[] = [
   "PREVIEW_REVIEW",
   "HOMEWORK",
   "TEST_STUDY",
@@ -26,9 +24,7 @@ const idx2todoType: TodoType[] = [
   "ETC",
 ];
 
-export const useStatistics = () => {
-  const { year, month } = useMoveDate();
-
+export const useStatistics = ({ year, month }: { year: number; month: number }) => {
   const [clickedSubject, setClickedSubject] = useState<number>(-1);
   const [subjects, setSubjects] = useState<RespMonthlyTodos[] | null | undefined>(null);
   const [achievementRate, setAchievementRate] = useState<AchievementRateType[]>();
@@ -88,13 +84,10 @@ export const useStatistics = () => {
   }, [year, month]);
 
   useEffect(() => {
-    try {
-      void initAchievementRate();
-      void initMonthlyFocusTime();
-    } catch (error) {
-      console.error(error);
-    }
-  }, [initMonthlyFocusTime, initAchievementRate]);
+    // 월이 변경될 때마다 API 재호출
+    void initAchievementRate();
+    void initMonthlyFocusTime();
+  }, [year, month, initAchievementRate, initMonthlyFocusTime]);
 
   return {
     clickedSubject,

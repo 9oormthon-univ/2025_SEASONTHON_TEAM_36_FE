@@ -1,4 +1,4 @@
-import { RespStepInfo } from "@/common/types/response/step";
+import { RespStepItem } from "@/common/types/response/step";
 
 /** UI에서 사용하는 Step 상태 */
 export type StepState = "play" | "pause" | "done";
@@ -7,7 +7,7 @@ export type StepState = "play" | "pause" | "done";
 export type PlayingKey = string | number | null;
 
 /** 서버 원본의 step 한 건(부족한 필드 보강: stepOrder, count는 없을 수 있어 Partial로) */
-export type StepRaw = RespStepInfo & {
+export type StepRaw = RespStepItem & {
   stepOrder?: number;
   count?: number;
 };

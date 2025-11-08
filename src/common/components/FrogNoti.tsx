@@ -1,11 +1,17 @@
 // FrogPage.jsx
 import styled from "styled-components";
 
+interface FrogNotiProps {
+  topText: string;
+  imageSrc: string;
+  bottomText: string;
+}
+
 export default function FrogNoti({
   topText = "", //
   imageSrc, // 개구리 이미지를 받아옴
   bottomText = "",
-}) {
+}: FrogNotiProps) {
   return (
     <Container>
       <TopText>{topText}</TopText>

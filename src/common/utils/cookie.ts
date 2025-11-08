@@ -5,16 +5,16 @@
  * @param {number|Date} expires – 만료일(초 단위 경과 시간 또는 Date 객체)
  * @param {string} [path='/'] – 쿠키가 유효한 경로
  */
-export function setCookie(name, value, expires, path = '/') {
+export function setCookie(name: string, value: string, expires: number | Date, path: string = "/") {
   let exp;
-  if (typeof expires === 'number') {
+  if (typeof expires === "number") {
     const d = new Date();
     d.setTime(d.getTime() + expires * 1000); // expires 초 뒤
     exp = d.toUTCString();
   } else if (expires instanceof Date) {
     exp = expires.toUTCString();
   } else {
-    throw new Error('expires는 초 단위 숫자 또는 Date여야 합니다.');
+    throw new Error("expires는 초 단위 숫자 또는 Date여야 합니다.");
   }
 
   document.cookie = [
@@ -23,19 +23,19 @@ export function setCookie(name, value, expires, path = '/') {
     `path=${path}`,
     `SameSite=Strict`, // CSRF 방어
     `Secure`, // HTTPS에서만 전달
-  ].join('; ');
+  ].join("; ");
 }
 
 // 쿠키 읽기
-export function getCookie(name) {
+export function getCookie(name: string) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
+  if (parts.length === 2) return parts.pop()?.split(";").shift();
   return null;
 }
 
 // 쿠키 삭제 (expires를 과거로)
-export function deleteCookie(name, path = '/') {
+export function deleteCookie(name: string, path = "/") {
   document.cookie = `${encodeURIComponent(
     name,
   )}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;

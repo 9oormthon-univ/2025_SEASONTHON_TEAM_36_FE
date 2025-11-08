@@ -1,12 +1,13 @@
-export const dateToFormatString = date => {
+export const dateToFormatString = (date: Date) => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
     date.getDate(),
   ).padStart(2, "0")}`;
 };
 
-export const maxDayOfMonth = date => {
+export const maxDayOfMonth = (date: Date) => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
+  const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   switch (month) {
     case 1:
     case 3:
@@ -22,11 +23,11 @@ export const maxDayOfMonth = date => {
     case 11:
       return 30;
     case 2:
-      return 28 + ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0);
+      return 28 + Number(isLeapYear);
   }
 };
 
-export const getWeekRange = date => {
+export const getWeekRange = (date: Date) => {
   // 입력된 날짜 객체 복사 (원본 불변)
   const targetDate = new Date(date);
 
@@ -44,7 +45,7 @@ export const getWeekRange = date => {
   return { monday, sunday };
 };
 
-export const checkWeekPosition = date => {
+export const checkWeekPosition = (date: Date) => {
   const { monday, sunday } = getWeekRange(date);
 
   const year = date.getFullYear();
