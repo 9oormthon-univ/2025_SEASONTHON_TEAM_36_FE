@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { CompletionLevel } from "@/common/types/enums";
 
 import { COLOR_TONES, FROG_FACES } from "../constants/completionConstants";
 import {
@@ -9,57 +9,50 @@ import {
   InnerDot,
   Wrapper,
 } from "../styles/CompletionStyles";
-import { CompletionSelectorProps } from "../types/completionTypes";
+
+/** CompletionLevel ↔ 점수(1~5) 매핑 */
+const LEVELS: CompletionLevel[] = ["ZERO", "TWENTY_FIVE", "FIFTY", "SEVENTY_FIVE", "ONE_HUNDRED"];
+
+export interface CompletionSelectorProps {
+  name: string;
+  value: CompletionLevel;
+  onChange: (val: CompletionLevel) => void;
+  leftLabel?: string;
+  rightLabel?: string;
+  className?: string;
+}
 
 /**
- * Selector (1~5)
- * - 활성 버튼은 자리별로 frog-face-1..5.svg 표시
- * - 연한 초록 → 진한 초록 그라데이션 라인 위에 점 배치
+ * Selector (CompletionLevel 기반)
+ * - ZERO ~ ONE_HUNDRED (5단계)
+ * - 활성 버튼은 자리별 frog-face 아이콘 표시
  */
 export default function CompletionSelector({
   name,
   value,
   onChange,
-  min = 1,
-  max = 5,
   leftLabel,
   rightLabel,
   className,
 }: CompletionSelectorProps) {
-  const handleKey = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        onChange(Math.max(min, value - 1));
-      } else if (e.key === "ArrowRight") {
-        e.preventDefault();
-        onChange(Math.min(max, value + 1));
-      } else if (/^[1-9]$/.test(e.key)) {
-        const num = Number(e.key);
-        if (num >= min && num <= max) onChange(num);
-      }
-    },
-    [value, onChange, min, max],
-  );
-
   return (
     <Wrapper className={className}>
-      <DotsRow role="radiogroup" aria-label={name} tabIndex={0} onKeyDown={handleKey}>
-        {Array.from({ length: max - min + 1 }).map((_, i) => {
-          const n = i + min; // 자리(1~5)
-          const active = value === n; // 현재 선택 여부
+      <DotsRow role="radiogroup" aria-label={name} tabIndex={0}>
+        {LEVELS.map((level, i) => {
+          const n = i + 1;
+          const active = level === value;
           const tone = COLOR_TONES[i] ?? "500";
           const faceSrc = FROG_FACES[n]; // 자리별 아이콘
           return (
             <DotButton
-              key={n}
+              key={level}
               type="button"
               role="radio"
               aria-checked={active}
-              aria-label={`${n}점`}
+              aria-label={`${level}`}
               $active={active}
               $tone={tone}
-              onClick={() => onChange(n)}
+              onClick={() => onChange(level)}
             >
               {active ? <FrogImg src={faceSrc} alt="" aria-hidden="true" /> : <InnerDot />}
             </DotButton>
