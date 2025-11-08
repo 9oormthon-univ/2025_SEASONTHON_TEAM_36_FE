@@ -55,6 +55,11 @@ export default function OnbLayout({
   const activeIndex = useMemo(() => extIndex ?? 0, [extIndex]);
   const stage = stages[activeIndex] ?? null;
 
+  // ✅ stage id가 바뀌면 이전 하이라이트(dim) 즉시 제거
+  useEffect(() => {
+    setSpotRect(null);
+  }, [stage?.id]);
+
   // 프레임 내부 좌표로 변환
   const localSpot = useMemo(() => {
     if (!spotRect || !frameRef.current) return null;
@@ -88,7 +93,11 @@ export default function OnbLayout({
           )}
 
           {/* 프레임 내부 오버레이(펄스/가이드 등) */}
+          {/* 프레임 내부 오버레이(펄스/가이드 등) */}
           <FrameOverlay>
+            {/* 하이라이트 사각형을 제외하고 프레임 내부를 은은히 덮는 딤 */}
+            {localSpot ? <SpotDim $rect={localSpot} /> : null}
+
             {stage.pulse && localSpot ? <Pulse $rect={localSpot} /> : null}
             {stage.placement === "center" && stage.body ? (
               <CenterBubble>
@@ -96,12 +105,15 @@ export default function OnbLayout({
                 <p>{stage.body}</p>
               </CenterBubble>
             ) : null}
+
             {stage.componenetKey === "chatbot" && localSpot ? (
               <>
                 <DottedCircle $rect={localSpot} />
                 <SpotBubble $rect={localSpot}>AI 개구리 ‘Rana’</SpotBubble>
               </>
             ) : null}
+
+            {/* (필요 시) goal-card, bottom-sheet 케이스도 동일 패턴으로 추가 가능 */}
           </FrameOverlay>
         </Frame>
       </FrameWrap>
@@ -294,7 +306,6 @@ const CenterBubble = styled.div`
   }
 `;
 
-// OnbLayout.tsx 가장 아래 스타일 구역에 추가
 const DottedCircle = styled.div<{ $rect: DOMRect }>`
   position: absolute;
   left: ${p => p.$rect.x - 5}px;
@@ -308,7 +319,7 @@ const DottedCircle = styled.div<{ $rect: DOMRect }>`
     0 6px 20px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(0.5px);
   pointer-events: none;
-  z-index: 6;
+  z-index: 10;
 `;
 
 const SpotBubble = styled.div<{ $rect: DOMRect }>`
@@ -326,4 +337,31 @@ const SpotBubble = styled.div<{ $rect: DOMRect }>`
   box-shadow: 0 8px 24px rgba(2, 6, 23, 0.25);
   border: 1px solid rgba(15, 23, 42, 0.08);
   pointer-events: none; /* 오버레이가 클릭 방해하지 않도록 */
+  z-index: 10;
+`;
+const SpotDim = styled.div<{ $rect: DOMRect }>`
+  position: absolute;
+  left: ${p => p.$rect.x}px;
+  top: ${p => p.$rect.y}px;
+  width: ${p => p.$rect.width}px;
+  height: ${p => p.$rect.height}px;
+
+  /* 하이라이트 모서리와 맞춤 (Pulse/DottedCircle과 동일 반경으로 통일하면 자연스러움) */
+  border-radius: 14px;
+
+  /*
+    핵심 트릭:
+    - center는 투명
+    - 거대한 spread의 box-shadow로 바깥 전부를 덮어 프레임 내부만 은은하게 어둡게
+    - Root의 전체 딤보다 살짝 밝은 농도로 "연한" 느낌
+  */
+  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.12);
+
+  pointer-events: none;
+  transition:
+    left 0.06s linear,
+    top 0.06s linear,
+    width 0.06s linear,
+    height 0.06s linear;
+  z-index: 5;
 `;

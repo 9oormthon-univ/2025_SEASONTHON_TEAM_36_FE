@@ -1,9 +1,9 @@
 // src/pages/home/components/TodayStepsSheet.tsx
 import styled from "styled-components";
 
-import { useBottomSheetStore } from "@/pages/home/store/useBottomSheetStore";
 import type { StepListItem } from "@/pages/home/types/steps";
 
+import { useOnbSheetStore } from "../store/useOnbSheetStore";
 import OnbBottomSheet from "./OnbBottomSheet";
 import OnbSheetListSection from "./OnbSheetListSection";
 
@@ -81,7 +81,7 @@ type StepsProps = {
 };
 
 export default function OnbStepsSheet({ onAction }: StepsProps) {
-  const open = useBottomSheetStore(s => s.open);
+  const open = useOnbSheetStore(s => s.open);
   return (
     <>
       {/* 온보딩 전용 BottomSheet는 showBackdrop prop이 없음 */}

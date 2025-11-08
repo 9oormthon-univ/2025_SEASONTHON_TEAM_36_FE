@@ -1,20 +1,19 @@
 // ---
-import { forwardRef, useEffect, useRef } from "react";
+import { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 
 import AI from "@/assets/images/ai-frog.svg";
 import { RespTodo } from "@/common/types/response/todo";
-import { useBottomSheetStore } from "@/pages/home/store/useBottomSheetStore";
 
 import OnbDateView from "../components/OnbDateView";
 import OnbEmptyState from "../components/OnbEmptyState";
 import OnbGoalCard from "../components/OnbGoalCard";
 import OnbStepsSheet from "../components/OnbStepsSheet";
 import { SceneProps } from "../layout/OnbLayout";
+import { useOnbSheetStore } from "../store/useOnbSheetStore";
 import { useOnbUiStore } from "../store/useOnbUiStore";
 
 const goals: RespTodo[] = [
-  // 마감일 11월 15일로 가정
   {
     id: 101,
     userId: 1,
@@ -28,8 +27,41 @@ const goals: RespTodo[] = [
   },
 ];
 
-/** Goal 단위의 전체 Steps 뷰 모델 (toGoalStepsView 반환) */
-/** ✅ StepListGroup 더미 데이터 (완성형) */
+/** SpotRect를 지속 보고하는 훅 */
+function useSpotReporter(
+  targetRef: React.RefObject<HTMLElement | null>,
+  active: boolean,
+  setSpotRect: (r: DOMRect | null) => void,
+) {
+  useLayoutEffect(() => {
+    if (!active) {
+      setSpotRect(null);
+      return;
+    }
+    let raf = 0;
+
+    const tick = () => {
+      const el = targetRef.current;
+      setSpotRect(el ? el.getBoundingClientRect() : null);
+      raf = requestAnimationFrame(tick);
+    };
+
+    const onScrollOrResize = () => {
+      const el = targetRef.current;
+      setSpotRect(el ? el.getBoundingClientRect() : null);
+    };
+
+    raf = requestAnimationFrame(tick);
+    window.addEventListener("scroll", onScrollOrResize, true);
+    window.addEventListener("resize", onScrollOrResize);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScrollOrResize, true);
+      window.removeEventListener("resize", onScrollOrResize);
+    };
+  }, [active, targetRef, setSpotRect]);
+}
 
 // styled-components transient props
 export interface BodyStyledProps {
@@ -46,33 +78,27 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
   const closeBottomSheet = useOnbUiStore(s => s.closeBottomSheet);
   const setUrgent = useOnbUiStore(s => s.setUrgent);
 
-  const openSheet = useBottomSheetStore(s => s.openSheet);
-  const closeSheet = useBottomSheetStore(s => s.closeSheet);
-  const expandSheet = useBottomSheetStore(s => s.expandSheet);
-  const collapseSheet = useBottomSheetStore(s => s.collapseSheet);
-  // stage.id 변화 시에만 초기화/분기 실행
+  const openSheet = useOnbSheetStore(s => s.openSheet);
+  // const closeSheet = useOnbSheetStore(s => s.closeSheet);
+  const expandSheet = useOnbSheetStore(s => s.expandSheet);
+
+  // 어떤 타깃을 하이라이트할지
+  const highlightChatbot = stage.componenetKey === "chatbot";
+  const highlightGoalCard = stage.componenetKey === "goal-card";
+  const highlightBottomSheet = stage.componenetKey === "bottom-sheet";
+
+  // 각 타깃에 대해 spotRect 지속 보고
+  useSpotReporter(refChatbot, highlightChatbot, setSpotRect);
+  useSpotReporter(refGoalCard, highlightGoalCard, setSpotRect);
+  useSpotReporter(refSheet, highlightBottomSheet, setSpotRect);
 
   useEffect(() => {
-    // 하이라이트 대상 보고
-    if (stage.componenetKey === "chatbot" && refChatbot.current) {
-      setSpotRect(refChatbot.current.getBoundingClientRect());
-    } else if (stage.componenetKey === "goal-card" && refGoalCard.current) {
-      setSpotRect(refGoalCard.current.getBoundingClientRect());
-    } else if (stage.componenetKey === "bottom-sheet" && refSheet.current) {
-      setSpotRect(refSheet.current.getBoundingClientRect());
-    } else {
-      setSpotRect(null);
-    }
-
     // ✅ 바텀시트 열기/닫기/확장/축소를 SceneMain에서 통합 제어
     if (stage.id !== "sheet-content") {
       openSheet();
-    } else if (stage.id === "sheet-content") {
+    } else {
       openSheet();
       expandSheet(); // 콘텐츠 보여줄 때는 확장
-      // collapseSheet();
-    } else {
-      closeSheet(); // 그 외 단계는 닫기
     }
 
     // 기존 UI store 동기화 (필요 시 유지)
@@ -88,28 +114,51 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
     const noGoals =
       stage.id === "start" || stage.id === "chatboticon" || stage.id === "chatbot-icon";
     setHasGoals(!noGoals);
-  }, [stage.id, stage.sceneKey, stage.componenetKey]);
+  }, [stage.id, stage.sceneKey]); // componenetKey로 spotRect는 useSpotReporter가 처리
 
   const hasGoals = useOnbUiStore(s => s.hasGoals);
   const setHasGoals = useOnbUiStore(s => s.setHasGoals);
-  const sheetHeight = useBottomSheetStore(s => s.heightPx);
-  const isSheetOpen = useBottomSheetStore(s => s.open);
+  const sheetHeight = useOnbSheetStore(s => s.heightPx);
+  const isSheetOpen = useOnbSheetStore(s => s.open);
+
   // 시트 열림 여부에 따른 카드 축소율
   const SHRINK_OPEN = 0.89 as const;
   const SHRINK_CLOSED = 1 as const;
   const shrink: number = isSheetOpen ? SHRINK_OPEN : SHRINK_CLOSED;
+
   return (
     <Page>
-      <OnbChatbotBtn ref={refChatbot} onClick={() => {}} isSheetOpen={isSheetOpen} />
+      <OnbChatbotBtn
+        ref={refChatbot}
+        onClick={() => {}}
+        isSheetOpen={isSheetOpen}
+        className="onb-chatbot-spot"
+      />
       {!isSheetOpen && <TopSpacing />}
+
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <OnbDateView />
 
-        {hasGoals ? <OnbGoalCard goal={goals[0]} shrink={shrink} /> : <OnbEmptyState />}
+        {hasGoals ? (
+          <OnbGoalCard
+            ref={refGoalCard}
+            goal={goals[0]}
+            shrink={shrink}
+            className="onb-goalcard-spot"
+          />
+        ) : (
+          <OnbEmptyState />
+        )}
       </Body>
+
       <BottomSpacing />
 
-      {hasGoals && <OnbStepsSheet key={stage.id} />}
+      {/* 바텀시트는 외곽 래퍼로 ref 연결 (포털 사용 시 위치 추적 안정화) */}
+      {hasGoals && (
+        <div ref={refSheet} className="onb-bsheet-spot" data-onb-target="bottom-sheet">
+          <OnbStepsSheet key={stage.id} />
+        </div>
+      )}
     </Page>
   );
 }
@@ -149,10 +198,18 @@ const BottomSpacing = styled.div`
   width: 100%;
 `;
 
-const OnbChatbotBtn = forwardRef<HTMLButtonElement, { isSheetOpen: boolean; onClick: () => void }>(
-  ({ isSheetOpen, onClick }, ref) => {
+type OnbChatbotBtnProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  isSheetOpen: boolean;
+};
+
+const OnbChatbotBtn = forwardRef<HTMLButtonElement, OnbChatbotBtnProps>(
+  ({ isSheetOpen, ...rest }, ref) => {
     return (
-      <Button ref={ref} onClick={onClick} $isSheetOpen={isSheetOpen} aria-label="AI 개구리 Rana">
+      <Button
+        ref={ref}
+        $isSheetOpen={isSheetOpen}
+        {...rest} // className, onClick, aria-* 등 모두 전달
+      >
         <AIImg src={AI} alt="AI" />
       </Button>
     );
