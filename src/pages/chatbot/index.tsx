@@ -5,10 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 import { disconnectSSE } from "@/apis/ai";
 import UserChatButton from "@/assets/images/chat-button.svg";
-import EscapeFrogImg from "@/assets/images/frog-escape-new.svg";
 import ConfirmModal from "@/common/components/ConfirmModal";
-import FrogNoti from "@/common/components/FrogNoti";
-import PageModal, { ModalHeader } from "@/common/components/PageModal";
+import { ModalHeader } from "@/common/components/PageModal";
 
 import { Chatbot, User } from "./components/Chat";
 import Choice from "./components/Choice";
@@ -24,16 +22,13 @@ const ChatbotPage = () => {
   const ref = useRef<HTMLDivElement>(null);
   const today = new Date();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [splashOpen, setSplashOpen] = useState<boolean>(false);
 
   const {
     userInfo,
     userChat,
     chats,
     status,
-    buttonTexts,
     setUserChat,
-    setStatus,
     handleSubmit,
     loading,
     isError,
@@ -60,19 +55,6 @@ const ChatbotPage = () => {
 
   return (
     <>
-      <PageModal
-        open={splashOpen}
-        onClose={() => {
-          setSplashOpen(false);
-          setStatus(false);
-        }}
-      >
-        <FrogNoti
-          topText={"개구리가 우물을 탈출할\n계획을 짜고 있어요"}
-          imageSrc={EscapeFrogImg}
-          bottomText={"조금만 기다려 주세요..."}
-        />
-      </PageModal>
       <ConfirmModal
         open={modalOpen}
         onConfirm={handleConfirmClose}
@@ -116,13 +98,6 @@ const ChatbotPage = () => {
                 ) : (
                   <User key={index}>{chatInfo.content}</User>
                 ),
-              )}
-              {status && (
-                <Choice
-                  setSplashOpen={setSplashOpen}
-                  setStatus={setStatus}
-                  buttonTexts={buttonTexts}
-                />
               )}
             </ChatBody>
             {!status && (
