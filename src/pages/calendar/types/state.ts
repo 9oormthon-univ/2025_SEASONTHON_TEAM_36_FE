@@ -1,4 +1,4 @@
-import { RespStepInfo } from "@/common/types/response/step";
+import { RespStepItem } from "@/common/types/response/step";
 
 import type { Goal, Goals } from "../types/ToDo";
 
@@ -17,7 +17,7 @@ interface CalendarActions {
   initAllTodo: (
     todoIds: Array<number>,
     todoTitle: Array<string>,
-    todos: Array<Array<RespStepInfo>>,
+    todos: Array<Array<RespStepItem>>,
   ) => void;
   handleModifyStep: (goalId: number, stepId: number, description: string) => void;
   handleDeleteStep: (goalId: number, stepId: number) => void;

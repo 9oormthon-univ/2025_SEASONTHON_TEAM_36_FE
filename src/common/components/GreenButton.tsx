@@ -1,6 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 
+interface GreenButtonProps {
+  disabled: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
 /**
  * 재사용 가능한 초록 버튼 컴포넌트
  *
@@ -9,7 +15,12 @@ import styled from "styled-components";
  * - onClick: 클릭 핸들러
  * - disabled: 버튼 비활성화
  */
-export default function GreenButton({ children, onClick, disabled = false, ...rest }) {
+export default function GreenButton({
+  children,
+  onClick,
+  disabled = false,
+  ...rest
+}: GreenButtonProps) {
   return (
     <StyledButton onClick={onClick} disabled={disabled} {...rest}>
       {children}

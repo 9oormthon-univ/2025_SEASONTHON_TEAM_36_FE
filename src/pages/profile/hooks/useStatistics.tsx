@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { fetchAchievementRate, fetchFocusTime, fetchMonthlyTodos } from "@/apis/statistics";
-import { TodoType } from "@/common/types/request/statistics";
+import { Todo } from "@/common/types/enums";
 import { RespMonthlyTodos } from "@/common/types/response/statistics";
 
 interface AchievementRateType {
@@ -15,7 +15,7 @@ interface FocusTimeType {
   최소: number;
 }
 
-const idx2todoType: TodoType[] = [
+const idx2todoType: Todo[] = [
   "PREVIEW_REVIEW",
   "HOMEWORK",
   "TEST_STUDY",

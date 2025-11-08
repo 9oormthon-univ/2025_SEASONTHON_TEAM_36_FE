@@ -1,7 +1,7 @@
 // src/apis/step.js
 import type { ReqPauseStopStep, ReqStartStep, reqUpdateSteps } from "@/common/types/request/step";
 import type {
-  RespStepInfo,
+  RespStepItem,
   RespStepRecord,
   RespTodayStep,
   RespTodoSteps,
@@ -36,7 +36,7 @@ export async function fetchTodaySteps(todoId: number) {
 export async function modifyStep(stepId: number, description: string | undefined) {
   if (stepId === null) throw new Error("Step 수정을 위해 stepId가 필요합니다.");
   if (description === undefined) throw new Error("description이 필요합니다.");
-  return handleApiRequest<Array<RespStepInfo>>(() =>
+  return handleApiRequest<Array<RespStepItem>>(() =>
     mainApi.put(
       `${BASE}/${stepId}`,
       {
@@ -52,7 +52,7 @@ export async function modifyStep(stepId: number, description: string | undefined
 /** [PUT] ToDo의 Step들 전체 수정 */
 export async function modifySteps(todoId: number, payload: Array<reqUpdateSteps>) {
   if (todoId == null) throw new Error("Step 수정을 위해 todoId가 필요합니다.");
-  return handleApiRequest<Array<RespStepInfo>>(() =>
+  return handleApiRequest<Array<RespStepItem>>(() =>
     mainApi.put(`${BASE}/todo/${todoId}`, payload, {
       headers: { Accept: "application/json" },
     }),

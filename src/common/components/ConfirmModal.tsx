@@ -3,8 +3,18 @@ import React from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
 
+interface ConfirmModalProps {
+  open: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  message?: string;
+  confirmText?: string;
+  cancelText?: string;
+  cancelCentric?: boolean;
+}
+
 /**
- * ConfirmDelete
+ * ConfirmModal
  * - open: boolean
  * - onConfirm: () => void
  * - onCancel: () => void
@@ -20,10 +30,10 @@ export default function ConfirmModal({
   confirmText = "예",
   cancelText = "아니오",
   cancelCentric = false,
-}) {
-  const cancelRef = React.useRef(null);
-  const confirmRef = React.useRef(null);
-  const dialogRef = React.useRef(null);
+}: ConfirmModalProps) {
+  const cancelRef = React.useRef<HTMLButtonElement>(null);
+  const confirmRef = React.useRef<HTMLButtonElement>(null);
+  const dialogRef = React.useRef<HTMLDivElement>(null);
 
   // focus first button & esc handler, body scroll lock
   React.useEffect(() => {
@@ -33,7 +43,7 @@ export default function ConfirmModal({
     // 초기 포커스: 취소 버튼에
     setTimeout(() => cancelRef.current?.focus(), 0);
 
-    const onKey = (e) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onCancel?.();
       if (e.key === "Enter") onConfirm?.();
     };
@@ -162,7 +172,10 @@ const Divider = styled.div`
   background: var(--natural-600, #969ba5);
 `;
 
-const Button = styled.button`
+const Button = styled.button<{
+  $cancelCentric: boolean;
+  "data-variant"?: "confirm" | "cancel";
+}>`
   appearance: none;
   background: transparent;
   border: 0;
@@ -170,7 +183,9 @@ const Button = styled.button`
   padding: 10px;
   cursor: pointer;
 
-  color: ${({ ["data-variant"]: v, $cancelCentric }) => {
+  color: ${props => {
+    const v = props["data-variant"];
+    const { $cancelCentric } = props;
     return $cancelCentric
       ? v === "cancel"
         ? "var(--brand-1, #0E7400)"
