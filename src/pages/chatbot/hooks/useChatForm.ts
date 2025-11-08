@@ -5,14 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { sendMessage } from "@/apis/ai";
 import { getUserProfile } from "@/apis/user";
 import { RespUserProfile } from "@/common/types/response/user";
+import { getAccessToken } from "@/common/utils/token";
 
 import { ChatType } from "../types/Chat";
-import { getAccessToken } from "@/common/utils/token";
 
 export const useChatForm = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<RespUserProfile>();
   const [userChat, setUserChat] = useState<string>("");
+  const [chatbotLoading, setChatbotLoading] = useState<boolean>(true);
   const [status, setStatus] = useState<boolean>(false);
   const [buttonTexts, _] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -84,9 +85,10 @@ export const useChatForm = () => {
                 content: messageData,
               };
               setChats(prev => [...prev, newChatbotChatInfo]);
+              setChatbotLoading(prev => !prev);
             };
 
-            chatbotRef.current.onerror = (error: Event) => {
+            chatbotRef.current.onerror = (error: ErrorEvent | Event) => {
               if (!isMounted) return;
 
               // 의도적인 연결 종료가 아닌 경우에만 에러로 처리
@@ -144,6 +146,7 @@ export const useChatForm = () => {
           };
           setChats(prev => [...prev, newUserChatInfo]);
           setUserChat("");
+          setChatbotLoading(prev => !prev);
         })
         .catch(error => console.error(error));
     }
@@ -161,6 +164,8 @@ export const useChatForm = () => {
     handleSubmit,
     loading,
     setLoading,
+    chatbotLoading,
+    setChatbotLoading,
     isError,
     setIsError,
     chatbotRef,
