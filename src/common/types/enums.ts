@@ -15,3 +15,11 @@ export type Mood =
   | "DISAPPOINTED";
 
 export type CompletionLevel = "ZERO" | "TWENTY_FIVE" | "FIFTY" | "SEVENTY_FIVE" | "ONE_HUNDRED";
+
+export type Todo =
+  | "PREVIEW_REVIEW"
+  | "HOMEWORK"
+  | "TEST_STUDY"
+  | "PERFORMANCE_ASSESSMENT"
+  | "CAREER_ACTIVITY"
+  | "ETC";
