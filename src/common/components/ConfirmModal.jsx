@@ -33,7 +33,7 @@ export default function ConfirmModal({
     // 초기 포커스: 취소 버튼에
     setTimeout(() => cancelRef.current?.focus(), 0);
 
-    const onKey = e => {
+    const onKey = (e) => {
       if (e.key === "Escape") onCancel?.();
       if (e.key === "Enter") onConfirm?.();
     };
@@ -179,6 +179,7 @@ const Button = styled.button`
   }};
 
   &:focus-visible {
+    outline: 2px solid var(--brand-1, #0e7400);
     outline: 2px solid var(--brand-1, #0e7400);
     outline-offset: -2px;
   }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import Calendar from "react-calendar";
+import Calendar, { OnArgs } from "react-calendar";
 
 import { calendarApi } from "@/apis/calendar";
 import LeftArrow from "@/assets/images/left-arrow.png";
@@ -13,6 +13,7 @@ const CustomCalendar = () => {
   const curDate = useCalendar(state => state.curDate);
   const handleMoveMonth = useCalendar(state => state.handleMoveMonth);
   const handleToDo = useCalendar(state => state.handleToDo);
+  const setView = useCalendar(state => state.setView);
 
   useEffect(() => {
     calendarApi(curDate.getFullYear(), curDate.getMonth() + 1)
@@ -76,6 +77,12 @@ const CustomCalendar = () => {
       <Calendar
         onClickDay={value => {
           handleToDo(value);
+        }}
+        onViewChange={({ activeStartDate, view }) => {
+          setView(view);
+          if (view === "month") {
+            handleToDo(activeStartDate as Date);
+          }
         }}
         formatDay={formatDay}
         tileContent={getTileContent}

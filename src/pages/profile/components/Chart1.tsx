@@ -1,8 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { CartesianGrid, DotProps, LabelProps, Line, LineChart, XAxis, YAxis } from "recharts";
 
-import { useStatistics } from "../hooks/useStatistics";
-
 interface CustomDotProps {
   cx?: number;
   cy?: number;
@@ -12,8 +10,16 @@ interface CustomDotProps {
   fill?: string;
 }
 
-const Chart1 = () => {
-  const { achievementRate } = useStatistics();
+interface AchievementRateType {
+  name: string;
+  rate: number;
+}
+
+interface Chart1Props {
+  achievementRate: AchievementRateType[] | undefined;
+}
+
+const Chart1 = ({ achievementRate }: Chart1Props) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const CustomActiveDot = (props: CustomDotProps) => {
     const { cx, cy, index } = props;
