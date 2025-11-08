@@ -12,6 +12,7 @@ import { useFetchSteps } from "./hooks/useFetchSteps";
 import { useActiveGoalStore } from "./store/useActiveGoalStore";
 import { useBottomSheetStore } from "./store/useBottomSheetStore";
 import { useBindGoalsStore, useGoalsStore } from "./store/useGoalsStore";
+import { getAccessToken } from "@/common/utils/token";
 
 // styled-components transient props
 export interface BodyStyledProps {
@@ -72,7 +73,7 @@ export default function HomePage() {
       </Page>
     );
   }
-
+  console.log(getAccessToken());
   return (
     <Page>
       <ChatbotBtn isSheetOpen={isSheetOpen} />
