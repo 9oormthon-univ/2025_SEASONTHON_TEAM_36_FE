@@ -1,24 +1,16 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
+import { modifyStep } from "@/apis/step";
 import ModifyImg from "@/assets/images/modify-result.svg";
+import { RespStepInfo } from "@/common/types/response/step";
 import { useOnClickOutside } from "@/pages/calendar/hooks/useOnClickOutside";
 
 import { Textarea } from "../styles";
 
-interface StepData {
-  date: string;
-  description: string;
-}
-
-interface StepProps {
-  stepData: StepData;
-  onUpdate: (newDescription: string) => void;
-}
-
-const Step = ({ stepData, onUpdate }: StepProps) => {
+const Step = ({ stepData }: { stepData: RespStepInfo }) => {
   const [isModify, setIsModify] = useState<boolean>(false);
-  const [description, setDescription] = useState<string>(stepData.description);
+  const [description, setDescription] = useState<string>(stepData?.description);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const stepRef = useRef<HTMLDivElement>(null);
 
@@ -38,8 +30,10 @@ const Step = ({ stepData, onUpdate }: StepProps) => {
   // 외부 클릭 시 수정 완료
   useOnClickOutside(stepRef, () => {
     if (isModify) {
-      onUpdate(description);
       setIsModify(false);
+      modifyStep(stepData.stepId, description)
+        .then(_ => {})
+        .catch(error => console.error(error));
     }
   });
 
@@ -66,7 +60,7 @@ const Step = ({ stepData, onUpdate }: StepProps) => {
 
   return (
     <StepContainer ref={stepRef}>
-      <StepDate>{stepData.date}</StepDate>
+      <StepDate>{stepData.stepDate}</StepDate>
       <StepContent>
         <Textarea
           ref={textareaRef}
