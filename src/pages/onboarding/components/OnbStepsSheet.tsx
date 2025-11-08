@@ -2,19 +2,86 @@
 import styled from "styled-components";
 
 import { useBottomSheetStore } from "@/pages/home/store/useBottomSheetStore";
-import type { StepListGroup, StepListItem } from "@/pages/home/types/steps";
+import type { StepListItem } from "@/pages/home/types/steps";
 
 import OnbBottomSheet from "./OnbBottomSheet";
 import OnbSheetListSection from "./OnbSheetListSection";
 
+const todaySteps = [
+  {
+    key: "today",
+    title: "오늘의 한 걸음",
+    items: [
+      {
+        stepId: 6,
+        stepOrder: 6,
+        stepDate: "2025-11-08",
+        description: "글 퇴고와 맞춤법 검사하기",
+        isCompleted: false,
+        state: "pause",
+        id: 6,
+      },
+      {
+        stepId: 5,
+        stepOrder: 5,
+        stepDate: "2025-11-08",
+        description: "결론 작성하기",
+        isCompleted: false,
+        state: "pause",
+        id: 5,
+      },
+      {
+        stepId: 4,
+        stepOrder: 4,
+        stepDate: "2025-11-08",
+        description: "본문 작성하기",
+        isCompleted: false,
+        state: "pause",
+        id: 4,
+      },
+    ],
+  },
+  {
+    key: "past",
+    title: "놓친 한 걸음",
+    items: [
+      {
+        stepId: 3,
+        stepOrder: 3,
+        stepDate: "2025-11-08",
+        description: "서론+어린시절 작성하기",
+        isCompleted: false,
+        state: "pause",
+        id: 3,
+      },
+      {
+        stepId: 2,
+        stepOrder: 2,
+        stepDate: "2025-11-08",
+        description: "자서전의 전체 흐름과 목차 결정하기",
+        isCompleted: false,
+        state: "pause",
+        id: 2,
+      },
+      {
+        stepId: 1,
+        stepOrder: 1,
+        stepDate: "2025-11-08",
+        description: "자서전 경험 후보 정리하기",
+        isCompleted: false,
+        state: "pause",
+        id: 1,
+      },
+    ],
+  },
+];
+
 type StepsProps = {
-  groups: StepListGroup[]; // ✅ 그룹 형태로 받음
   onAction?: (it: { id: number | null; stepId: number | null }) => void | Promise<void>;
 };
 
-export default function OnbStepsSheet({ groups, onAction }: StepsProps) {
+export default function OnbStepsSheet({ onAction }: StepsProps) {
   const open = useBottomSheetStore(s => s.open);
-
   return (
     <>
       {/* 온보딩 전용 BottomSheet는 showBackdrop prop이 없음 */}
@@ -22,7 +89,7 @@ export default function OnbStepsSheet({ groups, onAction }: StepsProps) {
         {open ? (
           <SheetBody>
             <ScrollArea role="list">
-              {groups.map(group => (
+              {todaySteps.map(group => (
                 <OnbSheetListSection key={group.key} title={group.title}>
                   <OnbTodayStepsList items={group.items} onAction={onAction} />
                 </OnbSheetListSection>

@@ -1,11 +1,11 @@
-import { motion, type PanInfo, type Variants } from "framer-motion";
-import { ReactNode, useCallback, useEffect, useRef } from "react";
+import { motion, type PanInfo } from "framer-motion";
+import { type CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
 import { useBottomSheetStore } from "@/pages/home/store/useBottomSheetStore";
 
 /** CSS 변수 타입 (style에 --peek 추가 용) */
-type CSSVarProps = React.CSSProperties & { ["--peek"]?: string };
+type CSSVarProps = CSSProperties & { ["--peek"]?: string };
 
 export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -18,19 +18,13 @@ export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
   const expandSheet = useBottomSheetStore(s => s.expandSheet);
   const collapseSheet = useBottomSheetStore(s => s.collapseSheet);
   const setHeight = useBottomSheetStore(s => s.setHeight);
+  const heightPx = useBottomSheetStore(s => s.heightPx);
 
   // 온보딩에선 %도 쓸 수 있게 허용 (부모 높이 필요). px 환산은 뷰포트 기준 간이 처리.
   const size = 150; // 예: "32vh" | "32%" | 320
   const expandedSize = 300; // 예: "58vh" | "58%" | 580
   const peekHeight = 40;
   const ariaLabel = useBottomSheetStore(s => s.defaultAriaLabel);
-
-  // 초기 포커스 (열릴 때 grab handle로 포커스)
-  useEffect(() => {
-    if (!open || !panelRef.current) return;
-    const t = window.setTimeout(() => panelRef.current?.focus(), 50);
-    return () => window.clearTimeout(t);
-  }, [open]);
 
   // 유틸: CSSLength/number → px (vh/% 등 대응, %는 뷰포트 기준 간이 환산)
   const toPx = useCallback((len: number | `${number}${string}`, vh: number) => {
@@ -59,15 +53,17 @@ export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
     setHeight(px);
   }, [open, isExpanded, size, expandedSize, peekHeight, setHeight, toPx]);
 
-  // 상태별 애니메이션
-  const variants: Variants = {
-    expanded: { y: 0, transition: { type: "spring", stiffness: 420, damping: 42 } },
-    open: { y: 0, transition: { type: "spring", stiffness: 420, damping: 42 } },
-    peek: {
-      y: `calc(100% - ${peekHeight}px)`,
-      transition: { type: "spring", stiffness: 420, damping: 42 },
-    },
-  };
+  const yPeek = useMemo(() => Math.max((heightPx || 0) - peekHeight, 0), [heightPx, peekHeight]);
+
+  // 상태별 애니메이션 (필요 시 variants 사용)
+  const variants = useMemo(
+    () => ({
+      expanded: { y: 0, transition: { type: "spring", stiffness: 420, damping: 42 } },
+      open: { y: 0, transition: { type: "spring", stiffness: 420, damping: 42 } },
+      peek: { y: yPeek, transition: { type: "spring", stiffness: 420, damping: 42 } },
+    }),
+    [yPeek],
+  );
 
   // 드래그 임계치
   const THRESHOLD_OPEN_UP = 0; // 피크 → 열림
@@ -169,6 +165,7 @@ export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
     </Panel>
   );
 }
+
 /** Props 타입 정의 */
 interface PanelProps {
   /** 패널 높이 (예: "50vh", "80%" 등) */
@@ -181,8 +178,6 @@ interface PanelProps {
 export const Backdrop = styled.div`
   position: fixed;
   inset: 0 0 var(--navbar-height, 0px) 0;
-  /* background: rgba(0,0,0,0.36);
-  backdrop-filter: saturate(120%) blur(2px); */
   z-index: 900;
 `;
 
@@ -191,7 +186,7 @@ export const Panel = styled(motion.div)<PanelProps>`
   position: absolute;
   z-index: 10;
   left: 0;
-  bottom: 0; /* 부모 bottom에 맞춤 */
+  bottom: 0;
   width: 100%;
   height: ${({ $size }) => $size};
   background: var(--bg-1, #fff);
@@ -200,28 +195,28 @@ export const Panel = styled(motion.div)<PanelProps>`
     -0.3px -0.3px 5px 0 var(--natural-400, #d6d9e0),
     0.3px 0.3px 5px 0 var(--natural-400, #d6d9e0);
   outline: none;
-  border-radius: 24px 24px 0 0; /* 온보딩은 살짝 더 작게 */
+  border-radius: 24px 24px 0 0;
   display: flex;
   flex-direction: column;
   pointer-events: auto;
+  will-change: transform;
 `;
 
-/** GrabHandle */
 export const GrabHandle = styled.div`
   position: absolute;
   z-index: 100;
-  inset: 0 0 auto 0; /* 상단 가로 전체 영역 */
+  inset: 0 0 auto 0;
   height: 56px;
   display: grid;
   place-items: center;
   cursor: grab;
   background: transparent;
+
   &:active {
     cursor: grabbing;
   }
 `;
 
-/** SheetViewport */
 export const SheetViewport = styled.div`
   display: flex;
   flex-direction: column;

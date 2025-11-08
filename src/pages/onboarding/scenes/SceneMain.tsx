@@ -30,74 +30,6 @@ const goals: RespTodo[] = [
 
 /** Goal 단위의 전체 Steps 뷰 모델 (toGoalStepsView 반환) */
 /** ✅ StepListGroup 더미 데이터 (완성형) */
-const todaySteps = [
-  {
-    key: "today",
-    title: "오늘의 한 걸음",
-    items: [
-      {
-        stepId: 6,
-        stepOrder: 6,
-        stepDate: "2025-11-08",
-        description: "글 퇴고와 맞춤법 검사하기",
-        isCompleted: false,
-        state: "pause",
-        id: 6,
-      },
-      {
-        stepId: 5,
-        stepOrder: 5,
-        stepDate: "2025-11-08",
-        description: "결론 작성하기",
-        isCompleted: false,
-        state: "pause",
-        id: 5,
-      },
-      {
-        stepId: 4,
-        stepOrder: 4,
-        stepDate: "2025-11-08",
-        description: "본문 작성하기",
-        isCompleted: false,
-        state: "pause",
-        id: 4,
-      },
-    ],
-  },
-  {
-    key: "past",
-    title: "놓친 한 걸음",
-    items: [
-      {
-        stepId: 3,
-        stepOrder: 3,
-        stepDate: "2025-11-08",
-        description: "서론+어린시절 작성하기",
-        isCompleted: false,
-        state: "pause",
-        id: 3,
-      },
-      {
-        stepId: 2,
-        stepOrder: 2,
-        stepDate: "2025-11-08",
-        description: "자서전의 전체 흐름과 목차 결정하기",
-        isCompleted: false,
-        state: "pause",
-        id: 2,
-      },
-      {
-        stepId: 1,
-        stepOrder: 1,
-        stepDate: "2025-11-08",
-        description: "자서전 경험 후보 정리하기",
-        isCompleted: false,
-        state: "pause",
-        id: 1,
-      },
-    ],
-  },
-];
 
 // styled-components transient props
 export interface BodyStyledProps {
@@ -114,9 +46,14 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
   const closeBottomSheet = useOnbUiStore(s => s.closeBottomSheet);
   const setUrgent = useOnbUiStore(s => s.setUrgent);
 
+  const openSheet = useBottomSheetStore(s => s.openSheet);
+  const closeSheet = useBottomSheetStore(s => s.closeSheet);
+  const expandSheet = useBottomSheetStore(s => s.expandSheet);
+  const collapseSheet = useBottomSheetStore(s => s.collapseSheet);
   // stage.id 변화 시에만 초기화/분기 실행
+
   useEffect(() => {
-    // 공통: 하이라이트 대상 보고
+    // 하이라이트 대상 보고
     if (stage.componenetKey === "chatbot" && refChatbot.current) {
       setSpotRect(refChatbot.current.getBoundingClientRect());
     } else if (stage.componenetKey === "goal-card" && refGoalCard.current) {
@@ -127,20 +64,31 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
       setSpotRect(null);
     }
 
-    // 분기: stage별로 다른 UI 상태 만들기 (예: 시트 열기)
+    // ✅ 바텀시트 열기/닫기/확장/축소를 SceneMain에서 통합 제어
+    if (stage.id !== "sheet-content") {
+      openSheet();
+    } else if (stage.id === "sheet-content") {
+      openSheet();
+      expandSheet(); // 콘텐츠 보여줄 때는 확장
+      // collapseSheet();
+    } else {
+      closeSheet(); // 그 외 단계는 닫기
+    }
+
+    // 기존 UI store 동기화 (필요 시 유지)
     if (stage.id === "sheet-scroll" || stage.id === "sheet-content") {
       openBottomSheet();
     } else {
       closeBottomSheet();
     }
 
-    // 분기: 시급함 뱃지 켜기/끄기
+    // 시급함 뱃지
     setUrgent(stage.sceneKey === "main-w-urgent");
 
     const noGoals =
       stage.id === "start" || stage.id === "chatboticon" || stage.id === "chatbot-icon";
     setHasGoals(!noGoals);
-  }, [stage.id]); // 핵심 포인트: stage.id가 바뀔 때만
+  }, [stage.id, stage.sceneKey, stage.componenetKey]);
 
   const hasGoals = useOnbUiStore(s => s.hasGoals);
   const setHasGoals = useOnbUiStore(s => s.setHasGoals);
@@ -161,7 +109,7 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
       </Body>
       <BottomSpacing />
 
-      {hasGoals && <OnbStepsSheet groups={todaySteps} />}
+      {hasGoals && <OnbStepsSheet key={stage.id} />}
     </Page>
   );
 }
