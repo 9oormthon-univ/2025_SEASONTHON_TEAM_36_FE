@@ -4,11 +4,10 @@ import { useNavigate } from "react-router-dom";
 interface ChoiceProps {
   setSplashOpen: Dispatch<SetStateAction<boolean>>;
   setStatus: Dispatch<SetStateAction<boolean>>;
-  setCount: Dispatch<SetStateAction<number>>;
   buttonTexts: string[];
 }
 
-const Choice = ({ setSplashOpen, setStatus, setCount, buttonTexts }: ChoiceProps) => {
+const Choice = ({ setSplashOpen, setStatus, buttonTexts }: ChoiceProps) => {
   const navigate = useNavigate();
 
   return (
@@ -67,7 +66,6 @@ const Choice = ({ setSplashOpen, setStatus, setCount, buttonTexts }: ChoiceProps
                     }, 3000);
                   } else {
                     setStatus(false);
-                    setCount(0);
                   }
                 }}
               >
