@@ -120,7 +120,7 @@ const Result = () => {
             void navigate("/home");
           }}
           onCancel={() => setModalOpen(false)}
-          message="지금 대화를 그만두면 학습계획이 저장되지 않아요"
+          message={"지금 대화를 그만두면\n학습계획이 저장되지 않아요"}
           confirmText="나가기"
           cancelText="취소"
         />
