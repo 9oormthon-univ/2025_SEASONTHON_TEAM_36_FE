@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { fetchSteps } from "@/apis/step";
 import { fetchTodos } from "@/apis/todo";
 import { ErrorResponse } from "@/common/types/error";
-import { RespStepInfo, RespTodoSteps } from "@/common/types/response/step";
+import { RespStepItem, RespTodoSteps } from "@/common/types/response/step";
 import { RespAllTodo, RespTodo } from "@/common/types/response/todo";
 
 import { useCalendar } from "../stores/useCalendar";
@@ -34,7 +34,7 @@ export const useInitAllTodo = () => {
                     }
                   }
                   // rejected 상태이거나 steps가 없는 경우 빈 배열 반환
-                  return [] as RespStepInfo[];
+                  return [] as RespStepItem[];
                 },
               );
               initAllTodo(todoIds, todoTitle, todos);

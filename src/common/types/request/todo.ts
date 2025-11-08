@@ -4,9 +4,12 @@
  * src/apis/todo.ts의 updateToDo와 대응
  */
 
+import { Todo } from "../enums";
+
 type TodoStep = {
   stepDate: string;
   description: string;
+  tips: string;
 };
 
 export interface ReqUpdateTodo {
@@ -30,4 +33,5 @@ export interface ReqAddTodo {
   startDate: string;
   endDate: string;
   expectedDays: Array<Days>;
+  todoType: Todo;
 }
