@@ -1,10 +1,12 @@
+import { Weather } from "../enums";
+
 /** BEFORE (시작 전) */
 export interface RespDailyLogBefore {
   id: number;
   emotion: number;
   userId: number;
   energy: number;
-  place: string; // "HOME" 등
+  weather: Weather;
   createdAt: string; // ISO date string
 }
 

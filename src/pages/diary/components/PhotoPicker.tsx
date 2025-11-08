@@ -38,8 +38,9 @@ export default function PhotoPicker({
 export const PhotoBox = styled.div`
   width: 100%;
   height: 150px;
-  background: var(--natural-400);
-  border: 1px solid var(--natural-400);
+  background: var(--natural-200);
+  border: 1px solid var(--natural-200);
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,5 +58,4 @@ export const Placeholder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.6;
 `;

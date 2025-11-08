@@ -21,6 +21,32 @@ export default function ConfirmModal({
   cancelText = "아니오",
   cancelCentric = false,
 }) {
+  // 훅은 항상 최상단에서 호출되어야 함
+  const cancelRef = React.useRef(null);
+  const confirmRef = React.useRef(null);
+  const dialogRef = React.useRef(null);
+
+  // focus first button & esc handler, body scroll lock
+  React.useEffect(() => {
+    if (!open) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    // 초기 포커스: 취소 버튼에
+    setTimeout(() => cancelRef.current?.focus(), 0);
+
+    const onKey = (e) => {
+      if (e.key === "Escape") onCancel?.();
+      if (e.key === "Enter") onConfirm?.();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open, onCancel, onConfirm]);
+
+  // early return은 모든 훅 호출 후에
   if (!open) return null;
 
   // ensure modal root
@@ -33,28 +59,6 @@ export default function ConfirmModal({
     }
     return root;
   };
-
-  const cancelRef = React.useRef(null);
-  const confirmRef = React.useRef(null);
-  const dialogRef = React.useRef(null);
-
-  // focus first button & esc handler, body scroll lock
-  React.useEffect(() => {
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    // 초기 포커스: 취소 버튼에
-    setTimeout(() => cancelRef.current?.focus(), 0);
-
-    const onKey = e => {
-      if (e.key === "Escape") onCancel?.();
-      if (e.key === "Enter") onConfirm?.();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [onCancel, onConfirm]);
 
   const portalRoot = getRoot();
 
@@ -178,6 +182,7 @@ const Button = styled.button`
   }};
 
   &:focus-visible {
+    outline: 2px solid var(--brand-1, #0e7400);
     outline: 2px solid var(--brand-1, #0e7400);
     outline-offset: -2px;
   }
