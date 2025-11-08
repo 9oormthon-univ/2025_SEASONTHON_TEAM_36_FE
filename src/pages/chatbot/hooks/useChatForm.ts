@@ -1,5 +1,6 @@
 import { EventSourcePolyfill } from "event-source-polyfill";
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { sendMessage } from "@/apis/ai";
 import { getUserProfile } from "@/apis/user";
@@ -8,6 +9,7 @@ import { RespUserProfile } from "@/common/types/response/user";
 import { ChatType } from "../types/Chat";
 
 export const useChatForm = () => {
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<RespUserProfile>();
   const [userChat, setUserChat] = useState<string>("");
   const [status, setStatus] = useState<boolean>(false);
@@ -50,12 +52,35 @@ export const useChatForm = () => {
             chatbotRef.current.onmessage = (event: MessageEvent) => {
               if (!isMounted) return;
               console.info("SSE message received:", event.data);
+
               if (event.data === "✅ 응답 완료") {
                 return;
               }
+
+              if (!event.data) return;
+
+              let messageData = String(event.data);
+
+              // (todoId=<숫자>) 패턴을 감지하는 정규표현식
+              const todoIdPattern = /^(.+)\n\(TodoId=(\d+)\)$/;
+              const match = messageData.match(todoIdPattern);
+              if (match && match[1] && match[2]) {
+                messageData = match[1].trim();
+                const todoId = parseInt(match[2], 10);
+                console.info("TodoId detected:", todoId);
+                // todoId를 사용한 추가 로직을 여기에 구현
+                setTimeout(() => {
+                  void navigate("/chatbot/result", {
+                    state: {
+                      todoId: todoId,
+                    },
+                  });
+                }, 3000);
+              }
+
               const newChatbotChatInfo = {
                 writer: "chatbot" as const,
-                content: event.data as string,
+                content: messageData,
               };
               setChats(prev => [...prev, newChatbotChatInfo]);
             };
@@ -104,7 +129,7 @@ export const useChatForm = () => {
         chatbotRef.current = null;
       }
     };
-  }, []);
+  }, [navigate]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
