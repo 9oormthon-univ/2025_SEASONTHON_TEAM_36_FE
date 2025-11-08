@@ -33,8 +33,8 @@ const StyledButton = styled.button`
   align-items: center;
 
   /* 텍스트 길이에 따라 유동 폭 */
-  padding: 12px 20px;
-  min-width: 134px; /* 기본 최소 너비 */
+  padding: 12px 10px;
+  min-width: 154px; /* 기본 최소 너비 */
   height: 50px; /* 고정 높이 */
 
   background: var(--primary-1, #0e7400);

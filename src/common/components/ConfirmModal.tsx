@@ -195,6 +195,7 @@ const Button = styled.button<{
 
   &:focus-visible {
     outline: 2px solid var(--brand-1, #0e7400);
+    outline: 2px solid var(--brand-1, #0e7400);
     outline-offset: -2px;
   }
 

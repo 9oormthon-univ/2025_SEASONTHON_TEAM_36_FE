@@ -6,6 +6,7 @@ import DiaryLayout from "./layout/DiaryLayout";
 import ProtectedRoute from "./layout/ProtectedRoute";
 import Calendar from "./pages/calendar";
 import Chatbot from "./pages/chatbot";
+import Result from "./pages/chatbot/components/Result";
 import Diary from "./pages/diary";
 import Read from "./pages/diary/components/ReadPage";
 import Write from "./pages/diary/components/WritePage";
@@ -38,6 +39,7 @@ function App() {
           <Route path="/diary/:date" element={<Read />} />
         </Route>
         <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/chatbot/result" element={<Result />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

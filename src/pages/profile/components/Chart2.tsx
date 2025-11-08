@@ -7,18 +7,25 @@ import {
   Legend,
   Rectangle,
   RectangleProps,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from "recharts";
-
-import { useStatistics } from "../hooks/useStatistics";
 
 interface CustomLabelProps extends LabelProps {
   x?: string | number;
   y?: string | number;
   activeBar: { index: number; dataKey: string } | null;
   dataKey: string;
+}
+
+interface FocusTimeType {
+  name: string;
+  최대: number;
+  최소: number;
+}
+
+interface Chart2Props {
+  focusTime: FocusTimeType[] | undefined;
 }
 
 const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProps) => {
@@ -86,8 +93,7 @@ interface CustomActiveBarProps extends RectangleProps {
   dataKey?: string;
 }
 
-const Chart2 = () => {
-  const { focusTime } = useStatistics();
+const Chart2 = ({ focusTime }: Chart2Props) => {
   const [activeBar, setActiveBar] = useState<{ index: number; dataKey: string } | null>(null);
 
   const CustomActiveBar = (props: CustomActiveBarProps) => {
@@ -115,89 +121,91 @@ const Chart2 = () => {
   };
 
   return (
-    <ResponsiveContainer width={"100%"} aspect={1.618}>
-      <BarChart margin={{ top: 10, right: 5 }} data={focusTime} style={{ paddingRight: "16px" }}>
-        <CartesianGrid stroke="rgba(0, 0, 42, 0.15)" strokeDasharray="3 3" vertical={false} />
-        <XAxis
-          dataKey="name"
-          tickLine={false}
-          tickMargin={4}
-          interval={0}
-          fontWeight={500}
-          stroke="#6f737b"
-          tick={{ fill: "#000", fontSize: 11, fontWeight: 500 }}
-        />
-        <YAxis
-          axisLine={false}
-          tickLine={false}
-          stroke="#6f737b"
-          tick={{ fill: "#6f737b", fontSize: 12 }}
-          tickCount={7}
-        />
-        <Bar
-          dataKey="최소"
-          barSize={17}
-          fill="#DEE1E6"
-          cursor="pointer"
-          activeBar={<CustomActiveBar />}
-          onPointerDown={(_, index) => setActiveBar({ index, dataKey: "최소" })}
-          onPointerUp={() => setActiveBar(null)}
-          isAnimationActive={false}
-          label={props => <CustomLabel {...props} activeBar={activeBar} dataKey="최소" />}
-        />
-        <Bar
-          dataKey="최대"
-          barSize={17}
-          fill="#ABAFB7"
-          cursor="pointer"
-          activeBar={<CustomActiveBar />}
-          onPointerDown={(_, index) => setActiveBar({ index, dataKey: "최대" })}
-          onPointerUp={() => setActiveBar(null)}
-          isAnimationActive={false}
-          label={props => <CustomLabel {...props} activeBar={activeBar} dataKey="최대" />}
-        />
-        <Legend
-          wrapperStyle={{ width: "100%" }}
-          content={props => {
-            const { payload } = props;
+    <BarChart
+      margin={{ top: 10, right: 5 }}
+      data={focusTime}
+      style={{ paddingRight: "16px", width: "100%", aspectRatio: 1.618 }}
+    >
+      <CartesianGrid stroke="rgba(0, 0, 42, 0.15)" strokeDasharray="3 3" vertical={false} />
+      <XAxis
+        dataKey="name"
+        tickLine={false}
+        tickMargin={4}
+        interval={0}
+        fontWeight={500}
+        stroke="#6f737b"
+        tick={{ fill: "#000", fontSize: 11, fontWeight: 500 }}
+      />
+      <YAxis
+        axisLine={false}
+        tickLine={false}
+        stroke="#6f737b"
+        tick={{ fill: "#6f737b", fontSize: 12 }}
+        tickCount={7}
+      />
+      <Bar
+        dataKey="최소"
+        barSize={17}
+        fill="#DEE1E6"
+        cursor="pointer"
+        activeBar={<CustomActiveBar />}
+        onPointerDown={(_, index) => setActiveBar({ index, dataKey: "최소" })}
+        onPointerUp={() => setActiveBar(null)}
+        isAnimationActive={false}
+        label={props => <CustomLabel {...props} activeBar={activeBar} dataKey="최소" />}
+      />
+      <Bar
+        dataKey="최대"
+        barSize={17}
+        fill="#ABAFB7"
+        cursor="pointer"
+        activeBar={<CustomActiveBar />}
+        onPointerDown={(_, index) => setActiveBar({ index, dataKey: "최대" })}
+        onPointerUp={() => setActiveBar(null)}
+        isAnimationActive={false}
+        label={props => <CustomLabel {...props} activeBar={activeBar} dataKey="최대" />}
+      />
+      <Legend
+        wrapperStyle={{ width: "100%" }}
+        content={props => {
+          const { payload } = props;
 
-            return (
-              <ul
-                style={{
-                  display: "flex",
-                  flexDirection: "row-reverse",
-                  justifyContent: "center",
-                  fontSize: "clamp(0.7rem, 2.20vw, 0.8rem)",
-                  listStyleType: "none",
-                  gap: "0.5em",
-                }}
-              >
-                {payload?.map((entry, index) => (
-                  <li
-                    key={`item-${index}`}
+          return (
+            <ul
+              style={{
+                display: "flex",
+                flexDirection: "row-reverse",
+                justifyContent: "center",
+                fontSize: "clamp(0.7rem, 2.20vw, 0.8rem)",
+                listStyleType: "none",
+                gap: "0.5em",
+              }}
+            >
+              {payload?.map((entry, index) => (
+                <li
+                  key={`item-${index}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5em",
+                    padding: "0.28em 0.25em",
+                  }}
+                >
+                  <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5em",
-                      padding: "0.28em 0.25em",
+                      width: "0.5em",
+                      height: "0.5em",
+                      background: index === 0 ? "#0E7400" : "#86EC78",
                     }}
-                  >
-                    <div
-                      style={{
-                        width: "0.5em",
-                        height: "0.5em",
-                        background: index === 0 ? "#0E7400" : "#86EC78",
-                      }}
-                    ></div>
-                    <span style={{ display: "block", fontWeight: "400" }}>{entry.value}</span>
-                  </li>
-                ))}
-              </ul>
-            );
-          }}
-        />
-      </BarChart>
-    </ResponsiveContainer>
+                  ></div>
+                  <span style={{ display: "block", fontWeight: "400" }}>{entry.value}</span>
+                </li>
+              ))}
+            </ul>
+          );
+        }}
+      />
+    </BarChart>
   );
 };
 
