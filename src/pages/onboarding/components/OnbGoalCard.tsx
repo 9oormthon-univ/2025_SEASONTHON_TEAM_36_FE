@@ -1,13 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { RespTodo } from "@/common/types/response/todo";
-import FrogBar from "@/pages/home/components/FrogBar";
-import GoalHeader from "@/pages/home/components/GoalHeader";
-import GoalStepsModal from "@/pages/home/modals/GoalStepsModal";
 import { getFrogByTodoType } from "@/pages/home/utils/selectFrog";
 
-import SceneChat from "../scenes/SceneChat";
+import OnbFrogBar from "./OnbFrogBar";
+import OnbGoalHeader from "./OnbGoalHeader";
 
 export interface GoalCardProps {
   goal: RespTodo;
@@ -21,8 +19,6 @@ interface ContainerProps {
 
 export default function OnbGoalCard({ goal, shrink = 1 }: GoalCardProps) {
   const frogRef = useRef<string | null>(null);
-  const [openSteps, setOpenSteps] = useState(false);
-  const [openChat, setOpenChat] = useState(false);
 
   const progress = goal?.progress ?? 0;
   const warmMessage = goal?.warmMessage;
@@ -32,14 +28,11 @@ export default function OnbGoalCard({ goal, shrink = 1 }: GoalCardProps) {
     frogRef.current = getFrogByTodoType(goal?.todoType);
   }
 
-  const openStepsModal = () => setOpenSteps(true);
-  const closeStepsModal = () => setOpenSteps(false);
-  const openChatScene = () => setOpenChat(true);
-  const closeChatScene = () => setOpenChat(false);
+  const openStepsModal = () => {};
 
   const onSirenClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    openChatScene();
+    // openChatScene();
   };
 
   return (
@@ -51,27 +44,16 @@ export default function OnbGoalCard({ goal, shrink = 1 }: GoalCardProps) {
         onClick={openStepsModal}
         $shrink={shrink}
       >
-        <GoalHeader onSirenClick={onSirenClick} />
-
-        <CheerMsg className="typo-label-l">{warmMessage}</CheerMsg>
+        <OnbGoalHeader onSirenClick={onSirenClick} />
+        <CheerMsg className="typo-label-xs">{warmMessage}</CheerMsg>
 
         <ImgContainer>
-          <FrogBar progress={progress} />
+          <OnbFrogBar progress={progress} />
           <Illust aria-hidden="true">
             {frogRef.current && <img src={frogRef.current} alt="" />}
           </Illust>
         </ImgContainer>
       </Container>
-
-      <GoalStepsModal open={openSteps} onClose={closeStepsModal} onDeleted={() => {}} />
-
-      {/* <ChatGoalModal
-        open={openChat}
-        onClose={closeChatModal}
-        goal={goal}
-        onUpdated={handleGoalChated}
-      /> */}
-      <SceneChat open={openChat} onClose={closeChatScene} />
     </>
   );
 }
@@ -81,17 +63,17 @@ const Container = styled.div<ContainerProps>`
   background: var(--bg-1);
   color: inherit;
   width: ${p => 80 * p.$shrink}%;
-  aspect-ratio: 4 / 5;
-  max-height: calc(100% - 24px);
-  margin: 0 auto 0;
-  padding: clamp(12px, 4.3vw, 40px) clamp(12px, 3vw, 40px);
-  border-radius: clamp(12px, 4vw, 16px);
+  aspect-ratio: 4 / 4.2; /* 🔹 기존 4/5 → 높이 축소 */
+  max-height: calc(100% - 16px); /* 🔹 여백도 조금 줄임 */
+  margin: 20px auto 0;
+  padding: clamp(10px, 3.5vw, 28px) clamp(10px, 2.8vw, 28px); /* 🔹 내부 여백 소폭 축소 */
+  border-radius: clamp(10px, 3.2vw, 14px);
   box-shadow:
     -0.27px -0.27px 4.495px 0 var(--natural-400),
     0.27px 0.27px 4.495px 0 var(--natural-400);
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 2.8vw, 16px);
+  gap: clamp(6px, 2vw, 12px);
   text-align: center;
   cursor: pointer;
   transition: width 0.25s ease;
@@ -107,7 +89,7 @@ const CheerMsg = styled.p`
   word-break: keep-all;
   overflow-wrap: anywhere;
   line-height: 1.1;
-  font-size: 14px;
+  font-size: 11px;
   text-align: center;
 `;
 
@@ -124,8 +106,8 @@ const ImgContainer = styled.div`
 
 const Illust = styled.figure`
   margin: 0;
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
   pointer-events: none;
   display: flex;
   align-items: flex-end;

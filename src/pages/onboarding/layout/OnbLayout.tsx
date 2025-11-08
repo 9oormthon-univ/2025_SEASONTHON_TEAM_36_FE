@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import styled, { css, keyframes } from "styled-components";
 
-import type { OnbStage, Placement } from "../engine/stages";
+import type { OnbStage } from "../engine/stages";
 
 export type SceneProps = {
   stage: OnbStage;
@@ -125,10 +125,10 @@ export default function OnbLayout({
 }
 
 /* ---------- helpers ---------- */
-function useBubblePositionInFrame(_rect: DOMRect | null, _placement: Placement) {
-  // 현재는 center만 쓰므로 생략 가능. 필요 시 확장.
-  return { leftInFrame: 0, topInFrame: 0 };
-}
+// function useBubblePositionInFrame(_rect: DOMRect | null, _placement: Placement) {
+//   // 현재는 center만 쓰므로 생략 가능. 필요 시 확장.
+//   return { leftInFrame: 0, topInFrame: 0 };
+// }
 
 /* ---------- styles ---------- */
 const Root = styled.div`
@@ -144,13 +144,13 @@ const Root = styled.div`
 const FrameWrap = styled.div`
   display: grid;
   place-items: center;
-  padding: 20px 0 12px;
+  padding: 40px 0 12px;
 `;
 
 const Frame = styled.div`
   position: relative;
-  width: min(420px, 76vw);
-  height: min(800px, 68vh);
+  width: min(420px, 80vw);
+  height: min(800px, 70vh);
   background: #ffffff;
   border-radius: 28px;
   box-shadow:

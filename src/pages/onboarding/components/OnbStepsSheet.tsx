@@ -1,91 +1,86 @@
 // src/pages/home/components/TodayStepsSheet.tsx
-import styled, { CSSProperties } from "styled-components";
+import styled from "styled-components";
 
-import dragUp from "@/assets/images/drag-up.svg";
-import BottomSheet from "@/common/components/BottomSheet";
-import SheetListSection from "@/pages/home/components/TodayStepsSheet/SheetListSection";
 import { useBottomSheetStore } from "@/pages/home/store/useBottomSheetStore";
-import { StepViewItem } from "@/pages/home/types/steps";
+import type { StepListGroup, StepListItem } from "@/pages/home/types/steps";
+
+import OnbBottomSheet from "./OnbBottomSheet";
+import OnbSheetListSection from "./OnbSheetListSection";
 
 type StepsProps = {
-  todaySteps: StepViewItem[];
+  groups: StepListGroup[]; // ✅ 그룹 형태로 받음
   onAction?: (it: { id: number | null; stepId: number | null }) => void | Promise<void>;
 };
 
-export default function OnbTodayStepsSheet({ todaySteps, onAction }: StepsProps) {
+export default function OnbStepsSheet({ groups, onAction }: StepsProps) {
   const open = useBottomSheetStore(s => s.open);
-  const peekHeight = useBottomSheetStore(s => s.peekHeightPx);
 
   return (
     <>
-      <BottomSheet>
+      {/* 온보딩 전용 BottomSheet는 showBackdrop prop이 없음 */}
+      <OnbBottomSheet>
         {open ? (
           <SheetBody>
             <ScrollArea role="list">
-              {todaySteps.map(g => (
-                <SheetListSection key={g.stepId ?? `${g.description}`} title={g.description}>
-                  <OnbTodayStepsList todaySteps={todaySteps} onAction={onAction} />
-                </SheetListSection>
+              {groups.map(group => (
+                <OnbSheetListSection key={group.key} title={group.title}>
+                  <OnbTodayStepsList items={group.items} onAction={onAction} />
+                </OnbSheetListSection>
               ))}
             </ScrollArea>
           </SheetBody>
         ) : (
-          <Title className="typo-h3">우물 밖으로 나갈 준비</Title>
+          <Title className="typo-h4">우물 밖으로 나갈 준비</Title>
         )}
-      </BottomSheet>
-
-      {!open && (
-        <FloatingArrow
-          src={dragUp}
-          alt=""
-          aria-hidden="true"
-          style={{ "--peek": `${peekHeight}px`, "--gap": "2%" } as CSSProperties}
-        />
-      )}
+      </OnbBottomSheet>
     </>
   );
 }
 
-// --- 자식 컴포넌트도 props 객체로 받기 ---
-function OnbTodayStepsList({ todaySteps, onAction }: StepsProps) {
+// --- 자식 컴포넌트도 그룹 아이템 배열로 받기 ---
+function OnbTodayStepsList({
+  items,
+  onAction,
+}: {
+  items: StepListItem[];
+  onAction?: (it: { id: number | null; stepId: number | null }) => void | Promise<void>;
+}) {
   return (
-    <>
-      <List role="list">
-        {todaySteps.map((it, idx) => (
-          <Item key={it.stepId ?? `step-${idx}`} role="listitem">
-            <Bullet aria-hidden="true" />
-            <ItemTitle $completed={it.isCompleted}>{it.description}</ItemTitle>
+    <List role="list">
+      {items.map((it, idx) => (
+        <Item key={it.stepId ?? `step-${idx}`} role="listitem">
+          <Bullet aria-hidden="true" />
+          <ItemTitle $completed={it.isCompleted}>{it.description}</ItemTitle>
 
-            <Right>
-              <ActionBtnWrapper
-                onClick={() => void onAction?.({ id: it.stepId, stepId: it.stepId })}
-                $isPlaying={false}
-                $completed={it.isCompleted}
-                $size={29}
-              >
-                <IconOuter data-property-1="기본">
-                  <IconSVG
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 21 21"
-                    role="img"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M18.0693 10.4683C18.3338 10.6212 18.3338 11.0033 18.0693 11.1548L7.94731 16.9537C7.68358 17.1044 7.35478 16.9134 7.35454 16.6092L7.35454 4.95396C7.35473 4.64973 7.68355 4.46056 7.94731 4.61284L18.0693 10.4683Z"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </IconSVG>
-                </IconOuter>
-              </ActionBtnWrapper>
-            </Right>
-          </Item>
-        ))}
-      </List>
-    </>
+          <Right>
+            <ActionBtnWrapper
+              onClick={() => void onAction?.({ id: it.stepId, stepId: it.stepId })}
+              $isPlaying={false}
+              $completed={it.isCompleted}
+              $size={29}
+            >
+              <IconOuter data-property-1="기본">
+                <IconSVG
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 21 21"
+                  role="img"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M18.0693 10.4683C18.3338 10.6212 18.3338 11.0033 18.0693 11.1548L7.94731 16.9537C7.68358 17.1044 7.35478 16.9134 7.35454 16.6092L7.35454 4.95396C7.35473 4.64973 7.68355 4.46056 7.94731 4.61284L18.0693 10.4683Z"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </IconSVG>
+              </IconOuter>
+            </ActionBtnWrapper>
+          </Right>
+        </Item>
+      ))}
+    </List>
   );
 }
 
@@ -105,28 +100,15 @@ const ScrollArea = styled.div`
   overflow-x: hidden;
 `;
 
-const FloatingArrow = styled.img`
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(
-    env(safe-area-inset-bottom, 0px) + var(--peek, 58px) + var(--gap, 14px) + var(--navbar-height)
-  );
-  width: 14px;
-  height: auto;
-  pointer-events: none;
-  z-index: 9999;
-`;
-
 const Title = styled.h3`
-  margin: 8px 30px;
+  margin: 4px 20px;
   color: var(--text-1);
 `;
 
 const List = styled.ul`
   list-style: none;
   display: grid;
-  gap: 20px;
+  gap: 8px;
   margin-top: 4%;
   padding: 0;
   margin: 10px;
@@ -137,15 +119,15 @@ const Item = styled.li`
   display: grid;
   grid-template-columns: 16px 1fr auto;
   align-items: center;
-  gap: 8px;
+  gap: 3px;
   padding: 0 2.3% 3.5% 2.3%;
   background: transparent;
   border-bottom: 1px solid var(--natural-400, #d6d9e0);
 `;
 
 const Bullet = styled.span`
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
   border-radius: 9999px;
   background: var(--icon-1);
   margin-right: 15px;
@@ -153,9 +135,9 @@ const Bullet = styled.span`
 
 const ItemTitle = styled.div<{ $completed?: boolean }>`
   color: var(--text-1, #000);
-  font-size: var(--fs-lg, 16px);
-  font-weight: 500;
-  line-height: 1.2;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.1;
   letter-spacing: var(--ls-2, 0);
   word-break: keep-all;
   overflow-wrap: anywhere;
@@ -192,8 +174,8 @@ const ActionBtnWrapper = styled.button<{
 `;
 
 const IconOuter = styled.div`
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
   background: var(--natural-200);
   border-radius: 16px;
   display: inline-flex;
@@ -202,6 +184,6 @@ const IconOuter = styled.div`
 `;
 
 const IconSVG = styled.svg`
-  width: 21px;
-  height: 21px;
+  width: 18px;
+  height: 18px;
 `;
