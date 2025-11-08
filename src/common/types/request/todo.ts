@@ -9,6 +9,7 @@ import { Todo } from "../enums";
 type TodoStep = {
   stepDate: string;
   description: string;
+  tips: string;
 };
 
 export interface ReqUpdateTodo {
