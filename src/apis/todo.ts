@@ -1,4 +1,5 @@
 // src/apis/todo.js
+import { Todo } from "@/common/types/enums";
 import { ReqAddTodo, ReqUpdateTodo } from "@/common/types/request/todo";
 import { RespAllTodo, RespTodo } from "@/common/types/response/todo";
 
@@ -59,10 +60,20 @@ export async function updateCompleteToDo(todoId: number) {
   );
 }
 
+export async function updateTodoDetail(todoId: number, title: string, todoType: Todo) {
+  return handleApiRequest<RespTodo>(() =>
+    mainApi.put(`${BASE}/detail/${todoId}`, {
+      title: title,
+      todoType: todoType,
+    }),
+  );
+}
+
 export default {
   fetchTodos,
   addTodo,
   deleteTodo,
   updateTodo,
+  updateTodoDetail,
   updateCompleteToDo,
 };

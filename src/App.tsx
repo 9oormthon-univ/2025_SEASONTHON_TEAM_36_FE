@@ -6,7 +6,6 @@ import DiaryLayout from "./layout/DiaryLayout";
 import ProtectedRoute from "./layout/ProtectedRoute";
 import Calendar from "./pages/calendar";
 import Chatbot from "./pages/chatbot";
-import Result from "./pages/chatbot/components/Result";
 import Diary from "./pages/diary";
 import Read from "./pages/diary/components/ReadPage";
 import Write from "./pages/diary/components/WritePage";
@@ -14,6 +13,7 @@ import HomePage from "./pages/home";
 import Login from "./pages/login";
 import OAuthCallback from "./pages/oauth";
 import Profile from "./pages/profile";
+import Result from "./pages/result";
 import SignUpDone from "./pages/signup";
 
 function App() {

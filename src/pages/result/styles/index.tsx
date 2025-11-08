@@ -39,6 +39,17 @@ export const Page = styled.main`
   flex: 1;
   overflow: hidden;
 `;
+
+export const Title = styled.h2<{ $fontSize: number | string }>`
+  width: 100%;
+  font-size: ${({ $fontSize }) => $fontSize};
+  font-weight: var(--fw-b);
+  font-family: var(--ff-sans);
+  @media (max-height: 667px), (max-width: 375px) {
+    font-size: var(--fs-sm);
+  }
+`;
+
 export const TodoTitle = styled.div`
   display: flex;
   align-items: center;
@@ -138,4 +149,24 @@ export const SubjectType = styled.button<{ $checked: boolean }>`
   transition:
     0.2s background-color ease-in-out,
     0.2s color ease-in-out;
+`;
+
+export const Textarea = styled.textarea<{
+  $fontSize?: number | string;
+  $isModify?: boolean;
+}>`
+  width: 100%;
+  border: none;
+  border-bottom: ${props => (props.$isModify ? "1px solid black" : "none")};
+  background: none;
+  color: black;
+  font-size: clamp(13px, 3.86vw, 16px);
+  font-weight: 500;
+  line-height: clamp(1.3, 1.4, 1.5);
+  font-family: var(--ff-sans);
+  resize: none;
+  overflow: hidden;
+  &:focus {
+    outline: none;
+  }
 `;

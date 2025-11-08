@@ -33,6 +33,7 @@ export const ChatbotChat = styled.div`
 
 export const ChatbotChatBlock = styled.div`
   padding: 10px 15px;
+  white-space: pre-wrap;
 `;
 
 export const ProfileImg = styled.img`
