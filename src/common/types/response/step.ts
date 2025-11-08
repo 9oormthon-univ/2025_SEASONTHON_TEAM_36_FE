@@ -8,6 +8,8 @@
  * src/apis/step.ts의 modifySteps
  */
 
+import { DaysOfTheWeek } from "../enums";
+
 export interface RespStepItem {
   stepId: number;
   stepDate: string; // e.g. "2025-09-02"
@@ -29,6 +31,8 @@ export interface RespStepItem {
 export interface RespTodoSteps {
   dDay: string;
   title: string;
+  expectedDays: DaysOfTheWeek[];
+  startDate: string;
   endDate: string;
   progressText: string;
   progress: number;
