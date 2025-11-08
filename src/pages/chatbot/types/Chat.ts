@@ -1,4 +1,4 @@
 export interface ChatType {
   writer: string;
-  content: string;
+  content: string | string[];
 }
