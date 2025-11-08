@@ -8,11 +8,12 @@
  * src/apis/step.ts의 modifySteps
  */
 
-export interface RespStepInfo {
+export interface RespStepItem {
   stepId: number;
-  stepDate: string;
+  stepDate: string; // e.g. "2025-09-02"
   description: string;
   isCompleted: boolean;
+  tips: string;
 }
 
 /**
@@ -31,16 +32,10 @@ export interface RespTodoSteps {
   endDate: string;
   progressText: string;
   progress: number;
-  steps: Array<RespStepInfo>;
+  steps: Array<RespStepItem>;
 }
 
 /** [GET] 오늘의 한 걸음 / 놓친 한 걸음 조회 */
-export interface RespStepItem {
-  stepId: number;
-  stepDate: string; // e.g. "2025-09-02"
-  description: string;
-  isCompleted: boolean;
-}
 export interface RespTodayStep {
   todayStepResponses: RespStepItem[]; // 오늘의 한 걸음
   missedStepResponses: RespStepItem[]; // 놓친 한 걸음
@@ -82,10 +77,10 @@ interface StepCalendar {
   stepCalendarId: number;
   calendarDate: string;
   percentage: number;
-  stepResponses: Array<RespStepInfo>;
+  stepResponses: Array<RespStepItem>;
 }
 
 export interface RespCalendar {
   calendar: Array<StepCalendar>;
-  todayToDo: Array<RespStepInfo>;
+  todayToDo: Array<RespStepItem>;
 }

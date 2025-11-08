@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { fetchSteps } from "@/apis/step";
 import { fetchTodos } from "@/apis/todo";
 import { ErrorResponse } from "@/common/types/error";
-import { RespStepInfo } from "@/common/types/response/step";
+import { RespStepItem } from "@/common/types/response/step";
 import { RespAllTodo, RespTodo } from "@/common/types/response/todo";
 
 import { useCalendar } from "../stores/useCalendar";
@@ -23,7 +23,7 @@ export const useInitAllTodo = () => {
                 if (typeof value === "object" && value !== null && "steps" in value) {
                   return value.steps;
                 }
-                return [] as RespStepInfo[];
+                return [] as RespStepItem[];
               });
               initAllTodo(todoIds, todoTitle, todos);
             })
