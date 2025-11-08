@@ -16,6 +16,7 @@ export const useCalendar = create<CalendarState>(
       curDate: new Date(),
       allToDo: {} as Goals,
       curToDo: {} as Goal,
+      view: "month" as string,
     },
     // 액션 구현
     set => ({
@@ -173,6 +174,11 @@ export const useCalendar = create<CalendarState>(
             curDate: newDate,
             curToDo: currentToDo,
           };
+        });
+      },
+      setView: view => {
+        set(state => {
+          return { ...state, view: view };
         });
       },
     }),
