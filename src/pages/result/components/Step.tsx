@@ -3,12 +3,12 @@ import styled from "styled-components";
 
 import { modifyStep } from "@/apis/step";
 import ModifyImg from "@/assets/images/modify-result.svg";
-import { RespStepInfo } from "@/common/types/response/step";
+import { RespStepItem } from "@/common/types/response/step";
 import { useOnClickOutside } from "@/pages/calendar/hooks/useOnClickOutside";
 
 import { Textarea } from "../styles";
 
-const Step = ({ stepData }: { stepData: RespStepInfo }) => {
+const Step = ({ stepData }: { stepData: RespStepItem }) => {
   const [isModify, setIsModify] = useState<boolean>(false);
   const [description, setDescription] = useState<string>(stepData?.description);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
