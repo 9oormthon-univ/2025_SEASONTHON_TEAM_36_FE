@@ -7,6 +7,7 @@ const Align = styled.div`
   justify-content: center;
   width: 100%;
 `;
+
 const Section = ({ title, children }: { title: string; children?: React.ReactNode }) => {
   return (
     <section>
