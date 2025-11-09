@@ -12,11 +12,12 @@ const LoginScreen = () => {
         <AppTitle src={AppTitleImg as string} alt="우물 밖 개구리" />
       </AppLogos>
       <button
+        style={{ width: "100%" }}
         onClick={() => {
           window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/kakao`;
         }}
       >
-        <img src={kakaoLoginImg} alt="카카오 로그인" />
+        <img src={kakaoLoginImg} alt="카카오 로그인" style={{ width: "100%", maxWidth: "300px" }} />
       </button>
     </Screen>
   );
