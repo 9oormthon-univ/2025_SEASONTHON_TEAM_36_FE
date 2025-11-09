@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 import { RespTodo } from "@/common/types/response/todo";
 
-import AdjustGoalModal from "../modals/AdjustGoalModal";
 import GoalStepsModal from "../modals/GoalStepsModal";
 import { useGoalsStore } from "../store/useGoalsStore"; // reloadTodos 불러오기
 import { getFrogByTodoType } from "../utils/selectFrog";
@@ -41,7 +40,6 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
 
   const openStepsModal = () => setOpenSteps(true);
   const closeStepsModal = () => setOpenSteps(false);
-  const openAdjustModal = () => setOpenAdjust(true);
   const closeAdjustModal = () => setOpenAdjust(false);
 
   // ESC키로 모달 닫기
@@ -72,19 +70,9 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
     }
   };
 
-  const onSirenClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    openAdjustModal();
-  };
-
   // 삭제 또는 수정 후 store에서 직접 reloadTodos 호출
   const handleGoalDeleted = async () => {
     closeStepsModal();
-    await reloadTodos();
-  };
-
-  const handleGoalAdjusted = async () => {
-    closeAdjustModal();
     await reloadTodos();
   };
 
@@ -101,7 +89,7 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
         data-goal-id={goalId}
         $shrink={shrink}
       >
-        <GoalHeader onSirenClick={onSirenClick} />
+        <GoalHeader />
 
         <CheerMsg className="typo-label-l">{warmMessage || "파이팅! 오늘도 한 걸음."}</CheerMsg>
 
@@ -117,13 +105,6 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
         open={openSteps}
         onClose={closeStepsModal}
         onDeleted={() => void handleGoalDeleted()}
-      />
-
-      <AdjustGoalModal
-        open={openAdjust}
-        onClose={closeAdjustModal}
-        goal={goal}
-        onUpdated={handleGoalAdjusted}
       />
     </>
   );

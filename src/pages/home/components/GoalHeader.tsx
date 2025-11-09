@@ -1,16 +1,19 @@
 // src/pages/home/components/GoalHeader.tsx
 import React, { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import { useActiveGoalStore } from "../store/useActiveGoalStore";
 import { useGoalsStore } from "../store/useGoalsStore";
 import { DDayIcon } from "../styles/DDayIcon";
 
-export interface GoalHeaderProps {
-  onSirenClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-}
+export default function GoalHeader() {
+  const navigate = useNavigate();
 
-export default function GoalHeader({ onSirenClick }: GoalHeaderProps) {
+  const onSirenClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    void navigate("/chatbot");
+  };
   // ===== 스토어에서 활성 goal 가져오기 =====
   const activeId = useActiveGoalStore(s => s.activeId);
   const goals = useGoalsStore(s => s.goals);
@@ -39,6 +42,7 @@ export default function GoalHeader({ onSirenClick }: GoalHeaderProps) {
    */
   const isUrgent =
     isDay || (num != null && ((sign === "+" && num >= 0) || (sign !== "+" && num <= 3)));
+  // true;
 
   return (
     <HeaderRow>
