@@ -6,6 +6,7 @@ import { createDailyLogAfter } from "@/apis/diaryLog";
 import { CompletionLevel } from "@/common/types/enums";
 import { ErrorResponse } from "@/common/types/error";
 import { ReqDailyLogAfter } from "@/common/types/request/dailyLog";
+import { formatKoreanDate } from "@/common/utils/dateUtils";
 import {
   ENUM_TO_WEATHER_ID, // ⬅️ 추가
   getWeatherIcons,
@@ -19,7 +20,6 @@ import { EMOTIONS, FOCUSES } from "../constants/writeConstants";
 // import useDiaryDetail from "../hooks/useDiaryDetail";  // ⛔️ 제거
 import useWriteDetail from "../hooks/useWriteDetail"; // ⬅️ 추가
 import { CompletionRow, DateBar, DateText, Label, Page, Section } from "../styles/WritePage";
-import { formatKoreanDate } from "../utils/dateUtils";
 import { ID_TO_MOOD, likert1to5ToIndex } from "../utils/diaryUtils"; // ⬅️ mapTodosToChartGoals 제거
 import ChartWithLegend from "./ChartWithLegend";
 import CompletionSelector from "./CompletionSelector";

@@ -1,8 +1,8 @@
 import leftBtnDiaryImg from "@/assets/images/left-btn-diary.svg";
 import rightBtnDiaryImg from "@/assets/images/right-btn-diary.svg";
 
+// import { checkLuanchingDate, checkOverDate } from "@/common/utils/dateUtils";
 import { ButtonImg, Month, Wrapper } from "../styles/DateNavigation";
-import { checkLuanchingDate, checkOverDate } from "../utils/dateUtils";
 
 const Button = ({
   handleMoveMonth,
@@ -39,8 +39,8 @@ const DateNavigation = ({
   handleMoveMonth: (move: number) => void;
   date: Date;
 }) => {
-  const isOverDate = checkOverDate(date);
-  const isLuanchingDate = checkLuanchingDate(date);
+  // const isOverDate = checkOverDate(date);
+  // const isLuanchingDate = checkLuanchingDate(date);
 
   return (
     <Wrapper>

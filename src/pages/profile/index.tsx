@@ -3,13 +3,13 @@ import "./styles/charts.css";
 import { useEffect, useState } from "react";
 
 import DetailTriImg from "@/assets/images/details-tri.svg";
+import { useDate } from "@/common/hooks/useDate";
 
 import AchievedGoals from "./components/AchievedGoals";
 import Chart1 from "./components/Chart1";
 import Chart2 from "./components/Chart2";
 import Modal from "./components/Modal";
 import Section from "./components/Section";
-import { useMoveDate } from "./hooks/useMoveDate";
 import { useStatistics } from "./hooks/useStatistics";
 import { useSwipeGesture } from "./hooks/useSwipeGesture";
 import {
@@ -25,7 +25,8 @@ import {
 import MyNavButton from "./user/MyNavButton";
 
 export default function Profile() {
-  const { year, month, handleMoveMonth, setYear, setMonth } = useMoveDate();
+  const { date, setDate, handleMoveMonth } = useDate("profile");
+  const [year, month] = date.split("-");
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
@@ -38,7 +39,7 @@ export default function Profile() {
     achievementRate,
     setSubjects,
     setClickedSubject,
-  } = useStatistics({ year, month });
+  } = useStatistics({ date });
 
   const { swipeHandlers, dragOffset, isDragging } = useSwipeGesture({
     onSwipeLeft: () => {
@@ -66,20 +67,13 @@ export default function Profile() {
 
   return (
     <>
-      <Modal
-        open={modalOpen}
-        year={year}
-        month={month}
-        setYear={setYear}
-        setMonth={setMonth}
-        setModalOpen={setModalOpen}
-      />
+      <Modal open={modalOpen} date={date} setDate={setDate} setModalOpen={setModalOpen} />
       <Page>
         <Wrapper>
           <Header>
             <div></div>
             <Center>
-              <HeaderTitle>{`${year}년 ${month}월 리포트`}</HeaderTitle>
+              <HeaderTitle>{`${year}년 ${Number(month)}월 리포트`}</HeaderTitle>
               <DatePickerButton
                 onClick={() => {
                   setModalOpen(prev => !prev);

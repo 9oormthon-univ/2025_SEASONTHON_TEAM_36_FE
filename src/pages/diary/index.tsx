@@ -1,10 +1,11 @@
+import { useDate } from "@/common/hooks/useDate";
+
 import Constellation from "./components/Constellation";
 import DateNavigation from "./components/DateNavigation";
-import { useDiary } from "./hooks/useDiaryDate";
 import { Header, Message, Page, Title } from "./styles";
 
 export default function Diary() {
-  const [date, handleMoveMonth] = useDiary();
+  const { date, handleMoveMonth } = useDate("diary");
   return (
     <Page>
       <Header>

@@ -4,9 +4,9 @@ import Calendar, { OnArgs } from "react-calendar";
 import { calendarApi } from "@/apis/calendar";
 import LeftArrow from "@/assets/images/left-arrow.png";
 import RightArrow from "@/assets/images/right-arrow.png";
+import { dateToFormatString } from "@/common/utils/dateUtils";
 
 import { useCalendar } from "../stores/useCalendar";
-import { dateToFormatString } from "../utils/dateUtils";
 
 const CustomCalendar = () => {
   const [percentageOfDay, setPercentageOfDay] = useState<Record<string, number> | null>(null);

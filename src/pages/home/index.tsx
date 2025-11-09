@@ -73,7 +73,7 @@ export default function HomePage() {
       </Page>
     );
   }
-  console.log(getAccessToken());
+
   return (
     <Page>
       <ChatbotBtn isSheetOpen={isSheetOpen} />
