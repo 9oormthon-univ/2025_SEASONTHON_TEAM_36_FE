@@ -13,7 +13,9 @@ interface FocusTimeType {
   최소: number;
 }
 
-export const useStatistics = ({ year, month }: { year: number; month: number }) => {
+export const useStatistics = ({ date }: { date: string }) => {
+  const year = Number(date.split("-")[0]);
+  const month = Number(date.split("-")[1]);
   const [achievementRate, setAchievementRate] = useState<AchievementRateType[]>();
   const [focusTime, setFocusTime] = useState<FocusTimeType[]>();
 

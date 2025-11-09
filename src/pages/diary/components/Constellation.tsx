@@ -2,8 +2,8 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import starImg from "@/assets/images/stars/star-0.svg";
+import { dateToFormatString } from "@/common/utils/dateUtils";
 
-import { dateToFormatString } from "../../calendar/utils/dateUtils";
 import { EMOTION_IMG } from "../constants/emotion_img";
 import { LINES } from "../constants/line";
 import { MONTH_CONSTELLATION } from "../constants/month";

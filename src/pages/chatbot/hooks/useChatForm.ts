@@ -21,6 +21,7 @@ export const useChatForm = () => {
   const chatbotRef = useRef<EventSourcePolyfill | null>(null);
   const [chats, setChats] = useState<ChatType[]>([]);
   const isClosingRef = useRef<boolean>(false); // 의도적인 연결 종료 플래그
+  const visitedRef = useRef<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -53,13 +54,22 @@ export const useChatForm = () => {
 
             chatbotRef.current.onmessage = (event: MessageEvent) => {
               if (!isMounted) return;
-              console.info("SSE message received:", event.data);
 
               if (event.data === "✅ 응답 완료") {
                 return;
               }
 
               if (!event.data) return;
+              if (
+                isMounted &&
+                visitedRef.current &&
+                event.data ===
+                  "안녕! 🐸\n나는 함께 공부계획을 세워주는 개구리 ‘Rana’야!\n너가 목표를 세우고 달성할 때마다 나는 우물 밖 세상을 구경할 수 있어.\n나랑 함께 점프해볼래? 준비됐어?"
+              ) {
+                return;
+              } else {
+                visitedRef.current = true;
+              }
 
               let messageData = String(event.data);
 
@@ -69,7 +79,6 @@ export const useChatForm = () => {
               if (match && match[1] && match[2]) {
                 messageData = match[1].trim();
                 const todoId = parseInt(match[2], 10);
-                console.info("TodoId detected:", todoId);
                 // todoId를 사용한 추가 로직을 여기에 구현
                 setTimeout(() => {
                   void navigate("/chatbot/result", {
@@ -85,25 +94,49 @@ export const useChatForm = () => {
                 content: messageData,
               };
               setChats(prev => [...prev, newChatbotChatInfo]);
-              setChatbotLoading(prev => !prev);
+              setChatbotLoading(false);
             };
 
-            chatbotRef.current.onerror = (error: ErrorEvent | Event) => {
+            chatbotRef.current.onerror = errorEvent => {
               if (!isMounted) return;
 
-              // 의도적인 연결 종료가 아닌 경우에만 에러로 처리
-              if (!isClosingRef.current) {
-                console.error("SSE error:", error);
-                // setIsError(true);
-              } else {
-                console.info("SSE connection closed intentionally");
+              // 의도적인 연결 종료인 경우
+              if (isClosingRef.current) {
+                setLoading(false);
+                return;
+              }
+
+              // errorEvent가 undefined인 경우는 타임아웃 또는 재연결 시도
+              if (!errorEvent || errorEvent === undefined) {
+                console.warn(
+                  "SSE connection timeout detected - closing connection to prevent duplicate messages",
+                );
+                // 타임아웃 발생 시 연결을 명시적으로 종료하여 재연결 방지
+                if (chatbotRef.current) {
+                  isClosingRef.current = true;
+                  chatbotRef.current.close();
+                  chatbotRef.current = null;
+                }
+                setLoading(false);
+                return;
+              }
+
+              // 실제 에러가 발생한 경우
+              console.error("SSE error:", errorEvent);
+              // 심각한 에러인 경우에만 에러 상태 설정
+              if (errorEvent && typeof errorEvent === "object" && "status" in errorEvent) {
+                const eventWithStatus = errorEvent as { status: number };
+                const status = eventWithStatus.status;
+                // 4xx, 5xx 에러인 경우에만 에러로 처리
+                if (status >= 400) {
+                  setIsError(true);
+                }
               }
               setLoading(false);
             };
 
             chatbotRef.current.onopen = () => {
               if (!isMounted) return;
-              console.info("SSE connection opened");
               setLoading(false);
               isClosingRef.current = false; // 연결이 열리면 플래그 초기화
             };
@@ -126,7 +159,6 @@ export const useChatForm = () => {
     return () => {
       isMounted = false;
       if (chatbotRef.current) {
-        console.info("Closing SSE connection");
         isClosingRef.current = true; // 의도적인 종료임을 표시
         chatbotRef.current.close();
         chatbotRef.current = null;
@@ -146,7 +178,7 @@ export const useChatForm = () => {
           };
           setChats(prev => [...prev, newUserChatInfo]);
           setUserChat("");
-          setChatbotLoading(prev => !prev);
+          setChatbotLoading(true);
         })
         .catch(error => console.error(error));
     }

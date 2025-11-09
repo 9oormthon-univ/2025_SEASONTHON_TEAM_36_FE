@@ -73,6 +73,7 @@ export default function HomePage() {
       </Page>
     );
   }
+  
   return (
     <Page>
       <OnboardingScenes />

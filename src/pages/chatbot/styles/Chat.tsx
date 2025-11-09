@@ -21,14 +21,10 @@ export const ChatbotRow = styled.div`
 export const ChatbotChat = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 240px;
+  max-width: 100%;
   word-break: break-word;
-  font-size: var(--fs-sm);
+  font-size: 18px;
   gap: 3px;
-  @media (min-width: 414px) {
-    max-width: 280px;
-    font-size: var(--fs-md);
-  }
 `;
 
 export const ChatbotChatBlock = styled.div`

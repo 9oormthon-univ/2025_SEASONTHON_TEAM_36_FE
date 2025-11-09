@@ -1,17 +1,21 @@
-import { useCallback, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import { validateYearMonthString } from "../utils/dateUtils";
+import { validateYearMonthString } from "@/common/utils/dateUtils";
 
-export const useDiary = (): [string, (move: number) => void] => {
-  const [searchParams, setSearchParams] = useSearchParams();
+export const useDate = (route: string) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = useMemo(() => new URLSearchParams(location.search), [location]);
+  const yearMonth = queryParams.get("yearMonth");
 
   // 초기 날짜 계산 및 date 상태 관리 (searchParams 기반)
-  const [date, setDate] = useState(validateYearMonthString(searchParams.get("yearMonth")));
+  const [date, setDate] = useState<string>(validateYearMonthString(yearMonth));
 
   useEffect(() => {
-    setSearchParams(`?yearMonth=${date}`);
-  }, [date, setSearchParams]);
+    if (typeof yearMonth === "string") queryParams.set("yearMonth", yearMonth);
+    setDate(validateYearMonthString(yearMonth));
+  }, [queryParams, yearMonth]);
 
   useEffect(() => {
     // 다이어리 화면에 들어올 때 스크롤 hidden";
@@ -32,10 +36,10 @@ export const useDiary = (): [string, (move: number) => void] => {
       const nextDate = new Date(prevYear, prevMonth + move, 1);
       const nextDateString = `${nextDate.getFullYear()}-${(nextDate.getMonth() + 1).toString().padStart(2, "0")}`;
       setDate(nextDateString);
-      setSearchParams(`?yearMonth=${nextDateString}`);
+      void navigate(`/${route}?yearMonth=${nextDateString}`);
     },
-    [date, setSearchParams],
+    [route, date, navigate],
   );
 
-  return [date, handleMoveMonth];
+  return { date, setDate, handleMoveMonth };
 };

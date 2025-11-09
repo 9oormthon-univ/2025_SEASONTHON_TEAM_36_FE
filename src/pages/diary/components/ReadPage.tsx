@@ -2,6 +2,7 @@
 import { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import { formatKoreanDate } from "@/common/utils/dateUtils";
 import {
   ENUM_TO_WEATHER_ID,
   getWeatherIcons,
@@ -18,7 +19,6 @@ import {
 import useDiaryDetail from "../hooks/useDiaryDetail";
 import { Label } from "../styles/InfoCard";
 import { DateBar, DateText, Page, Section } from "../styles/ReadPage";
-import { formatKoreanDate } from "../utils/dateUtils";
 import {
   COMPLETION_TO_PERCENT,
   likert1to5ToIndex,
