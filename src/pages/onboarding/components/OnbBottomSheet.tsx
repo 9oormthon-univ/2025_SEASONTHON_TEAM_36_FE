@@ -20,7 +20,7 @@ export default function OnbBottomSheet({
   const open = useOnbSheetStore(s => s.open);
   const isExpanded = useOnbSheetStore(s => s.isExpanded);
   const openSheet = useOnbSheetStore(s => s.openSheet);
-  const closeSheet = useOnbSheetStore(s => s.closeSheet);
+  // const closeSheet = useOnbSheetStore(s => s.closeSheet);
   const expandSheet = useOnbSheetStore(s => s.expandSheet);
   const collapseSheet = useOnbSheetStore(s => s.collapseSheet);
   const setHeight = useOnbSheetStore(s => s.setHeight);
@@ -110,7 +110,7 @@ export default function OnbBottomSheet({
       tabIndex={open ? -1 : undefined}
       $size={panelSize}
       $open={open}
-      $z={stageId === "goal-frog" ? 4 : 6} // 👈 추가
+      $z={stageId === "goal-frog" || stageId === "adjust-icon" ? 4 : 6} // 👈 추가
       initial="peek"
       animate={!open ? "peek" : isExpanded ? "expanded" : "open"}
       drag="y"
@@ -140,7 +140,7 @@ export default function OnbBottomSheet({
           if (isExpanded) {
             collapseSheet();
           } else {
-            closeSheet();
+            // closeSheet();
           }
         }}
         onKeyDown={e => {
@@ -148,7 +148,7 @@ export default function OnbBottomSheet({
             e.preventDefault();
             if (!open) openSheet();
             else if (isExpanded) collapseSheet();
-            else closeSheet();
+            // else closeSheet();
           }
         }}
         aria-hidden="false"

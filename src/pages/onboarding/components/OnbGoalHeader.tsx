@@ -4,20 +4,20 @@ import styled from "styled-components";
 export interface GoalHeaderProps {
   onSirenClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isUrgent?: boolean;
+  sirenRef?: React.Ref<HTMLButtonElement>;
 }
 
-export default function OnbGoalHeader({ onSirenClick, isUrgent }: GoalHeaderProps) {
+export default function OnbGoalHeader({ onSirenClick, isUrgent, sirenRef }: GoalHeaderProps) {
   // 없을 때 안전한 기본값
   const dDay = isUrgent ? "D-day" : "D-7";
   const title = "자서전 작성하기";
 
   return (
     <HeaderRow>
-      {/* ✅ urgent 상태 전달 */}
       <DDayIcon $urgent={isUrgent}>{dDay}</DDayIcon>
       <TitleWrap>
         <TaskTitle className="typo-label-l">{title}</TaskTitle>
-        <SirenButton type="button" onClick={onSirenClick}>
+        <SirenButton type="button" onClick={onSirenClick} ref={sirenRef}>
           {isUrgent ? siren : graySiren}
         </SirenButton>
       </TitleWrap>

@@ -259,6 +259,7 @@ const IconSVG = styled.svg`
 
 const FloatingArrow = styled.img`
   position: absolute;
+  left: 50%;
   transform: translateX(-50%);
   bottom: calc(env(safe-area-inset-bottom, 0px) + 160px);
   width: 14px;

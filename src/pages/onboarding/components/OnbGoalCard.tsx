@@ -11,6 +11,7 @@ export interface GoalCardOwnProps {
   goal: RespTodo;
   shrink?: number; // default 1
   isUrgent?: boolean;
+  sirenRef?: React.Ref<HTMLButtonElement>;
 }
 
 // 🔹 div의 표준 속성(className, onClick, aria-*, style 등)까지 받도록 확장
@@ -22,7 +23,7 @@ interface ContainerProps {
 }
 
 const OnbGoalCard = forwardRef<HTMLDivElement, GoalCardProps>(
-  ({ goal, shrink = 1, isUrgent, onClick, onKeyDown, role, tabIndex, ...rest }, ref) => {
+  ({ goal, shrink = 1, isUrgent, sirenRef, onClick, onKeyDown, role, tabIndex, ...rest }, ref) => {
     const frogRef = useRef<string | null>(null);
 
     const progress = goal?.progress ?? 0;
@@ -66,7 +67,7 @@ const OnbGoalCard = forwardRef<HTMLDivElement, GoalCardProps>(
         $shrink={shrink}
         {...rest} // 🔹 className, style 등 전달
       >
-        <OnbGoalHeader onSirenClick={onSirenClick} isUrgent={isUrgent} />
+        <OnbGoalHeader onSirenClick={onSirenClick} isUrgent={isUrgent} sirenRef={sirenRef} />
         {warmMessage ? <CheerMsg className="typo-label-xs">{warmMessage}</CheerMsg> : null}
 
         <ImgContainer>
@@ -87,7 +88,7 @@ export default OnbGoalCard;
 const Container = styled.div<ContainerProps>`
   background: var(--bg-1);
   color: inherit;
-  width: ${p => 90 * p.$shrink}%;
+  width: ${p => 84 * p.$shrink}%;
   aspect-ratio: 4 / 4.2; /* 🔹 기존 4/5 → 높이 축소 */
   max-height: calc(100% - 16px); /* 🔹 여백도 조금 줄임 */
   margin: 20px auto 0;
