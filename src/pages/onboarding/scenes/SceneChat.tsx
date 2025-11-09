@@ -106,12 +106,14 @@ const SkeletonLine = styled.div`
   height: 8px;
   background: var(--natural-400);
   border-radius: 4px;
-  animation: pulse 2s ease-in-out infinite;
+  animation:
+    pulse 1,
+    3s ease-in-out infinite;
 
   @keyframes pulse {
     0%,
     100% {
-      opacity: 0.8;
+      opacity: 0.6;
     }
     50% {
       opacity: 1;

@@ -1,11 +1,11 @@
 // SceneCheckin.tsx
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 import { WEATHER_ICONS, type WeatherId, WEATHERS } from "@/common/utils/mapWeather";
 
 import OnbDotSelector from "../components/OnbDotSelector";
-import type { SceneProps } from "../layout/OnbLayout"; // stage 받아오기
+import { SceneProps } from "../layout/OnbLayout.types";
 
 export default function SceneCheckin({ stage }: SceneProps) {
   const [weather, setWeather] = useState<WeatherId | null>(null);
@@ -289,6 +289,18 @@ const DottedCircle = styled.div<{ $rect: DOMRect }>`
   z-index: 10;
 `;
 
+const bubblePulse = keyframes`
+  0%   { transform: translateX(-50%) scale(1);    opacity: 1; }
+  50%  { transform: translateX(-50%) scale(1.03); opacity: .98; }
+  100% { transform: translateX(-50%) scale(1);    opacity: 1; }
+`;
+
+const bubbleHalo = keyframes`
+  0%   { opacity: .35; transform: scale(.96); }
+  60%  { opacity: 0;   transform: scale(1.08); }
+  100% { opacity: 0;   transform: scale(1.12); }
+`;
+
 const SpotBubble = styled.div<{ $rect: DOMRect }>`
   position: absolute;
   left: ${p => p.$rect.x - 12}px;
@@ -305,6 +317,23 @@ const SpotBubble = styled.div<{ $rect: DOMRect }>`
   border: 1px solid rgba(15, 23, 42, 0.08);
   pointer-events: none;
   z-index: 10;
+  + will-change: transform, box-shadow;
+ animation: ${bubblePulse} 1.6s ease-in-out infinite;
+
+ &::after {
+   content: "";
+   position: absolute;
+   inset: -6px;
+   border-radius: 26px 26px 6px 26px; /* 말풍선 모양에 맞춘 halo */
+   border: 2px solid rgba(59, 130, 246, 0.35);
+   animation: ${bubbleHalo} 1.6s ease-out infinite;
+   pointer-events: none;
+ }
+
+ @media (prefers-reduced-motion: reduce) {
+   animation: none;
+   &::after { animation: none; }
+ }
 `;
 const SpotDim = styled.div<{ $rect: DOMRect; $radius?: number }>`
   position: absolute;
