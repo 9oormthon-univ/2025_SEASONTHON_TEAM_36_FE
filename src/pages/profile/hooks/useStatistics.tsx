@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { fetchAchievementRate, fetchFocusTime, fetchMonthlyTodos } from "@/apis/statistics";
-import { Todo } from "@/common/types/enums";
-import { RespMonthlyTodos } from "@/common/types/response/statistics";
+import { fetchAchievementRate, fetchFocusTime } from "@/apis/statistics";
 
 interface AchievementRateType {
   name: string;
@@ -15,45 +13,12 @@ interface FocusTimeType {
   최소: number;
 }
 
-const idx2todoType: Todo[] = [
-  "PREVIEW_REVIEW",
-  "HOMEWORK",
-  "TEST_STUDY",
-  "PERFORMANCE_ASSESSMENT",
-  "CAREER_ACTIVITY",
-  "ETC",
-];
-
 export const useStatistics = ({ date }: { date: string }) => {
   const year = Number(date.split("-")[0]);
   const month = Number(date.split("-")[1]);
-  const [clickedSubject, setClickedSubject] = useState<number>(-1);
-  const [subjects, setSubjects] = useState<RespMonthlyTodos[] | null | undefined>(null);
   const [achievementRate, setAchievementRate] = useState<AchievementRateType[]>();
   const [focusTime, setFocusTime] = useState<FocusTimeType[]>();
 
-  const handleSubjectNumber = useCallback(
-    (index: number) => {
-      if (clickedSubject == index) {
-        setClickedSubject(-1);
-        setSubjects(null);
-      } else {
-        setClickedSubject(index);
-        const stringMonth = month.toString().padStart(2, "0");
-        fetchMonthlyTodos(`${year}-${stringMonth}`, idx2todoType[index])
-          .then(todos => {
-            if (Array.isArray(todos)) {
-              setSubjects(todos);
-            }
-          })
-          .catch(error => {
-            console.error("Failed to fetch monthly todos:", error);
-            setSubjects(undefined);
-          });
-      }
-    },
-    [clickedSubject, setClickedSubject, year, month],
-  );
   const initAchievementRate = useCallback(async () => {
     const stringMonth = month.toString().padStart(2, "0");
     const response = await fetchAchievementRate(`${year}-${stringMonth}`);
@@ -92,11 +57,6 @@ export const useStatistics = ({ date }: { date: string }) => {
   }, [year, month, initAchievementRate, initMonthlyFocusTime]);
 
   return {
-    clickedSubject,
-    setClickedSubject,
-    subjects,
-    setSubjects,
-    handleSubjectNumber,
     focusTime,
     achievementRate,
   };

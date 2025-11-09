@@ -46,7 +46,7 @@ export const useChatForm = () => {
               `${import.meta.env.VITE_API_BASE_URL}/api/v1/ai/connect?userId=${respUserInfo.userId}`,
               {
                 headers: {
-                  Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
+                  Authorization: `Bearer ${getAccessToken()}`,
                   Accept: "text/event-stream",
                 },
               },
@@ -94,7 +94,7 @@ export const useChatForm = () => {
               setChatbotLoading(prev => !prev);
             };
 
-            chatbotRef.current.onerror = (event: Event) => {
+            chatbotRef.current.onerror = _ => {
               if (!isMounted) return;
 
               // 의도적인 연결 종료가 아닌 경우에만 에러로 처리
