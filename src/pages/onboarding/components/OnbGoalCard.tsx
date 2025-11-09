@@ -89,17 +89,17 @@ const Container = styled.div<ContainerProps>`
   background: var(--bg-1);
   color: inherit;
   width: ${p => 84 * p.$shrink}%;
-  aspect-ratio: 4 / 4.2; /* 🔹 기존 4/5 → 높이 축소 */
-  max-height: calc(100% - 16px); /* 🔹 여백도 조금 줄임 */
+  aspect-ratio: 4 / 4.2;
+  max-height: calc(100% - 16px);
   margin: 20px auto 0;
-  padding: clamp(10px, 3.5vw, 28px) clamp(10px, 2.8vw, 28px);
-  border-radius: clamp(10px, 3.2vw, 14px);
+  padding: clamp(10px, 2%, 28px) clamp(10px, 2%, 28px);
+  border-radius: clamp(10px, 3%, 14px);
   box-shadow:
     -0.27px -0.27px 4.495px 0 var(--natural-400),
     0.27px 0.27px 4.495px 0 var(--natural-400);
   display: flex;
   flex-direction: column;
-  gap: clamp(6px, 2vw, 12px);
+  gap: clamp(4px, 2%, 12px);
   text-align: center;
   cursor: pointer;
   transition:

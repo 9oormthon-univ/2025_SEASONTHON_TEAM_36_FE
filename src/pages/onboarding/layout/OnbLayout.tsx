@@ -246,6 +246,7 @@ const Root = styled.div<{ $transparentBg?: boolean }>`
   background: ${p => (p.$transparentBg ? "transparent" : "rgba(17, 24, 39, 0.85)")};
   backdrop-filter: ${p => (p.$transparentBg ? "none" : "blur(2px)")};
   cursor: pointer; /* 화면 배경 클릭 네비 */
+  -webkit-tap-highlight-color: transparent;
 `;
 
 const FrameWrap = styled.div`
@@ -296,7 +297,7 @@ const HintText = styled.div<{ $centered?: boolean; $isSiren?: boolean }>`
 
   /* 일반 상태: 화면 하단 근처 */
   height: ${p => (p.$centered ? "auto" : "10vh")};
-  margin-bottom: ${p => (p.$centered ? "0" : "7vh")};
+  margin-bottom: ${p => (p.$centered ? "0" : "10vh")};
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -344,10 +345,10 @@ const Pulse = styled.div<{ $rect: DOMRect }>`
 /* ========== 프레임 "로컬" 스팟들 ========== */
 const DottedCircleLocal = styled.div<{ $rect: DOMRect }>`
   position: absolute;
-  left: ${p => p.$rect.x - 2}px;
-  top: ${p => p.$rect.y - 2}px;
-  width: ${p => p.$rect.width + 4}px;
-  height: ${p => p.$rect.height + 4}px;
+  left: ${p => p.$rect.x - 6}px;
+  top: ${p => p.$rect.y - 6}px;
+  width: ${p => p.$rect.width + 12}px;
+  height: ${p => p.$rect.height + 12}px;
   border: 2.5px dashed rgba(255, 255, 255, 0.95);
   border-radius: 9999px;
   pointer-events: none;
