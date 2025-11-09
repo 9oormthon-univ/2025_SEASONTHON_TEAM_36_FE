@@ -98,14 +98,18 @@ export default function HomePage() {
 }
 
 const Page = styled.section`
-  min-height: 100%;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh; /* iOS 주소창 변동 대응 */
   background: var(--bg-2);
   color: var(--text-1);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-sizing: border-box;
-  width: 100%;
+  overflow: hidden; /* 바깥 스크롤 막기 */
+  overscroll-behavior: none; /* iOS 일부 버전은 무시해도 무해 */
 `;
 
 const Body = styled.div<BodyStyledProps>`
@@ -113,7 +117,10 @@ const Body = styled.div<BodyStyledProps>`
   flex-direction: column;
   justify-content: flex-start;
   width: 100%;
+  flex: 1 1 auto;
   min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* iOS 스크롤 관성 */
 `;
 
 const TopSpacing = styled.div`

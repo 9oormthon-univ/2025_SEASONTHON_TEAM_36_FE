@@ -41,7 +41,7 @@ export const Screen = styled.div<{
   }
 `;
 
-export const HeaderBar = styled.header`
+export const HeaderBar = styled.header<{ $bgColor?: string }>`
   position: sticky;
   top: 0;
   z-index: 1;
@@ -55,7 +55,8 @@ export const HeaderBar = styled.header`
   padding-left: 12px;
   padding-right: 12px;
 
-  background: transparent;
+  // background: transparent;
+  background: ${({ $bgColor }) => $bgColor ?? "transparent"}; /* 기본값 fallback */
 `;
 
 export const Title = styled.h2`
@@ -72,7 +73,7 @@ export const Spacer = styled.div`
 `;
 
 export const IconBtn = styled.button`
-  padding: 4px 4px;
+  padding: 12px;
   border: 0;
   border-radius: 12px;
   background: transparent;
@@ -81,6 +82,7 @@ export const IconBtn = styled.button`
   align-items: center;
   justify-content: center;
   line-height: 0;
+  -webkit-tap-highlight-color: transparent;
 `;
 
 export const IconImg = styled.img`
