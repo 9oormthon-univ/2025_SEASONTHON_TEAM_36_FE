@@ -89,7 +89,7 @@ const SirenButton = styled.button`
   appearance: none;
   border: 0;
   background: transparent;
-  margin-left: 6px;
+  padding: 6px;
   border-radius: 9999px;
   line-height: 0;
   cursor: pointer;

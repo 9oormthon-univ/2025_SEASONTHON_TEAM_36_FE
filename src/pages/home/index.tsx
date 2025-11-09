@@ -79,8 +79,7 @@ export default function HomePage() {
       <ChatbotBtn isSheetOpen={isSheetOpen} />
       {!isSheetOpen && <TopSpacing />}
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
-        <DateView />
-
+        <DateView hideYear={isSheetOpen} />
         {hasGoals ? (
           <CardsCarousel ids={ids} maxDots={5}>
             {goals.map((g, i) => (

@@ -13,9 +13,9 @@ interface PanelProps {
 export const Backdrop = styled.div`
   position: fixed;
   inset: 0 0 var(--navbar-height, 0px) 0;
-  /* background: rgba(0,0,0,0.36);
-  backdrop-filter: saturate(120%) blur(2px); */
   z-index: 900;
+  touch-action: none;
+  overscroll-behavior: none;
 `;
 
 /** Panel: 네비바에 정확히 맞닿도록 보더 보정 */
@@ -64,6 +64,7 @@ export const SheetViewport = styled.div`
   display: flex;
   flex-direction: column;
   height: 90%;
-  overflow: hidden;
+  overflow-y: auto; /* ← 내부 스크롤 */
+  -webkit-overflow-scrolling: touch; /* ← iOS 관성 스크롤 */
   padding: 4px 0 0 0;
 `;
