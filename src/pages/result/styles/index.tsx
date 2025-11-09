@@ -72,9 +72,9 @@ export const Modify = styled.button`
   }
 `;
 
-export const TitleInput = styled.input<{ disabled: boolean }>`
+export const TitleInput = styled.input<{ $disabled: boolean }>`
   border: none;
-  border-bottom: ${props => (props.disabled ? "none" : "1px solid black")};
+  border-bottom: ${props => (props.$disabled ? "none" : "1px solid black")};
   background: none;
   color: black;
   font-size: clamp(var(--fs-xl), 5.31vw, var(--fs-2xl));
@@ -85,6 +85,7 @@ export const TitleInput = styled.input<{ disabled: boolean }>`
   &:focus {
     outline: none;
   }
+  cursor: ${props => (props.$disabled ? "default" : "text")};
 `;
 
 export const MeasureText = styled.span`
