@@ -106,7 +106,7 @@ export default function OnbLayout({
               </CenterBubble>
             ) : null}
 
-            {stage.componenetKey === "chatbot" && localSpot ? (
+            {stage.componentKey === "chatbot" && localSpot ? (
               <>
                 <DottedCircle $rect={localSpot} />
                 <SpotBubble $rect={localSpot}>AI 개구리 ‘Rana’</SpotBubble>

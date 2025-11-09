@@ -1,5 +1,5 @@
 import { motion, type PanInfo } from "framer-motion";
-import { type CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
+import { type CSSProperties, ReactNode, useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { useOnbSheetStore } from "../store/useOnbSheetStore";
@@ -10,17 +10,6 @@ type CSSVarProps = CSSProperties & { ["--peek"]?: string };
 export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // ⬇️ 추가: 마운트 시 패널 식별자 부착
-  useEffect(() => {
-    const el = panelRef.current;
-    if (!el) return;
-    el.setAttribute("data-onb-sheet-panel", "true");
-    return () => {
-      try {
-        el.removeAttribute("data-onb-sheet-panel");
-      } catch {}
-    };
-  }, []);
   // ===== zustand store =====
   const open = useOnbSheetStore(s => s.open);
   const isExpanded = useOnbSheetStore(s => s.isExpanded);
@@ -29,7 +18,6 @@ export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
   const expandSheet = useOnbSheetStore(s => s.expandSheet);
   const collapseSheet = useOnbSheetStore(s => s.collapseSheet);
   const setHeight = useOnbSheetStore(s => s.setHeight);
-  const heightPx = useOnbSheetStore(s => s.heightPx);
 
   // 온보딩에선 %도 쓸 수 있게 허용 (부모 높이 필요). px 환산은 뷰포트 기준 간이 처리.
   const size = 150; // 예: "32vh" | "32%" | 320
@@ -63,18 +51,6 @@ export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
 
     setHeight(px);
   }, [open, isExpanded, size, expandedSize, peekHeight, setHeight, toPx]);
-
-  const yPeek = useMemo(() => Math.max((heightPx || 0) - peekHeight, 0), [heightPx, peekHeight]);
-
-  // 상태별 애니메이션 (필요 시 variants 사용)
-  const variants = useMemo(
-    () => ({
-      expanded: { y: 0, transition: { type: "spring", stiffness: 420, damping: 42 } },
-      open: { y: 0, transition: { type: "spring", stiffness: 420, damping: 42 } },
-      peek: { y: yPeek, transition: { type: "spring", stiffness: 420, damping: 42 } },
-    }),
-    [yPeek],
-  );
 
   // 드래그 임계치
   const THRESHOLD_OPEN_UP = 0; // 피크 → 열림
@@ -126,7 +102,6 @@ export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
       tabIndex={open ? -1 : undefined}
       $size={panelSize}
       $open={open}
-      variants={variants}
       initial="peek"
       animate={!open ? "peek" : isExpanded ? "expanded" : "open"}
       drag="y"

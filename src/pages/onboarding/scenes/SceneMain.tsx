@@ -83,44 +83,53 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
   const expandSheet = useOnbSheetStore(s => s.expandSheet);
 
   // 어떤 타깃을 하이라이트할지
-  const highlightChatbot = stage.componenetKey === "chatbot";
-  const highlightGoalCard = stage.componenetKey === "goal-card";
-  const highlightBottomSheet = stage.componenetKey === "bottom-sheet";
+  const highlightChatbot = stage.componentKey === "chatbot";
+  const highlightGoalCard = stage.componentKey === "goal-card";
+  const highlightBottomSheet = stage.componentKey === "bottom-sheet";
 
   // 각 타깃에 대해 spotRect 지속 보고
   useSpotReporter(refChatbot, highlightChatbot, setSpotRect);
   useSpotReporter(refGoalCard, highlightGoalCard, setSpotRect);
   useSpotReporter(refSheet, highlightBottomSheet, setSpotRect);
 
-  useEffect(() => {
-    // ✅ 바텀시트 열기/닫기/확장/축소를 SceneMain에서 통합 제어
-    if (stage.id !== "sheet-content") {
-      openSheet();
-    } else {
-      openSheet();
-      expandSheet(); // 콘텐츠 보여줄 때는 확장
-    }
-
-    // 기존 UI store 동기화 (필요 시 유지)
-    if (stage.id === "sheet-scroll" || stage.id === "sheet-content") {
-      openBottomSheet();
-    } else {
-      closeBottomSheet();
-    }
-
-    // 시급함 뱃지
-    setUrgent(stage.sceneKey === "main-w-urgent");
-
-    const noGoals =
-      stage.id === "start" || stage.id === "chatboticon" || stage.id === "chatbot-icon";
-    setHasGoals(!noGoals);
-  }, [stage.id, stage.sceneKey]); // componenetKey로 spotRect는 useSpotReporter가 처리
-
   const hasGoals = useOnbUiStore(s => s.hasGoals);
   const setHasGoals = useOnbUiStore(s => s.setHasGoals);
   const sheetHeight = useOnbSheetStore(s => s.heightPx);
   const isSheetOpen = useOnbSheetStore(s => s.open);
 
+  // ==== 파생 플래그를 effect 밖에서 계산 ====
+  const shouldExpand = stage.id === "sheet-content";
+  const shouldOpenBottom = stage.id === "sheet-scroll" || stage.id === "sheet-content";
+  const isUrgent = stage.sceneKey === "main-w-urgent";
+  const noGoals = stage.id === "start" || stage.id === "chatboticon" || stage.id === "chatbot-icon";
+  const goalsFlag = !noGoals;
+
+  useEffect(() => {
+    // ✅ 바텀시트 열기/확장
+    openSheet();
+    if (shouldExpand) expandSheet();
+
+    // ✅ 기존 UI store 동기화
+    if (shouldOpenBottom) openBottomSheet();
+    else closeBottomSheet();
+
+    // ✅ 시급함 뱃지 & 카드 유무
+    setUrgent(isUrgent);
+    setHasGoals(goalsFlag);
+  }, [
+    // 액션들: zustand에서는 보통 stable ref -> 의존성에 넣어도 안전
+    openSheet,
+    expandSheet,
+    openBottomSheet,
+    closeBottomSheet,
+    setUrgent,
+    setHasGoals,
+    // 파생 플래그들
+    shouldExpand,
+    shouldOpenBottom,
+    isUrgent,
+    goalsFlag,
+  ]);
   // 시트 열림 여부에 따른 카드 축소율
   const SHRINK_OPEN = 0.89 as const;
   const SHRINK_CLOSED = 1 as const;
