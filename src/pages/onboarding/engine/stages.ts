@@ -9,7 +9,7 @@ export interface OnbStage {
   sceneKey?: string; // 복제 스크린 사용 시 키
   sceneZIndex?: number; // 복제 스크린 z-index
   /** 같은 scene 재사용 시 강조 타깃을 분기하기 위한 키(단일 혹은 여러 개) */
-  componenetKey?: string | string[];
+  componentKey?: string | string[];
 }
 
 export const stages: OnbStage[] = [
@@ -24,7 +24,7 @@ export const stages: OnbStage[] = [
     body: "우측 상단에 AI 개구리를\n눌러보세요!",
     placement: "bottom",
     sceneKey: "main",
-    componenetKey: "chatbot",
+    componentKey: "chatbot",
   },
   {
     id: "make-todo",
@@ -43,21 +43,21 @@ export const stages: OnbStage[] = [
     body: "드래그 해서 올려보세요!",
     placement: "bottom",
     sceneKey: "main-w-goal-step",
-    componenetKey: "bottom-sheet",
+    componentKey: "bottom-sheet",
   },
   {
     id: "sheet-content",
     body: "오늘의 할 일과 기간을 놓쳐\n수행하지 못한 일을 확인할 수 있어요!",
     placement: "bottom",
     sceneKey: "main-w-goal-step",
-    componenetKey: "bottom-sheet",
+    componentKey: "bottom-sheet",
   },
   {
     id: "goal-frog",
     body: "이번엔 개구리를 눌러볼까요?",
     placement: "bottom",
     sceneKey: "main-w-goal-step",
-    componenetKey: "goal-card",
+    componentKey: "goal-card",
   },
   {
     id: "goal-steps",
@@ -77,7 +77,7 @@ export const stages: OnbStage[] = [
     placement: "auto",
     pulse: true,
     sceneKey: "main-w-urgent",
-    componenetKey: "big-siren",
+    componentKey: "big-siren",
   },
   {
     id: "adjust",
@@ -90,7 +90,7 @@ export const stages: OnbStage[] = [
     body: "걱정마세요!",
     placement: "bottom",
     sceneKey: "main-w-urgent",
-    componenetKey: "siren",
+    componentKey: "siren",
   },
   {
     id: "adjust-chat",
@@ -103,7 +103,7 @@ export const stages: OnbStage[] = [
     body: "이번엔 플레이 버튼을 눌러볼까요?",
     placement: "bottom",
     sceneKey: "main-w-goal-step",
-    componenetKey: "play-btn",
+    componentKey: "play-btn",
   },
   {
     id: "daily-chkin",
@@ -116,7 +116,7 @@ export const stages: OnbStage[] = [
     body: "이제 일을 시작해 볼까요?",
     placement: "bottom",
     sceneKey: "daily-checkin-modal",
-    componenetKey: "start-btn",
+    componentKey: "start-btn",
   },
   {
     id: "playing",
