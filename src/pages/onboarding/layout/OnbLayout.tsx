@@ -155,6 +155,21 @@ export default function OnbLayout({
   /** ===== 최종 렌더(Portal) ===== */
   return createPortal(
     <Root $transparentBg={showBigSiren || stage.id === "end"} onClick={handleRootClick}>
+      {onSkip && stage.id !== "end" && (
+        <SkipBtn
+          type="button"
+          data-onb-no-advance="true"
+          aria-label="온보딩 건너뛰기"
+          title="건너뛰기"
+          onClick={e => {
+            e.stopPropagation();
+            onSkip?.();
+          }}
+          onPointerDown={e => e.stopPropagation()}
+        >
+          건너뛰기
+        </SkipBtn>
+      )}
       {stage.id === "end" && <DimOverlay />}
       {/* === 프레임 (앱 미리보기 캔버스) === */}
       {/* === 프레임 (앱 미리보기 캔버스) === */}
@@ -246,6 +261,7 @@ const Root = styled.div<{ $transparentBg?: boolean }>`
   background: ${p => (p.$transparentBg ? "transparent" : "rgba(17, 24, 39, 0.85)")};
   backdrop-filter: ${p => (p.$transparentBg ? "none" : "blur(2px)")};
   cursor: pointer; /* 화면 배경 클릭 네비 */
+  -webkit-tap-highlight-color: transparent;
 `;
 
 const FrameWrap = styled.div`
@@ -296,7 +312,7 @@ const HintText = styled.div<{ $centered?: boolean; $isSiren?: boolean }>`
 
   /* 일반 상태: 화면 하단 근처 */
   height: ${p => (p.$centered ? "auto" : "10vh")};
-  margin-bottom: ${p => (p.$centered ? "0" : "7vh")};
+  margin-bottom: ${p => (p.$centered ? "0" : "10vh")};
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -344,10 +360,10 @@ const Pulse = styled.div<{ $rect: DOMRect }>`
 /* ========== 프레임 "로컬" 스팟들 ========== */
 const DottedCircleLocal = styled.div<{ $rect: DOMRect }>`
   position: absolute;
-  left: ${p => p.$rect.x - 2}px;
-  top: ${p => p.$rect.y - 2}px;
-  width: ${p => p.$rect.width + 4}px;
-  height: ${p => p.$rect.height + 4}px;
+  left: ${p => p.$rect.x - 6}px;
+  top: ${p => p.$rect.y - 6}px;
+  width: ${p => p.$rect.width + 12}px;
+  height: ${p => p.$rect.height + 12}px;
   border: 2.5px dashed rgba(255, 255, 255, 0.95);
   border-radius: 9999px;
   pointer-events: none;
@@ -479,4 +495,51 @@ const SpotDimFixed = styled.div<{ $rect: DOMRect; $radius?: number }>`
     height 0.06s linear;
   z-index: 2147483646;
   pointer-events: none;
+`;
+
+const SkipBtn = styled.button`
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  right: calc(env(safe-area-inset-right, 0px) + 12px);
+  z-index: 2147483647; /* 포털 내 최상단 보장 */
+
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 9999px;
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(17, 24, 39, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    transform 0.12s ease,
+    background-color 0.12s ease,
+    opacity 0.12s ease;
+
+  &:hover {
+    background: rgba(17, 24, 39, 0.66);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+  &:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.9);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 `;

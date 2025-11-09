@@ -73,7 +73,6 @@ export default function HomePage() {
       </Page>
     );
   }
-  
   return (
     <Page>
       <OnboardingScenes />
@@ -81,6 +80,7 @@ export default function HomePage() {
       {!isSheetOpen && <TopSpacing />}
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <DateView hideYear={isSheetOpen} />
+
         {hasGoals ? (
           <CardsCarousel ids={ids} maxDots={5}>
             {goals.map((g, i) => (

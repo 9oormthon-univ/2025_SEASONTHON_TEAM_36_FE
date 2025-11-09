@@ -6,6 +6,7 @@ import { useSplashScreen } from "./hooks/useSplashScreen";
 
 const Page = styled.div`
   position: relative;
+  height: 100vh;
 `;
 
 const LoginScreen = () => {

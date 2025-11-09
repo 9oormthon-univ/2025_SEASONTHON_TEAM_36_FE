@@ -174,7 +174,7 @@ const HeaderWrapper = styled.div`
 `;
 
 const Header = styled.header`
-  width: 72vw;
+  width: 76vw;
   max-width: 680px;
   margin: 0 auto;
   display: flex;
@@ -206,6 +206,7 @@ const DeleteButton = styled.button`
     height: auto;
     display: block;
   }
+  padding: 10px;
 `;
 
 const Title = styled.h2`
