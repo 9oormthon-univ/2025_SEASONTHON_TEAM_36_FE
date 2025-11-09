@@ -155,6 +155,21 @@ export default function OnbLayout({
   /** ===== 최종 렌더(Portal) ===== */
   return createPortal(
     <Root $transparentBg={showBigSiren || stage.id === "end"} onClick={handleRootClick}>
+      {onSkip && stage.id !== "end" && (
+        <SkipBtn
+          type="button"
+          data-onb-no-advance="true"
+          aria-label="온보딩 건너뛰기"
+          title="건너뛰기"
+          onClick={e => {
+            e.stopPropagation();
+            onSkip?.();
+          }}
+          onPointerDown={e => e.stopPropagation()}
+        >
+          건너뛰기
+        </SkipBtn>
+      )}
       {stage.id === "end" && <DimOverlay />}
       {/* === 프레임 (앱 미리보기 캔버스) === */}
       {/* === 프레임 (앱 미리보기 캔버스) === */}
@@ -480,4 +495,51 @@ const SpotDimFixed = styled.div<{ $rect: DOMRect; $radius?: number }>`
     height 0.06s linear;
   z-index: 2147483646;
   pointer-events: none;
+`;
+
+const SkipBtn = styled.button`
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  right: calc(env(safe-area-inset-right, 0px) + 12px);
+  z-index: 2147483647; /* 포털 내 최상단 보장 */
+
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 9999px;
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(17, 24, 39, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    transform 0.12s ease,
+    background-color 0.12s ease,
+    opacity 0.12s ease;
+
+  &:hover {
+    background: rgba(17, 24, 39, 0.66);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+  &:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.9);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 `;
