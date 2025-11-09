@@ -338,6 +338,18 @@ const pulseKey = keyframes`
   60% { opacity: .15; transform: scale(1.04); }
   100% { opacity: 0; transform: scale(1.08); }
 `;
+// === 말풍선 공통 펄스 키프레임 ===
+const bubblePulse = keyframes`
+  0%   { transform: translateX(-50%) scale(1);    opacity: 1; }
+  50%  { transform: translateX(-50%) scale(1.03); opacity: .98; }
+  100% { transform: translateX(-50%) scale(1);    opacity: 1; }
+`;
+
+const bubbleHalo = keyframes`
+  0%   { opacity: .35; transform: scale(.96); }
+  60%  { opacity: 0;   transform: scale(1.08); }
+  100% { opacity: 0;   transform: scale(1.12); }
+`;
 const Pulse = styled.div<{ $rect: DOMRect }>`
   position: absolute;
   left: ${p => p.$rect.x - 6}px;
@@ -370,22 +382,45 @@ const DottedCircleLocal = styled.div<{ $rect: DOMRect }>`
   z-index: 10;
 `;
 
+// 기존 SpotBubbleLocal 교체
 const SpotBubbleLocal = styled.div<{ $rect: DOMRect }>`
   position: absolute;
-  left: ${p => p.$rect.x + p.$rect.width / 2 - 68}px;
-  top: ${p => p.$rect.y + p.$rect.height + 12}px; /* 요소 아래 */
+  left: ${p => p.$rect.x - p.$rect.width}px;
+  top: ${p => p.$rect.y + p.$rect.height + 12}px;
   transform: translateX(-50%);
-  width: 140px;
+  min-width: 135px;
   max-width: 240px;
   background: var(--green-100);
   color: var(--text-1);
   border-radius: 23px 0 23px 23px;
-  padding: 12px 16px;
+  padding: 12px;
   font-size: 14px;
   box-shadow: 0 8px 24px rgba(2, 6, 23, 0.25);
   border: 1px solid rgba(15, 23, 42, 0.08);
   pointer-events: none;
   z-index: 10;
+  will-change: transform, box-shadow;
+
+  /* ✨ 말풍선 펄스 */
+  animation: ${bubblePulse} 1.6s ease-in-out infinite;
+
+  /* ✨ 바깥으로 번지는 링 */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 26px 3px 26px 26px;
+    border: 2px solid rgba(59, 130, 246, 0.35);
+    animation: ${bubbleHalo} 1.6s ease-out infinite;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    &::after {
+      animation: none;
+    }
+  }
 `;
 
 const SpotDimLocal = styled.div<{ $rect: DOMRect; $radius?: number }>`
@@ -462,10 +497,11 @@ const DottedCircleFixed = styled.div<{ $rect: DOMRect }>`
   z-index: 2147483647;
 `;
 
+// 기존 SpotBubbleFixed 교체
 const SpotBubbleFixed = styled.div<{ $rect: DOMRect }>`
   position: fixed;
   left: ${p => p.$rect.x - p.$rect.width}px;
-  top: ${p => p.$rect.y + p.$rect.height + 12}px; /* 요소 아래 */
+  top: ${p => p.$rect.y + p.$rect.height + 12}px;
   transform: translateX(-50%);
   max-width: 240px;
   background: var(--green-100);
@@ -477,6 +513,28 @@ const SpotBubbleFixed = styled.div<{ $rect: DOMRect }>`
   border: 1px solid rgba(15, 23, 42, 0.08);
   z-index: 2147483647;
   pointer-events: none;
+  will-change: transform, box-shadow;
+
+  /* ✨ 말풍선 펄스 */
+  animation: ${bubblePulse} 1.6s ease-in-out infinite;
+
+  /* ✨ 바깥으로 번지는 링 */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 26px 3px 26px 26px;
+    border: 2px solid rgba(59, 130, 246, 0.35);
+    animation: ${bubbleHalo} 1.6s ease-out infinite;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    &::after {
+      animation: none;
+    }
+  }
 `;
 
 const SpotDimFixed = styled.div<{ $rect: DOMRect; $radius?: number }>`

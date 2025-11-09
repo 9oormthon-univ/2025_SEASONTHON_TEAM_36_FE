@@ -1,14 +1,121 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
 import OnbGoalHeader from "../components/OnbGoalHeader";
 
 export default function StepPlayingModal() {
-  const breakCountText = "0";
+  // ===== 타이머 상태 =====
+  const [isRunning, setIsRunning] = useState(true); // 재생/일시정지
+  const [baseElapsedMs, setBaseElapsedMs] = useState(0); // 누적 시간(ms), 일시정지 시 확정
+  const resumeStartRef = useRef<number | null>(Date.now()); // 재개 기준 시각(ms)
+  const intervalRef = useRef<number | null>(null);
+  const [nowTs, setNowTs] = useState(Date.now());
+
+  // 휴식 횟수: 일시정지 버튼 누를 때 +1
+  const [breakCount, setBreakCount] = useState(0);
+
+  // 진행 중 경과 시간(ms) = base + (지금 - 재개시각)
+  const liveElapsedMs = useMemo(() => {
+    if (!isRunning || resumeStartRef.current == null) return baseElapsedMs;
+    return baseElapsedMs + (nowTs - resumeStartRef.current); // ✅ nowTs 포함
+  }, [isRunning, baseElapsedMs, nowTs]); // ✅ nowTs 의존성 추가
+
+  // 1초마다 강제 리렌더(숫자 갱신)
+  useEffect(() => {
+    // 인터벌 클리어 유틸
+    const clear = () => {
+      if (intervalRef.current != null) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+
+    if (isRunning) {
+      // 재개 시각이 없으면 지금 시각으로
+      if (resumeStartRef.current == null) {
+        resumeStartRef.current = Date.now();
+      }
+      // 1초 간격 리렌더
+      intervalRef.current = window.setInterval(() => {
+        // 상태는 liveElapsedMs 계산에 의존하므로 setState 불필요
+        // 단, React가 리렌더 하도록 no-op set을 사용하거나 base를 유지
+        // 여기선 강제 리렌더를 위해 baseElapsedMs를 그대로 set (값 동일, 변경 없음)
+        setBaseElapsedMs(prev => prev);
+      }, 1000);
+    } else {
+      clear();
+    }
+
+    return () => clear();
+  }, [isRunning]);
+
+  useEffect(() => {
+    const clear = () => {
+      if (intervalRef.current != null) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+
+    if (isRunning) {
+      if (resumeStartRef.current == null) {
+        resumeStartRef.current = Date.now();
+      }
+      intervalRef.current = window.setInterval(() => {
+        setNowTs(Date.now()); // ✅ 매초 실제 시간 갱신 -> 리렌더 트리거
+      }, 1000);
+    } else {
+      clear();
+    }
+
+    return () => clear();
+  }, [isRunning]);
+
+  // 언마운트 시 확실히 정리
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current != null) {
+        window.clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  // 일시정지/재개 토글
+  const togglePause = () => {
+    if (isRunning) {
+      // 일시정지: 현재까지의 경과를 base에 반영
+      if (resumeStartRef.current != null) {
+        setBaseElapsedMs(prev => prev + (Date.now() - (resumeStartRef.current as number)));
+      }
+      resumeStartRef.current = null;
+      setIsRunning(false);
+      setBreakCount(c => c + 1); // 휴식 +1
+    } else {
+      // 재개
+      resumeStartRef.current = Date.now();
+      setIsRunning(true);
+    }
+  };
+
+  // 완료(확정) 버튼: 필요 시 콜백 연결
+  const confirm = () => {
+    // 여기서 API 호출/상태 리셋 등 처리
+    // 예: setIsRunning(false);
+  };
+
+  // 경과시간 포맷터(hh:mm:ss)
+  const timerText = useMemo(() => {
+    const total = Math.max(0, Math.floor(liveElapsedMs / 1000));
+    const h = String(Math.floor(total / 3600)).padStart(2, "0");
+    const m = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+    const s = String(total % 60).padStart(2, "0");
+    return `${h} : ${m} : ${s}`;
+  }, [liveElapsedMs]);
 
   const colortoken = "var(--green-200)";
 
   return (
-    <div style={{ background: "var(--bg-2" }}>
+    <div style={{ background: "var(--bg-2)" }}>
       <Body>
         <HeaderWrapper>
           <OnbGoalHeader />
@@ -20,19 +127,20 @@ export default function StepPlayingModal() {
             <Ring colortoken={colortoken}>
               {ringSVG}
               <RingCenter>
-                <SmallPill className="typo-body-xs">{`휴식 ${breakCountText}회`}</SmallPill>
+                <SmallPill className="typo-body-xs">{`휴식 ${breakCount}회`}</SmallPill>
                 <Timer aria-label="경과 시간" className="typo-h2">
-                  00 : 13 : 28
+                  {timerText}
                 </Timer>
               </RingCenter>
             </Ring>
           </GaugeArea>
         </Content>
+
         <BottomActions>
-          <CircleButton aria-label="일시정지" onClick={() => {}}>
-            {pauseIcon}
+          <CircleButton aria-label={isRunning ? "일시정지" : "재개"} onClick={togglePause}>
+            {isRunning ? pauseIcon : playIcon}
           </CircleButton>
-          <ConfirmButton aria-label="완료" onClick={() => {}}>
+          <ConfirmButton aria-label="완료" onClick={confirm}>
             {confirmIcon}
           </ConfirmButton>
         </BottomActions>
@@ -40,6 +148,8 @@ export default function StepPlayingModal() {
     </div>
   );
 }
+
+/* ================= styles ================= */
 
 const Body = styled.div`
   display: flex;
@@ -154,9 +264,17 @@ const ConfirmButton = styled(CircleButton)`
   border: none;
 `;
 
+/* ====== icons ====== */
+
 const pauseIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="30" viewBox="0 0 25 30" fill="none">
     <path d="M0 29.0389H8.29684V0H0V29.0389ZM16.5937 0V29.0389H24.8905V0H16.5937Z" fill="black" />
+  </svg>
+);
+
+const playIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" width="26" height="30" viewBox="0 0 26 30" fill="none">
+    <path d="M0 0L26 15L0 30V0Z" fill="black" />
   </svg>
 );
 
