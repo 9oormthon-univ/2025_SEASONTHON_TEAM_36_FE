@@ -9,7 +9,7 @@ export const mainApi = axios.create({
 
 mainApi.interceptors.request.use(
   config => {
-    const token = getAccessToken();
+    const token = import.meta.env.VITE_API_TOKEN as string;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

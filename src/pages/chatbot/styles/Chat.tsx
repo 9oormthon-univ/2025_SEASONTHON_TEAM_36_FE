@@ -23,7 +23,7 @@ export const ChatbotChat = styled.div`
   flex-direction: column;
   max-width: 100%;
   word-break: break-word;
-  font-size: 18px;
+  font-size: var(--fs-lg);
   gap: 3px;
 `;
 
