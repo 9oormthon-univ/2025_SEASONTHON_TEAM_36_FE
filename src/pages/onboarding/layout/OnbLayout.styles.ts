@@ -1,6 +1,4 @@
-import styled, { keyframes } from "styled-components";
-// OnbLayout.styles.ts
-import { css } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 
 /* ================================
  * Z-INDEX & DIMENSIONS
@@ -74,7 +72,7 @@ const slideUp = keyframes`
 `;
 
 /* 간단 타이핑 효과 (글자 클리핑 + 커서 깜박임) */
-const typing = (chars: number) => keyframes`
+const typing = (_chars: number) => keyframes`
   from { clip-path: inset(0 100% 0 0); }
   to   { clip-path: inset(0 0    0 0); }
 `;

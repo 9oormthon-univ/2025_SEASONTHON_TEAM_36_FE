@@ -5,14 +5,14 @@ import OnbGoalHeader from "../components/OnbGoalHeader";
 
 export default function StepPlayingModal() {
   // ===== 타이머 상태 =====
-  const [isRunning, setIsRunning] = useState(true); // 재생/일시정지
+  const [isRunning, _setIsRunning] = useState(true); // 재생/일시정지
   const [baseElapsedMs, setBaseElapsedMs] = useState(0); // 누적 시간(ms), 일시정지 시 확정
   const resumeStartRef = useRef<number | null>(Date.now()); // 재개 기준 시각(ms)
   const intervalRef = useRef<number | null>(null);
   const [nowTs, setNowTs] = useState(Date.now());
 
   // 휴식 횟수: 일시정지 버튼 누를 때 +1
-  const [breakCount, setBreakCount] = useState(0);
+  const [breakCount, _setBreakCount] = useState(0);
 
   // 진행 중 경과 시간(ms) = base + (지금 - 재개시각)
   const liveElapsedMs = useMemo(() => {
@@ -114,10 +114,13 @@ export default function StepPlayingModal() {
         </Content>
 
         <BottomActions>
-          <CircleButton aria-label={isRunning ? "일시정지" : "재개"} onClick={() => {}}>
+          <CircleButton
+            aria-label={isRunning ? "일시정지" : "재개"}
+            onClick={e => e.stopPropagation()}
+          >
             {isRunning ? pauseIcon : playIcon}
           </CircleButton>
-          <ConfirmButton aria-label="완료" onClick={() => {}}>
+          <ConfirmButton aria-label="완료" onClick={e => e.stopPropagation()}>
             {confirmIcon}
           </ConfirmButton>
         </BottomActions>
