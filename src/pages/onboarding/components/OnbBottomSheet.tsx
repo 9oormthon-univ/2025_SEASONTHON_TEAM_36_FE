@@ -110,7 +110,9 @@ export default function OnbBottomSheet({
       tabIndex={open ? -1 : undefined}
       $size={panelSize}
       $open={open}
-      $z={stageId === "goal-frog" || stageId === "adjust-icon" ? 4 : 6} // 👈 추가
+      $z={
+        stageId === "chatbot-icon" || stageId === "goal-frog" || stageId === "adjust-icon" ? 4 : 6
+      } // 👈 추가
       initial="peek"
       animate={!open ? "peek" : isExpanded ? "expanded" : "open"}
       drag="y"
