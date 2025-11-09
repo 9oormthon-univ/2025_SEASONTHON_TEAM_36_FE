@@ -18,10 +18,10 @@ export const useChatForm = () => {
   const [buttonTexts, _] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
-  const [isReconnecting, setIsReconnecting] = useState<boolean>(false);
   const chatbotRef = useRef<EventSourcePolyfill | null>(null);
   const [chats, setChats] = useState<ChatType[]>([]);
   const isClosingRef = useRef<boolean>(false); // 의도적인 연결 종료 플래그
+  const visitedRef = useRef<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -46,7 +46,7 @@ export const useChatForm = () => {
               `${import.meta.env.VITE_API_BASE_URL}/api/v1/ai/connect?userId=${respUserInfo.userId}`,
               {
                 headers: {
-                  Authorization: `Bearer ${getAccessToken()}`,
+                  Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN as string}`,
                   Accept: "text/event-stream",
                 },
               },
@@ -56,16 +56,21 @@ export const useChatForm = () => {
               if (!isMounted) return;
               console.info("SSE message received:", event.data);
 
-              if (isReconnecting) {
-                console.info("Message received during reconnection - ignoring");
-                return;
-              }
-
               if (event.data === "✅ 응답 완료") {
                 return;
               }
 
               if (!event.data) return;
+              if (
+                isMounted &&
+                visitedRef.current &&
+                event.data ===
+                  "안녕! 🐸\n나는 함께 공부계획을 세워주는 개구리 ‘Rana’야!\n너가 목표를 세우고 달성할 때마다 나는 우물 밖 세상을 구경할 수 있어.\n나랑 함께 점프해볼래? 준비됐어?"
+              ) {
+                return;
+              } else {
+                visitedRef.current = true;
+              }
 
               let messageData = String(event.data);
 
@@ -91,50 +96,45 @@ export const useChatForm = () => {
                 content: messageData,
               };
               setChats(prev => [...prev, newChatbotChatInfo]);
-              setChatbotLoading(prev => !prev);
+              setChatbotLoading(false);
+              console.log(visitedRef.current);
             };
 
-            chatbotRef.current.onerror = _ => {
+            chatbotRef.current.onerror = errorEvent => {
               if (!isMounted) return;
 
-              // 의도적인 연결 종료가 아닌 경우에만 에러로 처리
-              if (!isClosingRef.current) {
-                console.error("SSE error:", event);
-
-                // EventSourcePolyfill의 에러 이벤트는 커스텀 구조를 가집니다
-                const errorEvent = event as Event & {
-                  type?: string;
-                  target?: EventSourcePolyfill;
-                  error?: Error;
-                };
-
-                // readyState를 먼저 확인 (상태 변경 전에 캡처)
-                const currentReadyState = errorEvent.target?.readyState;
-                console.info("ReadyState at error:", currentReadyState);
-
-                if (errorEvent.error) {
-                  console.error("Error details:", errorEvent.error.message);
-
-                  // "Reconnecting" 메시지가 포함되어 있으면 재연결 상태로 설정
-                  if (errorEvent.error.message.includes("Reconnecting")) {
-                    setIsReconnecting(true);
-                    console.info("SSE is reconnecting...");
-                  }
-                }
-
-                // readyState 설명:
-                // 0 = CONNECTING, 1 = OPEN, 2 = CLOSED
-                if (currentReadyState === 2) {
-                  console.info("Connection is CLOSED");
-                } else if (currentReadyState === 0) {
-                  console.info("Connection is CONNECTING (likely reconnecting)");
-                } else if (currentReadyState === 1) {
-                  console.info("Connection is OPEN");
-                }
-
-                // setIsError(true);
-              } else {
+              // 의도적인 연결 종료인 경우
+              if (isClosingRef.current) {
                 console.info("SSE connection closed intentionally");
+                setLoading(false);
+                return;
+              }
+
+              // errorEvent가 undefined인 경우는 타임아웃 또는 재연결 시도
+              if (!errorEvent || errorEvent === undefined) {
+                console.warn(
+                  "SSE connection timeout detected - closing connection to prevent duplicate messages",
+                );
+                // 타임아웃 발생 시 연결을 명시적으로 종료하여 재연결 방지
+                if (chatbotRef.current) {
+                  isClosingRef.current = true;
+                  chatbotRef.current.close();
+                  chatbotRef.current = null;
+                }
+                setLoading(false);
+                return;
+              }
+
+              // 실제 에러가 발생한 경우
+              console.error("SSE error:", errorEvent);
+              // 심각한 에러인 경우에만 에러 상태 설정
+              if (errorEvent && typeof errorEvent === "object" && "status" in errorEvent) {
+                const eventWithStatus = errorEvent as { status: number };
+                const status = eventWithStatus.status;
+                // 4xx, 5xx 에러인 경우에만 에러로 처리
+                if (status >= 400) {
+                  setIsError(true);
+                }
               }
               setLoading(false);
             };
@@ -142,11 +142,7 @@ export const useChatForm = () => {
             chatbotRef.current.onopen = () => {
               if (!isMounted) return;
               console.info("SSE connection opened");
-              if (isReconnecting) {
-                console.info("Reconnection successful - was in reconnecting state");
-              }
               setLoading(false);
-              setIsReconnecting(false); // 연결 성공 시 재연결 상태 해제
               isClosingRef.current = false; // 연결이 열리면 플래그 초기화
             };
           } catch (error) {
@@ -156,7 +152,7 @@ export const useChatForm = () => {
           }
         }
       } catch (error) {
-        console.error(error);
+        console.error("ETC 에러: ", error);
         // setIsError(true);
         setLoading(false);
       }
@@ -174,7 +170,7 @@ export const useChatForm = () => {
         chatbotRef.current = null;
       }
     };
-  }, [isReconnecting, navigate]);
+  }, [navigate]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -188,7 +184,7 @@ export const useChatForm = () => {
           };
           setChats(prev => [...prev, newUserChatInfo]);
           setUserChat("");
-          setChatbotLoading(prev => !prev);
+          setChatbotLoading(true);
         })
         .catch(error => console.error(error));
     }
@@ -210,8 +206,6 @@ export const useChatForm = () => {
     setChatbotLoading,
     isError,
     setIsError,
-    isReconnecting,
-    setIsReconnecting,
     chatbotRef,
     isClosingRef,
   };
