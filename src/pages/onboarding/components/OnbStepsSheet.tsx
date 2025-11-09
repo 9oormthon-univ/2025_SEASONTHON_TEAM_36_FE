@@ -16,7 +16,7 @@ const todaySteps = [
         stepId: 6,
         stepOrder: 6,
         stepDate: "2025-11-08",
-        description: "글 퇴고와 맞춤법 검사하기",
+        description: "글 검토하고 맞춤법 검사하기",
         isCompleted: false,
         state: "pause",
         id: 6,

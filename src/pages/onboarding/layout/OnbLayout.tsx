@@ -1,5 +1,5 @@
 // src/pages/home/onboarding/layout/OnbLayout.tsx
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import styled, { css, keyframes } from "styled-components";
 
@@ -9,7 +9,6 @@ import type { OnbStage } from "../engine/stages";
 
 export type SceneProps = {
   stage: OnbStage;
-  /** window 좌표 기준(getBoundingClientRect) */
   setSpotRect: (r: DOMRect | null) => void;
 };
 
@@ -19,7 +18,7 @@ export interface OnbLayoutProps {
   activeIndex?: number;
   onPrev?: () => void;
   onNext?: () => void;
-  onSkip?: () => void;
+  onSkip?: () => void; // (남겨두되 버튼은 제거)
 }
 
 export default function OnbLayout({
@@ -30,24 +29,20 @@ export default function OnbLayout({
   onNext,
   onSkip,
 }: OnbLayoutProps) {
-  // ✅ 훅 호출 순서 고정
   const [spotRect, setSpotRect] = useState<DOMRect | null>(null);
   const frameRef = useRef<HTMLDivElement>(null);
 
   const [portalEl, setPortalEl] = useState<HTMLElement | null>(null);
   useEffect(() => {
-    // 전용 포털 컨테이너 생성 (z-index 최상단)
     const el = document.createElement("div");
     el.setAttribute("id", "onb-portal");
     el.style.position = "relative";
-    el.style.zIndex = "2147483647"; // 진짜 최상단
+    el.style.zIndex = "2147483647";
     document.body.appendChild(el);
     setPortalEl(el);
 
-    // 스크롤 락
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-
     return () => {
       document.body.style.overflow = prevOverflow;
       document.body.removeChild(el);
@@ -57,19 +52,16 @@ export default function OnbLayout({
   const activeIndex = useMemo(() => extIndex ?? 0, [extIndex]);
   const stage = stages[activeIndex] ?? null;
   const showBigSiren = stage?.componentKey === "big-siren";
-  // ✅ stage id가 바뀌면 이전 하이라이트(dim) 즉시 제거
-  useEffect(() => {
-    setSpotRect(null);
-  }, [stage?.id]);
 
-  // 프레임 내부 좌표로 변환
+  useEffect(() => setSpotRect(null), [stage?.id]);
+
   const localSpot = useMemo(() => {
     if (!spotRect || !frameRef.current) return null;
     const fr = frameRef.current.getBoundingClientRect();
     return new DOMRect(spotRect.x - fr.x, spotRect.y - fr.y, spotRect.width, spotRect.height);
   }, [spotRect]);
 
-  // 키 네비
+  // --- 키 네비는 유지 ---
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onSkip?.();
@@ -80,27 +72,86 @@ export default function OnbLayout({
     return () => window.removeEventListener("keydown", onKey);
   }, [onPrev, onNext, onSkip]);
 
+  // ====== 새 로직: 인터랙션 시 한 번만 다음으로 이동 ======
+  const didAdvanceRef = useRef(false);
+  useEffect(() => {
+    didAdvanceRef.current = false; // 스테이지 진입마다 리셋
+  }, [stage?.id]);
+
+  const canAdvance = true; // stage.footer?.nextEnabled 없으면 true
+
+  const advanceNextIfAllowed = useCallback(() => {
+    if (didAdvanceRef.current) return;
+    if (!canAdvance) return;
+    didAdvanceRef.current = true;
+    onNext?.();
+  }, [canAdvance, onNext]);
+
   if (!stage || !portalEl) return null;
   const Scene = stage.sceneKey ? sceneMap[stage.sceneKey] : undefined;
 
+  // 프레임 안에서 특정 요소는 제외하고 싶을 때: data-onb-no-advance="true"
+  const shouldIgnoreTarget = (el: EventTarget | null) => {
+    let n = el as HTMLElement | null;
+    while (n) {
+      if (n.getAttribute && n.getAttribute("data-onb-no-advance") === "true") return true;
+      n = n.parentElement;
+    }
+    return false;
+  };
+
+  // Root 배경 클릭으로 좌/우 반 화면 네비게이션
+  const handleRootClick = (e: React.MouseEvent) => {
+    // 프레임 내부 클릭이면 무시 (프레임 컨테이너에서 stopPropagation 함)
+    const x = e.clientX;
+    const mid = window.innerWidth / 2;
+    if (x < mid) onPrev?.();
+    else advanceNextIfAllowed();
+  };
+
+  // 프레임 내부 "어느 인터랙션이든" 다음으로 진행
+  // PointerDown이 대부분의 터치/클릭을 커버. 입력은 input/change/keydown Enter 보강.
+  const onFramePointerDown = (e: React.PointerEvent) => {
+    if (shouldIgnoreTarget(e.target)) return;
+    advanceNextIfAllowed();
+  };
+  const onFrameKeyDown = (e: React.KeyboardEvent) => {
+    if (shouldIgnoreTarget(e.target)) return;
+    if (e.key === "Enter" || e.key === " ") advanceNextIfAllowed();
+  };
+  const onFrameInput = (e: React.FormEvent) => {
+    if (shouldIgnoreTarget(e.target)) return;
+    advanceNextIfAllowed();
+  };
+  const onFrameWheel = (e: React.WheelEvent) => {
+    if (shouldIgnoreTarget(e.target)) return;
+    advanceNextIfAllowed();
+  };
+
   return createPortal(
-    <Root $transparentBg={showBigSiren}>
-      {/* 액자 프레임 */}
+    <Root $transparentBg={showBigSiren} onClick={handleRootClick}>
       <FrameWrap>
-        <Frame ref={frameRef} aria-label="Onboarding Frame">
+        <Frame
+          ref={frameRef}
+          aria-label="Onboarding Frame"
+          // 프레임 내부 클릭은 루트로 버블링되지 않게
+          onClick={e => e.stopPropagation()}
+          onPointerDown={onFramePointerDown}
+          onKeyDown={onFrameKeyDown}
+          onInput={onFrameInput}
+          onWheel={onFrameWheel}
+          tabIndex={-1} // 키 이벤트 받기 위함
+        >
           {Scene ? (
             <Scene key={stage.id} stage={stage} setSpotRect={setSpotRect} />
           ) : (
             <FramePlaceholder>sceneKey가 없습니다.</FramePlaceholder>
           )}
 
-          {/* 프레임 내부 오버레이(펄스/가이드 등) */}
           <FrameOverlay>
-            {/* 하이라이트 사각형을 제외하고 프레임 내부를 은은히 덮는 딤 */}
             {localSpot && (
               <SpotDim $rect={localSpot} $radius={stage.componentKey === "goal-card" ? 12 : 9999} />
             )}
-
             {stage.pulse && localSpot ? <Pulse $rect={localSpot} /> : null}
             {stage.placement === "center" && stage.body ? (
               <CenterBubble>
@@ -115,12 +166,11 @@ export default function OnbLayout({
                 <SpotBubble $rect={localSpot}>AI 개구리 ‘Rana’</SpotBubble>
               </>
             ) : null}
-
-            {/* (필요 시) goal-card, bottom-sheet 케이스도 동일 패턴으로 추가 가능 */}
           </FrameOverlay>
+
           {showBigSiren && (
             <>
-              <DimOverlay /> {/* 모바일 화면 전체를 가림 (root bg 변경 없음) */}
+              <DimOverlay />
               <CenterSiren role="img" aria-label="긴급 경고 사이렌">
                 <img src={bigSiren} alt="" />
               </CenterSiren>
@@ -129,46 +179,26 @@ export default function OnbLayout({
         </Frame>
       </FrameWrap>
 
-      {/* 하단 바(포털 상단에 있으므로 바텀시트/탭바 위로 올라옴) */}
-      <BottomBar role="region" aria-label="Onboarding hint">
-        <BarInner>
-          <HintText>{stage.body}</HintText>
-          <BarActions>
-            {onPrev ? <BarBtn onClick={onPrev}>이전</BarBtn> : null}
-            {onSkip ? (
-              <BarBtn $ghost onClick={onSkip}>
-                건너뛰기
-              </BarBtn>
-            ) : null}
-            {onNext ? (
-              <BarBtn $primary onClick={onNext}>
-                다음
-              </BarBtn>
-            ) : null}
-          </BarActions>
-        </BarInner>
-      </BottomBar>
+      {/* <BottomBar role="region" aria-label="Onboarding hint"> */}
+      {/* <BarInner> */}
+      <HintText className="typo-h4">{stage.body}</HintText>
+      {/* </BarInner> */}
+      {/* </BottomBar> */}
     </Root>,
     portalEl,
   );
 }
 
-/* ---------- helpers ---------- */
-// function useBubblePositionInFrame(_rect: DOMRect | null, _placement: Placement) {
-//   // 현재는 center만 쓰므로 생략 가능. 필요 시 확장.
-//   return { leftInFrame: 0, topInFrame: 0 };
-// }
-
-/* ---------- styles ---------- */
+/* ---------- styles (아래 기존과 동일) ---------- */
 const Root = styled.div<{ $transparentBg?: boolean }>`
   position: fixed;
   inset: 0;
   display: grid;
   grid-template-rows: 1fr auto;
-
-  /* showBigSiren일 때 투명, 아닐 때 기존 딤/블러 */
   background: ${p => (p.$transparentBg ? "transparent" : "rgba(17, 24, 39, 0.85)")};
   backdrop-filter: ${p => (p.$transparentBg ? "none" : "blur(2px)")};
+  /* 전체 영역 클릭 가능하므로 커서 힌트(선택): */
+  cursor: pointer;
 `;
 
 const FrameWrap = styled.div`
@@ -187,6 +217,10 @@ const Frame = styled.div`
     0 24px 60px rgba(0, 0, 0, 0.45),
     0 0 0 2px rgba(0, 0, 0, 0.06) inset;
   overflow: hidden;
+  /* 내부 인터랙션 활성화를 위한 포커스 가능 */
+  outline: none;
+  cursor: default;
+  margin-top: auto;
 `;
 
 const FrameOverlay = styled.div`
@@ -225,14 +259,17 @@ const BarInner = styled.div`
 `;
 
 const HintText = styled.div`
-  background: #0b1220;
-  color: #e5e7eb;
-  border: 1px solid #334155;
-  border-radius: 16px;
-  padding: 10px 14px;
-  font-size: 14px;
-  line-height: 1.45;
-  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.35);
+  background: transparent;
+  color: var(--text-w1, #fff);
+  border: none;
+  padding: 12px;
+  height: 10vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 7vh;
+  word-break: keep-all;
 `;
 
 const BarActions = styled.div`

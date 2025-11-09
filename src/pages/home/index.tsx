@@ -2,6 +2,7 @@
 import { useEffect, useMemo } from "react";
 import styled from "styled-components";
 
+import OnboardingScenes from "../onboarding/scenes";
 import CardsCarousel from "./components/CardsCarousel";
 import ChatbotBtn from "./components/ChatbotBtn";
 import DateView from "./components/DateView";
@@ -12,7 +13,6 @@ import { useFetchSteps } from "./hooks/useFetchSteps";
 import { useActiveGoalStore } from "./store/useActiveGoalStore";
 import { useBottomSheetStore } from "./store/useBottomSheetStore";
 import { useBindGoalsStore, useGoalsStore } from "./store/useGoalsStore";
-import { getAccessToken } from "@/common/utils/token";
 
 // styled-components transient props
 export interface BodyStyledProps {
@@ -73,9 +73,9 @@ export default function HomePage() {
       </Page>
     );
   }
-  console.log(getAccessToken());
   return (
     <Page>
+      <OnboardingScenes />
       <ChatbotBtn isSheetOpen={isSheetOpen} />
       {!isSheetOpen && <TopSpacing />}
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>

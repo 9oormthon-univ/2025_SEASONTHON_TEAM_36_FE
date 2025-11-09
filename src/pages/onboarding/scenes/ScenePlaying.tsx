@@ -25,7 +25,7 @@ export default function StepPlayingModal({ onConfirm, onPause, record }: StepPla
       <Body>
         <HeaderWrapper>
           <OnbGoalHeader />
-          <Title className="typo-h3">글 퇴고와 맞춤법 검사하기</Title>
+          <Title className="typo-h3">글 검토하고 맞춤법 검사하기</Title>
         </HeaderWrapper>
 
         <Content role="region" aria-label="step 진행 중">

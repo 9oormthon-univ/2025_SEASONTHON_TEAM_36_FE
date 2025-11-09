@@ -133,7 +133,7 @@ export default function GoalCard({ goal, shrink = 1 }: GoalCardProps) {
 const Container = styled.div<ContainerProps>`
   background: var(--bg-1);
   color: inherit;
-  width: ${p => 80 * p.$shrink}%;
+  width: ${p => 78 * p.$shrink}%;
   aspect-ratio: 4 / 4.2;
   max-height: calc(100% - 24px);
   margin: 0 auto 0;

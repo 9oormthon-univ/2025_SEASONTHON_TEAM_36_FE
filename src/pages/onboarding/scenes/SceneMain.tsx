@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
+import OnbChatbotBtn from "../components/OnbChatBotBtn";
 import OnbDateView from "../components/OnbDateView";
 import OnbEmptyState from "../components/OnbEmptyState";
 import OnbGoalCard from "../components/OnbGoalCard";
@@ -47,7 +48,7 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
   const refGoalCard = useRef<HTMLDivElement>(null);
   const refSheet = useRef<HTMLDivElement>(null);
   const refGoalHeaderSiren = useRef<HTMLButtonElement>(null);
-  const refPlayBtn = useRef<HTMLElement>(null);
+  const refPlayBtn = useRef<HTMLButtonElement>(null);
 
   // siren 버튼의 rect 별도 보관 (화면에 오버레이 표시용)
   const [sirenRect, setSirenRect] = useState<DOMRect | null>(null);
@@ -98,7 +99,13 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
 
   return (
     <Page>
-      {/* === 본문 === */}
+      <OnbChatbotBtn
+        ref={refChatbot}
+        onClick={() => {}}
+        isSheetOpen={isSheetOpen}
+        className="onb-chatbot-spot"
+      />
+      {!isSheetOpen && <TopSpacing />}
       <Body $sheetHeight={sheetHeight} $shrink={shrink}>
         <OnbDateView />
         {hasGoals ? (
@@ -116,13 +123,14 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
               todoType: "HOMEWORK",
             }}
             shrink={shrink}
-            isUrgent={highlightGoalHeaderSiren}
-            sirenRef={refGoalHeaderSiren} // ✅ 시렌 버튼 ref 전달
+            isUrgent={highlightGoalHeaderSiren || stage.id === "adjust" || stage.id === "siren"}
+            sirenRef={refGoalHeaderSiren}
           />
         ) : (
           <OnbEmptyState />
         )}
       </Body>
+      <BottomSpacing />
 
       {/* === 바텀시트 === */}
       {hasGoals && (
@@ -160,6 +168,21 @@ const Body = styled.div<{ $sheetHeight: number; $shrink: number }>`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+const TopSpacing = styled.div`
+  height: calc(14px + env(safe-area-inset-top, 0px));
+  @media (min-height: 700px) {
+    height: calc(24px + env(safe-area-inset-top, 0px));
+  }
+  width: 100%;
+`;
+const BottomSpacing = styled.div`
+  height: calc(54px + env(safe-area-inset-bottom, 0px));
+  @media (min-height: 700px) {
+    height: calc(90px + env(safe-area-inset-bottom, 0px));
+  }
+  width: 100%;
 `;
 
 const OverlayLayer = styled.div`
