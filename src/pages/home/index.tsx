@@ -99,18 +99,29 @@ export default function HomePage() {
 }
 
 const Page = styled.section`
-  position: fixed;
-  inset: 0;
+  position: relative;
+  inset: auto;
   width: 100%;
-  height: 100dvh; /* iOS 주소창 변동 대응 */
+  /* 최신 iOS: 주소창 변동에도 안정적인 svh 사용 + 폴백 */
+  height: 100vh; /* 폴백 */
+  min-height: 100vh; /* 폴백 */
+  @supports (height: 100svh) {
+    height: 100svh;
+    min-height: 100svh;
+  }
   background: var(--bg-2);
   color: var(--text-1);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden; /* 바깥 스크롤 막기 */
-  overscroll-behavior: none; /* iOS 일부 버전은 무시해도 무해 */
+  /* iOS PWA 버그 회피: Y 스크롤은 허용하고 X만 숨김 */
+  overflow-x: hidden;
+  overflow-y: visible;
+  /* 노치/홈 인디케이터 안전 영역 */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  overscroll-behavior: contain;
 `;
 
 const Body = styled.div<BodyStyledProps>`
