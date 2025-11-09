@@ -30,4 +30,5 @@ export const Screen = styled.div<{ $show: boolean }>`
   animation: ${fadeOut} 1.5s forwards;
   position: absolute;
   background-color: white;
+  width: 100%;
 `;
