@@ -8,6 +8,9 @@ export const Wrapper = styled.div`
   gap: 20px;
   padding: 0 1rem;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 `;
 
 export const Icon = styled.div`
