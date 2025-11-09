@@ -1,15 +1,17 @@
+import styled from "styled-components";
+
 import kakaoLoginImg from "@/assets/images/kakao-login-medium-wide.svg";
 
 import AppLogoImg from "../../../assets/images/app-logo-frog.png";
 import AppTitleImg from "../../../assets/images/app-title.png";
-import { AppLogos, Screen } from "../styles/Login";
+import { AppLogo, AppLogos, AppTitle, Screen } from "../styles/Login";
 
 const LoginScreen = () => {
   return (
     <Screen>
       <AppLogos>
-        <img src={AppLogoImg} alt="개구리 얼굴" width="262" />
-        <img src={AppTitleImg} alt="우물 밖 개구리" width="224" />
+        <AppLogo src={AppLogoImg as string} alt="개구리 얼굴" />
+        <AppTitle src={AppTitleImg as string} alt="우물 밖 개구리" />
       </AppLogos>
       <button
         onClick={() => {
