@@ -1,18 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 import WellImg from "@/assets/images/well.png";
 
-import { Button, Message, Page } from "./styles/SignUp";
-
-const OutOfWell = styled.img`
-  width: 100%;
-  max-width: 208px;
-`;
-
-const Wrapper = styled.div`
-  text-align: center;
-`;
+import { Button, Message, OutOfWell, Page, Wrapper } from "./styles/SignUp";
 
 const SignUpDone = () => {
   const navigate = useNavigate();

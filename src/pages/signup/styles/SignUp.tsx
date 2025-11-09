@@ -9,6 +9,10 @@ export const Page = styled.div`
   gap: 8%;
 `;
 
+export const Wrapper = styled.div`
+  text-align: center;
+`;
+
 export const Message = styled.h3`
   white-space: pre-line;
   color: #6f737b;
@@ -27,4 +31,9 @@ export const Button = styled.button`
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 24px;
+`;
+
+export const OutOfWell = styled.img`
+  width: 100%;
+  max-width: 208px;
 `;
