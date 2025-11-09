@@ -4,72 +4,72 @@ import type { RespTodoSteps } from "@/common/types/response/step";
 
 /** ====== 개발용 Fallback (더미) 데이터 ====== */
 const DUMMY_STEPS: Record<number, RespTodoSteps> = {
-  101: {
-    dDay: "D-5",
-    title: "React 공부하기",
-    endDate: "2025-10-27",
-    progressText: "개구리가 햇빛을 보기 시작했어요!",
-    progress: 45,
-    steps: [
-      {
-        todoId: 101,
-        todoTitle: "React 공부하기",
-        stepId: 1,
-        stepDate: "2025-10-20",
-        description: "Hooks 복습하기",
-        isCompleted: false,
-      },
-      {
-        todoId: 101,
-        todoTitle: "React 공부하기",
-        stepId: 2,
-        stepDate: "2025-10-20",
-        description: "Zustand 상태 관리 연습하기",
-        isCompleted: false,
-      },
-      {
-        todoId: 101,
-        todoTitle: "React 공부하기",
-        stepId: 3,
-        stepDate: "2025-10-24",
-        description: "Context API 정리",
-        isCompleted: false,
-      },
-    ],
-  },
-  102: {
-    dDay: "D-2",
-    title: "운동 루틴 만들기",
-    endDate: "2025-10-24",
-    progressText: "개구리가 햇빛을 보기 시작했어요!",
-    progress: 70,
-    steps: [
-      {
-        todoId: 102,
-        todoTitle: "운동 루틴 만들기",
-        stepId: 1,
-        stepDate: "2025-10-21",
-        description: "스트레칭 정리",
-        isCompleted: false,
-      },
-      {
-        todoId: 102,
-        todoTitle: "운동 루틴 만들기",
-        stepId: 2,
-        stepDate: "2025-10-22",
-        description: "상체 루틴 설계",
-        isCompleted: false,
-      },
-      {
-        todoId: 102,
-        todoTitle: "운동 루틴 만들기",
-        stepId: 3,
-        stepDate: "2025-10-22",
-        description: "하체 루틴 추가",
-        isCompleted: false,
-      },
-    ],
-  },
+  // 101: {
+  //   dDay: "D-5",
+  //   title: "React 공부하기",
+  //   endDate: "2025-10-27",
+  //   progressText: "개구리가 햇빛을 보기 시작했어요!",
+  //   progress: 45,
+  //   steps: [
+  //     {
+  //       todoId: 101,
+  //       todoTitle: "React 공부하기",
+  //       stepId: 1,
+  //       stepDate: "2025-10-20",
+  //       description: "Hooks 복습하기",
+  //       isCompleted: false,
+  //     },
+  //     {
+  //       todoId: 101,
+  //       todoTitle: "React 공부하기",
+  //       stepId: 2,
+  //       stepDate: "2025-10-20",
+  //       description: "Zustand 상태 관리 연습하기",
+  //       isCompleted: false,
+  //     },
+  //     {
+  //       todoId: 101,
+  //       todoTitle: "React 공부하기",
+  //       stepId: 3,
+  //       stepDate: "2025-10-24",
+  //       description: "Context API 정리",
+  //       isCompleted: false,
+  //     },
+  //   ],
+  // },
+  // 102: {
+  //   dDay: "D-2",
+  //   title: "운동 루틴 만들기",
+  //   endDate: "2025-10-24",
+  //   progressText: "개구리가 햇빛을 보기 시작했어요!",
+  //   progress: 70,
+  //   steps: [
+  //     {
+  //       todoId: 102,
+  //       todoTitle: "운동 루틴 만들기",
+  //       stepId: 1,
+  //       stepDate: "2025-10-21",
+  //       description: "스트레칭 정리",
+  //       isCompleted: false,
+  //     },
+  //     {
+  //       todoId: 102,
+  //       todoTitle: "운동 루틴 만들기",
+  //       stepId: 2,
+  //       stepDate: "2025-10-22",
+  //       description: "상체 루틴 설계",
+  //       isCompleted: false,
+  //     },
+  //     {
+  //       todoId: 102,
+  //       todoTitle: "운동 루틴 만들기",
+  //       stepId: 3,
+  //       stepDate: "2025-10-22",
+  //       description: "하체 루틴 추가",
+  //       isCompleted: false,
+  //     },
+  //   ],
+  // },
 };
 
 /** ====== Zustand Store Shape ====== */
