@@ -54,7 +54,6 @@ export const useChatForm = () => {
 
             chatbotRef.current.onmessage = (event: MessageEvent) => {
               if (!isMounted) return;
-              console.info("SSE message received:", event.data);
 
               if (event.data === "✅ 응답 완료") {
                 return;
@@ -80,7 +79,6 @@ export const useChatForm = () => {
               if (match && match[1] && match[2]) {
                 messageData = match[1].trim();
                 const todoId = parseInt(match[2], 10);
-                console.info("TodoId detected:", todoId);
                 // todoId를 사용한 추가 로직을 여기에 구현
                 setTimeout(() => {
                   void navigate("/chatbot/result", {
@@ -97,7 +95,6 @@ export const useChatForm = () => {
               };
               setChats(prev => [...prev, newChatbotChatInfo]);
               setChatbotLoading(false);
-              console.log(visitedRef.current);
             };
 
             chatbotRef.current.onerror = errorEvent => {
@@ -105,7 +102,6 @@ export const useChatForm = () => {
 
               // 의도적인 연결 종료인 경우
               if (isClosingRef.current) {
-                console.info("SSE connection closed intentionally");
                 setLoading(false);
                 return;
               }
@@ -141,7 +137,6 @@ export const useChatForm = () => {
 
             chatbotRef.current.onopen = () => {
               if (!isMounted) return;
-              console.info("SSE connection opened");
               setLoading(false);
               isClosingRef.current = false; // 연결이 열리면 플래그 초기화
             };
@@ -152,7 +147,7 @@ export const useChatForm = () => {
           }
         }
       } catch (error) {
-        console.error("ETC 에러: ", error);
+        console.error(error);
         // setIsError(true);
         setLoading(false);
       }
@@ -164,7 +159,6 @@ export const useChatForm = () => {
     return () => {
       isMounted = false;
       if (chatbotRef.current) {
-        console.info("Closing SSE connection");
         isClosingRef.current = true; // 의도적인 종료임을 표시
         chatbotRef.current.close();
         chatbotRef.current = null;
