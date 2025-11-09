@@ -13,7 +13,7 @@ interface PanelProps {
 export const Backdrop = styled.div`
   position: fixed;
   inset: 0 0 var(--navbar-height, 0px) 0;
-  z-index: 900;
+  z-index: 100;
   touch-action: none;
   overscroll-behavior: none;
 `;
@@ -45,7 +45,7 @@ export const Panel = styled(motion.div)<PanelProps>`
 /** GrabHandle */
 export const GrabHandle = styled.div`
   position: absolute;
-  z-index: 2;
+  z-index: 200;
   inset: 0 0 auto 0; /* 상단 가로 전체 영역 */
   height: 56px;
   display: grid;
