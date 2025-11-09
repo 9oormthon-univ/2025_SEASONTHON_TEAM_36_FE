@@ -154,63 +154,72 @@ export default function OnbLayout({
 
   /** ===== 최종 렌더(Portal) ===== */
   return createPortal(
-    <Root $transparentBg={showBigSiren} onClick={handleRootClick}>
+    <Root $transparentBg={showBigSiren || stage.id === "end"} onClick={handleRootClick}>
+      {stage.id === "end" && <DimOverlay />}
       {/* === 프레임 (앱 미리보기 캔버스) === */}
-      <FrameWrap>
-        <Frame
-          ref={frameRef}
-          aria-label="Onboarding Frame"
-          onClick={e => e.stopPropagation()} // 프레임 내부 클릭은 루트로 버블링 방지
-          onPointerDown={onFramePointerDown}
-          onKeyDown={onFrameKeyDown}
-          onInput={onFrameInput}
-          onWheel={onFrameWheel}
-          tabIndex={-1} // 키 이벤트 수신
-        >
-          {Scene ? (
-            <Scene
-              key={stage.id}
-              stage={stage}
-              setSpotRect={setSpotRect}
-              /** 다중 스팟 보고 콜백 전달 */
-              setOverlaySpots={setOverlaySpots}
-            />
-          ) : (
-            <FramePlaceholder>sceneKey가 없습니다.</FramePlaceholder>
-          )}
-
-          {/* 프레임 내부 오버레이(로컬 스팟) */}
-          <FrameOverlay>
-            {localSpot && (
-              <SpotDimLocal
-                $rect={localSpot}
-                $radius={stage.componentKey === "goal-card" ? 12 : 9999}
+      {/* === 프레임 (앱 미리보기 캔버스) === */}
+      {stage.id !== "end" && (
+        <FrameWrap>
+          <Frame
+            ref={frameRef}
+            aria-label="Onboarding Frame"
+            onClick={e => e.stopPropagation()}
+            onPointerDown={onFramePointerDown}
+            onKeyDown={onFrameKeyDown}
+            onInput={onFrameInput}
+            onWheel={onFrameWheel}
+            tabIndex={-1}
+          >
+            {Scene ? (
+              <Scene
+                key={stage.id}
+                stage={stage}
+                setSpotRect={setSpotRect}
+                setOverlaySpots={setOverlaySpots}
               />
+            ) : (
+              <FramePlaceholder>sceneKey가 없습니다.</FramePlaceholder>
             )}
-            {stage.pulse && localSpot ? <Pulse $rect={localSpot} /> : null}
 
-            {stage.componentKey === "chatbot" && localSpot ? (
+            {/* 프레임 내부 오버레이(로컬 스팟) */}
+            <FrameOverlay>
+              {localSpot && (
+                <SpotDimLocal
+                  $rect={localSpot}
+                  $radius={stage.componentKey === "goal-card" ? 12 : 9999}
+                />
+              )}
+              {stage.pulse && localSpot ? <Pulse $rect={localSpot} /> : null}
+
+              {stage.componentKey === "chatbot" && localSpot ? (
+                <>
+                  <DottedCircleLocal $rect={localSpot} />
+                  <SpotBubbleLocal $rect={localSpot}>AI 개구리 ‘Rana’</SpotBubbleLocal>
+                </>
+              ) : null}
+            </FrameOverlay>
+
+            {/* 빅 사이렌 모드 */}
+            {showBigSiren && (
               <>
-                <DottedCircleLocal $rect={localSpot} />
-                <SpotBubbleLocal $rect={localSpot}>AI 개구리 ‘Rana’</SpotBubbleLocal>
+                <DimOverlay />
+                <CenterSiren role="img" aria-label="긴급 경고 사이렌">
+                  <img src={bigSiren} alt="" />
+                </CenterSiren>
               </>
-            ) : null}
-          </FrameOverlay>
-
-          {/* 빅 사이렌 모드: 프레임 뒤 전체 디밍 + 중앙 사이렌 */}
-          {showBigSiren && (
-            <>
-              <DimOverlay />
-              <CenterSiren role="img" aria-label="긴급 경고 사이렌">
-                <img src={bigSiren} alt="" />
-              </CenterSiren>
-            </>
-          )}
-        </Frame>
-      </FrameWrap>
-
+            )}
+          </Frame>
+        </FrameWrap>
+      )}
+      {(showBigSiren || stage.id === "end") && <HintSpacer />}
       {/* 하단 힌트 텍스트(앱 UI 위) */}
-      <HintText className="typo-h4">{stage.body}</HintText>
+      <HintText
+        className="typo-h4"
+        $centered={showBigSiren || stage.id === "end"}
+        $isSiren={showBigSiren}
+      >
+        {stage.body}
+      </HintText>
 
       {/* === 전역 다중 스팟 오버레이(윈도우 고정 좌표) === */}
       <OverlayLayer aria-hidden>
@@ -272,22 +281,41 @@ const FramePlaceholder = styled.div`
 `;
 
 /* 하단 힌트 텍스트 */
-const HintText = styled.div`
+const HintText = styled.div<{ $centered?: boolean; $isSiren?: boolean }>`
   background: transparent;
   color: var(--text-w1, #fff);
   border: none;
   padding: 12px;
-  height: 10vh;
+  text-align: center;
+  word-break: keep-all;
+  white-space: pre-line;
+  z-index: 50;
+  position: ${p => (p.$centered ? "fixed" : "relative")};
+  left: 0;
+  right: 0;
+
+  /* 일반 상태: 화면 하단 근처 */
+  height: ${p => (p.$centered ? "auto" : "10vh")};
+  margin-bottom: ${p => (p.$centered ? "0" : "7vh")};
   display: flex;
   flex-direction: column;
   justify-content: center;
-  text-align: center;
-  margin-bottom: 7vh;
-  word-break: keep-all;
-  z-index: 50;
-  position: relative;
-`;
 
+  /* 중앙 또는 약간 아래 정렬 */
+  top: ${p =>
+    p.$centered
+      ? p.$isSiren
+        ? "65%" // 사이렌 있을 때 글씨 살짝 아래로
+        : "50%" // 일반 end 상태는 정확히 중앙
+      : "auto"};
+  transform: ${p => (p.$centered ? "translateY(-50%)" : "none")};
+`;
+/* 하단 공간 보존용 스페이서 */
+const HintSpacer = styled.div`
+  /* 일반 하단 힌트의 height(10vh) + margin-bottom(7vh) = 17vh */
+  height: 17vh;
+  /* grid row #2를 차지하도록 기본 흐름에 두면 됩니다 */
+`;
 /* 프레임 내부 하이라이트(펄스) */
 const pulseKey = keyframes`
   0% { opacity: .6; transform: scale(.98); }
@@ -365,7 +393,7 @@ const SpotDimLocal = styled.div<{ $rect: DOMRect; $radius?: number }>`
 const DimOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.9);
   z-index: 7;
   pointer-events: none;
 `;
@@ -381,13 +409,14 @@ const pulse = keyframes`
 const CenterSiren = styled.figure`
   position: fixed;
   left: 39%;
-  top: 50%;
+  top: 45%; /* 기존 50% → 살짝 위로 이동 */
   width: min(28vw, 320px);
   z-index: 9999;
   transform: translate(-50%, -50%);
   margin: 0;
   padding: 0;
   animation: ${pulse} 1.4s ease-in-out infinite;
+  pointer-events: none;
 
   > img {
     display: block;
@@ -431,6 +460,7 @@ const SpotBubbleFixed = styled.div<{ $rect: DOMRect }>`
   box-shadow: 0 8px 24px rgba(2, 6, 23, 0.25);
   border: 1px solid rgba(15, 23, 42, 0.08);
   z-index: 2147483647;
+  pointer-events: none;
 `;
 
 const SpotDimFixed = styled.div<{ $rect: DOMRect; $radius?: number }>`
@@ -448,4 +478,5 @@ const SpotDimFixed = styled.div<{ $rect: DOMRect; $radius?: number }>`
     width 0.06s linear,
     height 0.06s linear;
   z-index: 2147483646;
+  pointer-events: none;
 `;

@@ -1,22 +1,9 @@
 import styled from "styled-components";
 
-import { RespStepRecord } from "@/common/types/response/step";
-
 import OnbGoalHeader from "../components/OnbGoalHeader";
 
-// import GoalHeader from "../components/GoalHeader";
-
-interface StepPlayingModalProps {
-  open: boolean;
-  onClose?: () => void;
-  onConfirm?: () => void | Promise<void>;
-  onPause?: () => void | Promise<void>;
-  record?: RespStepRecord | null; // 🐸 추가
-  stepDescription?: string; // 🐸 추가
-}
-
-export default function StepPlayingModal({ onConfirm, onPause, record }: StepPlayingModalProps) {
-  const breakCountText = record?.breakCount != null ? String(record.breakCount) : "0";
+export default function StepPlayingModal() {
+  const breakCountText = "0";
 
   const colortoken = "var(--green-200)";
 
@@ -42,10 +29,10 @@ export default function StepPlayingModal({ onConfirm, onPause, record }: StepPla
           </GaugeArea>
         </Content>
         <BottomActions>
-          <CircleButton aria-label="일시정지" onClick={() => void onPause?.()}>
+          <CircleButton aria-label="일시정지" onClick={() => {}}>
             {pauseIcon}
           </CircleButton>
-          <ConfirmButton aria-label="완료" onClick={() => void onConfirm?.()}>
+          <ConfirmButton aria-label="완료" onClick={() => {}}>
             {confirmIcon}
           </ConfirmButton>
         </BottomActions>
