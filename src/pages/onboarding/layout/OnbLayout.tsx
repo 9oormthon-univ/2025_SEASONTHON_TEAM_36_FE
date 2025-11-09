@@ -12,6 +12,7 @@ import {
   FrameOverlay,
   FramePlaceholder,
   FrameWrap,
+  HintAnim,
   HintSpacer,
   HintText,
   OverlayLayer,
@@ -117,21 +118,21 @@ export default function OnbLayout({
     advanceNextIfAllowed();
   };
   // 루트 배경 클릭 → 좌/우 반 화면 네비
-  const handleRootClick = useCallback(
-    (e: React.MouseEvent) => {
-      const x = e.clientX;
-      const mid = window.innerWidth / 2;
-      if (x < mid) onPrev?.();
-      else advanceNextIfAllowed();
-    },
-    [advanceNextIfAllowed, onPrev],
-  );
+  // const handleRootClick = useCallback(
+  //   (e: React.MouseEvent) => {
+  //     const x = e.clientX;
+  //     const mid = window.innerWidth / 2;
+  //     if (x < mid) onPrev?.();
+  //     else advanceNextIfAllowed();
+  //   },
+  //   [advanceNextIfAllowed, onPrev],
+  // );
 
   if (!stage || !portalEl) return null;
   const Scene = stage.sceneKey ? sceneMap[stage.sceneKey] : undefined;
 
   return createPortal(
-    <Root $transparentBg={showBigSiren || stage.id === "end"} onClick={handleRootClick}>
+    <Root $transparentBg={showBigSiren || stage.id === "end"} onClick={advanceNextIfAllowed}>
       {onSkip && stage.id !== "end" && (
         <SkipBtn
           type="button"
@@ -212,6 +213,9 @@ export default function OnbLayout({
         className="typo-h4"
         $centered={showBigSiren || stage.id === "end"}
         $isSiren={showBigSiren}
+        $anim={(stage.hintAnim as HintAnim) ?? "fade-up"}
+        $durationMs={stage.hintDurationMs ?? 600}
+        $delayMs={0}
       >
         {stage.body}
       </HintText>

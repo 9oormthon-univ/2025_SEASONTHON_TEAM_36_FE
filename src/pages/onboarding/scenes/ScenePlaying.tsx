@@ -80,29 +80,6 @@ export default function StepPlayingModal() {
     };
   }, []);
 
-  // 일시정지/재개 토글
-  const togglePause = () => {
-    if (isRunning) {
-      // 일시정지: 현재까지의 경과를 base에 반영
-      if (resumeStartRef.current != null) {
-        setBaseElapsedMs(prev => prev + (Date.now() - (resumeStartRef.current as number)));
-      }
-      resumeStartRef.current = null;
-      setIsRunning(false);
-      setBreakCount(c => c + 1); // 휴식 +1
-    } else {
-      // 재개
-      resumeStartRef.current = Date.now();
-      setIsRunning(true);
-    }
-  };
-
-  // 완료(확정) 버튼: 필요 시 콜백 연결
-  const confirm = () => {
-    // 여기서 API 호출/상태 리셋 등 처리
-    // 예: setIsRunning(false);
-  };
-
   // 경과시간 포맷터(hh:mm:ss)
   const timerText = useMemo(() => {
     const total = Math.max(0, Math.floor(liveElapsedMs / 1000));
@@ -137,10 +114,10 @@ export default function StepPlayingModal() {
         </Content>
 
         <BottomActions>
-          <CircleButton aria-label={isRunning ? "일시정지" : "재개"} onClick={togglePause}>
+          <CircleButton aria-label={isRunning ? "일시정지" : "재개"} onClick={() => {}}>
             {isRunning ? pauseIcon : playIcon}
           </CircleButton>
-          <ConfirmButton aria-label="완료" onClick={confirm}>
+          <ConfirmButton aria-label="완료" onClick={() => {}}>
             {confirmIcon}
           </ConfirmButton>
         </BottomActions>

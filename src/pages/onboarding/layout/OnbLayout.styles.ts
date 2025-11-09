@@ -1,4 +1,6 @@
 import styled, { keyframes } from "styled-components";
+// OnbLayout.styles.ts
+import { css } from "styled-components";
 
 /* ================================
  * Z-INDEX & DIMENSIONS
@@ -9,7 +11,7 @@ const Z = {
   skipBtn: 2147483647,
   siren: 9999,
   dim: 7,
-  frameOverlay: 10,
+  frameOverlay: 5,
   hint: 50,
 };
 
@@ -48,6 +50,50 @@ const sirenPulse = keyframes`
   50% { transform: translate(-50%, -50%) scale(1.04); opacity: 0.95; }
   100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 `;
+
+/* ===== Animations ===== */
+const fadeUp = keyframes`
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+`;
+
+const floatY = keyframes`
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+`;
+
+const pulse = keyframes`
+  0%,100% { transform: scale(1);    opacity: 1; }
+  50%     { transform: scale(1.03); opacity: .95; }
+`;
+
+const slideUp = keyframes`
+  0%   { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0);    opacity: 1; }
+`;
+
+/* 간단 타이핑 효과 (글자 클리핑 + 커서 깜박임) */
+const typing = (chars: number) => keyframes`
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0    0 0); }
+`;
+const caret = keyframes`
+  0%, 49% { opacity: 1; }
+  50%,100%{ opacity: 0; }
+`;
+
+/* ===== Props ===== */
+export type HintAnim = "none" | "fade-up" | "float" | "pulse" | "slide-up" | "typing";
+
+type HintTextAnimProps = {
+  $anim?: HintAnim;
+  $durationMs?: number;
+  $delayMs?: number;
+  $loop?: boolean;
+  /** typing 전용: 대략 글자 수 (없으면 길이에 맞춰 추정치 사용) */
+  $typingChars?: number;
+};
 
 /* ================================
  * STYLED COMPONENTS
@@ -97,7 +143,12 @@ export const FramePlaceholder = styled.div`
 `;
 
 /* 하단 힌트 텍스트 */
-export const HintText = styled.div<{ $centered?: boolean; $isSiren?: boolean }>`
+export const HintText = styled.div<
+  {
+    $centered?: boolean;
+    $isSiren?: boolean;
+  } & HintTextAnimProps
+>`
   background: transparent;
   color: var(--text-w1, #fff);
   border: none;
@@ -120,6 +171,73 @@ export const HintText = styled.div<{ $centered?: boolean; $isSiren?: boolean }>`
   /* 중앙 또는 약간 아래 정렬 */
   top: ${p => (p.$centered ? (p.$isSiren ? "65%" : "50%") : "auto")};
   transform: ${p => (p.$centered ? "translateY(-50%)" : "none")};
+
+  ${({ $centered }) =>
+    $centered &&
+    css`
+      text-align: center;
+    `}
+
+  ${({ $anim = "fade-up", $durationMs = 600, $delayMs = 0, $loop, $typingChars }) => {
+    if ($anim === "none") return "";
+
+    /* 접근성: reduce-motion일 때는 기본 페이드만 */
+    const base = css`
+      @media (prefers-reduced-motion: reduce) {
+        animation: ${fadeUp} ${Math.min($durationMs, 400)}ms ease ${$delayMs}ms both;
+      }
+    `;
+
+    switch ($anim) {
+      case "fade-up":
+        return css`
+          animation: ${fadeUp} ${$durationMs}ms ease ${$delayMs}ms both;
+          ${base}
+        `;
+      case "float":
+        return css`
+          animation:
+            ${fadeUp} 420ms ease ${$delayMs}ms both,
+            ${floatY} ${Math.max($durationMs, 2000)}ms ease-in-out ${$delayMs + 420}ms
+              ${$loop !== false ? "infinite" : "both"};
+          ${base}
+        `;
+      case "pulse":
+        return css`
+          animation:
+            ${fadeUp} 360ms ease ${$delayMs}ms both,
+            ${pulse} ${Math.max($durationMs, 1200)}ms ease-in-out ${$delayMs + 360}ms
+              ${$loop !== false ? "infinite" : "both"};
+          ${base}
+        `;
+      case "slide-up":
+        return css`
+          animation: ${slideUp} ${$durationMs}ms cubic-bezier(0.22, 1, 0.36, 1) ${$delayMs}ms both;
+          ${base}
+        `;
+      case "typing": {
+        const chars = $typingChars ?? 24; // 대충 기본값
+        return css`
+          display: inline-block;
+          white-space: nowrap;
+          animation: ${typing(chars)} ${Math.max($durationMs, chars * 40)}ms steps(${chars})
+            ${$delayMs}ms both;
+          position: relative;
+          &::after {
+            content: "";
+            position: absolute;
+            right: -0.25em;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: currentColor;
+            animation: ${caret} 1s steps(1) ${$delayMs}ms ${$loop !== false ? "infinite" : "both"};
+          }
+          ${base}
+        `;
+      }
+    }
+  }}
 `;
 
 /* 하단 공간 보존용 스페이서 */

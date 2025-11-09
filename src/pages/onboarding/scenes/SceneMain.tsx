@@ -7,7 +7,8 @@ import OnbDateView from "../components/OnbDateView";
 import OnbEmptyState from "../components/OnbEmptyState";
 import OnbGoalCard from "../components/OnbGoalCard";
 import OnbStepsSheet from "../components/OnbStepsSheet";
-import { SceneProps } from "../layout/OnbLayout";
+import { SceneProps } from "../layout/OnbLayout.types";
+// import { SceneProps } from "../layout/OnbLayout";
 import { useOnbSheetStore } from "../store/useOnbSheetStore";
 import { useOnbUiStore } from "../store/useOnbUiStore";
 
