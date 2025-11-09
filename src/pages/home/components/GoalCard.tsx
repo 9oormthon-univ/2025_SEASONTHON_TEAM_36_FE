@@ -118,14 +118,14 @@ const Container = styled.div<ContainerProps>`
   aspect-ratio: 4 / 4.2;
   max-height: calc(100% - 24px);
   margin: 0 auto 0;
-  padding: clamp(12px, 4.3vw, 40px) clamp(12px, 3vw, 40px);
+  padding: clamp(12px, 4%, 40px) clamp(12px, 2vw, 40px);
   border-radius: clamp(12px, 4vw, 16px);
   box-shadow:
     -0.27px -0.27px 4.495px 0 var(--natural-400),
     0.27px 0.27px 4.495px 0 var(--natural-400);
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 2.8vw, 16px);
+  gap: clamp(8px, 2%, 16px);
   text-align: center;
   cursor: pointer;
   transition: width 0.25s ease;

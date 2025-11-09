@@ -25,7 +25,7 @@ export default OnbChatbotBtn;
 
 const Button = styled.button<{ $isSheetOpen: boolean }>`
   position: fixed;
-  top: 10vh;
+  top: 14vh;
   right: 15vw;
   z-index: 5;
   transition:
@@ -35,11 +35,11 @@ const Button = styled.button<{ $isSheetOpen: boolean }>`
     right: 16vw;
   }
   @media (min-height: 700px) {
-    top: calc(${props => (props.$isSheetOpen ? 13 : 14)}vh + env(safe-area-inset-bottom, 0px));
+    top: calc(${props => (props.$isSheetOpen ? 11 : 14)}vh + env(safe-area-inset-bottom, 0px));
   }
 `;
 
 const AIImg = styled.img`
   width: 44px;
-  height: 42px;
+  height: 41px;
 `;
