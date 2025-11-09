@@ -30,15 +30,7 @@ export default function Profile() {
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
   // 통계 데이터를 Profile에서 한 번만 호출
-  const {
-    clickedSubject,
-    subjects,
-    handleSubjectNumber,
-    focusTime,
-    achievementRate,
-    setSubjects,
-    setClickedSubject,
-  } = useStatistics({ year, month });
+  const { focusTime, achievementRate } = useStatistics({ year, month });
 
   const { swipeHandlers, dragOffset, isDragging } = useSwipeGesture({
     onSwipeLeft: () => {
@@ -58,11 +50,6 @@ export default function Profile() {
       return () => clearTimeout(timer);
     }
   }, [isTransitioning]);
-
-  useEffect(() => {
-    setSubjects(null);
-    setClickedSubject(-1);
-  }, [year, month, setSubjects, setClickedSubject]);
 
   return (
     <>
@@ -98,11 +85,7 @@ export default function Profile() {
             {...swipeHandlers}
           >
             <Section title="이번 달 달성 과제">
-              <AchievedGoals
-                clickedSubject={clickedSubject}
-                subjects={subjects}
-                handleSubjectNumber={handleSubjectNumber}
-              />
+              <AchievedGoals year={year} month={month} />
             </Section>
             <Section title="달성률 변화 추이">
               <Chart1 achievementRate={achievementRate} />
