@@ -1,5 +1,6 @@
 <div align="center">
 
+# 2025:SPARKUP 🎆
 ## [2025 kakao x goorm] 시즌톤 36팀 - 우물 밖 연구소
 
 #### 우물 안 개구리들이 모두 밖으로 탈출하는 그 날까지
