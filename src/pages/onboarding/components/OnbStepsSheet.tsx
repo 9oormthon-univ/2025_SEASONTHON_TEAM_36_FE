@@ -1,4 +1,3 @@
-// src/pages/home/components/TodayStepsSheet.tsx
 import styled from "styled-components";
 
 import dragUp from "@/assets/images/drag-up.svg";
@@ -80,20 +79,24 @@ const todaySteps = [
 type StepsProps = {
   onAction?: (it: { id: number | null; stepId: number | null }) => void | Promise<void>;
   stageId?: string;
+  playBtnRef?: React.Ref<HTMLButtonElement>;
 };
 
-export default function OnbStepsSheet({ onAction, stageId }: StepsProps) {
+export default function OnbStepsSheet({ onAction, stageId, playBtnRef }: StepsProps) {
   const open = useOnbSheetStore(s => s.open);
   return (
     <>
-      {/* 온보딩 전용 BottomSheet는 showBackdrop prop이 없음 */}
       <OnbBottomSheet stageId={stageId}>
         {open ? (
           <SheetBody>
             <ScrollArea role="list">
               {todaySteps.map(group => (
                 <OnbSheetListSection key={group.key} title={group.title}>
-                  <OnbTodayStepsList items={group.items} onAction={onAction} />
+                  <OnbTodayStepsList
+                    items={group.items}
+                    onAction={onAction}
+                    playBtnRef={playBtnRef}
+                  />
                 </OnbSheetListSection>
               ))}
             </ScrollArea>
@@ -102,54 +105,65 @@ export default function OnbStepsSheet({ onAction, stageId }: StepsProps) {
           <Title className="typo-h4">우물 밖으로 나갈 준비</Title>
         )}
       </OnbBottomSheet>
+
       {stageId === "sheet-scroll" && <FloatingArrow src={dragUp} alt="" aria-hidden="true" />}
     </>
   );
 }
-
 // --- 자식 컴포넌트도 그룹 아이템 배열로 받기 ---
 function OnbTodayStepsList({
   items,
   onAction,
+  playBtnRef,
 }: {
   items: StepListItem[];
   onAction?: (it: { id: number | null; stepId: number | null }) => void | Promise<void>;
+  playBtnRef?: React.Ref<HTMLButtonElement>;
 }) {
   return (
     <List role="list">
-      {items.map((it, idx) => (
-        <Item key={it.stepId ?? `step-${idx}`} role="listitem">
-          <Bullet aria-hidden="true" />
-          <ItemTitle $completed={it.isCompleted}>{it.description}</ItemTitle>
+      {items.map((it, idx) => {
+        const attachRef = it.stepId === 6 ? playBtnRef : undefined;
 
-          <Right>
-            <ActionBtnWrapper
-              onClick={() => void onAction?.({ id: it.stepId, stepId: it.stepId })}
-              $isPlaying={false}
-              $completed={it.isCompleted}
-              $size={29}
-            >
-              <IconOuter data-property-1="기본">
-                <IconSVG
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 21 21"
-                  role="img"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M18.0693 10.4683C18.3338 10.6212 18.3338 11.0033 18.0693 11.1548L7.94731 16.9537C7.68358 17.1044 7.35478 16.9134 7.35454 16.6092L7.35454 4.95396C7.35473 4.64973 7.68355 4.46056 7.94731 4.61284L18.0693 10.4683Z"
-                    fill="currentColor"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </IconSVG>
-              </IconOuter>
-            </ActionBtnWrapper>
-          </Right>
-        </Item>
-      ))}
+        return (
+          <Item key={it.stepId ?? `step-${idx}`} role="listitem">
+            <Bullet aria-hidden="true" />
+            <ItemTitle $completed={it.isCompleted}>{it.description}</ItemTitle>
+
+            <Right>
+              <ActionBtnWrapper
+                ref={attachRef}
+                onClick={() =>
+                  void onAction?.({ id: it.stepId ?? null, stepId: it.stepId ?? null })
+                }
+                $isPlaying={false}
+                $completed={it.isCompleted}
+                $size={24}
+                type="button"
+                aria-label="재생"
+              >
+                <IconOuter data-property-1="기본">
+                  <IconSVG
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 21 21"
+                    role="img"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M18.0693 10.4683C18.3338 10.6212 18.3338 11.0033 18.0693 11.1548L7.94731 16.9537C7.68358 17.1044 7.35478 16.9134 7.35454 16.6092L7.35454 4.95396C7.35473 4.64973 7.68355 4.46056 7.94731 4.61284L18.0693 10.4683Z"
+                      fill="currentColor"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </IconSVG>
+                </IconOuter>
+              </ActionBtnWrapper>
+            </Right>
+          </Item>
+        );
+      })}
     </List>
   );
 }
@@ -180,7 +194,6 @@ const List = styled.ul`
   display: grid;
   gap: 8px;
   margin-top: 4%;
-  padding: 0;
   margin: 10px;
   background: transparent;
 `;
@@ -189,7 +202,8 @@ const Item = styled.li`
   display: grid;
   grid-template-columns: 16px 1fr auto;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
+  padding: 6px 0;
   background: transparent;
   border-bottom: 1px solid var(--natural-400, #d6d9e0);
 `;
@@ -240,11 +254,18 @@ const ActionBtnWrapper = styled.button<{
   height: ${({ $size }) => $size ?? 29}px;
 
   color: ${({ $completed }) => ($completed ? "red" : "var(--green-400)")};
+
+  /* 버튼로 쓰니 접근성 속성/포커스 반영을 고려 */
+  &:focus-visible {
+    outline: 2px solid var(--primary-1);
+    outline-offset: 2px;
+    border-radius: 16px;
+  }
 `;
 
 const IconOuter = styled.div`
-  width: 80%;
-  height: 80%;
+  width: 100%;
+  height: 100%;
   background: var(--natural-200);
   border-radius: 16px;
   display: inline-flex;

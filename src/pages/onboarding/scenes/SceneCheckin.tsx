@@ -291,7 +291,7 @@ const DottedCircle = styled.div<{ $rect: DOMRect }>`
 
 const SpotBubble = styled.div<{ $rect: DOMRect }>`
   position: absolute;
-  left: ${p => p.$rect.x - 20}px;
+  left: ${p => p.$rect.x - 15}px;
   top: ${p => p.$rect.y - 48}px; /* 버튼 위쪽에 말풍선 */
   transform: translateX(-50%);
   width: 58px;

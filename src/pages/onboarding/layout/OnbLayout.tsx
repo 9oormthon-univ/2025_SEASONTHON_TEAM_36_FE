@@ -95,7 +95,6 @@ export default function OnbLayout({
           )}
 
           {/* 프레임 내부 오버레이(펄스/가이드 등) */}
-          {/* 프레임 내부 오버레이(펄스/가이드 등) */}
           <FrameOverlay>
             {/* 하이라이트 사각형을 제외하고 프레임 내부를 은은히 덮는 딤 */}
             {localSpot && (

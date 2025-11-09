@@ -46,12 +46,23 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
   const refChatbot = useRef<HTMLButtonElement>(null);
   const refGoalCard = useRef<HTMLDivElement>(null);
   const refSheet = useRef<HTMLDivElement>(null);
-
-  // ✅ 시렌 아이콘 버튼 ref
   const refGoalHeaderSiren = useRef<HTMLButtonElement>(null);
+  const refPlayBtn = useRef<HTMLElement>(null);
 
-  // ✅ 시렌 버튼의 rect 별도 보관 (화면에 오버레이 표시용)
+  // siren 버튼의 rect 별도 보관 (화면에 오버레이 표시용)
   const [sirenRect, setSirenRect] = useState<DOMRect | null>(null);
+  const [playRect, setPlayRect] = useState<DOMRect | null>(null);
+
+  // ---- stage 판단 ----
+  const highlightGoalHeaderSiren = stage.id === "adjust-icon";
+  const highlightPlayBtn = stage.id === "play-btn";
+
+  useSpotReporter(refGoalHeaderSiren, highlightGoalHeaderSiren, setSirenRect);
+  useSpotReporter(refPlayBtn, highlightPlayBtn, setPlayRect);
+  // 나머지 하이라이트 유지
+  useSpotReporter(refChatbot, stage.componentKey === "chatbot", setSpotRect);
+  useSpotReporter(refGoalCard, stage.componentKey === "goal-card", setSpotRect);
+  useSpotReporter(refSheet, stage.componentKey === "bottom-sheet", setSpotRect);
 
   // ---- 기존 store / 상태 로직 생략 ----
   const openBottomSheet = useOnbUiStore(s => s.openBottomSheet);
@@ -63,16 +74,6 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
   const isSheetOpen = useOnbSheetStore(s => s.open);
   const hasGoals = useOnbUiStore(s => s.hasGoals);
   const setHasGoals = useOnbUiStore(s => s.setHasGoals);
-
-  // ---- stage 판단 ----
-  const highlightGoalHeaderSiren = stage.id === "adjust-icon";
-
-  useSpotReporter(refGoalHeaderSiren, highlightGoalHeaderSiren, setSirenRect);
-
-  // 나머지 하이라이트 유지
-  useSpotReporter(refChatbot, stage.componentKey === "chatbot", setSpotRect);
-  useSpotReporter(refGoalCard, stage.componentKey === "goal-card", setSpotRect);
-  useSpotReporter(refSheet, stage.componentKey === "bottom-sheet", setSpotRect);
 
   useEffect(() => {
     openSheet();
@@ -126,16 +127,22 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
       {/* === 바텀시트 === */}
       {hasGoals && (
         <div ref={refSheet}>
-          <OnbStepsSheet key={stage.id} stageId={stage.id} />
+          <OnbStepsSheet key={stage.id} stageId={stage.id} playBtnRef={refPlayBtn} />
         </div>
       )}
 
-      {/* === ✅ 시렌 버튼 하이라이트 오버레이 === */}
       {highlightGoalHeaderSiren && sirenRect && (
         <OverlayLayer aria-hidden>
           <SpotDim $rect={sirenRect} $radius={32} />
           <DottedCircle $rect={sirenRect} />
           <SpotBubble $rect={sirenRect}>클릭</SpotBubble>
+        </OverlayLayer>
+      )}
+      {highlightPlayBtn && playRect && (
+        <OverlayLayer aria-hidden>
+          <SpotDim $rect={playRect} $radius={28} />
+          <DottedCircle $rect={playRect} />
+          <SpotBubble $rect={playRect}>클릭</SpotBubble>
         </OverlayLayer>
       )}
     </Page>
