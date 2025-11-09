@@ -3,17 +3,18 @@ import styled from "styled-components";
 
 export interface GoalHeaderProps {
   onSirenClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  isUrgent?: boolean;
 }
 
-export default function OnbGoalHeader({ onSirenClick }: GoalHeaderProps) {
+export default function OnbGoalHeader({ onSirenClick, isUrgent }: GoalHeaderProps) {
   // 없을 때 안전한 기본값
-  const dDay = "D-7";
+  const dDay = isUrgent ? "D-day" : "D-7";
   const title = "자서전 작성하기";
-  const isUrgent = false;
 
   return (
     <HeaderRow>
-      <DDayIcon>{dDay}</DDayIcon>
+      {/* ✅ urgent 상태 전달 */}
+      <DDayIcon $urgent={isUrgent}>{dDay}</DDayIcon>
       <TitleWrap>
         <TaskTitle className="typo-label-l">{title}</TaskTitle>
         <SirenButton type="button" onClick={onSirenClick}>
@@ -23,22 +24,9 @@ export default function OnbGoalHeader({ onSirenClick }: GoalHeaderProps) {
     </HeaderRow>
   );
 }
-const DDayIcon = styled.div`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 20px;
-  width: 38px;
-  padding: 0 8px;
-  border-radius: 10px;
-  color: var(--text-1);
-  font-size: clamp(8px, 2.5vw, 15px);
-  font-weight: 400;
-  margin-right: 8px;
-  background: var(--green-200);
-`;
 
 /* ===== styled-components (이 컴포넌트 전용) ===== */
+
 const HeaderRow = styled.div`
   display: flex;
   align-items: center;
@@ -59,6 +47,23 @@ const TaskTitle = styled.h3`
   font-size: clamp(12px, 3.5vw, 30px);
   font-weight: 600;
   color: var(--text-1);
+`;
+
+/** ✅ urgent 시 배경색 변경 */
+const DDayIcon = styled.div<{ $urgent?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  min-width: 38px;
+  padding: 0 8px;
+  border-radius: 10px;
+  color: var(--text-1);
+  font-size: clamp(8px, 2.5vw, 15px);
+  font-weight: 400;
+  margin-right: 8px;
+  background: ${({ $urgent }) => ($urgent ? "#FF0000" : "var(--green-200)")};
+  color: ${({ $urgent }) => ($urgent ? "#fff" : "var(--text-1)")};
 `;
 
 const SirenButton = styled.button`

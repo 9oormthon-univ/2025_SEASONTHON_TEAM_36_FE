@@ -1,6 +1,7 @@
 // src/pages/home/components/TodayStepsSheet.tsx
 import styled from "styled-components";
 
+import dragUp from "@/assets/images/drag-up.svg";
 import type { StepListItem } from "@/pages/home/types/steps";
 
 import { useOnbSheetStore } from "../store/useOnbSheetStore";
@@ -78,14 +79,15 @@ const todaySteps = [
 
 type StepsProps = {
   onAction?: (it: { id: number | null; stepId: number | null }) => void | Promise<void>;
+  stageId?: string;
 };
 
-export default function OnbStepsSheet({ onAction }: StepsProps) {
+export default function OnbStepsSheet({ onAction, stageId }: StepsProps) {
   const open = useOnbSheetStore(s => s.open);
   return (
     <>
       {/* 온보딩 전용 BottomSheet는 showBackdrop prop이 없음 */}
-      <OnbBottomSheet>
+      <OnbBottomSheet stageId={stageId}>
         {open ? (
           <SheetBody>
             <ScrollArea role="list">
@@ -100,6 +102,7 @@ export default function OnbStepsSheet({ onAction }: StepsProps) {
           <Title className="typo-h4">우물 밖으로 나갈 준비</Title>
         )}
       </OnbBottomSheet>
+      {stageId === "sheet-scroll" && <FloatingArrow src={dragUp} alt="" aria-hidden="true" />}
     </>
   );
 }
@@ -252,4 +255,14 @@ const IconOuter = styled.div`
 const IconSVG = styled.svg`
   width: 18px;
   height: 18px;
+`;
+
+const FloatingArrow = styled.img`
+  position: absolute;
+  transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 160px);
+  width: 14px;
+  height: auto;
+  pointer-events: none;
+  z-index: 5;
 `;

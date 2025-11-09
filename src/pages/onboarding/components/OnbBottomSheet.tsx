@@ -7,7 +7,13 @@ import { useOnbSheetStore } from "../store/useOnbSheetStore";
 /** CSS 변수 타입 (style에 --peek 추가 용) */
 type CSSVarProps = CSSProperties & { ["--peek"]?: string };
 
-export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
+export default function OnbBottomSheet({
+  children,
+  stageId,
+}: {
+  children?: ReactNode;
+  stageId?: string;
+}) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   // ===== zustand store =====
@@ -70,17 +76,19 @@ export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
     }
 
     if (isExpanded) {
-      const quickClose = offsetY > THRESHOLD_CLOSE_DOWN || vy > FAST_VELOCITY;
+      // const quickClose = offsetY > THRESHOLD_CLOSE_DOWN || vy > FAST_VELOCITY;
       const collapse = offsetY > THRESHOLD_COLLAPSE_DOWN || vy > FAST_VELOCITY / 2;
-      if (quickClose) closeSheet();
-      else if (collapse) collapseSheet();
+      // if (quickClose) closeSheet();
+      // else if (collapse) collapseSheet();
+      if (collapse) collapseSheet();
       return;
     }
 
-    const closeDown = offsetY > THRESHOLD_CLOSE_DOWN || vy > FAST_VELOCITY;
+    // const closeDown = offsetY > THRESHOLD_CLOSE_DOWN || vy > FAST_VELOCITY;
     const expandUp = offsetY < -THRESHOLD_EXPAND_UP || vy < -FAST_VELOCITY;
-    if (closeDown) closeSheet();
-    else if (expandUp) expandSheet();
+    // if (closeDown) closeSheet();
+    // else if (expandUp) expandSheet();
+    if (expandUp) expandSheet();
   };
 
   // CSS height 값 그대로 사용 (부모 높이 기준으로 %도 가능)
@@ -102,6 +110,7 @@ export default function OnbBottomSheet({ children }: { children?: ReactNode }) {
       tabIndex={open ? -1 : undefined}
       $size={panelSize}
       $open={open}
+      $z={stageId === "goal-frog" ? 4 : 6} // 👈 추가
       initial="peek"
       animate={!open ? "peek" : isExpanded ? "expanded" : "open"}
       drag="y"
@@ -158,6 +167,7 @@ interface PanelProps {
   $size: string;
   /** 오픈 여부: true일 때만 클릭 가능 */
   $open: boolean;
+  $z?: number;
 }
 
 /** Backdrop: 네비 영역은 가리지 않음 */
@@ -170,7 +180,7 @@ export const Backdrop = styled.div`
 /** Panel: 네비바에 정확히 맞닿도록 보더 보정 */
 export const Panel = styled(motion.div)<PanelProps>`
   position: absolute;
-  z-index: 6;
+  z-index: ${({ $z }) => $z ?? 6};
   left: 0;
   bottom: 0;
   width: 100%;

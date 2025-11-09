@@ -100,7 +100,7 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
   // ==== 파생 플래그를 effect 밖에서 계산 ====
   const shouldExpand = stage.id === "sheet-content";
   const shouldOpenBottom = stage.id === "sheet-scroll" || stage.id === "sheet-content";
-  const isUrgent = stage.sceneKey === "main-w-urgent";
+  const isUrgent = stage.id === "siren" || stage.id === "adjust" || stage.id === "adjust-icon";
   const noGoals = stage.id === "start" || stage.id === "chatboticon" || stage.id === "chatbot-icon";
   const goalsFlag = !noGoals;
 
@@ -154,6 +154,7 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
             goal={goals[0]}
             shrink={shrink}
             className="onb-goalcard-spot"
+            isUrgent={isUrgent}
           />
         ) : (
           <OnbEmptyState />
@@ -165,7 +166,7 @@ export default function SceneMain({ stage, setSpotRect }: SceneProps) {
       {/* 바텀시트는 외곽 래퍼로 ref 연결 (포털 사용 시 위치 추적 안정화) */}
       {hasGoals && (
         <div ref={refSheet} className="onb-bsheet-spot" data-onb-target="bottom-sheet">
-          <OnbStepsSheet key={stage.id} />
+          <OnbStepsSheet key={stage.id} stageId={stage.id} />
         </div>
       )}
     </Page>
@@ -228,21 +229,21 @@ OnbChatbotBtn.displayName = "OnbChatbotBtn";
 
 const Button = styled.button<{ $isSheetOpen: boolean }>`
   position: fixed;
-  top: 30px;
-  right: 62px;
-  z-index: 10;
+  top: 10vh;
+  right: 15vw;
+  z-index: 5;
   transition:
     top 0.3s ease,
     right 0.3s ease;
   @media (min-width: 414px) {
-    right: 90px;
+    right: 16vw;
   }
   @media (min-height: 700px) {
-    top: calc(${props => (props.$isSheetOpen ? 90 : 120)}px + env(safe-area-inset-bottom, 0px));
+    top: calc(${props => (props.$isSheetOpen ? 13 : 14)}vh + env(safe-area-inset-bottom, 0px));
   }
 `;
 
 const AIImg = styled.img`
-  width: 42px;
+  width: 44px;
   height: 42px;
 `;

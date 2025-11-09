@@ -3,6 +3,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import styled, { css, keyframes } from "styled-components";
 
+import bigSiren from "@/assets/images/big-siren.svg";
+
 import type { OnbStage } from "../engine/stages";
 
 export type SceneProps = {
@@ -54,7 +56,7 @@ export default function OnbLayout({
 
   const activeIndex = useMemo(() => extIndex ?? 0, [extIndex]);
   const stage = stages[activeIndex] ?? null;
-
+  const showBigSiren = stage?.componentKey === "big-siren";
   // ✅ stage id가 바뀌면 이전 하이라이트(dim) 즉시 제거
   useEffect(() => {
     setSpotRect(null);
@@ -82,7 +84,7 @@ export default function OnbLayout({
   const Scene = stage.sceneKey ? sceneMap[stage.sceneKey] : undefined;
 
   return createPortal(
-    <Root>
+    <Root $transparentBg={showBigSiren}>
       {/* 액자 프레임 */}
       <FrameWrap>
         <Frame ref={frameRef} aria-label="Onboarding Frame">
@@ -96,7 +98,9 @@ export default function OnbLayout({
           {/* 프레임 내부 오버레이(펄스/가이드 등) */}
           <FrameOverlay>
             {/* 하이라이트 사각형을 제외하고 프레임 내부를 은은히 덮는 딤 */}
-            {localSpot ? <SpotDim $rect={localSpot} /> : null}
+            {localSpot && (
+              <SpotDim $rect={localSpot} $radius={stage.componentKey === "goal-card" ? 12 : 9999} />
+            )}
 
             {stage.pulse && localSpot ? <Pulse $rect={localSpot} /> : null}
             {stage.placement === "center" && stage.body ? (
@@ -115,6 +119,14 @@ export default function OnbLayout({
 
             {/* (필요 시) goal-card, bottom-sheet 케이스도 동일 패턴으로 추가 가능 */}
           </FrameOverlay>
+          {showBigSiren && (
+            <>
+              <DimOverlay /> {/* 모바일 화면 전체를 가림 (root bg 변경 없음) */}
+              <CenterSiren role="img" aria-label="긴급 경고 사이렌">
+                <img src={bigSiren} alt="" />
+              </CenterSiren>
+            </>
+          )}
         </Frame>
       </FrameWrap>
 
@@ -149,14 +161,15 @@ export default function OnbLayout({
 // }
 
 /* ---------- styles ---------- */
-const Root = styled.div`
+const Root = styled.div<{ $transparentBg?: boolean }>`
   position: fixed;
   inset: 0;
   display: grid;
   grid-template-rows: 1fr auto;
-  /* 배경을 살짝 어둡게 해 원본 화면을 '뒤'로 보이게 */
-  background: rgba(17, 24, 39, 0.85);
-  backdrop-filter: blur(2px);
+
+  /* showBigSiren일 때 투명, 아닐 때 기존 딤/블러 */
+  background: ${p => (p.$transparentBg ? "transparent" : "rgba(17, 24, 39, 0.85)")};
+  backdrop-filter: ${p => (p.$transparentBg ? "none" : "blur(2px)")};
 `;
 
 const FrameWrap = styled.div`
@@ -308,23 +321,19 @@ const CenterBubble = styled.div`
 
 const DottedCircle = styled.div<{ $rect: DOMRect }>`
   position: absolute;
-  left: ${p => p.$rect.x - 5}px;
-  top: ${p => p.$rect.y - 5}px;
-  width: 50px;
-  height: 50px;
+  left: ${p => p.$rect.x - 2}px;
+  top: ${p => p.$rect.y - 2}px;
+  width: ${p => p.$rect.width + 4}px;
+  height: ${p => p.$rect.height + 4}px;
   border: 2.5px dashed rgba(255, 255, 255, 0.95);
   border-radius: 9999px;
-  box-shadow:
-    0 0 0 8px rgba(255, 255, 255, 0.12),
-    0 6px 20px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(0.5px);
   pointer-events: none;
   z-index: 10;
 `;
 
 const SpotBubble = styled.div<{ $rect: DOMRect }>`
   position: absolute;
-  left: ${p => p.$rect.x + p.$rect.width / 2 - 65}px;
+  left: ${p => p.$rect.x + p.$rect.width / 2 - 68}px;
   top: ${p => p.$rect.y + p.$rect.height + 12}px; /* 요소 아래 */
   transform: translateX(-50%);
   width: 140px;
@@ -339,23 +348,18 @@ const SpotBubble = styled.div<{ $rect: DOMRect }>`
   pointer-events: none; /* 오버레이가 클릭 방해하지 않도록 */
   z-index: 10;
 `;
-const SpotDim = styled.div<{ $rect: DOMRect }>`
+const SpotDim = styled.div<{ $rect: DOMRect; $radius?: number }>`
   position: absolute;
   left: ${p => p.$rect.x}px;
   top: ${p => p.$rect.y}px;
   width: ${p => p.$rect.width}px;
   height: ${p => p.$rect.height}px;
 
-  /* 하이라이트 모서리와 맞춤 (Pulse/DottedCircle과 동일 반경으로 통일하면 자연스러움) */
-  border-radius: 14px;
+  /* 단순 반경 값만 prop으로 전달 */
+  border-radius: ${p => (p.$radius ? `${p.$radius}px` : "14px")};
 
-  /*
-    핵심 트릭:
-    - center는 투명
-    - 거대한 spread의 box-shadow로 바깥 전부를 덮어 프레임 내부만 은은하게 어둡게
-    - Root의 전체 딤보다 살짝 밝은 농도로 "연한" 느낌
-  */
-  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.12);
+  /* 프레임 안쪽만 투명하게, 나머지 전체 어둡게 덮기 */
+  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.45);
 
   pointer-events: none;
   transition:
@@ -364,4 +368,41 @@ const SpotDim = styled.div<{ $rect: DOMRect }>`
     width 0.06s linear,
     height 0.06s linear;
   z-index: 5;
+`;
+
+/** 화면 전체 디밍: 모바일 화면 전체 덮기 (root의 background는 설정하지 않음) */
+const DimOverlay = styled.div`
+  position: fixed; /* 화면 전체 */
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85); /* 적당한 어둡기 */
+  z-index: 9998; /* 프레임 위의 최상위 오버레이 */
+  pointer-events: none;
+`;
+
+/** 사이렌 살짝 펄스 애니메이션 */
+const pulse = keyframes`
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.04); opacity: 0.95; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+`;
+
+/** 중앙 고정 사이렌 */
+const CenterSiren = styled.figure`
+  position: fixed;
+  left: 39%;
+  top: 50%;
+  width: min(28vw, 320px);
+  z-index: 9999; /* 디밍보다 위 */
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0;
+  animation: ${pulse} 1.4s ease-in-out infinite;
+
+  > img {
+    display: block;
+    width: min(48vw, 320px); /* 반응형: 모바일 기준 크게 보이도록 */
+    height: auto;
+    user-select: none;
+    pointer-events: none;
+  }
 `;
