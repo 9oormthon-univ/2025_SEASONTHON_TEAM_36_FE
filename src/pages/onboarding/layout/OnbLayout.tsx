@@ -93,11 +93,18 @@ export default function OnbLayout({
 
   const canAdvance = true; // stage.footer?.nextEnabled 없으면 true
 
+  const isLastAnimation = stage.id === "end";
+
   const advanceNextIfAllowed = useCallback(() => {
-    if (didAdvanceRef.current || !canAdvance) return;
+    // Prevent advancing during final stage
+    if (didAdvanceRef.current || !canAdvance || isLastAnimation) return;
+
     didAdvanceRef.current = true;
-    onNext?.();
-  }, [canAdvance, onNext]);
+    // Trigger onNext if not on "end" stage
+    if (stage?.id !== "end") {
+      onNext?.();
+    }
+  }, [canAdvance, onNext, isLastAnimation, stage?.id]);
 
   // 프레임 내부 액션 → 다음
   const advanceOnUserAction = useCallback(
@@ -117,6 +124,7 @@ export default function OnbLayout({
     if (shouldIgnoreTarget(e.target)) return;
     advanceNextIfAllowed();
   };
+
   // 루트 배경 클릭 → 좌/우 반 화면 네비
   // const handleRootClick = useCallback(
   //   (e: React.MouseEvent) => {
@@ -127,12 +135,29 @@ export default function OnbLayout({
   //   },
   //   [advanceNextIfAllowed, onPrev],
   // );
+  // Automatically skip "end" stage after 5 seconds
+  useEffect(() => {
+    if (stage?.id === "end") {
+      const timeout = setTimeout(() => {
+        onSkip?.(); // Automatically skip after the timeout
+      }, 3000); // 3 seconds after the "end" screen appears
+
+      return () => clearTimeout(timeout);
+    }
+  }, [stage?.id, onSkip]);
 
   if (!stage || !portalEl) return null;
   const Scene = stage.sceneKey ? sceneMap[stage.sceneKey] : undefined;
 
   return createPortal(
-    <Root $transparentBg={showBigSiren || stage.id === "end"} onClick={advanceNextIfAllowed}>
+    <Root
+      $transparentBg={showBigSiren || stage.id === "end"}
+      onClick={e => {
+        if (stage.id !== "end") {
+          advanceNextIfAllowed();
+        }
+      }}
+    >
       {onSkip && stage.id !== "end" && (
         <SkipBtn
           type="button"
