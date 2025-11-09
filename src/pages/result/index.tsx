@@ -127,7 +127,7 @@ const Result = () => {
             setStartDate(response.startDate.split("-").join("."));
             setEndDate(response.endDate.split("-").join("."));
             setSteps(response.steps);
-            const updatedCheckDays = [...checkDays];
+            const updatedCheckDays = [false, false, false, false, false, false, false];
             response.expectedDays.forEach(value => {
               updatedCheckDays[EXPECTED_DAYS_TO_IDX[value]] = true;
             });
@@ -140,7 +140,7 @@ const Result = () => {
       setIsError(true);
       return;
     }
-  }, [checkDays, location.state]);
+  }, [location.state]);
 
   if (!splashOpen && isError) {
     return "할일 정보가 없습니다 🥲";
@@ -178,7 +178,8 @@ const Result = () => {
             <TodoTitle>
               <TitleInput
                 name="To-Do Title"
-                disabled={!titleModify}
+                $disabled={!titleModify}
+                readOnly={!titleModify}
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 style={{ width: `${inputWidth}px` }}
