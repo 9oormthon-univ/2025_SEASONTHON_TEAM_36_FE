@@ -154,7 +154,7 @@ const GaugeArea = styled.div`
 
 const Ring = styled.div<{ colortoken: string }>`
   position: relative;
-  height: 38vh;
+  height: 35vh;
   aspect-ratio: 1 / 1;
   display: grid;
   place-items: center;
@@ -197,7 +197,7 @@ const BottomActions = styled.div`
   align-items: center;
   justify-content: center;
   gap: 20vw;
-  bottom: 20vh;
+  bottom: 16vh;
 `;
 
 const CircleButton = styled.button`
