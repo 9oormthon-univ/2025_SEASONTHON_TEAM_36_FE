@@ -1,4 +1,4 @@
-import frogCareer from "@/assets/images/frog-default.svg"; // 추후 carrer로 교체
+import frogCareer from "@/assets/images/todoTypes/frog-career.svg"; // 교체 완료
 import frogEtc from "@/assets/images/todoTypes/frog-etc.svg";
 import frogHomework from "@/assets/images/todoTypes/frog-hobby.svg";
 import frogPerformance from "@/assets/images/todoTypes/frog-performance.svg";

@@ -32,7 +32,6 @@ export default function SheetListSection({
 const SectionWrap = styled.section`
   background: transparent;
   border-radius: 12px;
-  margin: 8px 0 12px;
   padding: 0 0 0 4px;
 `;
 
@@ -53,6 +52,7 @@ const SectionHeader = styled.div`
   color: var(--text-1);
   margin: 0 22px;
   padding: 4px 0;
+  border-radius: 20px;
 `;
 
 const SectionTitle = styled.h3`

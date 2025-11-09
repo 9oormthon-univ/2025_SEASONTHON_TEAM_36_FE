@@ -212,6 +212,7 @@ const Title = styled.h2`
   color: var(--text-1, #000);
   text-align: center;
   margin: 0;
+  word-break: keep-all;
 `;
 
 const WarmMsg = styled.p`
@@ -222,6 +223,7 @@ const WarmMsg = styled.p`
   letter-spacing: var(--ls-2, 0);
   text-align: center;
   margin: 0;
+  word-break: keep-all;
 `;
 
 const Content = styled.div`
