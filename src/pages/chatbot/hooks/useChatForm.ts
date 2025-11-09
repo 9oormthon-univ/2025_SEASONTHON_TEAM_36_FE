@@ -18,6 +18,7 @@ export const useChatForm = () => {
   const [buttonTexts, _] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
+  const [isReconnecting, setIsReconnecting] = useState<boolean>(false);
   const chatbotRef = useRef<EventSourcePolyfill | null>(null);
   const [chats, setChats] = useState<ChatType[]>([]);
   const isClosingRef = useRef<boolean>(false); // 의도적인 연결 종료 플래그
@@ -45,7 +46,7 @@ export const useChatForm = () => {
               `${import.meta.env.VITE_API_BASE_URL}/api/v1/ai/connect?userId=${respUserInfo.userId}`,
               {
                 headers: {
-                  Authorization: `Bearer ${getAccessToken()}`,
+                  Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
                   Accept: "text/event-stream",
                 },
               },
@@ -54,6 +55,11 @@ export const useChatForm = () => {
             chatbotRef.current.onmessage = (event: MessageEvent) => {
               if (!isMounted) return;
               console.info("SSE message received:", event.data);
+
+              if (isReconnecting) {
+                console.info("Message received during reconnection - ignoring");
+                return;
+              }
 
               if (event.data === "✅ 응답 완료") {
                 return;
@@ -88,12 +94,44 @@ export const useChatForm = () => {
               setChatbotLoading(prev => !prev);
             };
 
-            chatbotRef.current.onerror = (error: ErrorEvent | Event) => {
+            chatbotRef.current.onerror = (event: Event) => {
               if (!isMounted) return;
 
               // 의도적인 연결 종료가 아닌 경우에만 에러로 처리
               if (!isClosingRef.current) {
-                console.error("SSE error:", error);
+                console.error("SSE error:", event);
+
+                // EventSourcePolyfill의 에러 이벤트는 커스텀 구조를 가집니다
+                const errorEvent = event as Event & {
+                  type?: string;
+                  target?: EventSourcePolyfill;
+                  error?: Error;
+                };
+
+                // readyState를 먼저 확인 (상태 변경 전에 캡처)
+                const currentReadyState = errorEvent.target?.readyState;
+                console.info("ReadyState at error:", currentReadyState);
+
+                if (errorEvent.error) {
+                  console.error("Error details:", errorEvent.error.message);
+
+                  // "Reconnecting" 메시지가 포함되어 있으면 재연결 상태로 설정
+                  if (errorEvent.error.message.includes("Reconnecting")) {
+                    setIsReconnecting(true);
+                    console.info("SSE is reconnecting...");
+                  }
+                }
+
+                // readyState 설명:
+                // 0 = CONNECTING, 1 = OPEN, 2 = CLOSED
+                if (currentReadyState === 2) {
+                  console.info("Connection is CLOSED");
+                } else if (currentReadyState === 0) {
+                  console.info("Connection is CONNECTING (likely reconnecting)");
+                } else if (currentReadyState === 1) {
+                  console.info("Connection is OPEN");
+                }
+
                 // setIsError(true);
               } else {
                 console.info("SSE connection closed intentionally");
@@ -104,7 +142,11 @@ export const useChatForm = () => {
             chatbotRef.current.onopen = () => {
               if (!isMounted) return;
               console.info("SSE connection opened");
+              if (isReconnecting) {
+                console.info("Reconnection successful - was in reconnecting state");
+              }
               setLoading(false);
+              setIsReconnecting(false); // 연결 성공 시 재연결 상태 해제
               isClosingRef.current = false; // 연결이 열리면 플래그 초기화
             };
           } catch (error) {
@@ -132,7 +174,7 @@ export const useChatForm = () => {
         chatbotRef.current = null;
       }
     };
-  }, [navigate]);
+  }, [isReconnecting, navigate]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -168,6 +210,8 @@ export const useChatForm = () => {
     setChatbotLoading,
     isError,
     setIsError,
+    isReconnecting,
+    setIsReconnecting,
     chatbotRef,
     isClosingRef,
   };
