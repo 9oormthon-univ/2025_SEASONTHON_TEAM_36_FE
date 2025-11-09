@@ -375,7 +375,7 @@ const DimOverlay = styled.div`
   position: fixed; /* 화면 전체 */
   inset: 0;
   background: rgba(0, 0, 0, 0.85); /* 적당한 어둡기 */
-  z-index: 9998; /* 프레임 위의 최상위 오버레이 */
+  z-index: 7;
   pointer-events: none;
 `;
 
