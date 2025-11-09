@@ -31,13 +31,14 @@ export default function BottomSheet({ children }: { children?: ReactNode }) {
   const lockedScrollYRef = useRef<number | null>(null);
 
   useEffect(() => {
+    // 확장 상태에서만 스크롤 잠금
+    if (!(open && isExpanded)) return;
+
     const html = document.documentElement;
     const body = document.body;
 
-    if (!open) return;
-
     const scrollY = window.scrollY || window.pageYOffset;
-    lockedScrollYRef.current = scrollY; // ✅ 실제 잠금 시점 저장
+    lockedScrollYRef.current = scrollY;
 
     const prev = {
       htmlOverscrollBehavior: html.style.overscrollBehavior,
@@ -62,12 +63,11 @@ export default function BottomSheet({ children }: { children?: ReactNode }) {
       body.style.overflow = prev.bodyOverflow;
       html.classList.remove("sheet-open");
 
-      // ✅ 잠금 당시의 scrollY로 복원
       const lockedY = lockedScrollYRef.current ?? 0;
       lockedScrollYRef.current = null;
       window.scrollTo(0, lockedY);
     };
-  }, [open]);
+  }, [open, isExpanded]);
 
   // ESC로 닫기/접기
   useEffect(() => {
@@ -84,48 +84,48 @@ export default function BottomSheet({ children }: { children?: ReactNode }) {
 
   // body 스크롤 잠금
   // 🔒 뒤 화면 스크롤 완전 차단 (iOS Safari 대응: body 고정 + 스크롤 복원)
-  useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
+  // useEffect(() => {
+  //   const html = document.documentElement;
+  //   const body = document.body;
 
-    if (!open) return;
+  //   if (!open) return;
 
-    // 현재 스크롤 위치 저장
-    const scrollY = window.scrollY || window.pageYOffset;
+  //   // 현재 스크롤 위치 저장
+  //   const scrollY = window.scrollY || window.pageYOffset;
 
-    // 기존 인라인 스타일 백업
-    const prev = {
-      htmlOverscrollBehavior: html.style.overscrollBehavior,
-      bodyPosition: body.style.position,
-      bodyTop: body.style.top,
-      bodyWidth: body.style.width,
-      bodyOverflow: body.style.overflow,
-    };
+  //   // 기존 인라인 스타일 백업
+  //   const prev = {
+  //     htmlOverscrollBehavior: html.style.overscrollBehavior,
+  //     bodyPosition: body.style.position,
+  //     bodyTop: body.style.top,
+  //     bodyWidth: body.style.width,
+  //     bodyOverflow: body.style.overflow,
+  //   };
 
-    // 스크롤 잠금 (iOS 포함)
-    html.style.overscrollBehavior = "none"; // Android/Chrome 계열 보정
-    body.style.position = "fixed";
-    body.style.top = `-${scrollY}px`;
-    body.style.width = "100%";
-    body.style.overflow = "hidden"; // 안전망
+  //   // 스크롤 잠금 (iOS 포함)
+  //   html.style.overscrollBehavior = "none"; // Android/Chrome 계열 보정
+  //   body.style.position = "fixed";
+  //   body.style.top = `-${scrollY}px`;
+  //   body.style.width = "100%";
+  //   body.style.overflow = "hidden"; // 안전망
 
-    // 클래스 플래그(원하면 전역 CSS에서 활용 가능)
-    html.classList.add("sheet-open");
+  //   // 클래스 플래그(원하면 전역 CSS에서 활용 가능)
+  //   html.classList.add("sheet-open");
 
-    return () => {
-      // 원복
-      html.style.overscrollBehavior = prev.htmlOverscrollBehavior;
-      body.style.position = prev.bodyPosition;
-      body.style.top = prev.bodyTop;
-      body.style.width = prev.bodyWidth;
-      body.style.overflow = prev.bodyOverflow;
-      html.classList.remove("sheet-open");
+  //   return () => {
+  //     // 원복
+  //     html.style.overscrollBehavior = prev.htmlOverscrollBehavior;
+  //     body.style.position = prev.bodyPosition;
+  //     body.style.top = prev.bodyTop;
+  //     body.style.width = prev.bodyWidth;
+  //     body.style.overflow = prev.bodyOverflow;
+  //     html.classList.remove("sheet-open");
 
-      // 스크롤 위치 복원
-      const y = Math.abs(parseInt(prev.bodyTop || "0", 10)) || scrollY;
-      window.scrollTo(0, y);
-    };
-  }, [open]);
+  //     // 스크롤 위치 복원
+  //     const y = Math.abs(parseInt(prev.bodyTop || "0", 10)) || scrollY;
+  //     window.scrollTo(0, y);
+  //   };
+  // }, [open]);
 
   // 초기 포커스
   useEffect(() => {
@@ -255,6 +255,7 @@ export default function BottomSheet({ children }: { children?: ReactNode }) {
       {open && (
         <Backdrop
           as={motion.div}
+          $interactive={isExpanded}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: { duration: 0.12 } }}
           exit={{ opacity: 0, transition: { duration: 0.12 } }}

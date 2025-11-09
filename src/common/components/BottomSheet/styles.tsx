@@ -10,12 +10,14 @@ interface PanelProps {
 }
 
 /** Backdrop: 네비 영역은 가리지 않음 */
-export const Backdrop = styled.div`
+export const Backdrop = styled(motion.div)<{ $interactive: boolean }>`
   position: fixed;
   inset: 0 0 var(--navbar-height, 0px) 0;
   z-index: 100;
   touch-action: none;
   overscroll-behavior: none;
+  /* ✅ open(일반)에서는 터치 통과, expanded에서만 막기 */
+  pointer-events: ${({ $interactive }) => ($interactive ? "auto" : "none")};
 `;
 
 /** Panel: 네비바에 정확히 맞닿도록 보더 보정 */
@@ -23,6 +25,7 @@ export const Panel = styled(motion.div)<PanelProps>`
   position: fixed;
   z-index: 1000;
   left: 0;
+  padding-right: 4px;
   bottom: calc(var(--navbar-height, 0px) - var(--nav-border-top, 0px));
   width: 100vw;
   height: ${({ $size }) => $size};
@@ -63,7 +66,7 @@ export const GrabHandle = styled.div`
 export const SheetViewport = styled.div`
   display: flex;
   flex-direction: column;
-  height: 90%;
+  height: 100%;
   overflow-y: auto; /* ← 내부 스크롤 */
   -webkit-overflow-scrolling: touch; /* ← iOS 관성 스크롤 */
   padding: 4px 0 0 0;
