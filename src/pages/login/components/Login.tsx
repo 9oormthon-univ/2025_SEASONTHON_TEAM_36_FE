@@ -1,5 +1,3 @@
-import styled from "styled-components";
-
 import kakaoLoginImg from "@/assets/images/kakao-login-medium-wide.svg";
 
 import AppLogoImg from "../../../assets/images/app-logo-frog.png";
