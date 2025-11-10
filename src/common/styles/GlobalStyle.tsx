@@ -24,7 +24,7 @@ export const GlobalStyle = createGlobalStyle`
     --yellow1: #FFE578;
     --yellow2: #FFFFB9;
     --pink: #FFC8F2;
-    --oragne: #FFB378;
+    --orange: #FFB378;
     --deep-blue: #75A0CE;
     --olive-green: #9BAEAA;
     --red: #EA7678;
