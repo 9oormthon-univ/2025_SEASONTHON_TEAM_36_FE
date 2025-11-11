@@ -1,4 +1,3 @@
-// src/pages/home/hooks/useTodaySteps.ts
 import { useCallback, useEffect, useState } from "react";
 
 import { fetchTodaySteps } from "@/apis/step";
@@ -17,7 +16,7 @@ function mapRespToListItem(_prefix: "today" | "past") {
       isCompleted: !!s.isCompleted,
 
       // StepListItem 확장
-      state: s.isCompleted ? "done" : "pause",
+      state: s.isCompleted ? "done" : "idle", // ✅ 기본 상태를 "idle"로 변경
       id: s.stepId, // playingKey 비교용 id
     };
   };

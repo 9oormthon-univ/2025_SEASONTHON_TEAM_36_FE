@@ -38,6 +38,7 @@ export default function TodayStepsSheet() {
 
   const {
     playingKey,
+    lastPlayedKey,
     lastProgress,
     lastRecord,
     stepStopOpen,
@@ -59,7 +60,10 @@ export default function TodayStepsSheet() {
     onOpenDailyIfNeeded: () => maybeOpen(),
   });
 
-  const groups = useMemo(() => applyPlayingState(baseGroups, playingKey), [baseGroups, playingKey]);
+  const groups = useMemo(
+    () => applyPlayingState(baseGroups, playingKey, lastPlayedKey),
+    [baseGroups, playingKey, lastPlayedKey],
+  );
   const playingItem = useMemo(
     () => groups.flatMap(g => g.items).find(it => it.state === "play"),
     [groups],

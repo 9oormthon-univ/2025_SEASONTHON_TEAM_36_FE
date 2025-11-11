@@ -30,6 +30,9 @@ export function useStepPlayback({
   // 현재 재생중인 아이템의 id
   const [playingKey, setPlayingKey] = useState<PlayingKey>(null);
 
+  // ✅ 바로 직전에 재생하다가 정지/일시정지된 아이템의 id (UI에서는 pause로 표시)
+  const [lastPlayedKey, setLastPlayedKey] = useState<PlayingKey>(null);
+
   // 재생 시작 / 종료 시간
   const [startTimes, setStartTimes] = useState<Record<string | number, Date>>({});
   const [endTimes, setEndTimes] = useState<Record<string | number, Date>>({});
@@ -49,6 +52,7 @@ export function useStepPlayback({
 
   // 동시 입력 (더블 탭 등)으로 인한 중복 실행 방지 플래그
   const busyRef = useRef(false);
+
   // 상단 refs 부근에 추가
   const pendingReloadAfterStopRef = useRef(false);
   useEffect(() => {
@@ -77,8 +81,6 @@ export function useStepPlayback({
 
     if (progress != null) setLastProgress(progress);
 
-    // void reloadTodos();
-
     // 1) 오늘 스텝 모두 완료 → DayComplete만
     if (doneToday) {
       setStepStopOpen(false);
@@ -93,9 +95,7 @@ export function useStepPlayback({
       setGoalCompleteOpen(true);
       return true;
     }
-    // 3) 그 외 → Pause 유지
-    // setStepStopOpen(true); // handleStopFromModal에서 처리
-    // setPlayingKey(null);
+    // 3) 그 외 → Pause 유지 (스플래시는 호출측에서)
     return false;
   }, []);
 
@@ -113,7 +113,6 @@ export function useStepPlayback({
             if (prevStepId != null) {
               const startedAt = startTimes[prevKey];
               const now = new Date();
-              // const endTime = toKstIsoString(now);
               const endTime = new Date().toISOString();
               const duration = startedAt
                 ? Math.max(0, Math.floor((now.getTime() - startedAt.getTime()) / 1000))
@@ -124,6 +123,8 @@ export function useStepPlayback({
           } catch (e: unknown) {
             console.error("[useStepPlayback] stop on goal change failed:", e);
           } finally {
+            // ✅ 목표 전환으로 인해 끊긴 직전 아이템을 pause로 보여주기
+            setLastPlayedKey(prevKey);
             void reloadTodos();
           }
         })();
@@ -151,12 +152,9 @@ export function useStepPlayback({
 
         if (it.stepId != null) {
           try {
-            // const startTime = toKstIsoString(new Date());
             const startTime = new Date().toISOString();
             const res = (await startStep(it.stepId, { startTime })) as RespStepRecord;
             setLastRecord(res); // 🐸 추가
-            console.info("[useStepPlayback] startStep result:", res);
-            // setLastProgress(res.progress);
           } catch (e) {
             console.error("[useStepPlayback] startStep error:", e);
             alert(e || "시작 중 오류가 발생했습니다.");
@@ -168,6 +166,7 @@ export function useStepPlayback({
       busyRef.current = false;
     }
   };
+
   // 🐸 모달 안의 “완료” 버튼이 실제 stopStep 수행
   const handleStopFromModal = async () => {
     const it = selectedStep;
@@ -185,10 +184,12 @@ export function useStepPlayback({
       console.error("[useStepPlayback] stopStep(from modal) error:", e);
       alert(e || "정지 로그 저장에 실패했습니다.");
     } finally {
+      // ✅ 마지막으로 정지한 아이템은 pause로 보이도록 저장
+      if (it) setLastPlayedKey(it.id);
       setStepStopOpen(true);
       setPlayingModalOpen(false);
       setPlayingKey(null);
-      pendingReloadAfterStopRef.current = true; // 모달이 '내부 로직으로 닫힌 이후'에만 reload 되도록 플래그 ON
+      pendingReloadAfterStopRef.current = true; // 모달이 '내부 로직으로 닫힌 이후'에만 reload 되도록
     }
   };
 
@@ -212,6 +213,8 @@ export function useStepPlayback({
       // UI 상태 업데이트
       setEndTimes(prev => ({ ...prev, [it.id]: now }));
       setPlayingKey(null); // 이후 재개 시 새 타이머 구간 시작 위해 재생 상태 해제
+      // ✅ 마지막으로 일시정지한 아이템을 pause로 보이도록 저장
+      setLastPlayedKey(it.id);
     } catch (e) {
       console.error("[useStepPlayback] pauseStep(from modal) error:", e);
       alert(e || "일시정지 중 오류가 발생했습니다.");
@@ -219,13 +222,14 @@ export function useStepPlayback({
       busyRef.current = false;
       setStepPauseOpen(true);
       setPlayingModalOpen(false);
-      // void reloadTodos(); 삭제함
+      // void reloadTodos();  // 유지: 모달 닫힘/스플래시 흐름에 맞춰 외부에서 처리
     }
   };
 
   return {
     selectedStep,
     playingKey,
+    lastPlayedKey, // ✅ 추가: 직전에 정지/일시정지한 아이템 id
     startTimes,
     endTimes,
     lastProgress,

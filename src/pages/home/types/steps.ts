@@ -1,7 +1,7 @@
 import { RespStepItem } from "@/common/types/response/step";
 
 /** UI에서 사용하는 Step 상태 */
-export type StepState = "play" | "pause" | "done";
+export type StepState = "play" | "pause" | "done" | "idle";
 
 /** applyPlayingState에서 비교하는 키(id)는 문자열/숫자 모두 가능하게 */
 export type PlayingKey = string | number | null;

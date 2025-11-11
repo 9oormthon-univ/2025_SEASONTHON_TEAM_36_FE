@@ -14,6 +14,8 @@ export default function TodayStepsList({ items = [], onAction }: TodayStepsListP
       <List role="list">
         {items.map(it => {
           const isPlaying = it.state === "play";
+          const isPaused = it.state === "pause";
+
           return (
             <Item key={it.id} role="listitem">
               <Bullet aria-hidden="true" />
@@ -26,6 +28,7 @@ export default function TodayStepsList({ items = [], onAction }: TodayStepsListP
                   title={isPlaying ? "정지" : "시작"}
                   onClick={() => void onAction?.({ id: it.id, stepId: it.stepId })}
                   $isPlaying={isPlaying}
+                  $isPaused={isPaused}
                   $completed={it.isCompleted}
                   $size={29}
                 >
@@ -125,19 +128,19 @@ const Right = styled.div`
 /**DOM으로 전달되지 않도록 $프롭으로 정의 */
 const ActionBtnWrapper = styled.button<{
   $isPlaying?: boolean;
+  $isPaused?: boolean;
   $completed?: boolean;
   $size?: number;
 }>`
   all: unset;
   cursor: pointer;
-
   display: inline-flex;
   border-radius: 16px;
   width: ${({ $size }) => $size ?? 29}px;
   height: ${({ $size }) => $size ?? 29}px;
 
-  /* 버튼 자체 색상 = 내부 SVG의 currentColor */
-  color: ${({ $completed }) => ($completed ? "red" : "var(--green-400)")};
+  /* 아이콘 색상: 일시정지면 빨강, 그 외에는 녹색 */
+  color: ${({ $isPaused }) => ($isPaused ? "red" : "var(--green-400)")};
 `;
 
 const IconOuter = styled.div`
