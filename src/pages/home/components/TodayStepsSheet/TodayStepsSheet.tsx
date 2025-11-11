@@ -34,7 +34,8 @@ export default function TodayStepsSheet() {
     alert(msg || "할 일(step) 목록을 불러오지 못했습니다.");
   }, [error]);
 
-  const { modalOpen, maybeOpen, closeAndMark } = useDailyCheckIn();
+  const { modalOpen, maybeOpen, closeAndMark, dailyShown } = useDailyCheckIn();
+  console.log(`dailyShown: ${dailyShown}`);
 
   const {
     playingKey,

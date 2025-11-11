@@ -15,7 +15,7 @@ export async function createDailyLogBefore(
 /** [GET] 오늘 DailyLogBefore 조회 */
 export async function getTodayDailyLogBefore() {
   return handleApiRequest<RespDailyLogBefore>(() =>
-    mainApi.get("/api/v1/daily-log/before/today", {
+    mainApi.get("/api/v1/daily-log/before", {
       headers: { Accept: "application/json" },
     }),
   );
