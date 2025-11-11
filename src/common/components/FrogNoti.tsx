@@ -39,6 +39,7 @@ const TopText = styled.h2`
   text-align: center;
   white-space: pre-wrap;
   line-height: 1.7;
+  word-break: keep-all;
 `;
 
 const FrogImg = styled.img`
@@ -50,4 +51,5 @@ const BottomText = styled.h3`
   color: var(--text-3, #666);
   text-align: center;
   white-space: pre-wrap;
+  word-break: keep-all;
 `;
