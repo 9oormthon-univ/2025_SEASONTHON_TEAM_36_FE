@@ -116,20 +116,26 @@ export default function GoalStepsModal({
 
                   {/* 아코디언 패널 영역 */}
                   <StepPanel id={panelId} $open={isOpen} role="region" aria-label="단계 상세">
-                    <PanelGrid>
-                      <PanelRow>
-                        <PanelLabel>완료 여부</PanelLabel>
-                        <PanelValue>
-                          {"isCompleted" in s && typeof s.isCompleted === "boolean" ? (
-                            <StatusPill data-completed={s.isCompleted}>
-                              {s.isCompleted ? "완료" : "미완료"}
-                            </StatusPill>
-                          ) : (
-                            "-"
-                          )}
-                        </PanelValue>
-                      </PanelRow>
-                    </PanelGrid>
+                    <PanelRow style={{ justifyContent: "flex-start" }}>
+                      {/* {s.tips && ( */}
+                      <>
+                        <PanelLabel>💡</PanelLabel>
+                        <PanelValue>{s.tips == null ? "-" : s.tips}</PanelValue>
+                      </>
+                      {/* )} */}
+                    </PanelRow>
+                    <PanelRow>
+                      <PanelLabel>완료 여부</PanelLabel>
+                      <PanelValue>
+                        {"isCompleted" in s && typeof s.isCompleted === "boolean" ? (
+                          <StatusPill data-completed={s.isCompleted}>
+                            {s.isCompleted ? "완료" : "미완료"}
+                          </StatusPill>
+                        ) : (
+                          "-"
+                        )}
+                      </PanelValue>
+                    </PanelRow>
                   </StepPanel>
                 </StepItem>
               );
@@ -283,7 +289,6 @@ const StepDate = styled.span`
   white-space: nowrap;
 `;
 
-// 확장 상태에 맞춰 수직 정렬 조금 바꿔주면 제목이 여러 줄일 때 보기 좋아짐
 const StepTitleRow = styled.div<{ $expanded?: boolean }>`
   display: flex;
   align-items: ${({ $expanded }) => ($expanded ? "flex-start" : "center")};
@@ -296,10 +301,9 @@ const StepTitle = styled.span<{ $expanded?: boolean }>`
   flex: 1 1 auto;
   min-width: 0;
   color: var(--text-1, #000);
-  font-size: var(--fs-xs, 12px);
+  font-size: 13px;
   font-weight: 500;
-  line-height: var(--lh-S, 16px);
-  letter-spacing: var(--ls-1, 0.6px);
+  line-height: 1.2;
 
   /* 기본(접힘): 한 줄 + ellipsis */
   ${({ $expanded }) =>
@@ -314,7 +318,7 @@ const StepTitle = styled.span<{ $expanded?: boolean }>`
     white-space: normal;
     overflow: visible;
     text-overflow: unset;
-    line-height: var(--lh-M, 18px);
+    line-height: 1.2;
     word-break: keep-all;
     overflow-wrap: anywhere;
   `}
@@ -354,28 +358,25 @@ const StepPanel = styled.div<{ $open: boolean }>`
   margin-top: ${({ $open }) => ($open ? "2px" : "0")};
 `;
 
-const PanelGrid = styled.div`
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  row-gap: 6px;
-  column-gap: 10px;
-  width: 100%;
-`;
-
 const PanelRow = styled.div`
-  display: contents;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center; /* 수직 중앙 정렬 */
+  width: 100%;
+  gap: 4px; /* 라벨과 값 사이 간격 */
+  padding-bottom: 4px;
 `;
 
 const PanelLabel = styled.span`
-  color: var(--text-2, #6f737b);
-  font-size: 12px;
+  color: var(--text-3);
+  font-size: 11px;
   line-height: 18px;
 `;
 
 const PanelValue = styled.span`
-  color: var(--text-1, #111);
-  font-size: 13px;
-  line-height: 18px;
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.1;
 `;
 
 const StatusPill = styled.span`
