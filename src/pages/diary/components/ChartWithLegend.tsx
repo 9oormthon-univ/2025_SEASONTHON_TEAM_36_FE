@@ -5,9 +5,8 @@ import styled from "styled-components";
 import type { GoalForChart } from "../utils/diaryUtils";
 import ClockPie24 from "./ClockPie24";
 
-/** 초 단위를 사람이 읽기 쉬운 H:MM:SS 또는 M:SS 형태로 포맷합니다. */
 /** 초 단위를 항상 HH:MM:SS 형태로 포맷합니다. */
-export function fmtHMS(totalSeconds: number): string {
+function fmtHMS(totalSeconds: number): string {
   const sec = Math.max(0, Math.floor(totalSeconds || 0));
   const h = Math.floor(sec / 3600);
   const m = Math.floor((sec % 3600) / 60);
@@ -55,21 +54,17 @@ export default function ChartWithLegend({
           {data.length === 0 || !hasAny ? (
             <Empty>{emptyText}</Empty>
           ) : (
-            data
-              .slice()
-              .sort((a, b) => b.value - a.value)
-              .map(g => (
-                <LegendItem key={g.id}>
-                  <ColorDot style={{ background: g.color }} />
-                  <span className="typo-h4" style={{ lineHeight: "1.1", wordBreak: "keep-all" }}>
-                    {g.label}
-                  </span>
-                  <span className="time" style={{ color: "var(--text-3)" }}>
-                    {fmtHMS(g.timeSecs)}
-                  </span>
-                  {/* 시간 추가하면 좋을 듯 ! */}
-                </LegendItem>
-              ))
+            data.map(g => (
+              <LegendItem key={g.id}>
+                <ColorDot style={{ background: g.color }} />
+                <span className="typo-h4" style={{ lineHeight: "1.1", wordBreak: "keep-all" }}>
+                  {g.label}
+                </span>
+                <span className="time" style={{ color: "var(--text-3)" }}>
+                  {fmtHMS(g.timeSecs)}
+                </span>
+              </LegendItem>
+            ))
           )}
         </Legend>
       </ChartRow>
@@ -109,7 +104,7 @@ const Legend = styled.div`
 const LegendItem = styled.span`
   width: 100%;
   border: none;
-  background: var(--gray-50);
+  background: transparent;
   border-radius: 12px;
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -117,11 +112,6 @@ const LegendItem = styled.span`
   align-items: center;
   text-align: left;
   cursor: pointer;
-  .name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
   .time {
     font-variant-numeric: tabular-nums;
     font-weight: 600;
