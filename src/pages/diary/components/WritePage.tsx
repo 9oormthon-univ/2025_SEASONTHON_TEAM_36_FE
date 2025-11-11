@@ -17,9 +17,9 @@ import GreenButton from "../../../common/components/GreenButton";
 import { ENERGY, PREV_EMOTION } from "../constants/readConstants";
 import type { SelectorItem } from "../constants/writeConstants";
 import { EMOTIONS, FOCUSES } from "../constants/writeConstants";
-import useWriteDetail from "../hooks/useWriteDetail";
+import useDiaryDetail from "../hooks/useDiaryDetail";
 import { CompletionRow, DateBar, DateText, Label, Page, Section } from "../styles/WritePage";
-import { ID_TO_MOOD, likert1to5ToIndex } from "../utils/diaryUtils";
+import { ID_TO_MOOD, likert1to5ToIndex, mapTodosToChartGoals } from "../utils/diaryUtils";
 import ChartWithLegend from "./ChartWithLegend";
 import CompletionSelector from "./CompletionSelector";
 import { default as JourneyRow } from "./JourneyRow";
@@ -87,7 +87,7 @@ export default function Write() {
   const navigate = useNavigate();
 
   // 서버 데이터
-  const { before, goals, loading, error } = useWriteDetail(date);
+  const { detail, error, loading } = useDiaryDetail(date ?? null);
 
   // 작성 상태
   const [mood, setMood] = useState<SelectorItem | null>(null);
@@ -119,9 +119,11 @@ export default function Write() {
   const headerDate = formatKoreanDate(new Date(state));
 
   // 서버 데이터 → UI 매핑(안전 디폴트)
-  const prevEmotionIdx = before ? likert1to5ToIndex(before.emotion, 5) : 2;
-  const energyIdx = before ? likert1to5ToIndex(before.energy, 5) : 2;
-  const weatherIdx = before ? (ENUM_TO_WEATHER_ID[before.weather] ?? 0) : 0;
+  const prevEmotionIdx = detail ? likert1to5ToIndex(detail.emotion, 5) : 2;
+  const energyIdx = detail ? likert1to5ToIndex(detail.energy, 5) : 2;
+  const weatherIdx = detail ? (ENUM_TO_WEATHER_ID[detail.weather] ?? 0) : 0;
+
+  const goals = mapTodosToChartGoals(detail?.todayCompletedTodoResponses);
 
   // 파일 선택 열기 (iOS 카메라 바로 열기: capture="environment"를 input에 지정)
   const handleAddClick = useCallback(() => {
@@ -258,10 +260,10 @@ export default function Write() {
       {/* 파이 차트 + 범례 */}
       <ChartWithLegend goals={goals} />
 
-      {/* 여정 전 — Before 데이터 */}
+      {/* 여정 전 — detail 데이터 */}
       <Section>
         <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
-        {before ? (
+        {detail ? (
           <JourneyRow
             items={[
               {
@@ -277,7 +279,7 @@ export default function Write() {
               {
                 title: "날씨",
                 imgSrc: getWeatherIcons(weatherIdx)?.active,
-                label: before ? getWeatherLabelFromEnum(before.weather) : "",
+                label: detail ? getWeatherLabelFromEnum(detail.weather) : "",
               },
             ]}
           />

@@ -5,6 +5,19 @@ import styled from "styled-components";
 import type { GoalForChart } from "../utils/diaryUtils";
 import ClockPie24 from "./ClockPie24";
 
+/** 초 단위를 사람이 읽기 쉬운 H:MM:SS 또는 M:SS 형태로 포맷합니다. */
+/** 초 단위를 항상 HH:MM:SS 형태로 포맷합니다. */
+export function fmtHMS(totalSeconds: number): string {
+  const sec = Math.max(0, Math.floor(totalSeconds || 0));
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+
+  return [String(h).padStart(2, "0"), String(m).padStart(2, "0"), String(s).padStart(2, "0")].join(
+    ":",
+  );
+}
+
 export default function ChartWithLegend({
   goals,
   chartWidthPct = 75,
@@ -48,8 +61,12 @@ export default function ChartWithLegend({
               .map(g => (
                 <LegendItem key={g.id}>
                   <ColorDot style={{ background: g.color }} />
-                  <span className="typo-h4">{g.label}</span>
-                  {/* <span className="time">{fmtHMS(g.timeSecs)}</span> */}
+                  <span className="typo-h4" style={{ lineHeight: "1.1", wordBreak: "keep-all" }}>
+                    {g.label}
+                  </span>
+                  <span className="time" style={{ color: "var(--text-3)" }}>
+                    {fmtHMS(g.timeSecs)}
+                  </span>
                   {/* 시간 추가하면 좋을 듯 ! */}
                 </LegendItem>
               ))
@@ -108,6 +125,7 @@ const LegendItem = styled.span`
   .time {
     font-variant-numeric: tabular-nums;
     font-weight: 600;
+    font-size: 14px;
   }
 `;
 

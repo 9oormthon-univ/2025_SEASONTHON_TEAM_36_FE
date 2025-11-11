@@ -63,6 +63,7 @@ export default function Read() {
 
   // 실제 데이터 사용 (권장)
   const goals = mapTodosToChartGoals(detail.todayCompletedTodoResponses);
+  // console.log(goals);
 
   // 필요 시 더미 데이터를 잠깐 쓰고 싶다면 위 줄을 주석 처리하고 아래 블록 사용
   /*
