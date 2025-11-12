@@ -10,14 +10,9 @@ import { DDayIcon } from "../styles/DDayIcon";
 export default function GoalHeader() {
   const navigate = useNavigate();
 
-  const onSirenClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    void navigate("/chatbot");
-  };
   // ===== 스토어에서 활성 goal 가져오기 =====
   const activeId = useActiveGoalStore(s => s.activeId);
   const goals = useGoalsStore(s => s.goals);
-
   const activeGoal = useMemo(() => goals.find(g => g.id === activeId) ?? null, [goals, activeId]);
 
   // 없을 때 안전한 기본값
@@ -42,7 +37,13 @@ export default function GoalHeader() {
    */
   const isUrgent =
     isDay || (num != null && ((sign === "+" && num >= 0) || (sign !== "+" && num <= 3)));
-  // true;
+
+  const onSirenClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    // 안전망: 혹시라도 disabled 스타일이 풀려도 실제로는 동작 금지
+    if (!isUrgent) return;
+    void navigate("/chatbot");
+  };
 
   return (
     <HeaderRow>
@@ -51,9 +52,11 @@ export default function GoalHeader() {
         <TaskTitle className="typo-label-l">{title}</TaskTitle>
         <SirenButton
           type="button"
-          onClick={onSirenClick}
-          tabIndex={isUrgent ? 0 : -1}
+          onClick={isUrgent ? onSirenClick : undefined}
+          disabled={!isUrgent}
+          aria-disabled={!isUrgent}
           aria-label={isUrgent ? "긴급 알림" : "긴급 아님"}
+          title={isUrgent ? "긴급: 챗봇으로 이동" : "지금은 긴급 알림이 아닙니다"}
         >
           {isUrgent ? siren : graySiren}
         </SirenButton>
@@ -95,6 +98,14 @@ const SirenButton = styled.button`
   cursor: pointer;
   &:active {
     transform: scale(0.96);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    transform: none;
+    /* 필요시 클릭 방지 강화 */
+    pointer-events: none;
+    opacity: 0.9; /* 시각적 차이 미세하게 */
   }
 `;
 
