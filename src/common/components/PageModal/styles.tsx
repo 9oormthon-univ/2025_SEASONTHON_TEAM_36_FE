@@ -93,6 +93,6 @@ export const IconImg = styled.img`
 
 export const Body = styled.div`
   flex: 1 1 auto;
-  overflow: auto;
+  overflow-x: hidden;
   padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px);
 `;
