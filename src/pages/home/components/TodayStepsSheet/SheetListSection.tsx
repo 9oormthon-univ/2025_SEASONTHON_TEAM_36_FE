@@ -40,8 +40,8 @@ const HeaderBackground = styled.div`
   top: 0; /* 또는 상단 고정 간격을 조절하려면 0 대신 4px, 8px 등 사용 */
   background: var(--bg-1, #fff); /* 투명 대신 배경색을 줘야 겹칠 때 가독성 유지 */
   color: var(--text-1);
-  margin: 0 20px;
-  padding: 4px 0;
+  padding: 4px;
+  margin: 0 10px;
 `;
 
 const SectionHeader = styled.div`
