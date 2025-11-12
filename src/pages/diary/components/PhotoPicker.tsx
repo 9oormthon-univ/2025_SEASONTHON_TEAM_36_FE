@@ -48,13 +48,15 @@ export const PhotoBox = styled.div`
   margin-bottom: 50px;
 
   img {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
   }
 `;
 
-export const Placeholder = styled.div`
+export const Placeholder = styled.div<{ $isPhoto?: boolean }>`
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;

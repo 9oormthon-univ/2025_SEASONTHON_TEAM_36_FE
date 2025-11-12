@@ -18,6 +18,7 @@ import { ENERGY, PREV_EMOTION } from "../constants/readConstants";
 import type { SelectorItem } from "../constants/writeConstants";
 import { EMOTIONS, FOCUSES } from "../constants/writeConstants";
 import useDiaryDetail from "../hooks/useDiaryDetail";
+import { useUploadToS3 } from "../hooks/useUploadToS3";
 import { CompletionRow, DateBar, DateText, Label, Page, Section } from "../styles/WritePage";
 import { ID_TO_MOOD, likert1to5ToIndex, mapTodosToChartGoals } from "../utils/diaryUtils";
 import ChartWithLegend from "./ChartWithLegend";
@@ -27,59 +28,6 @@ import MemoBox from "./MemoBox";
 import PhotoPicker from "./PhotoPicker";
 import Selector from "./Selector";
 import ViewPicture from "./ViewPicture";
-
-// ===== 이미지 헬퍼: 파일 → 리사이즈된 DataURL(JPEG/WebP) =====
-async function fileToResizedDataUrl(
-  file: File,
-  opts: { maxSize: number; quality: number; prefer: "image/webp" | "image/jpeg" } = {
-    maxSize: 2048, // 긴 변 기준
-    quality: 0.85,
-    prefer: "image/jpeg",
-  },
-): Promise<string> {
-  // 브라우저가 디코드 못하면(예: 일부 환경의 HEIC) 예외 발생 → 상위에서 폴백
-  const arrayBuf = await file.arrayBuffer();
-  const blob = new Blob([arrayBuf], { type: file.type || "application/octet-stream" });
-  const objectUrl = URL.createObjectURL(blob);
-
-  try {
-    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const image = new Image();
-      // iOS 사파리 CORS 문제 회피를 위해 same-origin 가정. 필요시 crossOrigin 설정.
-      image.onload = () => resolve(image);
-      image.onerror = reject;
-      image.src = objectUrl;
-    });
-
-    const { naturalWidth: w, naturalHeight: h } = img;
-    if (!w || !h) throw new Error("Invalid image dimension");
-
-    const scale = Math.min(1, opts.maxSize / Math.max(w, h));
-    const targetW = Math.round(w * scale);
-    const targetH = Math.round(h * scale);
-
-    const canvas = document.createElement("canvas");
-    canvas.width = targetW;
-    canvas.height = targetH;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("Canvas 2D context not available");
-
-    // 간단한 고품질 보간
-    (ctx as any).imageSmoothingEnabled = true;
-    (ctx as any).imageSmoothingQuality = "high";
-
-    ctx.drawImage(img, 0, 0, targetW, targetH);
-
-    // WebP가 더 작고 좋지만, 사파리 구버전 호환을 위해 JPEG 우선 옵션도 지원
-    const targetType = opts.prefer;
-    // 일부 브라우저는 toDataURL의 MIME을 무시하고 기본값으로 반환할 수 있음
-    const dataUrl = canvas.toDataURL(targetType, opts.quality);
-
-    return dataUrl;
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
-}
 
 export default function Write() {
   const { state } = useLocation() as { state: string };
@@ -105,6 +53,9 @@ export default function Write() {
   // 파일 input & 프리뷰 모달
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+
+  // ✅ S3 업로드 훅
+  const { upload, uploading, progress, error: uploadError } = useUploadToS3();
 
   // 컴포넌트 unmount 시 프리뷰 URL 정리
   useEffect(() => {
@@ -139,12 +90,11 @@ export default function Write() {
       const MAX_SIZE = 15 * 1024 * 1024; // 15MB
       const mime = (file.type || "").toLowerCase();
 
-      // 타입/용량 검증 (HEIC/HEIF도 일단 허용: 브라우저 디코딩 실패 시 폴백)
       const allowed =
         mime.startsWith("image/") ||
         mime === "image/heic" ||
         mime === "image/heif" ||
-        mime === "application/octet-stream"; // 일부 iOS가 빈 타입 줄 때
+        mime === "application/octet-stream";
 
       if (!allowed) {
         alert("지원하지 않는 이미지 형식이에요.");
@@ -194,27 +144,11 @@ export default function Write() {
 
     setSubmitting(true);
     try {
-      // ===== 이미지 처리 전략 =====
-      // 백엔드가 문자열 필드 photoUrl만 받으므로
-      // - 가능하면 클라이언트에서 리사이즈+JPEG/WebP DataURL로 변환해 전달합니다.
-      // - 브라우저가 디코딩 못하면(HEIC 등) 프리뷰 blob URL로 폴백 (권장X, 추후 업로드 API로 교체).
+      // 🔁 사진이 있으면 S3에 업로드 → url을 API의 photoUrl로 사용
       let photoUrlForApi: string | undefined = undefined;
-
       if (selectedFile) {
-        try {
-          // 사파리 포함 대다수 브라우저 호환을 위해 JPEG 권장
-          photoUrlForApi = await fileToResizedDataUrl(selectedFile, {
-            maxSize: 2048,
-            quality: 0.85,
-            prefer: "image/jpeg",
-          });
-        } catch (err) {
-          // 디코딩 실패(HEIC 미지원 등) → 폴백: 일단 blob/objectURL 사용
-          // ⚠️ 서버가 blob URL을 읽을 수는 없으니, 실제 운영에서는 CDN 사전 업로드로 교체 필요
-          if (previewUrl) {
-            photoUrlForApi = previewUrl;
-          }
-        }
+        const { url } = await upload(selectedFile); // <-- 핵심 변경
+        photoUrlForApi = url;
       }
 
       const body: ReqDailyLogAfter = {
@@ -222,7 +156,7 @@ export default function Write() {
         focusLevel,
         completionLevel: completion,
         memo: memo.trim() || undefined,
-        photoUrl: photoUrlForApi, // DataURL(권장) 또는 임시 폴백
+        photoUrl: photoUrlForApi,
       } as const;
 
       const res = await createDailyLogAfter(body, date);
@@ -245,7 +179,7 @@ export default function Write() {
     } finally {
       setSubmitting(false);
     }
-  }, [mood?.id, focus?.id, completion, memo, selectedFile, previewUrl, date, navigate]);
+  }, [mood?.id, focus?.id, completion, memo, selectedFile, date, navigate, upload]);
 
   if (error) return <div>❌ {error}</div>;
   if (loading) return <div style={{ textAlign: "center" }}>불러오는 중...</div>;
@@ -360,8 +294,20 @@ export default function Write() {
           onImageClick={handleImageClick}
         />
 
-        <GreenButton onClick={handleSubmit} disabled={submitting} style={{ margin: " 0 30%" }}>
-          작성 완료
+        {/* 진행률/에러 표시 (선택) */}
+        {/* {uploading && (
+          <div style={{ textAlign: "center", marginTop: 8 }}>업로드 중... {progress}%</div>
+        )} */}
+        {uploadError && (
+          <div style={{ color: "crimson", textAlign: "center" }}>{uploadError.message}</div>
+        )}
+
+        <GreenButton
+          onClick={handleSubmit}
+          disabled={submitting || uploading}
+          style={{ margin: " 0 30%" }}
+        >
+          {submitting ? "저장 중..." : uploading ? `이미지 업로드 중... ${progress}%` : "작성 완료"}
         </GreenButton>
       </Section>
 
