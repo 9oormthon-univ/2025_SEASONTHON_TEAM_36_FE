@@ -14,9 +14,10 @@ function mapRespToListItem(_prefix: "today" | "past") {
       stepDate: s.stepDate ?? "", // 없으면 빈 문자열
       description: s.description ?? "",
       isCompleted: !!s.isCompleted,
-
+      isPaused: !!s.isPaused,
+      tips: s.tips ?? "",
       // StepListItem 확장
-      state: s.isCompleted ? "done" : "idle", // ✅ 기본 상태를 "idle"로 변경
+      state: s.isPaused ? "pause" : s.isCompleted ? "done" : "idle",
       id: s.stepId, // playingKey 비교용 id
     };
   };

@@ -12,12 +12,9 @@ import { PlayingKey, StepListGroup, StepListItem } from "../../../types/steps";
 export function applyPlayingState(
   groups: StepListGroup[],
   playingKey: PlayingKey,
-  lastPlayedKey: PlayingKey | null, // ✅ 추가
+  // lastPlayedKey: PlayingKey | null,  // 레거시
 ): StepListGroup[] {
   const isPlaying = (id: string | number, key: PlayingKey) =>
-    key !== null && (id === key || String(id) === String(key));
-
-  const isLastPlayed = (id: string | number, key: PlayingKey | null) =>
     key !== null && (id === key || String(id) === String(key));
 
   return groups.map(g => ({
@@ -25,9 +22,6 @@ export function applyPlayingState(
     items: g.items.map((it): StepListItem => {
       if (isPlaying(it.id, playingKey)) {
         return { ...it, state: "play" }; // 현재 재생 중
-      }
-      if (isLastPlayed(it.id, lastPlayedKey)) {
-        return { ...it, state: "pause" }; // ✅ 마지막에 정지된 항목
       }
       return { ...it, state: "idle" }; // 나머지는 기본 상태
     }),

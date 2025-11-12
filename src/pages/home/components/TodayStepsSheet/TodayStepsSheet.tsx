@@ -27,6 +27,7 @@ export default function TodayStepsSheet() {
 
   // 🍋‍🟩 이제 groups가 바로 내려옴
   const { loading, error, groups: baseGroups } = useTodaySteps(activeId);
+  console.info(baseGroups);
 
   useEffect(() => {
     if (!error) return;
@@ -39,7 +40,6 @@ export default function TodayStepsSheet() {
 
   const {
     playingKey,
-    lastPlayedKey,
     lastProgress,
     lastRecord,
     stepStopOpen,
@@ -61,10 +61,7 @@ export default function TodayStepsSheet() {
     onOpenDailyIfNeeded: () => maybeOpen(),
   });
 
-  const groups = useMemo(
-    () => applyPlayingState(baseGroups, playingKey, lastPlayedKey),
-    [baseGroups, playingKey, lastPlayedKey],
-  );
+  const groups = useMemo(() => applyPlayingState(baseGroups, playingKey), [baseGroups, playingKey]);
   const playingItem = useMemo(
     () => groups.flatMap(g => g.items).find(it => it.state === "play"),
     [groups],

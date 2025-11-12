@@ -13,8 +13,8 @@ export default function TodayStepsList({ items = [], onAction }: TodayStepsListP
     <>
       <List role="list">
         {items.map(it => {
-          const isPlaying = it.state === "play";
-          const isPaused = it.state === "pause";
+          const isPlaying = it.state === "play"; // 클라이언트 관리 상태에 의존
+          const isPaused = it.isPaused; // 서버 상태만 사용
 
           return (
             <Item key={it.id} role="listitem">

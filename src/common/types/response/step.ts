@@ -15,6 +15,7 @@ export interface RespStepItem {
   stepDate: string; // e.g. "2025-09-02"
   description: string;
   isCompleted: boolean;
+  isPaused: boolean;
   tips: string;
 }
 
