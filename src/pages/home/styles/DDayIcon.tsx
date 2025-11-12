@@ -70,6 +70,7 @@ function ddayStyles(dDay?: string) {
 
 export const DDayIcon = styled.div<{ $dDay?: string }>`
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   height: 22.5px;

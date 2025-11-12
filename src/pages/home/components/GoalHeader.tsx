@@ -56,7 +56,6 @@ export default function GoalHeader() {
           disabled={!isUrgent}
           aria-disabled={!isUrgent}
           aria-label={isUrgent ? "긴급 알림" : "긴급 아님"}
-          title={isUrgent ? "긴급: 챗봇으로 이동" : "지금은 긴급 알림이 아닙니다"}
         >
           {isUrgent ? siren : graySiren}
         </SirenButton>
