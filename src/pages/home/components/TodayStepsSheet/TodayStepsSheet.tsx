@@ -121,6 +121,7 @@ const SheetBody = styled.div`
   max-height: 100%;
   overflow: hidden;
   margin: 0 2%;
+  background: transparent;
 `;
 
 const ScrollArea = styled.div`
