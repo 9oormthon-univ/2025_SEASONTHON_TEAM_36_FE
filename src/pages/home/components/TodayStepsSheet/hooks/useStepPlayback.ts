@@ -30,9 +30,6 @@ export function useStepPlayback({
   // 현재 재생중인 아이템의 id
   const [playingKey, setPlayingKey] = useState<PlayingKey>(null);
 
-  // ✅ 바로 직전에 재생하다가 정지/일시정지된 아이템의 id (UI에서는 pause로 표시)
-  const [lastPlayedKey, setLastPlayedKey] = useState<PlayingKey>(null);
-
   // 재생 시작 / 종료 시간
   const [startTimes, setStartTimes] = useState<Record<string | number, Date>>({});
   const [endTimes, setEndTimes] = useState<Record<string | number, Date>>({});
@@ -46,24 +43,17 @@ export function useStepPlayback({
   const [dayCompleteOpen, setDayCompleteOpen] = useState<boolean>(false);
   const [stepPauseOpen, setStepPauseOpen] = useState<boolean>(false);
 
-  // 🐸 새로 추가: StepPlayingModal 열림 상태
+  // StepPlayingModal 열림 상태
   const [playingModalOpen, setPlayingModalOpen] = useState(false);
-  const [lastRecord, setLastRecord] = useState<RespStepRecord | null>(null); // 🐸 추가
+  const [lastRecord, setLastRecord] = useState<RespStepRecord | null>(null);
 
   // 동시 입력 (더블 탭 등)으로 인한 중복 실행 방지 플래그
   const busyRef = useRef(false);
 
-  // 상단 refs 부근에 추가
-  const pendingReloadAfterStopRef = useRef(false);
-  useEffect(() => {
-    // 모달이 닫힌 상태이고, 종료 이후 리로드 대기 플래그가 켜져있을 때만 실행
-    if (!stepStopOpen && pendingReloadAfterStopRef.current) {
-      pendingReloadAfterStopRef.current = false; // 소모
-      void reloadTodos();
-    }
-  }, [stepStopOpen, reloadTodos]);
+  // ✅ 리로드 대기 플래그(범용): 어떤 모달이든 "전부 닫힌" 타이밍에 1회 리로드
+  const pendingReloadRef = useRef(false);
 
-  // 보조 계산) playingKey에서 대응되는 stepId를 찾거나, 이전 재생 중 아이템을 끊을 때 사용
+  // 모든 아이템(보조 계산)
   const allItems = useMemo(() => groups.flatMap(g => g.items), [groups]);
 
   const closeStepStop = () => setStepStopOpen(false);
@@ -71,9 +61,20 @@ export function useStepPlayback({
   const closeDay = () => setDayCompleteOpen(false);
   const closeStepPause = () => setStepPauseOpen(false);
 
+  // ✅ 어떤 모달도 열려 있지 않을 때, 대기 플래그가 켜져 있으면 리로드
+  const anyModalOpen =
+    playingModalOpen || stepStopOpen || stepPauseOpen || goalCompleteOpen || dayCompleteOpen;
+
+  useEffect(() => {
+    if (!anyModalOpen && pendingReloadRef.current) {
+      pendingReloadRef.current = false; // 소모
+      void reloadTodos();
+    }
+  }, [anyModalOpen, reloadTodos]);
+
   // RespStepRecord 기반으로 직접 판정 (외부 유틸 의존성 제거)
   const handleStopResult = useCallback((res: RespStepRecord) => {
-    setLastRecord(res); // 🐸 추가
+    setLastRecord(res);
     const doneToday = Boolean(res.isCompletedTodaySteps);
     const p = Number(res.progress);
     const progress = Number.isFinite(p) ? p : null;
@@ -123,9 +124,8 @@ export function useStepPlayback({
           } catch (e: unknown) {
             console.error("[useStepPlayback] stop on goal change failed:", e);
           } finally {
-            // ✅ 목표 전환으로 인해 끊긴 직전 아이템을 pause로 보여주기
-            setLastPlayedKey(prevKey);
-            void reloadTodos();
+            // 이전에는 즉시 reloadTodos(); 지금은 범용 플래그 → 모달이 없으면 즉시, 있으면 닫힐 때 리로드
+            pendingReloadRef.current = true;
           }
         })();
 
@@ -134,9 +134,9 @@ export function useStepPlayback({
       }
       prevGoalRef.current = goalId;
     }
-  }, [goalId, playingKey, allItems, handleStopResult, reloadTodos, startTimes]);
+  }, [goalId, playingKey, allItems, handleStopResult, startTimes]);
 
-  // 🐸 Step 시작: 항상 StepPlayingModal 열기
+  // Step 시작: 항상 StepPlayingModal 열기
   const handleAction = async (it: { id: number | string; stepId: number | null }) => {
     if (busyRef.current) return;
     busyRef.current = true;
@@ -148,13 +148,13 @@ export function useStepPlayback({
         // 새 항목 재생
         setPlayingKey(it.id);
         setStartTimes(prev => ({ ...prev, [it.id]: new Date() }));
-        setPlayingModalOpen(true); // 🐸 항상 모달 열기
+        setPlayingModalOpen(true); // 항상 모달 열기
 
         if (it.stepId != null) {
           try {
             const startTime = new Date().toISOString();
             const res = (await startStep(it.stepId, { startTime })) as RespStepRecord;
-            setLastRecord(res); // 🐸 추가
+            setLastRecord(res);
           } catch (e) {
             console.error("[useStepPlayback] startStep error:", e);
             alert(e || "시작 중 오류가 발생했습니다.");
@@ -167,7 +167,7 @@ export function useStepPlayback({
     }
   };
 
-  // 🐸 모달 안의 “완료” 버튼이 실제 stopStep 수행
+  // 모달 안의 “완료” 버튼 → 실제 stopStep 수행
   const handleStopFromModal = async () => {
     const it = selectedStep;
     if (!it || !it.stepId) return;
@@ -184,15 +184,15 @@ export function useStepPlayback({
       console.error("[useStepPlayback] stopStep(from modal) error:", e);
       alert(e || "정지 로그 저장에 실패했습니다.");
     } finally {
-      // ✅ 마지막으로 정지한 아이템은 pause로 보이도록 저장
-      if (it) setLastPlayedKey(it.id);
       setStepStopOpen(true);
       setPlayingModalOpen(false);
       setPlayingKey(null);
-      pendingReloadAfterStopRef.current = true; // 모달이 '내부 로직으로 닫힌 이후'에만 reload 되도록
+      // 모달(혹은 스플래시) 닫힐 때 1회 리로드
+      pendingReloadRef.current = true;
     }
   };
 
+  // 모달 안의 “일시정지” 버튼
   const handlePauseFromModal = async () => {
     const it = selectedStep;
     if (!it || !it.stepId) return;
@@ -207,14 +207,12 @@ export function useStepPlayback({
         ? Math.max(0, Math.floor((now.getTime() - startedAt.getTime()) / 1000))
         : 0;
       const res = (await pauseStep(it.stepId, { endTime, duration })) as RespStepRecord;
-      setLastRecord(res); // 🐸 추가
+      setLastRecord(res);
       console.info("[useStepPlayback] pauseStep result:", res);
 
       // UI 상태 업데이트
       setEndTimes(prev => ({ ...prev, [it.id]: now }));
       setPlayingKey(null); // 이후 재개 시 새 타이머 구간 시작 위해 재생 상태 해제
-      // ✅ 마지막으로 일시정지한 아이템을 pause로 보이도록 저장
-      setLastPlayedKey(it.id);
     } catch (e) {
       console.error("[useStepPlayback] pauseStep(from modal) error:", e);
       alert(e || "일시정지 중 오류가 발생했습니다.");
@@ -222,27 +220,27 @@ export function useStepPlayback({
       busyRef.current = false;
       setStepPauseOpen(true);
       setPlayingModalOpen(false);
-      // void reloadTodos();  // 유지: 모달 닫힘/스플래시 흐름에 맞춰 외부에서 처리
+      // 모달(혹은 스플래시) 닫힐 때 1회 리로드
+      pendingReloadRef.current = true;
     }
   };
 
   return {
     selectedStep,
     playingKey,
-    lastPlayedKey, // ✅ 추가: 직전에 정지/일시정지한 아이템 id
     startTimes,
     endTimes,
     lastProgress,
-    lastRecord, // 🐸 추가
+    lastRecord,
     stepStopOpen,
     goalCompleteOpen,
     dayCompleteOpen,
-    playingModalOpen, // 🐸 stepPlayingModal 열림 상태
+    playingModalOpen,
     stepPauseOpen,
-    setPlayingModalOpen, // 🐸
+    setPlayingModalOpen,
     handleAction,
-    handleStopFromModal, // 🐸 모달 내 “완료” 버튼
-    handlePauseFromModal, // 🐸 모달 내 “일시정지” 버튼
+    handleStopFromModal,
+    handlePauseFromModal,
     closeStepStop,
     closeGoal,
     closeDay,

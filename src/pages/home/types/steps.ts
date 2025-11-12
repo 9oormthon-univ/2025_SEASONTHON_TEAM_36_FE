@@ -20,6 +20,7 @@ export interface StepViewItem {
   description: string;
   // count: number; // 기본 0
   isCompleted: boolean;
+  isPaused: boolean;
   tips: string;
 }
 
