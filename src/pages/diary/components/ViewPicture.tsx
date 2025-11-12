@@ -85,7 +85,6 @@ const Overlay = styled.div<{ $zIndex: number }>`
 `;
 
 const ImgWrapper = styled.div`
-  max-width: 92%;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   background: #000;
