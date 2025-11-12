@@ -20,12 +20,12 @@ export default function PhotoPicker({
   return (
     <PhotoBox className={className}>
       {photoUrl ? (
-        <Placeholder
+        <Photoholder
           onClick={onImageClick}
           style={{ cursor: onImageClick ? "pointer" : "default" }}
         >
           <img src={photoUrl} alt="기록 사진" />
-        </Placeholder>
+        </Photoholder>
       ) : (
         <Placeholder onClick={onAddClick} style={{ cursor: onAddClick ? "pointer" : "default" }}>
           <img src={addPhotoIcon} alt="추가" />
@@ -55,6 +55,11 @@ export const PhotoBox = styled.div`
 `;
 
 export const Placeholder = styled.div<{ $isPhoto?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+export const Photoholder = styled.div<{ $isPhoto?: boolean }>`
   width: 100%;
   height: 100%;
   display: flex;
