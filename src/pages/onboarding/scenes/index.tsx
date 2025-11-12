@@ -1,10 +1,9 @@
 // src/pages/home/onboarding/scenes/index.ts
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { getOnbDone, setOnbDone } from "../engine/onbPersist";
 import { stages } from "../engine/stages";
-// import { stages as initialStages } from "../onboarding/engine/stages";
 import { useOnbEngine } from "../engine/useOnbEngine";
-// import type { SceneProps } from "../layout/OnbLayout";
 import OnbLayout from "../layout/OnbLayout";
 import { SceneProps } from "../layout/OnbLayout.types";
 import SceneChat from "./SceneChat";
@@ -25,10 +24,29 @@ export const sceneMap: Record<string, React.ComponentType<SceneProps>> = {
 };
 
 export default function OnboardingScenes() {
-  const engine = useOnbEngine(stages, "start");
-  const [open, setOpen] = useState(true);
+  // null: 초기 로딩(깜빡임 방지), true: 표시, false: 숨김
+  const [open, setOpen] = useState<boolean | null>(null);
 
+  // 첫 마운트에 완료 플래그 확인
+  useEffect(() => {
+    setOpen(!getOnbDone()); // 완료되어 있으면 열지 않음
+  }, []);
+
+  // 완료 처리: 플래그 저장 후 닫기
+  const handleComplete = useCallback(() => {
+    setOnbDone();
+    setOpen(false);
+  }, []);
+
+  // useOnbEngine이 onComplete 옵션을 지원한다면:
+  const engine = useOnbEngine(stages, "start", { onComplete: handleComplete });
+
+  // 로딩 단계에선 아무것도 렌더하지 않음(SSR 깜빡임 방지용)
+  if (open === null) return null;
   if (!open) return null;
+
+  // onComplete 옵션이 없다면 아래처럼 마지막 단계에서 직접 handleComplete() 호출해도 됨
+  const isLast = engine.activeIndex === engine.stages.length - 1;
 
   return (
     <OnbLayout
@@ -37,11 +55,10 @@ export default function OnboardingScenes() {
       activeIndex={engine.activeIndex}
       onPrev={engine.prev}
       onNext={() => {
-        if (engine.activeIndex === engine.stages.length - 1) return setOpen(false);
+        if (isLast) return handleComplete();
         engine.next();
       }}
-      onSkip={() => setOpen(false)}
-      // initialStageId="start"
+      onSkip={handleComplete}
     />
   );
 }
