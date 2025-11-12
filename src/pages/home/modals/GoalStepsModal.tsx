@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import detailsTri from "@/assets/images/details-tri.svg";
@@ -41,14 +41,16 @@ export default function GoalStepsModal({
   const { confirmOpen, deleting, openConfirm, closeConfirm, handleConfirmDelete } =
     useConfirmGoalDelete({ goalId: activeId, onDelete, onDeleted, onClose });
 
-  // 4) 아코디언 확장 상태 (여러개 동시 확장 가능)
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  // 4) 아코디언 확장 상태: "한 개만" 열림
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
 
   const getKey = (s: StepViewItem) => String(s.stepId ?? `${s.stepDate}-${s.description}`);
   const toggleExpand = (s: StepViewItem) => {
     const k = getKey(s);
-    setExpanded(prev => ({ ...prev, [k]: !prev[k] }));
+    setExpandedKey(prev => (prev === k ? null : k));
   };
+  // 목록이 바뀌면 열림 상태 초기화
+  useEffect(() => setExpandedKey(null), [vm.steps.length]);
 
   return (
     <PageModal
@@ -93,7 +95,7 @@ export default function GoalStepsModal({
           <Steps ref={stepsRef} role="list" aria-label="진행 단계 목록" $center={centerList}>
             {(loading ? [] : vm.steps).map(s => {
               const key = getKey(s);
-              const isOpen = !!expanded[key];
+              const isOpen = expandedKey === key; // ⬅ 변경
               const panelId = `step-panel-${key}`;
               return (
                 <StepItem key={key} role="listitem" aria-expanded={isOpen}>
@@ -117,12 +119,8 @@ export default function GoalStepsModal({
                   {/* 아코디언 패널 영역 */}
                   <StepPanel id={panelId} $open={isOpen} role="region" aria-label="단계 상세">
                     <PanelRow style={{ justifyContent: "flex-start" }}>
-                      {/* {s.tips && ( */}
-                      <>
-                        <PanelLabel>💡</PanelLabel>
-                        <PanelValue>{s.tips == null ? "-" : s.tips}</PanelValue>
-                      </>
-                      {/* )} */}
+                      <PanelLabel>💡</PanelLabel>
+                      <PanelValue>{s.tips == null ? "-" : s.tips}</PanelValue>
                     </PanelRow>
                     <PanelRow>
                       <PanelLabel>완료 여부</PanelLabel>
@@ -344,18 +342,22 @@ const DetailsBtn = styled.button<{ $expanded: boolean }>`
   }
 `;
 
-/** 아코디언 패널: 높이 애니메이션(max-height) + opacity */
+/** 아코디언 패널: 열릴 때만 애니메이션, 닫힐 땐 즉시 */
 const StepPanel = styled.div<{ $open: boolean }>`
   width: 100%;
   overflow: hidden;
+
   max-height: ${({ $open }) => ($open ? "400px" : "0px")};
   opacity: ${({ $open }) => ($open ? 1 : 0)};
-  transition:
-    max-height 220ms ease,
-    opacity 200ms ease;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
   padding-top: ${({ $open }) => ($open ? "10px" : "0")};
   margin-top: ${({ $open }) => ($open ? "2px" : "0")};
+
+  transition: ${({ $open }) =>
+    $open
+      ? "max-height 220ms ease, opacity 200ms ease, padding-top 180ms ease, margin-top 180ms ease"
+      : "max-height 55ms ease, opacity 50ms ease, padding-top 45ms ease, margin-top 45ms ease"};
+
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 `;
 
 const PanelRow = styled.div`
