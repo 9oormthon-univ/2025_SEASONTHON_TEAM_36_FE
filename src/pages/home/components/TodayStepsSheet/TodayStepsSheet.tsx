@@ -27,7 +27,6 @@ export default function TodayStepsSheet() {
 
   // 🍋‍🟩 이제 groups가 바로 내려옴
   const { loading, error, groups: baseGroups } = useTodaySteps(activeId);
-  console.info(baseGroups);
 
   useEffect(() => {
     if (!error) return;
@@ -35,8 +34,7 @@ export default function TodayStepsSheet() {
     alert(msg || "할 일(step) 목록을 불러오지 못했습니다.");
   }, [error]);
 
-  const { modalOpen, maybeOpen, closeAndMark, dailyShown } = useDailyCheckIn();
-  console.log(`dailyShown: ${dailyShown}`);
+  const { modalOpen, maybeOpen, closeAndMark } = useDailyCheckIn();
 
   const {
     playingKey,

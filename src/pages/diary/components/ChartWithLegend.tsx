@@ -79,7 +79,6 @@ const Wrap = styled.div`
 const ChartRow = styled.div<{ $pct: number }>`
   display: grid;
   grid-template-columns: ${({ $pct }) => `${$pct}%`} 1fr;
-  gap: 16px;
 
   @media (max-width: 820px) {
     grid-template-columns: 1fr;
@@ -98,7 +97,6 @@ const Legend = styled.div`
   gap: 8px;
   align-content: start;
   padding: 12px;
-  margin-top: 14px;
 `;
 
 const LegendItem = styled.span`
