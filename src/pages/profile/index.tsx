@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import DetailTriImg from "@/assets/images/details-tri.svg";
 import { useDate } from "@/common/hooks/useDate";
+import { useSwipeGesture } from "@/common/hooks/useSwipeGesture";
 
 import AchievedGoals from "./components/AchievedGoals";
 import Chart1 from "./components/Chart1";
@@ -11,7 +12,6 @@ import Chart2 from "./components/Chart2";
 import Modal from "./components/Modal";
 import Section from "./components/Section";
 import { useStatistics } from "./hooks/useStatistics";
-import { useSwipeGesture } from "./hooks/useSwipeGesture";
 import {
   Center,
   ContentWrapper,
