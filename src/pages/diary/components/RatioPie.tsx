@@ -31,7 +31,7 @@ export default function RatioPie({
   const END_ANGLE = -270; // 12시부터 시계 방향 한 바퀴
   const SWEEP = END_ANGLE - START_ANGLE; // -360
 
-  const { data, totalRatio, cumAngles } = useMemo(() => {
+  const { data, totalRatio, cumAngles, totalTimeSecs } = useMemo(() => {
     // ratio를 기반으로 파이 조각 크기 계산
     const safe: Slice[] = (goals ?? []).map(g => ({
       id: Number(g.id),
@@ -41,15 +41,18 @@ export default function RatioPie({
       timeSecs: Math.max(0, Math.floor(g.timeSecs || 0)), // 말풍선용 시간
     }));
 
-    // value(=ratio) 합
     const totalRatio = safe.reduce((a, b) => a + b.value, 0);
 
     // ratio가 0 이하인 건 실제 파이에서는 그리지 않도록 필터링
     const arr = safe.filter(s => s.value > 0);
 
+    // timeSecs 총합
+    const totalTimeSecs = safe.reduce((a, b) => a + b.timeSecs, 0);
+
     const tot = arr.reduce((a, b) => a + b.value, 0) || 1; // 0 분모 방지
     const res: Array<{ id: number; startDeg: number; endDeg: number; midDeg: number }> = [];
     let acc = 0;
+
     for (const s of arr) {
       const startDeg = START_ANGLE + (acc / tot) * SWEEP;
       const endDeg = START_ANGLE + ((acc + s.value) / tot) * SWEEP;
@@ -58,7 +61,7 @@ export default function RatioPie({
       acc += s.value;
     }
 
-    return { data: arr, totalRatio, cumAngles: res };
+    return { data: arr, totalRatio, cumAngles: res, totalTimeSecs };
   }, [goals]);
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -77,6 +80,31 @@ export default function RatioPie({
       "0",
     )}`;
   };
+  const _fmtTextLegacy = (sec: number) => {
+    const s = Math.max(0, Math.floor(sec));
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const r = s % 60;
+    return `${h}시간 ${m}분 ${r}초`;
+  };
+  const fmtText = (sec: number) => {
+    const s = Math.max(0, Math.floor(sec));
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const r = s % 60;
+
+    const parts: string[] = [];
+    if (h > 0) parts.push(`${h}시간`);
+    if (m > 0) parts.push(`${m}분`);
+    if (r > 0) parts.push(`${r}초`);
+
+    // 전부 0이면 0초 (사실상 렌더링되는 경우 없음)
+    if (parts.length === 0) return "0초";
+
+    return parts.join(" ");
+  };
+  const timeText = fmtText(totalTimeSecs);
+
   const deg2rad = (deg: number) => (deg * Math.PI) / 180;
 
   // 선택된 조각의 말풍선 좌표 계산 (중앙각 기준)
@@ -112,61 +140,66 @@ export default function RatioPie({
   }
 
   return (
-    <Wrap style={{ width: size, height: size }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <RChart>
-          {/* 외곽 원 테두리 (디자인용) */}
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radiusOuter}
-            fill="none"
-            stroke="var(--natural-400)"
-            strokeWidth="1.2"
-          />
-          <Pie
-            data={data}
-            dataKey="value" // ★ ratio 기반 값으로 파이 조각 비율 계산
-            nameKey="name"
-            startAngle={START_ANGLE}
-            endAngle={END_ANGLE}
-            innerRadius={0}
-            outerRadius={radiusOuter}
-            paddingAngle={padAngle}
-            isAnimationActive={false}
-            strokeWidth={0}
+    <>
+      <Wrap style={{ width: size, height: size }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <RChart>
+            {/* 외곽 원 테두리 (디자인용) */}
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radiusOuter}
+              fill="none"
+              stroke="var(--natural-400)"
+              strokeWidth="1.2"
+            />
+            <Pie
+              data={data}
+              dataKey="value" // ★ ratio 기반 값으로 파이 조각 비율 계산
+              nameKey="name"
+              startAngle={START_ANGLE}
+              endAngle={END_ANGLE}
+              innerRadius={0}
+              outerRadius={radiusOuter}
+              paddingAngle={padAngle}
+              isAnimationActive={false}
+              strokeWidth={0}
+            >
+              {data.map(entry => {
+                const isSelected = selectedId != null && selectedId === entry.id;
+                return (
+                  <Cell
+                    key={entry.id}
+                    fill={entry.color}
+                    onClick={() => setSelectedId(prev => (prev === entry.id ? null : entry.id))}
+                    style={{
+                      cursor: "pointer",
+                      transform: isSelected ? "scale(1.025)" : undefined,
+                      transformOrigin: "center",
+                      transition: "transform 120ms ease",
+                    }}
+                  />
+                );
+              })}
+            </Pie>
+          </RChart>
+        </ResponsiveContainer>
+        {bubble && (
+          <Bubble
+            style={{
+              left: bubble.left,
+              top: bubble.top,
+              transform: "translate(-50%, -110%)",
+            }}
           >
-            {data.map(entry => {
-              const isSelected = selectedId != null && selectedId === entry.id;
-              return (
-                <Cell
-                  key={entry.id}
-                  fill={entry.color}
-                  onClick={() => setSelectedId(prev => (prev === entry.id ? null : entry.id))}
-                  style={{
-                    cursor: "pointer",
-                    transform: isSelected ? "scale(1.025)" : undefined,
-                    transformOrigin: "center",
-                    transition: "transform 120ms ease",
-                  }}
-                />
-              );
-            })}
-          </Pie>
-        </RChart>
-      </ResponsiveContainer>
-      {bubble && (
-        <Bubble
-          style={{
-            left: bubble.left,
-            top: bubble.top,
-            transform: "translate(-50%, -110%)",
-          }}
-        >
-          {bubble.text}
-        </Bubble>
-      )}
-    </Wrap>
+            {bubble.text}
+          </Bubble>
+        )}
+      </Wrap>
+      <TotalLabel>
+        오늘은 총 <Highlight>{timeText}</Highlight> 집중했어요!
+      </TotalLabel>
+    </>
   );
 }
 
@@ -212,4 +245,20 @@ const Bubble = styled.div`
     border-right: 6px solid transparent;
     border-top: 6px solid var(--olive-green);
   }
+`;
+
+const TotalLabel = styled.div`
+  color: var(--text-2);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  word-break: keep-all;
+  padding: 10px 0;
+`;
+
+const Highlight = styled.span`
+  color: var(--green-500);
+  font-weight: 600;
+  font-size: 16px;
+  word-break: keep-all;
 `;
