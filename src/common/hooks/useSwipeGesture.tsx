@@ -14,8 +14,17 @@ export const useSwipeGesture = ({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [swipeStatus, setSwipeStatus] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isTransitioning) {
+      const timer = setTimeout(() => setIsTransitioning(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isTransitioning]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -47,8 +56,10 @@ export const useSwipeGesture = ({
 
     if (isLeftSwipe) {
       onSwipeLeft();
+      setSwipeStatus(1);
     } else if (isRightSwipe) {
       onSwipeRight();
+      setSwipeStatus(-1);
     }
 
     setIsDragging(false);
@@ -147,5 +158,9 @@ export const useSwipeGesture = ({
     },
     dragOffset,
     isDragging,
+    isTransitioning,
+    setIsTransitioning,
+    swipeStatus,
+    setSwipeStatus,
   };
 };
