@@ -163,8 +163,8 @@ export const useCalendar = create<CalendarState>(
       handleMoveMonth: offset => {
         set(state => {
           const newDate = new Date(state.curDate);
-          newDate.setMonth(newDate.getMonth() + offset);
           newDate.setDate(1);
+          newDate.setMonth(newDate.getMonth() + offset);
 
           const dateString = dateToFormatString(newDate);
           const currentToDo = state.allToDo[dateString] || {};
