@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import styled from "styled-components";
 
 import type { GoalForChart } from "../utils/diaryUtils";
-import ClockPie24 from "./ClockPie24";
+import RatioPie from "./RatioPie";
 
 /** 초 단위를 항상 HH:MM:SS 형태로 포맷합니다. */
 function fmtHMS(totalSeconds: number): string {
@@ -47,7 +47,7 @@ export default function ChartWithLegend({
     <Wrap>
       <ChartRow $pct={chartWidthPct}>
         <ChartBox>
-          <ClockPie24 goals={goals} size={240} padAngle={0} />
+          <RatioPie goals={goals} size={240} padAngle={0} />
         </ChartBox>
 
         <Legend>

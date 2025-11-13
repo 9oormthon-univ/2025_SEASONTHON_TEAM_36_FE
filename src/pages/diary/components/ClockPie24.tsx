@@ -1,4 +1,4 @@
-// src/pages/diary/components/ClockPie24.tsx
+// [레거시] -> 24시간 기반이 아닌 전체 수행시간 합 기준인 RatioPie로 대체
 import { useMemo, useState } from "react"; // 리액트 훅들 임포트
 import { Cell, Pie, PieChart as RChart, ResponsiveContainer } from "recharts"; // Recharts 컴포넌트들
 import styled from "styled-components"; // 스타일드 컴포넌트

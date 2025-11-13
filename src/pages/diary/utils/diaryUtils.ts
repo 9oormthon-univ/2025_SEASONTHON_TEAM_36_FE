@@ -92,11 +92,11 @@ export type GoalForChart = {
 
 // 공통 팔레트(읽기 화면과 호환 위해 기본값 제공)
 export const GOAL_COLORS = [
-  "var(--green-500)",
-  "var(--green-400)",
-  "var(--green-300)",
-  "var(--green-200)",
   "var(--green-100)",
+  "var(--green-200)",
+  "var(--green-300)",
+  "var(--green-400)",
+  "var(--green-500)",
 ] as const;
 
 export function mapTodosToChartGoals(
