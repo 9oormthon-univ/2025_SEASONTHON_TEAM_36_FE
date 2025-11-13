@@ -54,7 +54,6 @@ export const UserRow = styled.div`
 
 export const UserChat = styled.div`
   padding: 10px 15px;
-  border: 1px solid var(--green-500);
   background: var(--green-100);
   border-radius: 16px 0 16px 16px;
   max-width: 240px;
