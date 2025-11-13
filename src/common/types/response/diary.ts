@@ -1,4 +1,4 @@
-import { CompletionLevel, Mood, Place } from "../enums";
+import { CompletionLevel, Mood, Weather } from "../enums";
 
 /** [GET] /api/v1/diaries: 특정 달의 Diary 조회 (쿼리 파라미터: yearMonth -> "yyyy-MM" 형식) */
 export interface RespDiary {
@@ -13,7 +13,7 @@ export interface RespDiaryDetail {
   todayCompletedTodoResponses: TodayCompletedTodo[];
   emotion: number;
   energy: number;
-  place: Place; // enum
+  weather: Weather; // enum
   mood: Mood; // enum
   focusLevel: number;
   completionLevel: CompletionLevel; // enum

@@ -20,7 +20,7 @@ function fmtHMS(totalSeconds: number): string {
 export default function ChartWithLegend({
   goals,
   chartWidthPct = 75,
-  emptyText = "오늘 한 일 데이터가 없습니다",
+  emptyText = "기록된 수행 시간이 없습니다.",
 }: {
   goals: GoalForChart[];
   chartWidthPct?: number; // 차트 가로 비율(%)
@@ -127,8 +127,8 @@ const ColorDot = styled.span`
 `;
 
 const Empty = styled.div`
-  padding: 12px;
-  color: var(--gray-500);
-  background: var(--gray-50);
-  border-radius: 12px;
+  color: var(--green-500);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
 `;

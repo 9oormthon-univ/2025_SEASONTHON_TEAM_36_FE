@@ -52,9 +52,9 @@ export default function Read() {
   if (loading || !detail) return <div style={{ textAlign: "center" }}>불러오는 중...</div>;
 
   // ---------- 서버 데이터 → UI 매핑 ----------
-  const prevEmotionIdx = likert1to5ToIndex(detail.emotion, 5);
-  const energyIdx = likert1to5ToIndex(detail.energy, 5);
-  const weatherIdx = ENUM_TO_WEATHER_ID[detail.weather] ?? 0;
+  const prevEmotionIdx = detail ? likert1to5ToIndex(detail.emotion, 5) : 2;
+  const energyIdx = detail ? likert1to5ToIndex(detail.energy, 5) : 2;
+  const weatherIdx = detail ? (ENUM_TO_WEATHER_ID[detail.weather] ?? 0) : 0;
   const emotionIdx = MOOD_TO_IDX[detail.mood] ?? 0;
   const concentrationIdx = likert1to5ToIndex(detail.focusLevel, 5);
 
@@ -90,28 +90,36 @@ export default function Read() {
       {/* 실제 파이 차트 + 범례 (터치/클릭 시 상세 시간) */}
       <ChartWithLegend goals={goals} />
 
-      {/* 여정 전 */}
+      {/* 여정 전 — detail 데이터 */}
       <Section>
-        <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
-        <JourneyRow
-          items={[
-            {
-              title: "감정",
-              imgSrc: PREV_EMOTION[prevEmotionIdx]?.img,
-              label: PREV_EMOTION[prevEmotionIdx]?.text ?? "",
-            },
-            {
-              title: "잔여 에너지",
-              imgSrc: ENERGY[energyIdx]?.img,
-              label: ENERGY[energyIdx]?.text ?? "",
-            },
-            {
-              title: "날씨",
-              imgSrc: getWeatherIcons(weatherIdx)?.active,
-              label: getWeatherLabelFromEnum(detail.weather) ?? "",
-            },
-          ]}
-        />
+        {detail?.emotion && detail?.energy && detail?.weather ? (
+          <>
+            <Label className="typo-h4">오늘의 여정을 시작하기 전</Label>
+            <JourneyRow
+              items={[
+                {
+                  title: "감정",
+                  imgSrc: PREV_EMOTION[prevEmotionIdx]?.img,
+                  label: PREV_EMOTION[prevEmotionIdx]?.text ?? "",
+                },
+                {
+                  title: "잔여 에너지",
+                  imgSrc: ENERGY[energyIdx]?.img,
+                  label: ENERGY[energyIdx]?.text ?? "",
+                },
+                {
+                  title: "날씨",
+                  imgSrc: getWeatherIcons(weatherIdx)?.active,
+                  label: detail ? getWeatherLabelFromEnum(detail.weather) : "",
+                },
+              ]}
+            />
+          </>
+        ) : (
+          <span style={{ color: "var(--text-3)" }} className="typo-h4">
+            오늘의 여정 전 데이터가 없습니다.
+          </span>
+        )}
       </Section>
 
       {/* 여정 후 */}
