@@ -1,8 +1,9 @@
 import "./styles/charts.css";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import DetailTriImg from "@/assets/images/details-tri.svg";
+import PageSwiper from "@/common/components/PageSwiper";
 import { useDate } from "@/common/hooks/useDate";
 import { useSwipeGesture } from "@/common/hooks/useSwipeGesture";
 
@@ -12,16 +13,7 @@ import Chart2 from "./components/Chart2";
 import Modal from "./components/Modal";
 import Section from "./components/Section";
 import { useStatistics } from "./hooks/useStatistics";
-import {
-  Center,
-  ContentWrapper,
-  DatePickerButton,
-  Header,
-  HeaderTitle,
-  Page,
-  SizedBox,
-  Wrapper,
-} from "./styles";
+import { Center, DatePickerButton, Header, HeaderTitle, Page, SizedBox, Wrapper } from "./styles";
 import MyNavButton from "./user/MyNavButton";
 
 export default function Profile() {
@@ -29,29 +21,22 @@ export default function Profile() {
   const year = Number(date.split("-")[0]);
   const month = Number(date.split("-")[1]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
   // 통계 데이터를 Profile에서 한 번만 호출
   const { focusTime, achievementRate } = useStatistics({ date });
 
-  const { swipeHandlers, dragOffset, isDragging } = useSwipeGesture({
-    onSwipeLeft: () => {
-      setIsTransitioning(true);
-      handleMoveMonth(1);
-    },
-    onSwipeRight: () => {
-      setIsTransitioning(true);
-      handleMoveMonth(-1);
-    },
-    minSwipeDistance: 50,
-  });
-
-  useEffect(() => {
-    if (isTransitioning) {
-      const timer = setTimeout(() => setIsTransitioning(false), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [isTransitioning]);
+  const { swipeHandlers, dragOffset, isDragging, isTransitioning, setIsTransitioning } =
+    useSwipeGesture({
+      onSwipeLeft: () => {
+        setIsTransitioning(true);
+        handleMoveMonth(1);
+      },
+      onSwipeRight: () => {
+        setIsTransitioning(true);
+        handleMoveMonth(-1);
+      },
+      minSwipeDistance: 50,
+    });
 
   return (
     <>
@@ -73,7 +58,7 @@ export default function Profile() {
             <MyNavButton />
           </Header>
           <SizedBox />
-          <ContentWrapper
+          <PageSwiper
             $dragOffset={dragOffset}
             $isDragging={isDragging}
             $isTransitioning={isTransitioning}
@@ -88,7 +73,7 @@ export default function Profile() {
             <Section title="집중시간">
               <Chart2 focusTime={focusTime} />
             </Section>
-          </ContentWrapper>
+          </PageSwiper>
         </Wrapper>
       </Page>
     </>
