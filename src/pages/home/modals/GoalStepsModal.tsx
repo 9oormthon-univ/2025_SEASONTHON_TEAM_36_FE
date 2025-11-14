@@ -7,7 +7,6 @@ import trashIcon from "@/assets/images/trash.svg";
 import ConfirmModal from "../../../common/components/ConfirmModal";
 import PageModal from "../../../common/components/PageModal";
 import FrogBar from "../components/FrogBar";
-import { useAutoCenterList } from "../hooks/useAutoCenterList";
 import { useConfirmGoalDelete } from "../hooks/useConfirmGoalDelete";
 import { useGoalStepsView } from "../hooks/useGoalStepsView";
 import { useActiveGoalStore } from "../store/useActiveGoalStore";
@@ -50,7 +49,8 @@ export default function GoalStepsModal({
 
   // 2) 스크롤 중앙정렬 측정
   const stepsRef = useRef<HTMLUListElement | null>(null);
-  const centerList = useAutoCenterList(stepsRef, open, `${vm.steps.length}-${open}`);
+  // const centerList = useAutoCenterList(stepsRef, open, `${vm.steps.length}-${open}`);
+  const centerList = false; // 레이아웃 오버플로우 이슈로 일단 무조건 false
 
   // 3) 삭제
   const { confirmOpen, deleting, openConfirm, closeConfirm, handleConfirmDelete } =
@@ -262,7 +262,6 @@ const Content = styled.div`
   display: flex;
   align-items: stretch;
   justify-content: center;
-  border-radius: 12px;
   overflow: hidden;
   gap: 12%;
 `;
@@ -275,7 +274,6 @@ const FrogWrap = styled.div`
   align-items: stretch;
 `;
 
-// Transient prop $center 로 타입 안전하게 처리
 const Steps = styled.ul<{ $center: boolean }>`
   flex: 1 1 auto;
   height: 100%;
@@ -289,7 +287,8 @@ const Steps = styled.ul<{ $center: boolean }>`
   scroll-padding-bottom: 12px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  ${({ $center }) => ($center ? "justify-content: center;" : "justify-content: flex-start;")}
+  justify-content: space-around;
+  // ${({ $center }) => ($center ? "justify-content: center;" : "justify-content: flex-start;")}
 `;
 
 const StepItem = styled.li`
