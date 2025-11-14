@@ -23,7 +23,7 @@ const ChatbotPage = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const {
-    userInfo,
+    userInfoRef,
     userChat,
     chats,
     status,
@@ -41,18 +41,17 @@ const ChatbotPage = () => {
 
   // ConfirmModal 핸들러를 useCallback으로 메모이제이션
   const handleConfirmClose = useCallback(() => {
-    if (userInfo && isClosingRef) {
+    if (userInfoRef.current && !isClosingRef.current) {
       isClosingRef.current = true; // 의도적인 종료임을 표시
-      disconnectSSE(userInfo.userId)
+      disconnectSSE(userInfoRef.current.userId)
         .then(_ => void navigate("/home"))
         .catch(error => console.error(error));
     }
-  }, [userInfo, navigate, isClosingRef]);
+  }, [userInfoRef, navigate, isClosingRef]);
 
   const handleCancelClose = useCallback(() => {
     setModalOpen(false);
   }, []);
-  console.log(chatbotLoading);
   return (
     <>
       <ConfirmModal
