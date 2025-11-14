@@ -19,6 +19,15 @@ export const useSwipeGesture = ({
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // 콜백을 ref로 저장하여 의존성 문제 해결
+  const onSwipeLeftRef = useRef(onSwipeLeft);
+  const onSwipeRightRef = useRef(onSwipeRight);
+
+  useEffect(() => {
+    onSwipeLeftRef.current = onSwipeLeft;
+    onSwipeRightRef.current = onSwipeRight;
+  }, [onSwipeLeft, onSwipeRight]);
+
   useEffect(() => {
     if (isTransitioning) {
       const timer = setTimeout(() => setIsTransitioning(false), 300);
@@ -53,12 +62,11 @@ export const useSwipeGesture = ({
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
-
     if (isLeftSwipe) {
-      onSwipeLeft();
+      onSwipeLeftRef.current();
       setSwipeStatus(1);
     } else if (isRightSwipe) {
-      onSwipeRight();
+      onSwipeRightRef.current();
       setSwipeStatus(-1);
     }
 
@@ -103,9 +111,11 @@ export const useSwipeGesture = ({
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe) {
-      onSwipeLeft();
+      onSwipeLeftRef.current();
+      setSwipeStatus(1);
     } else if (isRightSwipe) {
-      onSwipeRight();
+      onSwipeRightRef.current();
+      setSwipeStatus(-1);
     }
 
     setIsDragging(false);
@@ -127,9 +137,11 @@ export const useSwipeGesture = ({
       const isRightSwipe = distance < -minSwipeDistance;
 
       if (isLeftSwipe) {
-        onSwipeLeft();
+        onSwipeLeftRef.current();
+        setSwipeStatus(1);
       } else if (isRightSwipe) {
-        onSwipeRight();
+        onSwipeRightRef.current();
+        setSwipeStatus(-1);
       }
 
       setIsDragging(false);
@@ -144,7 +156,7 @@ export const useSwipeGesture = ({
         document.removeEventListener("mouseup", handleMouseUpGlobal);
       };
     }
-  }, [isDragging, touchStart, touchEnd, minSwipeDistance, onSwipeLeft, onSwipeRight]);
+  }, [isDragging, touchStart, touchEnd, minSwipeDistance]);
 
   return {
     containerRef,
