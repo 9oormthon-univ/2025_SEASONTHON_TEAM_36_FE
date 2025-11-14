@@ -12,8 +12,9 @@ export const Form = styled.form`
   background: white;
   display: flex;
   justify-content: space-between;
-  padding: 14px 10px 14px 20px;
-  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  padding: 14px 10px;
+  padding-left: 20px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom, 20px));
   position: sticky;
   bottom: 0;
   left: 0;
