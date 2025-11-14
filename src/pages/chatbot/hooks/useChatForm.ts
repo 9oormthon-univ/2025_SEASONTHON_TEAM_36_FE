@@ -11,7 +11,7 @@ import { ChatType } from "../types/Chat";
 
 export const useChatForm = () => {
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState<RespUserProfile>();
+  const userInfoRef = useRef<RespUserProfile | undefined>(undefined);
   const [userChat, setUserChat] = useState<string>("");
   const [chatbotLoading, setChatbotLoading] = useState<boolean>(true);
   const [status, setStatus] = useState<boolean>(false);
@@ -21,7 +21,7 @@ export const useChatForm = () => {
   const chatbotRef = useRef<EventSourcePolyfill | null>(null);
   const [chats, setChats] = useState<ChatType[]>([]);
   const isClosingRef = useRef<boolean>(false); // 의도적인 연결 종료 플래그
-  const visitedRef = useRef<boolean>(false);
+  const reconnectingRef = useRef<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -33,7 +33,7 @@ export const useChatForm = () => {
         if (!isMounted) return;
 
         if (typeof respUserInfo === "object" && "userId" in respUserInfo) {
-          setUserInfo(respUserInfo);
+          userInfoRef.current = respUserInfo;
 
           // 기존 연결이 있다면 먼저 종료
           if (chatbotRef.current) {
@@ -48,27 +48,23 @@ export const useChatForm = () => {
                 headers: {
                   Authorization: `Bearer ${getAccessToken()}`,
                   Accept: "text/event-stream",
+                  "Cache-Control": "no-cache",
+                  Connection: "keep-alive",
                 },
+                heartbeatTimeout: 18000000, // 30분
               },
             );
 
             chatbotRef.current.onmessage = (event: MessageEvent) => {
               if (!isMounted) return;
 
-              if (event.data === "✅ 응답 완료") {
+              if (!event.data || event.data === "✅ 응답 완료") {
                 return;
               }
 
-              if (!event.data) return;
-              if (
-                isMounted &&
-                visitedRef.current &&
-                event.data ===
-                  "안녕! 🐸\n나는 함께 공부계획을 세워주는 개구리 ‘Rana’야!\n너가 목표를 세우고 달성할 때마다 나는 우물 밖 세상을 구경할 수 있어.\n나랑 함께 점프해볼래? 준비됐어?"
-              ) {
+              if (reconnectingRef.current) {
+                reconnectingRef.current = false;
                 return;
-              } else {
-                visitedRef.current = true;
               }
 
               let messageData = String(event.data);
@@ -96,7 +92,6 @@ export const useChatForm = () => {
               setChats(prev => [...prev, newChatbotChatInfo]);
               setChatbotLoading(false);
             };
-
             chatbotRef.current.onerror = errorEvent => {
               if (!isMounted) return;
 
@@ -122,14 +117,37 @@ export const useChatForm = () => {
               }
 
               // 실제 에러가 발생한 경우
-              console.error("SSE error:", errorEvent);
+              // console.error("SSE error:", errorEvent);
               // 심각한 에러인 경우에만 에러 상태 설정
-              if (errorEvent && typeof errorEvent === "object" && "status" in errorEvent) {
-                const eventWithStatus = errorEvent as { status: number };
-                const status = eventWithStatus.status;
-                // 4xx, 5xx 에러인 경우에만 에러로 처리
-                if (status >= 400) {
-                  setIsError(true);
+              if (errorEvent && typeof errorEvent === "object") {
+                if ("status" in errorEvent) {
+                  const eventWithStatus = errorEvent as { status: number };
+                  const status = eventWithStatus.status;
+                  // 4xx, 5xx 에러인 경우에만 에러로 처리
+                  if (status >= 400) {
+                    setIsError(true);
+                  }
+                }
+                if ("error" in errorEvent) {
+                  const error = errorEvent.error;
+                  const errorMessage =
+                    error && typeof error === "object" && "message" in error
+                      ? String(error.message)
+                      : String(error);
+
+                  if (errorMessage.includes("Reconnecting") || error === undefined) {
+                    reconnectingRef.current = true;
+                  } else if (errorMessage.includes("network error")) {
+                    if (chatbotRef.current) {
+                      isClosingRef.current = true; // 의도적인 종료임을 표시
+                      chatbotRef.current.close();
+                      chatbotRef.current = null;
+                      console.info("서버 측 네트워크 에러(연결 강제 종료, 동일 계정 사용, 그 외)");
+                      void navigate("/home", { replace: true });
+                    }
+                  } else {
+                    console.error(error);
+                  }
                 }
               }
               setLoading(false);
@@ -142,13 +160,11 @@ export const useChatForm = () => {
             };
           } catch (error) {
             console.error("Failed to create EventSource:", error);
-            // setIsError(true);
             setLoading(false);
           }
         }
       } catch (error) {
         console.error(error);
-        // setIsError(true);
         setLoading(false);
       }
     };
@@ -169,8 +185,8 @@ export const useChatForm = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const sentUserChat = userChat.trim();
-    if (userInfo) {
-      sendMessage(userInfo.userId, sentUserChat)
+    if (userInfoRef.current) {
+      sendMessage(userInfoRef.current.userId, sentUserChat)
         .then(_ => {
           const newUserChatInfo = {
             writer: "user" as const,
@@ -186,7 +202,7 @@ export const useChatForm = () => {
   };
 
   return {
-    userInfo,
+    userInfoRef,
     userChat,
     chats,
     status,
