@@ -118,12 +118,21 @@ export default function GoalStepsModal({
 
                   {/* 아코디언 패널 영역 */}
                   <StepPanel id={panelId} $open={isOpen} role="region" aria-label="단계 상세">
-                    <PanelRow style={{ justifyContent: "flex-start" }}>
+                    <PanelRow style={{ justifyContent: "flex-start", alignItems: "flex-start" }}>
                       <PanelLabel>💡</PanelLabel>
-                      <PanelValue>{s.tips == null ? "-" : s.tips}</PanelValue>
+
+                      {!s.tips || s.tips.length === 0 ? (
+                        <PanelValue>-</PanelValue>
+                      ) : (
+                        <TipsValue>
+                          {s.tips.map((tip, idx) => (
+                            <TipBullet key={idx}>{tip}</TipBullet>
+                          ))}
+                        </TipsValue>
+                      )}
                     </PanelRow>
-                    <PanelRow>
-                      <PanelLabel>완료 여부</PanelLabel>
+                    <PanelRow style={{ marginTop: "6px" }}>
+                      <PanelLabel style={{ color: "var(--text-3)" }}>완료 여부</PanelLabel>
                       <PanelValue>
                         {"isCompleted" in s && typeof s.isCompleted === "boolean" ? (
                           <StatusPill data-completed={s.isCompleted}>
@@ -396,5 +405,29 @@ const StatusPill = styled.span`
   &[data-completed="false"] {
     background: #fff3e0;
     color: #e65100;
+  }
+`;
+const TipsValue = styled.div`
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.1;
+  display: flex;
+  gap: 4px;
+  flex-direction: column;
+  align-items: flex-start;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+`;
+
+const TipBullet = styled.span`
+  position: relative;
+  padding-left: 12px;
+
+  &::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 `;
