@@ -15,7 +15,15 @@ const GoalInfo = ({ data }: { data: RespMonthlyTodos[] }) => {
             </RowOne>
             <RowTwo>
               <Date>{`${value.startDate} ~ ${value.endDate}`}</Date>
-              <Time>{value.totalDuration}</Time>
+              <Time>
+                {`${Math.floor(value.totalDuration / 3600)
+                  .toString()
+                  .padStart(2, "0")}-${Math.floor(value.totalDuration / 60)
+                  .toString()
+                  .padStart(2, "0")}-${Math.floor(value.totalDuration % 60)
+                  .toString()
+                  .padStart(2, "0")}`}
+              </Time>
             </RowTwo>
           </Goal>
         );
