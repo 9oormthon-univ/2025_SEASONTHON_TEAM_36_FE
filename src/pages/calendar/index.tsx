@@ -35,18 +35,6 @@ const CalendarScreen = () => {
   useInitAllTodo();
 
   useEffect(() => {
-    const rootElement = document.querySelector("#root") as HTMLElement;
-    if (rootElement) {
-      const originalOverflow = rootElement.style.overflow;
-      rootElement.style.overflow = "hidden";
-
-      return () => {
-        rootElement.style.overflow = originalOverflow || "auto";
-      };
-    }
-  }, []);
-
-  useEffect(() => {
     const calendarLeftLabelBtn = document.querySelector(
       ".react-calendar__navigation__prev-button",
     ) as HTMLElement;
