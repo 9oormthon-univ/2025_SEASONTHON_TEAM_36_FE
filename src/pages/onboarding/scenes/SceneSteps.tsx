@@ -11,44 +11,56 @@ const todaySteps: StepViewItem[] = [
   {
     stepId: 1,
     stepOrder: 1,
-    stepDate: "2025-00-00",
+    stepDate: "0월 0일",
     description: "자서전에 경험 후보 정리하기",
     isCompleted: false,
+    isPaused: false,
+    tips: [],
   },
   {
     stepId: 2,
     stepOrder: 2,
-    stepDate: "2025-00-00",
+    stepDate: "0월 0일",
     description: "자서전의 전체 흐름과 목차 결정하기",
     isCompleted: false,
+    isPaused: false,
+    tips: [],
   },
   {
     stepId: 3,
     stepOrder: 3,
-    stepDate: "2025-00-00",
+    stepDate: "0월 0일",
     description: "서론+어린시절 작성하기",
     isCompleted: false,
+    isPaused: false,
+    tips: [],
   },
   {
     stepId: 4,
     stepOrder: 4,
-    stepDate: "2025-00-00",
+    stepDate: "0월 0일",
     description: "본문 작성하기",
     isCompleted: false,
+    isPaused: false,
+    tips: [],
   },
   {
     stepId: 5,
     stepOrder: 5,
-    stepDate: "2025-00-00",
+    stepDate: "0월 0일",
     description: "결론 작성하기",
     isCompleted: false,
+    isPaused: false,
+    tips: [],
   },
   {
     stepId: 6,
     stepOrder: 6,
-    stepDate: "2025-00-00",
+    stepDate: "0월 0일",
     description: "글 검토하고 맞춤법 검사하기",
     isCompleted: false,
+    isPaused: false,
+    tips: [],
   },
 ];
 interface SceneStepsProps {
@@ -96,7 +108,7 @@ export default function SceneSteps() {
             const panelId = `step-panel-${key}`;
             return (
               <StepItem key={key} role="listitem" aria-expanded={isOpen}>
-                <StepDate className="typo-body-s">{s.stepDate}</StepDate>
+                <StepDate className="typo-body-xs">{s.stepDate}</StepDate>
 
                 <StepTitleRow $expanded={isOpen}>
                   <StepTitle $expanded={isOpen}>{s.description}</StepTitle>

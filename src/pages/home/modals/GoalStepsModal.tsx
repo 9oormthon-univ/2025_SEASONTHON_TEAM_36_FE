@@ -14,6 +14,21 @@ import { useActiveGoalStore } from "../store/useActiveGoalStore";
 import { DDayIcon } from "../styles/DDayIcon";
 import { StepViewItem } from "../types/steps";
 
+// ISO string → "n월 n일" 형태로 포맷
+function formatStepDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return "";
+
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) {
+    return dateStr;
+  }
+
+  const month = d.getMonth() + 1; // 0-based
+  const date = d.getDate();
+
+  return `${month}월 ${date}일`;
+}
+
 interface GoalStepsModalProps {
   open: boolean;
   onClose?: () => void;
@@ -99,7 +114,7 @@ export default function GoalStepsModal({
               const panelId = `step-panel-${key}`;
               return (
                 <StepItem key={key} role="listitem" aria-expanded={isOpen}>
-                  <StepDate className="typo-body-s">{s.stepDate}</StepDate>
+                  <StepDate className="typo-body-s">{formatStepDate(s.stepDate)}</StepDate>
 
                   <StepTitleRow $expanded={isOpen}>
                     <StepTitle $expanded={isOpen}>{s.description}</StepTitle>
@@ -279,7 +294,7 @@ const Steps = styled.ul<{ $center: boolean }>`
 
 const StepItem = styled.li`
   display: flex;
-  width: 92%;
+  width: 94%;
   padding: 12px 16px;
   flex-direction: column;
   align-items: flex-start;
@@ -308,7 +323,7 @@ const StepTitle = styled.span<{ $expanded?: boolean }>`
   flex: 1 1 auto;
   min-width: 0;
   color: var(--text-1, #000);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 1.2;
 
