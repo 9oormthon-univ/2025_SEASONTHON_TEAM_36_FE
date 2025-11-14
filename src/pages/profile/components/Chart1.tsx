@@ -25,31 +25,26 @@ const Chart1 = ({ achievementRate }: Chart1Props) => {
     const { cx, cy, index } = props;
 
     const handleTouchStart = (e: React.TouchEvent) => {
-      e.preventDefault();
       e.stopPropagation();
       setActiveIndex(index as number);
     };
 
     const handleTouchEnd = (e: React.TouchEvent) => {
-      e.preventDefault();
       e.stopPropagation();
       setActiveIndex(null);
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
-      e.preventDefault();
       e.stopPropagation();
       setActiveIndex(index as number);
     };
 
     const handleMouseUp = (e: React.MouseEvent) => {
-      e.preventDefault();
       e.stopPropagation();
       setActiveIndex(null);
     };
 
     const handleMouseLeave = (e: React.MouseEvent) => {
-      e.preventDefault();
       e.stopPropagation();
       setActiveIndex(null);
     };
@@ -67,7 +62,7 @@ const Chart1 = ({ achievementRate }: Chart1Props) => {
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
-        style={{ cursor: "pointer", filter: "none", touchAction: "none" }}
+        style={{ cursor: "pointer", filter: "none" }}
       />
     );
   };
