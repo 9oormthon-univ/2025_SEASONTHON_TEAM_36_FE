@@ -47,15 +47,7 @@ const Subject = memo(({ index, focused }: { index: number; focused: boolean }) =
   }, [index, setClickedSubject]);
 
   return (
-    <Wrapper
-      onClick={handleClick}
-      onTouchEnd={e => {
-        e.preventDefault();
-        handleClick();
-      }}
-      role="button"
-      tabIndex={0}
-    >
+    <Wrapper onClick={handleClick} role="button" tabIndex={0}>
       <Icon>
         <SVG className={focused ? "clicked" : ""} />
       </Icon>
