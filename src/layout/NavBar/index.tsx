@@ -6,8 +6,8 @@ import diary from "@/assets/images/diary.svg";
 import diaryfill from "@/assets/images/diary-fill.svg";
 import home from "@/assets/images/home.svg";
 import homefill from "@/assets/images/home-fill.svg";
-import profile from "@/assets/images/profile.svg";
-import profilefill from "@/assets/images/profile-fill.svg";
+import statistics from "@/assets/images/statistics.svg";
+import statisticsfill from "@/assets/images/statistics-fill.svg";
 
 import { Bar, type BarPosition, IconImg, Inner, Item, Label } from "./styles";
 
@@ -60,9 +60,9 @@ const DEFAULT_ITEMS: NavItem[] = [
   },
   {
     to: "/profile",
-    label: "프로필",
-    iconSrc: profile,
-    iconfillSrc: profilefill,
+    label: "통계",
+    iconSrc: statistics,
+    iconfillSrc: statisticsfill,
     isfill: p => p.startsWith("/profile"),
   },
 ];

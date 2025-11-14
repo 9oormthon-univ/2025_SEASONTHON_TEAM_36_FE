@@ -13,6 +13,7 @@ import { useFetchSteps } from "./hooks/useFetchSteps";
 import { useActiveGoalStore } from "./store/useActiveGoalStore";
 import { useBottomSheetStore } from "./store/useBottomSheetStore";
 import { useBindGoalsStore, useGoalsStore } from "./store/useGoalsStore";
+import { filterGoalsDDay } from "./utils/filterGoalsDDay";
 
 // styled-components transient props
 export interface BodyStyledProps {
@@ -24,6 +25,9 @@ export default function HomePage() {
   // 전역 상태
   const { goals, loading, error } = useGoalsStore();
   const { activeId, setActiveId } = useActiveGoalStore();
+
+  // 🐸 goal D+3까지만 필터링 기능 추가
+  const visibleGoals = filterGoalsDDay(goals);
 
   // API ↔ Zustand 동기화 + 개발용 더미 fallback
   useBindGoalsStore();
@@ -40,23 +44,23 @@ export default function HomePage() {
   // Carousel에 넘길 ids (id 없으면 음수 센티널)
   const ids = useMemo<number[]>(
     () =>
-      goals.map((g, i) => {
+      visibleGoals.map((g, i) => {
         const id = g?.id;
         return typeof id === "number" && Number.isFinite(id) ? id : -(i + 1);
       }),
-    [goals],
+    [visibleGoals],
   );
 
   // goals 변경 시 activeId 유효성 보장
   useEffect(() => {
-    if (!goals.length) return;
+    if (!visibleGoals.length) return;
     const currentId = useActiveGoalStore.getState().activeId; // Zustand 현재값
-    if (currentId == null || !goals.some(t => t.id === currentId)) {
-      setActiveId(goals[0].id);
+    if (currentId == null || !visibleGoals.some(t => t.id === currentId)) {
+      setActiveId(visibleGoals[0].id);
     }
-  }, [goals, setActiveId]);
+  }, [visibleGoals, setActiveId]);
 
-  const hasGoals = goals.length > 0;
+  const hasGoals = visibleGoals.length > 0;
 
   if (loading) {
     return (
@@ -83,7 +87,7 @@ export default function HomePage() {
 
         {hasGoals ? (
           <CardsCarousel ids={ids} maxDots={5}>
-            {goals.map((g, i) => (
+            {visibleGoals.map((g, i) => (
               <GoalCard key={ids[i]?.toString()} goal={g} shrink={shrink} />
             ))}
           </CardsCarousel>
