@@ -13,6 +13,7 @@ export const Form = styled.form`
   display: flex;
   justify-content: space-between;
   padding: 14px 10px 14px 20px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
   position: sticky;
   bottom: 0;
   left: 0;
@@ -35,6 +36,7 @@ export const Input = styled.input`
   padding: 10px 20px;
   outline: none;
   font-size: var(--fs-lg);
+
   &:disabled {
     background: var(--natural-200);
   }
