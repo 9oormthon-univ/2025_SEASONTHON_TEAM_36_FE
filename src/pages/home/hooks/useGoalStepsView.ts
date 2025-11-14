@@ -1,9 +1,9 @@
 // src/pages/home/utils/useGoalStepsView.ts
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
-import { useStepsStore } from "@/pages/home/store/useStepsStore";
 import type { GoalStepsView } from "@/pages/home/types/steps";
 
+import { useFetchSteps } from "../hooks/useFetchSteps";
 import { toGoalStepsView } from "../utils/stepsView";
 
 const EMPTY_VM: GoalStepsView = {
@@ -16,37 +16,24 @@ const EMPTY_VM: GoalStepsView = {
 };
 
 export function useGoalStepsView(open: boolean, goalId: number | string | null) {
-  // goalId → number로 정규화
-  const numId =
+  // goalId → number로 정규화 (유효하지 않으면 null)
+  const numId: number | null =
     typeof goalId === "string"
       ? Number.isFinite(Number(goalId))
         ? Number(goalId)
-        : undefined
-      : (goalId ?? undefined);
+        : null
+      : (goalId ?? null);
 
-  // open이 false면 fetch 방지
-  const effectiveId = open ? numId : undefined;
+  // 모달이 열려 있을 때만 fetch 수행 (useFetchSteps 내부에서도 한 번 더 체크함)
+  const { data, loading, error } = useFetchSteps(numId, open);
 
-  // 스토어 상태 구독
-  const raw = useStepsStore(s => s.raw);
-  const loading = useStepsStore(s => s.loading);
-  const error = useStepsStore(s => s.error);
-  const reloadSteps = useStepsStore(s => s.reloadSteps);
-
-  // goalId 바뀔 때 자동 로드 (리로더가 주입되어 있다면)
-  useEffect(() => {
-    if (effectiveId == null) return;
-    void reloadSteps(effectiveId);
-  }, [effectiveId, reloadSteps]);
-
-  // 원천(raw) → GoalStepsView
-  const view: GoalStepsView = useMemo(() => toGoalStepsView(raw), [raw]);
+  // 원천(data: RespTodoSteps | null) → GoalStepsView
+  const view: GoalStepsView = useMemo(() => toGoalStepsView(data), [data]);
 
   // 기본값 가드
   const vm: GoalStepsView = useMemo(() => view ?? EMPTY_VM, [view]);
 
-  // 외부에서 명시적으로 호출할 수 있게 래핑 (gid 없으면 effectiveId 사용)
-  const reload = (gid?: number | null) => reloadSteps(gid ?? effectiveId ?? null);
-
-  return { vm, view, loading, error, reload };
+  // 예전엔 reloadSteps를 store에서 받아서 래핑했는데,
+  // 이제는 store 의존을 제거했으므로 reload는 제공하지 않음.
+  return { vm, view, loading, error };
 }
