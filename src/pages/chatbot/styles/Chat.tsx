@@ -37,7 +37,6 @@ export const ProfileImg = styled.img`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  // padding: 5px;
   background: var(--bg-1-soft);
   width: 48px;
   height: 48px;
@@ -57,7 +56,7 @@ export const UserChat = styled.div`
   background: var(--green-100);
   border-radius: 16px 0 16px 16px;
   max-width: 240px;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-lg);
   word-break: break-word;
   @media (min-width: 414px) {
     max-width: 280px;
