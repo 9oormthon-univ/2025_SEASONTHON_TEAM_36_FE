@@ -35,6 +35,9 @@ export const Input = styled.input`
   padding: 10px 20px;
   outline: none;
   font-size: var(--fs-lg);
+  &:disabled {
+    background: var(--natural-200);
+  }
   &::placeholder {
     color: var(--text-2);
   }
@@ -42,6 +45,10 @@ export const Input = styled.input`
 
 export const Button = styled.button`
   margin-left: 4px;
+
+  .disabled > path {
+    fill: var(--natural-600);
+  }
 `;
 
 export const Textarea = styled.textarea<{

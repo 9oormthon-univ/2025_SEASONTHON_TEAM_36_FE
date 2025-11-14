@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { disconnectSSE } from "@/apis/ai";
-import UserChatButton from "@/assets/images/chat-button.svg";
+import UserChatButton from "@/assets/images/chat-button.svg?react";
 import ConfirmModal from "@/common/components/ConfirmModal";
 import { ModalHeader } from "@/common/components/PageModal";
 
@@ -52,7 +52,7 @@ const ChatbotPage = () => {
   const handleCancelClose = useCallback(() => {
     setModalOpen(false);
   }, []);
-
+  console.log(chatbotLoading);
   return (
     <>
       <ConfirmModal
@@ -153,9 +153,16 @@ const ChatbotPage = () => {
                   onChange={e => {
                     setUserChat(e.target.value);
                   }}
+                  disabled={chatbotLoading ? true : false}
                 />
-                <Button>
-                  <img src={UserChatButton} alt="채팅 버튼" />
+                <Button
+                  onClick={e => {
+                    if (chatbotLoading) {
+                      e.preventDefault();
+                    }
+                  }}
+                >
+                  <UserChatButton className={chatbotLoading ? "disabled" : ""} />
                 </Button>
               </Form>
             )}
