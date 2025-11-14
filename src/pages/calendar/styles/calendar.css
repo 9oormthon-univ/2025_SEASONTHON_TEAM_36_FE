@@ -128,7 +128,6 @@
 .react-calendar__month-view__days__day {
   transition: 0.2s background-color linear;
   border-radius: 10px;
-  position: relative;
 }
 
 /* 날짜 숫자의 폰트 크기도 반응형으로 설정 */

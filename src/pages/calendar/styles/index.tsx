@@ -1,15 +1,8 @@
 import styled from "styled-components";
 
-export const Page = styled.div`
-  height: 100%;
-  position: relative;
-`;
+export const Page = styled.div``;
 
-export const Main = styled.div`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-`;
+export const Main = styled.div``;
 
 export const Title = styled.h2<{ $fontSize: number | string }>`
   width: 100%;

@@ -73,7 +73,7 @@ const CustomCalendar = () => {
     return null;
   };
   return (
-    <div style={{ position: "relative" }}>
+    <>
       <Calendar
         onClickDay={value => {
           handleToDo(value);
@@ -108,7 +108,7 @@ const CustomCalendar = () => {
           />
         }
       />
-    </div>
+    </>
   );
 };
 
