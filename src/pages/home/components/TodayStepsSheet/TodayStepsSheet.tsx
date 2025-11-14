@@ -26,7 +26,7 @@ export default function TodayStepsSheet() {
   const { activeId } = useActiveGoalStore();
 
   // 🍋‍🟩 이제 groups가 바로 내려옴
-  const { loading, error, groups: baseGroups } = useTodaySteps(activeId);
+  const { loading, error, groups: baseGroups, refetch } = useTodaySteps(activeId);
 
   useEffect(() => {
     if (!error) return;
@@ -57,6 +57,7 @@ export default function TodayStepsSheet() {
     goalId: activeId,
     groups: baseGroups,
     onOpenDailyIfNeeded: () => maybeOpen(),
+    refetchTodaySteps: refetch,
   });
 
   const groups = useMemo(() => applyPlayingState(baseGroups, playingKey), [baseGroups, playingKey]);
