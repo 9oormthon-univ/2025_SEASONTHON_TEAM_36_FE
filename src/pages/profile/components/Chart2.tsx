@@ -33,6 +33,9 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
   const [width, setWidth] = useState(100); // 초기값 설정
   const [height, setHeight] = useState(30); // 초기값 설정
 
+  // iOS 기기 감지
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
   useLayoutEffect(() => {
     if (ref.current) {
       setWidth(ref.current.offsetWidth);
@@ -56,7 +59,7 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
       y={-22}
       width={width || 100}
       height={height || 30}
-      style={{ overflow: "visible", position: "relative" }}
+      style={{ overflow: "visible", position: "relative", pointerEvents: "none" }}
     >
       <div
         ref={ref}
@@ -67,7 +70,7 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
           border: "1px solid var(--green-500)",
           borderRadius: "7px",
           boxShadow:
-            "-0.3px -0.3px 5px 0 var(--natural-color-natural-400, #D6D9E0), 0.3px 0.3px 5px 0 var(--natural-color-natural-400, #D6D9E0)",
+            "-0.3px -0.3px 5px 0 var(--natural-400, #D6D9E0), 0.3px 0.3px 5px 0 var(--natural-400, #D6D9E0)",
           padding: "3px 28px",
           display: "inline-block",
           whiteSpace: "nowrap",
@@ -82,7 +85,8 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
           height: `${y - 4}px`,
           background: dataKey === "최대" ? "green" : "lightgreen",
           position: "absolute",
-          left: `${width / 2 + 1.5}px`,
+          left: isIOS ? `${width * 1.24}px` : `${width / 2 + 1.5}px`,
+          top: isIOS ? "9.5px" : "27px",
         }}
       ></div>
     </foreignObject>
@@ -95,6 +99,30 @@ interface CustomActiveBarProps extends RectangleProps {
 
 const Chart2 = ({ focusTime }: Chart2Props) => {
   const [activeBar, setActiveBar] = useState<{ index: number; dataKey: string } | null>(null);
+
+  const handleBarTouchStart = (dataKey: string) => (_: unknown, index: number) => {
+    setActiveBar({ index, dataKey });
+  };
+
+  const handleBarTouchEnd = () => {
+    setActiveBar(null);
+  };
+
+  const handleBarTouchCancel = () => {
+    setActiveBar(null);
+  };
+
+  const handleBarMouseDown = (dataKey: string) => (_: unknown, index: number) => {
+    setActiveBar({ index, dataKey });
+  };
+
+  const handleBarMouseUp = () => {
+    setActiveBar(null);
+  };
+
+  const handleBarMouseLeave = () => {
+    setActiveBar(null);
+  };
 
   const CustomActiveBar = (props: CustomActiveBarProps) => {
     const { dataKey } = props;
@@ -116,6 +144,7 @@ const Chart2 = ({ focusTime }: Chart2Props) => {
               ? "var(--green-500)"
               : "var(--green-200)"
         }
+        style={{ touchAction: "none" }}
       />
     );
   };
@@ -149,8 +178,12 @@ const Chart2 = ({ focusTime }: Chart2Props) => {
         fill="#DEE1E6"
         cursor="pointer"
         activeBar={<CustomActiveBar />}
-        onPointerDown={(_, index) => setActiveBar({ index, dataKey: "최소" })}
-        onPointerUp={() => setActiveBar(null)}
+        onTouchStart={handleBarTouchStart("최소")}
+        onTouchEnd={handleBarTouchEnd}
+        onTouchCancel={handleBarTouchCancel}
+        onMouseDown={handleBarMouseDown("최소")}
+        onMouseUp={handleBarMouseUp}
+        onMouseLeave={handleBarMouseLeave}
         isAnimationActive={false}
         label={props => <CustomLabel {...props} activeBar={activeBar} dataKey="최소" />}
       />
@@ -160,8 +193,12 @@ const Chart2 = ({ focusTime }: Chart2Props) => {
         fill="#ABAFB7"
         cursor="pointer"
         activeBar={<CustomActiveBar />}
-        onPointerDown={(_, index) => setActiveBar({ index, dataKey: "최대" })}
-        onPointerUp={() => setActiveBar(null)}
+        onTouchStart={handleBarTouchStart("최대")}
+        onTouchEnd={handleBarTouchEnd}
+        onTouchCancel={handleBarTouchCancel}
+        onMouseDown={handleBarMouseDown("최대")}
+        onMouseUp={handleBarMouseUp}
+        onMouseLeave={handleBarMouseLeave}
         isAnimationActive={false}
         label={props => <CustomLabel {...props} activeBar={activeBar} dataKey="최대" />}
       />
