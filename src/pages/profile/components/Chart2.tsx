@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { memo, useCallback, useLayoutEffect, useRef, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -28,13 +28,14 @@ interface Chart2Props {
   focusTime: FocusTimeType[] | undefined;
 }
 
-const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(100); // 초기값 설정
-  const [height, setHeight] = useState(30); // 초기값 설정
+// iOS 기기 감지를 한 번만 수행
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-  // iOS 기기 감지
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+// CustomLabel을 메모이제이션
+const CustomLabel = memo(({ x, y, value, activeBar, dataKey, index }: CustomLabelProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(100);
+  const [height, setHeight] = useState(30);
 
   useLayoutEffect(() => {
     if (ref.current) {
@@ -43,12 +44,10 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
     }
   }, [value]);
 
-  // x, y가 유효한 숫자가 아니면 렌더링하지 않음
   if (typeof x !== "number" || typeof y !== "number") {
     return null;
   }
 
-  // 클릭된 Bar가 아니면 렌더링하지 않음
   if (!activeBar || activeBar.index !== index || activeBar.dataKey !== dataKey) {
     return null;
   }
@@ -91,7 +90,9 @@ const CustomLabel = ({ x, y, value, activeBar, dataKey, index }: CustomLabelProp
       ></div>
     </foreignObject>
   );
-};
+});
+
+CustomLabel.displayName = "CustomLabel";
 
 interface CustomActiveBarProps extends RectangleProps {
   dataKey?: string;
@@ -100,54 +101,73 @@ interface CustomActiveBarProps extends RectangleProps {
 const Chart2 = ({ focusTime }: Chart2Props) => {
   const [activeBar, setActiveBar] = useState<{ index: number; dataKey: string } | null>(null);
 
-  const handleBarTouchStart = (dataKey: string) => (_: unknown, index: number) => {
-    setActiveBar({ index, dataKey });
-  };
+  const handleBarTouchStart = useCallback(
+    (dataKey: string) => (_: unknown, index: number) => {
+      setActiveBar({ index, dataKey });
+    },
+    [],
+  );
 
-  const handleBarTouchEnd = () => {
+  const handleBarTouchEnd = useCallback(() => {
     setActiveBar(null);
-  };
+  }, []);
 
-  const handleBarTouchCancel = () => {
+  const handleBarTouchCancel = useCallback(() => {
     setActiveBar(null);
-  };
+  }, []);
 
-  const handleBarMouseDown = (dataKey: string) => (_: unknown, index: number) => {
-    setActiveBar({ index, dataKey });
-  };
+  const handleBarMouseDown = useCallback(
+    (dataKey: string) => (_: unknown, index: number) => {
+      setActiveBar({ index, dataKey });
+    },
+    [],
+  );
 
-  const handleBarMouseUp = () => {
+  const handleBarMouseUp = useCallback(() => {
     setActiveBar(null);
-  };
+  }, []);
 
-  const handleBarMouseLeave = () => {
+  const handleBarMouseLeave = useCallback(() => {
     setActiveBar(null);
-  };
+  }, []);
 
-  const CustomActiveBar = (props: CustomActiveBarProps) => {
-    const { dataKey } = props;
-    const originProps = { ...props };
-    delete originProps.dataKey;
-    return (
-      <Rectangle
-        {...originProps}
-        fill={
-          activeBar
-            ? dataKey === "최대" && activeBar.dataKey === "최대"
-              ? "var(--green-500)"
-              : dataKey === "최소" && activeBar.dataKey === "최소"
-                ? "var(--green-200)"
-                : dataKey === "최대"
-                  ? "#ABAFB7"
-                  : "#DEE1E6"
-            : dataKey === "최대"
-              ? "var(--green-500)"
-              : "var(--green-200)"
-        }
-        style={{ touchAction: "none" }}
-      />
-    );
-  };
+  const CustomActiveBar = useCallback(
+    (props: CustomActiveBarProps) => {
+      const { dataKey } = props;
+      const originProps = { ...props };
+      delete originProps.dataKey;
+      return (
+        <Rectangle
+          {...originProps}
+          fill={
+            activeBar
+              ? dataKey === "최대" && activeBar.dataKey === "최대"
+                ? "var(--green-500)"
+                : dataKey === "최소" && activeBar.dataKey === "최소"
+                  ? "var(--green-200)"
+                  : dataKey === "최대"
+                    ? "#ABAFB7"
+                    : "#DEE1E6"
+              : dataKey === "최대"
+                ? "var(--green-500)"
+                : "var(--green-200)"
+          }
+          style={{ touchAction: "none" }}
+        />
+      );
+    },
+    [activeBar],
+  );
+
+  const renderMinLabel = useCallback(
+    (props: LabelProps) => <CustomLabel {...props} activeBar={activeBar} dataKey="최소" />,
+    [activeBar],
+  );
+
+  const renderMaxLabel = useCallback(
+    (props: LabelProps) => <CustomLabel {...props} activeBar={activeBar} dataKey="최대" />,
+    [activeBar],
+  );
 
   return (
     <BarChart
@@ -185,7 +205,7 @@ const Chart2 = ({ focusTime }: Chart2Props) => {
         onMouseUp={handleBarMouseUp}
         onMouseLeave={handleBarMouseLeave}
         isAnimationActive={false}
-        label={props => <CustomLabel {...props} activeBar={activeBar} dataKey="최소" />}
+        label={renderMinLabel}
       />
       <Bar
         dataKey="최대"
@@ -200,7 +220,7 @@ const Chart2 = ({ focusTime }: Chart2Props) => {
         onMouseUp={handleBarMouseUp}
         onMouseLeave={handleBarMouseLeave}
         isAnimationActive={false}
-        label={props => <CustomLabel {...props} activeBar={activeBar} dataKey="최대" />}
+        label={renderMaxLabel}
       />
       <Legend
         wrapperStyle={{ width: "100%" }}

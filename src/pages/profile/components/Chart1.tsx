@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { memo, useCallback, useLayoutEffect, useRef, useState } from "react";
 import { CartesianGrid, DotProps, LabelProps, Line, LineChart, XAxis, YAxis } from "recharts";
 
 interface CustomDotProps {
@@ -19,55 +19,9 @@ interface Chart1Props {
   achievementRate: AchievementRateType[] | undefined;
 }
 
-const Chart1 = ({ achievementRate }: Chart1Props) => {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const CustomActiveDot = (props: CustomDotProps) => {
-    const { cx, cy, index } = props;
-
-    const handleTouchStart = (e: React.TouchEvent) => {
-      e.stopPropagation();
-      setActiveIndex(index as number);
-    };
-
-    const handleTouchEnd = (e: React.TouchEvent) => {
-      e.stopPropagation();
-      setActiveIndex(null);
-    };
-
-    const handleMouseDown = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setActiveIndex(index as number);
-    };
-
-    const handleMouseUp = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setActiveIndex(null);
-    };
-
-    const handleMouseLeave = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setActiveIndex(null);
-    };
-
-    return (
-      <circle
-        cx={cx}
-        cy={cy}
-        r={3}
-        fill="white"
-        stroke={"red"}
-        strokeWidth={2}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        style={{ cursor: "pointer", filter: "none" }}
-      />
-    );
-  };
-
-  const CustomLabel = ({ x, y, value, index }: LabelProps) => {
+// CustomLabel 컴포넌트를 외부로 분리
+const CustomLabel = memo(
+  ({ x, y, value, activeIndex, index }: LabelProps & { activeIndex: number | null }) => {
     const ref = useRef<HTMLDivElement>(null);
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
@@ -86,7 +40,7 @@ const Chart1 = ({ achievementRate }: Chart1Props) => {
     return (
       <foreignObject
         x={(x as number) - width / 2}
-        y={(y as number) - 36} // 위쪽으로 이동
+        y={(y as number) - 36}
         width={width}
         height={height}
         style={{ overflow: "visible" }}
@@ -109,7 +63,75 @@ const Chart1 = ({ achievementRate }: Chart1Props) => {
         </div>
       </foreignObject>
     );
-  };
+  },
+);
+
+CustomLabel.displayName = "CustomLabel";
+
+const Chart1 = ({ achievementRate }: Chart1Props) => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  const handleSetActive = useCallback((index: number) => {
+    setActiveIndex(index);
+  }, []);
+
+  const handleClearActive = useCallback(() => {
+    setActiveIndex(null);
+  }, []);
+
+  const CustomActiveDot = useCallback(
+    (props: CustomDotProps) => {
+      const { cx, cy, index } = props;
+
+      const handleTouchStart = (e: React.TouchEvent) => {
+        e.stopPropagation();
+        handleSetActive(index as number);
+      };
+
+      const handleTouchEnd = (e: React.TouchEvent) => {
+        e.stopPropagation();
+        handleClearActive();
+      };
+
+      const handleMouseDown = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        handleSetActive(index as number);
+      };
+
+      const handleMouseUp = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        handleClearActive();
+      };
+
+      const handleMouseLeave = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        handleClearActive();
+      };
+
+      return (
+        <circle
+          cx={cx}
+          cy={cy}
+          r={3}
+          fill="white"
+          stroke={"red"}
+          strokeWidth={2}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          style={{ cursor: "pointer", filter: "none" }}
+        />
+      );
+    },
+    [handleSetActive, handleClearActive],
+  );
+
+  const renderLabel = useCallback(
+    (props: LabelProps) => <CustomLabel {...props} activeIndex={activeIndex} />,
+    [activeIndex],
+  );
   return (
     <LineChart
       style={{
@@ -166,7 +188,7 @@ const Chart1 = ({ achievementRate }: Chart1Props) => {
         stroke="#0e7400"
         dot={{ strokeWidth: 2, style: { filter: "none" } }}
         activeDot={CustomActiveDot}
-        label={CustomLabel}
+        label={renderLabel}
         strokeLinecap="round"
         isAnimationActive={false}
         style={{ filter: "url(#dualShadow)" }}
