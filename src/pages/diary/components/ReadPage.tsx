@@ -144,27 +144,40 @@ export default function Read() {
 
       {/* 메모 */}
       <Section>
-        <Label className="typo-h4">MEMO</Label>
-        <MemoBox
-          value={detail.memo ?? ""}
-          placeholder="메모"
-          readOnly
-          showCounter={false}
-          rows={3}
-        />
+        {detail.memo ? (
+          <>
+            <Label className="typo-h4">MEMO</Label>
+            <MemoBox
+              value={detail.memo ?? ""}
+              placeholder="메모"
+              readOnly
+              showCounter={false}
+              rows={3}
+            />
+          </>
+        ) : (
+          <span style={{ color: "var(--text-3)" }} className="typo-h4">
+            기록된 메모가 없습니다.
+          </span>
+        )}
       </Section>
 
       {/* 사진 */}
       <Section>
-        <Label className="typo-h4">사진</Label>
-        <PhotoPicker
-          photoUrl={detail.photoUrl ?? "https://picsum.photos/400"}
-          onImageClick={handleImageClick}
-        />
+        {detail.photoUrl ? (
+          <>
+            <Label className="typo-h4">사진</Label>
+            <PhotoPicker photoUrl={detail.photoUrl ?? ""} onImageClick={handleImageClick} />
+          </>
+        ) : (
+          <span style={{ color: "var(--text-3)" }} className="typo-h4">
+            기록된 사진이 없습니다.
+          </span>
+        )}
       </Section>
       <ViewPicture
         open={previewOpen}
-        src={detail.photoUrl ?? "https://picsum.photos/400"}
+        src={detail.photoUrl ?? ""}
         alt="사진 미리보기"
         onClose={handleClosePreview}
       />
