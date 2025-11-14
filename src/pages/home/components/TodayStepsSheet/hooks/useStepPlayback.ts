@@ -13,10 +13,12 @@ export function useStepPlayback({
   goalId,
   groups,
   onOpenDailyIfNeeded,
+  refetchTodaySteps,
 }: {
   goalId?: number | null;
   groups: Group[];
   onOpenDailyIfNeeded?: () => void;
+  refetchTodaySteps?: () => Promise<void>;
 }) {
   // store에서 직접 reloadTodos 사용
   const reloadTodos = useGoalsStore(s => s.reloadTodos);
@@ -52,6 +54,7 @@ export function useStepPlayback({
 
   // ✅ 리로드 대기 플래그(범용): 어떤 모달이든 "전부 닫힌" 타이밍에 1회 리로드
   const pendingReloadRef = useRef(false);
+  const pendingStepReloadRef = useRef(false);
 
   // 모든 아이템(보조 계산)
   const allItems = useMemo(() => groups.flatMap(g => g.items), [groups]);
@@ -71,6 +74,15 @@ export function useStepPlayback({
       void reloadTodos();
     }
   }, [anyModalOpen, reloadTodos]);
+
+  useEffect(() => {
+    if (!anyModalOpen) {
+      if (pendingStepReloadRef.current && refetchTodaySteps) {
+        pendingStepReloadRef.current = false;
+        void refetchTodaySteps();
+      }
+    }
+  }, [anyModalOpen, refetchTodaySteps]);
 
   // RespStepRecord 기반으로 직접 판정 (외부 유틸 의존성 제거)
   const handleStopResult = useCallback((res: RespStepRecord) => {
@@ -221,7 +233,8 @@ export function useStepPlayback({
       setStepPauseOpen(true);
       setPlayingModalOpen(false);
       // 모달(혹은 스플래시) 닫힐 때 1회 리로드
-      pendingReloadRef.current = true;
+      // pendingReloadRef.current = true;
+      pendingStepReloadRef.current = true; // todaystep만 reload
     }
   };
 

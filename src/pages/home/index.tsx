@@ -9,7 +9,6 @@ import DateView from "./components/DateView";
 import EmptyState from "./components/EmptyState";
 import GoalCard from "./components/GoalCard";
 import TodayStepsSheet from "./components/TodayStepsSheet/TodayStepsSheet";
-import { useFetchSteps } from "./hooks/useFetchSteps";
 import { useActiveGoalStore } from "./store/useActiveGoalStore";
 import { useBottomSheetStore } from "./store/useBottomSheetStore";
 import { useBindGoalsStore, useGoalsStore } from "./store/useGoalsStore";
@@ -31,7 +30,6 @@ export default function HomePage() {
 
   // API ↔ Zustand 동기화 + 개발용 더미 fallback
   useBindGoalsStore();
-  useFetchSteps(activeId);
 
   const sheetHeight = useBottomSheetStore(s => s.heightPx);
   const isSheetOpen = useBottomSheetStore(s => s.open);
