@@ -16,7 +16,7 @@ export interface RespStepItem {
   description: string;
   isCompleted: boolean;
   isPaused: boolean;
-  tips: string;
+  tips: string[];
 }
 
 /**

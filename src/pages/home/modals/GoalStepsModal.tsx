@@ -7,12 +7,26 @@ import trashIcon from "@/assets/images/trash.svg";
 import ConfirmModal from "../../../common/components/ConfirmModal";
 import PageModal from "../../../common/components/PageModal";
 import FrogBar from "../components/FrogBar";
-import { useAutoCenterList } from "../hooks/useAutoCenterList";
 import { useConfirmGoalDelete } from "../hooks/useConfirmGoalDelete";
 import { useGoalStepsView } from "../hooks/useGoalStepsView";
 import { useActiveGoalStore } from "../store/useActiveGoalStore";
 import { DDayIcon } from "../styles/DDayIcon";
 import { StepViewItem } from "../types/steps";
+
+// ISO string → "n월 n일" 형태로 포맷
+function formatStepDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return "";
+
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) {
+    return dateStr;
+  }
+
+  const month = d.getMonth() + 1; // 0-based
+  const date = d.getDate();
+
+  return `${month}월 ${date}일`;
+}
 
 interface GoalStepsModalProps {
   open: boolean;
@@ -35,7 +49,8 @@ export default function GoalStepsModal({
 
   // 2) 스크롤 중앙정렬 측정
   const stepsRef = useRef<HTMLUListElement | null>(null);
-  const centerList = useAutoCenterList(stepsRef, open, `${vm.steps.length}-${open}`);
+  // const centerList = useAutoCenterList(stepsRef, open, `${vm.steps.length}-${open}`);
+  const centerList = false; // 레이아웃 오버플로우 이슈로 일단 무조건 false
 
   // 3) 삭제
   const { confirmOpen, deleting, openConfirm, closeConfirm, handleConfirmDelete } =
@@ -99,7 +114,7 @@ export default function GoalStepsModal({
               const panelId = `step-panel-${key}`;
               return (
                 <StepItem key={key} role="listitem" aria-expanded={isOpen}>
-                  <StepDate className="typo-body-s">{s.stepDate}</StepDate>
+                  <StepDate className="typo-body-s">{formatStepDate(s.stepDate)}</StepDate>
 
                   <StepTitleRow $expanded={isOpen}>
                     <StepTitle $expanded={isOpen}>{s.description}</StepTitle>
@@ -118,12 +133,21 @@ export default function GoalStepsModal({
 
                   {/* 아코디언 패널 영역 */}
                   <StepPanel id={panelId} $open={isOpen} role="region" aria-label="단계 상세">
-                    <PanelRow style={{ justifyContent: "flex-start" }}>
+                    <PanelRow style={{ justifyContent: "flex-start", alignItems: "flex-start" }}>
                       <PanelLabel>💡</PanelLabel>
-                      <PanelValue>{s.tips == null ? "-" : s.tips}</PanelValue>
+
+                      {!s.tips || s.tips.length === 0 ? (
+                        <PanelValue>-</PanelValue>
+                      ) : (
+                        <TipsValue>
+                          {s.tips.map((tip, idx) => (
+                            <TipBullet key={idx}>{tip}</TipBullet>
+                          ))}
+                        </TipsValue>
+                      )}
                     </PanelRow>
-                    <PanelRow>
-                      <PanelLabel>완료 여부</PanelLabel>
+                    <PanelRow style={{ marginTop: "6px" }}>
+                      <PanelLabel style={{ color: "var(--text-3)" }}>완료 여부</PanelLabel>
                       <PanelValue>
                         {"isCompleted" in s && typeof s.isCompleted === "boolean" ? (
                           <StatusPill data-completed={s.isCompleted}>
@@ -238,7 +262,6 @@ const Content = styled.div`
   display: flex;
   align-items: stretch;
   justify-content: center;
-  border-radius: 12px;
   overflow: hidden;
   gap: 12%;
 `;
@@ -251,7 +274,6 @@ const FrogWrap = styled.div`
   align-items: stretch;
 `;
 
-// Transient prop $center 로 타입 안전하게 처리
 const Steps = styled.ul<{ $center: boolean }>`
   flex: 1 1 auto;
   height: 100%;
@@ -265,12 +287,13 @@ const Steps = styled.ul<{ $center: boolean }>`
   scroll-padding-bottom: 12px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  ${({ $center }) => ($center ? "justify-content: center;" : "justify-content: flex-start;")}
+  justify-content: space-around;
+  // ${({ $center }) => ($center ? "justify-content: center;" : "justify-content: flex-start;")}
 `;
 
 const StepItem = styled.li`
   display: flex;
-  width: 92%;
+  width: 94%;
   padding: 12px 16px;
   flex-direction: column;
   align-items: flex-start;
@@ -299,7 +322,7 @@ const StepTitle = styled.span<{ $expanded?: boolean }>`
   flex: 1 1 auto;
   min-width: 0;
   color: var(--text-1, #000);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 1.2;
 
@@ -396,5 +419,29 @@ const StatusPill = styled.span`
   &[data-completed="false"] {
     background: #fff3e0;
     color: #e65100;
+  }
+`;
+const TipsValue = styled.div`
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.1;
+  display: flex;
+  gap: 4px;
+  flex-direction: column;
+  align-items: flex-start;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+`;
+
+const TipBullet = styled.span`
+  position: relative;
+  padding-left: 12px;
+
+  &::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 `;

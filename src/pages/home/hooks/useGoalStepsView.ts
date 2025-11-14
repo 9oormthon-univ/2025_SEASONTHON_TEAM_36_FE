@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { GoalStepsView } from "@/pages/home/types/steps";
 
 import { useFetchSteps } from "../hooks/useFetchSteps";
-import { toGoalStepsView } from "../utils/stepsView";
+import { toGoalStepsView } from "../utils/toGoalStepsView";
 
 const EMPTY_VM: GoalStepsView = {
   dDay: "D-0",
