@@ -21,7 +21,7 @@ export interface StepViewItem {
   // count: number; // 기본 0
   isCompleted: boolean;
   isPaused: boolean;
-  tips: string;
+  tips: string[];
 }
 
 /** Goal 단위의 전체 Steps 뷰 모델 (toGoalStepsView 반환) */

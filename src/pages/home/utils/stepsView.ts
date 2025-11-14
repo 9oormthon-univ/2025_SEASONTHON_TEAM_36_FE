@@ -25,6 +25,8 @@ export function toGoalStepsView(raw: Partial<RespTodoSteps> | null | undefined):
         description: typeof x.description === "string" ? x.description : "",
         count: Number.isFinite(countSrc) ? countSrc : 0,
         isCompleted: !!x.isCompleted,
+        tips: Array.isArray(x.tips) ? x.tips : [],
+        isPaused: !!x.isPaused,
       };
     })
     .sort((a, b) => {
