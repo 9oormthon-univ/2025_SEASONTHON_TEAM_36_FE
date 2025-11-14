@@ -5,6 +5,7 @@ import { ModalHeader } from "@/common/components/PageModal";
 
 const Shell = styled.div`
   // margin-top: 60px;
+  overflow-x: hidden;
 `;
 
 export default function DiaryLayout() {
