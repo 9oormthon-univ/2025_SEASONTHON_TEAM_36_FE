@@ -24,12 +24,32 @@ const Chart1 = ({ achievementRate }: Chart1Props) => {
   const CustomActiveDot = (props: CustomDotProps) => {
     const { cx, cy, index } = props;
 
-    const handlePointerDown = (e: React.MouseEvent) => {
+    const handleTouchStart = (e: React.TouchEvent) => {
+      e.preventDefault();
       e.stopPropagation();
       setActiveIndex(index as number);
     };
 
-    const handlePointerUp = (e: React.MouseEvent) => {
+    const handleTouchEnd = (e: React.TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setActiveIndex(null);
+    };
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setActiveIndex(index as number);
+    };
+
+    const handleMouseUp = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setActiveIndex(null);
+    };
+
+    const handleMouseLeave = (e: React.MouseEvent) => {
+      e.preventDefault();
       e.stopPropagation();
       setActiveIndex(null);
     };
@@ -42,9 +62,12 @@ const Chart1 = ({ achievementRate }: Chart1Props) => {
         fill="white"
         stroke={"red"}
         strokeWidth={2}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        style={{ cursor: "pointer", filter: "none" }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        style={{ cursor: "pointer", filter: "none", touchAction: "none" }}
       />
     );
   };
