@@ -156,12 +156,14 @@ const ChatbotPage = () => {
                 />
                 <Button
                   onClick={e => {
-                    if (chatbotLoading) {
+                    if (userChat.length === 0 || chatbotLoading) {
                       e.preventDefault();
                     }
                   }}
                 >
-                  <UserChatButton className={chatbotLoading ? "disabled" : ""} />
+                  <UserChatButton
+                    className={userChat.length === 0 || chatbotLoading ? "disabled" : ""}
+                  />
                 </Button>
               </Form>
             )}

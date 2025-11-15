@@ -46,7 +46,7 @@ export const useChatForm = () => {
               `${import.meta.env.VITE_API_BASE_URL}/api/v1/ai/connect?userId=${respUserInfo.userId}`,
               {
                 headers: {
-                  Authorization: `Bearer ${getAccessToken()}`,
+                  Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
                   Accept: "text/event-stream",
                   "Cache-Control": "no-cache",
                   Connection: "keep-alive",
@@ -184,6 +184,7 @@ export const useChatForm = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (userChat.length === 0) return;
     const sentUserChat = userChat.trim();
     if (userInfoRef.current) {
       sendMessage(userInfoRef.current.userId, sentUserChat)
