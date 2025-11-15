@@ -46,7 +46,7 @@ export const useChatForm = () => {
               `${import.meta.env.VITE_API_BASE_URL}/api/v1/ai/connect?userId=${respUserInfo.userId}`,
               {
                 headers: {
-                  Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
+                  Authorization: `Bearer ${getAccessToken()}`,
                   Accept: "text/event-stream",
                   "Cache-Control": "no-cache",
                   Connection: "keep-alive",
