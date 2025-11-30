@@ -60,8 +60,6 @@
 
 ## FE 기술 스택
 
-<img width="436" height="464" alt="스크린샷 2025-09-08 오후 10 58 12" src="https://github.com/user-attachments/assets/1e70504e-5299-44c3-b39f-025ab20bf756" />
-
 <img width="436" height="464" alt="스크린샷 2025-11-27 오전 11 21 52" src="https://github.com/user-attachments/assets/3805cb57-15c5-4a17-9978-76756abbfd9e" />
 
 
